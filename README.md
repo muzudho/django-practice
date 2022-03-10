@@ -57,6 +57,7 @@ host1/
 ```
 
 ```shell
+# docker-compose up する前に、 settings.py のデータベース設定を変えてください
 docker-compose up
 ```
 
