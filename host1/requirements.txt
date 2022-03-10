@@ -1,0 +1,5 @@
+# Dockerはまだ Django 4 に対応してない？
+Django>=3.0,<4.0
+
+# PostgreSQLへ接続するためのドライバ
+psycopg2>=2.8
