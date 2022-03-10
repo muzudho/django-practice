@@ -31,22 +31,49 @@ host1/
 ```shell
 cd host1
 
-# もう run しました
+# もう run しました。また run するなら、下図の <New> のファイルを消してください。 分かるなら、関連するDockerコンテナや、Dockerイメージも消してください
 # docker-compose run web django-admin.py startproject webapp1 .
 ```
 
 ```plain
 host1/
     |
+    +-- data                <New>
+            |
+            +-- db          <New>
+                |
+                +-- たくさん <New>
     +-- webapp1/            <New>
             |
             +-- __init__.py <New>
             +-- asgi.py     <New>
-            +-- settings.py <New>
+            +-- settings.py <New> https://docs.docker.com/samples/django/ 見てデータベースの設定を行った
             +-- urls.py     <New>
             +-- wsgi.py     <New>
     +-- docker-compose.yml
     +-- Dockerfile
-    +-- manage.py <New>
+    +-- manage.py           <New>
     +-- requirements.txt
+```
+
+```shell
+docker-compose up
+```
+
+* http://localhost:8000
+* [Ctrl]+[C]キーで停止
+
+
+別ターミナルから:  
+
+```shell
+# コンテナに入れることの確認だけ
+docker container exec -it host1_db_1 bash
+#                         ----------
+#                         CONTAINER NAME
+
+cd /var/lib/postgresql/data
+ls -la
+
+exit
 ```

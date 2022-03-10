@@ -5,6 +5,10 @@
 ```shell
 docker --help
 docker image --help
+docker system --help
+
+# 使ってないデータの削除
+docker system prune
 
 # Dockerイメージのリスト
 docker image --help
