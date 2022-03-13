@@ -6,9 +6,14 @@ def index(request):
     return HttpResponse("Hello, world. You're at the webapp1 index.")
 
 @login_required
-def loginUserList(request):
-    # host1/webapp1/templates/webapp1/login-user-list.html を取ってきます
-    template = loader.get_template('webapp1/login-user-list.html')
+def loginUser(request):
+    # host1/webapp1/templates/webapp1/login-user.html を取ってきます。 webapp1 が２回出てくるのはテクニックのようです
+    template = loader.get_template('webapp1/login-user.html')
+
+    user = request.user
     context = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
     }
     return HttpResponse(template.render(context, request))

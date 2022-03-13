@@ -20,8 +20,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('loginUserList', views.loginUserList, name='loginUserList'),
-    # path('webapp1/', include('webapp1.urls')),
+    path('login-user', views.loginUser, name='loginUser'),
     path('admin/', admin.site.urls),
 
     # Allauth
