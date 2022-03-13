@@ -1,0 +1,2 @@
+EMAIL_HOST_USER=<Gmailのアドレス>
+EMAIL_HOST_PASSWORD=<Gmailのアプリパスワード>

@@ -148,6 +148,6 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/' # ログアウト後に遷移�
  
 EMAIL_HOST = 'smtp.gmail.com' # メールサーバの指定
 EMAIL_PORT = 587 # ポート番号の指定
-EMAIL_HOST_USER = 'admin@example.com' # メールサーバのGmailのアドレス
-EMAIL_HOST_PASSWORD = 'password-of-gmail' # メールサーバのGmailのパスワード
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # メールサーバのGmailのアドレス
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # メールサーバのGmailのパスワード
 EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)
