@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'accounts',                     #追加
+
+    # 追加 allauth
     'django.contrib.sites',         #追加
     'allauth',                      #追加
     'allauth.account',              #追加

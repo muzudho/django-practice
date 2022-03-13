@@ -1,2 +1,5 @@
+# Superuser
+# docker-compose run --rm web python3 manage.py custom_createsuperuser --username <スーパーユーザー名> --email <スーパーユーザーのEmailアドレス> --password <スーパーユーザーのパスワード>
+
 EMAIL_HOST_USER=<Gmailのアドレス>
 EMAIL_HOST_PASSWORD=<Gmailのアプリパスワード>
