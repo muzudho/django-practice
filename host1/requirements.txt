@@ -3,3 +3,6 @@ Django>=3.0,<4.0
 
 # PostgreSQLへ接続するためのドライバ
 psycopg2>=2.8
+
+# ユーザー認証
+django-allauth>=0.32.0

@@ -38,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'accounts',                     #追加
+    'django.contrib.sites',         #追加
+    'allauth',                      #追加
+    'allauth.account',              #追加
+    'allauth.socialaccount',        #追加
 ]
 
 MIDDLEWARE = [
@@ -133,3 +138,16 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Allauth
+# https://sinyblog.com/django/django-allauth/
+
+SITE_ID = 1 # 動かしているサイトを識別するID
+LOGIN_REDIRECT_URL = 'home' # ログオン後に遷移するURLの指定
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/' # ログアウト後に遷移するURLの指定
+ 
+EMAIL_HOST = 'smtp.gmail.com' # メールサーバの指定
+EMAIL_PORT = 587 # ポート番号の指定
+EMAIL_HOST_USER = 'admin@example.com' # メールサーバのGmailのアドレス
+EMAIL_HOST_PASSWORD = 'password-of-gmail' # メールサーバのGmailのパスワード
+EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)

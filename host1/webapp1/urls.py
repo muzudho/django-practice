@@ -15,10 +15,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView #追加
 from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
     # path('webapp1/', include('webapp1.urls')),
     path('admin/', admin.site.urls),
+
+    # Allauth
+    # https://sinyblog.com/django/django-allauth/
+    path('', TemplateView.as_view(template_name='home.html'), name='home'), #追加。ログオン後のTOP画面の定義
+    path('accounts/', include('allauth.urls')), #追加
 ]
