@@ -12,6 +12,8 @@ slide: false
 
 # はじめに
 
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
 前提知識:  
 
 | Key                              | Value                                                                                            |

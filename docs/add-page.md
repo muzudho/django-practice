@@ -19,7 +19,13 @@ http://<省略>.com/practice1/page1.html
 
 # はじめに
 
-前の記事：　📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)  
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+前提知識:  
+
+| Key                                | Value                                                                                            |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| スーパーユーザーを追加しておくこと | 📖[Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153) |
 
 この記事のアーキテクチャ:  
 
