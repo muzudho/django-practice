@@ -1,22 +1,64 @@
-# ログインユーザー情報取得
+---
+title: Djangoでログインユーザー情報を表示しよう！
+tags: Django Docker Allauth
+author: muzudho1
+slide: false
+---
+# 目的
 
-📖 [Djangoで現在ログイン中のユーザ情報を取得したい時](https://awesome-linus.com/2019/04/05/django-get-login-user/)  
+画面に下記のようなログインしている自分のユーザー情報を表示する方法を説明する。  
 
-# settings.py の設定
+```
+Login user.
+id: 1
+username: Muzudho
+email: admin@example.com
+```
 
-INSTALLED_APPS = [
-    'webapp1', # 追加
-]
+# はじめに
 
-# 作成
+前の記事：　📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)  
 
-フォルダーを作成してください。  
+この記事のアーキテクチャ:  
 
-📂`host1/webapp1/templates`  
+| Key       | Value                                     |
+| --------- | ----------------------------------------- |
+| OS        | Windows10                                 |
+| Container | Docker                                    |
+| Auth      | allauth                                   |
+| Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-ファイルを作成してください。  
+前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
 
-📄`host1/webapp1/templates/webapp1/login-user.html`  
+```plaintext
+📂host1
+　├── 📂data
+　│　　└── 📂db
+　│　　　　└── （たくさんのもの）
+　├── 📂webapp1
+　│　　├── 📄settings.py
+　│　　├── 📄urls.py
+　│　　└── <いろいろ>
+　├── 📄.env
+　├── 🐳docker-compose.yml
+　├── 🐳Dockerfile
+　├── 📄manage.py
+　└── <いろいろ>
+```
+
+# Step 1. HTMLファイルを置く
+
+以下のディレクトリ、ファイルを作成してほしい。  
+
+```plaintext
+📂host1
+　└── 📂webapp1                      # アプリケーション フォルダー
+　 　　└── 📂templates
+　 　　　　└── 📂webapp1              # もう１回 アプリケーション フォルダー
+　 　　        └── 📄login-user.html
+```
+
+📄`host1/webapp1/templates/webapp1/login-user.html`:  
 
 ```html
 <html>
@@ -31,16 +73,25 @@ INSTALLED_APPS = [
 </html>
 ```
 
-📄host1/webapp1/views.py:  
+# Step 2. views.py を編集
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+📂host1
+　└── 📂webapp1
+　 　　└── 📄views.py
+```
+
+📄`host1/webapp1/views.py`:  
 
 ```py
-from django.contrib.auth.decorators import login_required # 追加
-from django.template import loader # 追加
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.template import loader
 
-# 追加
 @login_required
 def loginUser(request):
-    # host1/webapp1/templates/webapp1/login-user.html を取ってきます。 webapp1 が２回出てくるのはテクニックのようです
     template = loader.get_template('webapp1/login-user.html')
 
     user = request.user
@@ -52,7 +103,11 @@ def loginUser(request):
     return HttpResponse(template.render(context, request))
 ```
 
-📖host1/webapp1/urls.py:  
+# Step 3. urls.py を編集
+
+以下のファイルの該当箇所を追記してほしい
+
+📄`host1/webapp1/urls.py`:  
 
 ```py
 urlpatterns = [
@@ -60,10 +115,10 @@ urlpatterns = [
 ]
 ```
 
-# Webページへアクセス
+# Step 4. Webページへアクセス
 
 📖 [http://localhost:8000/login-user](http://localhost:8000/login-user)  
 
-# Documents
+# 次の記事
 
-📖 [Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)  
+📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)  

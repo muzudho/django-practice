@@ -1,4 +1,43 @@
-# スーパーユーザーの作成
+---
+title: Djangoでスーパーユーザーを追加しよう！
+tags: Django Docker
+author: muzudho1
+slide: false
+---
+# 目的
+
+管理画面に入れるのはスーパーユーザーだ。スーパーユーザーを作る方法を説明する。  
+
+# はじめに
+
+前の記事：　📖 [Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)  
+
+この記事のアーキテクチャ:  
+
+| Key       | Value                                     |
+| --------- | ----------------------------------------- |
+| OS        | Windows10                                 |
+| Container | Docker                                    |
+| Editor    | Visual Studio Code （以下 VSCode と表記） |
+
+前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+
+```plaintext
+📂host1
+　├── 📂data
+　│　　└── 📂db
+　│　　　　└── （たくさんのもの）
+　├── 📂webapp1
+　│　　├── 📂templates
+　│　　├── 📄settings.py
+　│　　└── 📄urls.py
+　├── 📄.env
+　├── 🐳docker-compose.yml
+　├── 🐳Dockerfile
+　└── 📄manage.py
+```
+
+# Step 1. スーパーユーザーを作るコマンドを用意する
 
 以下のようにディレクトリとファイルを作成してほしい。  
 
@@ -49,6 +88,8 @@ class Command(createsuperuser.Command):
             self.UserModel._default_manager.db_manager(database).create_superuser(**user_data)
 ```
 
+# Step 2. 上記のコマンドを実行する
+
 Dockerコンテナを停止してほしい。  
 
 次に以下のコマンドを打鍵してほしい。Dockerコンテナの中で動いているサーバーアプリケーションにスーパーユーザーが追加される。タイプミスしないように注意してほしい。  
@@ -66,9 +107,14 @@ Dockerコンテナの破棄～起動のたびに打鍵するのがめんどく�
 docker-compose up
 ```
 
-# Webの管理画面へアクセス
+# Step 3. Webの管理画面へアクセス
 
 📖 [http://localhost:8000/admin](http://localhost:8000/admin)  
+
+# 次の記事
+
+📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
+📖 [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2)  
 
 # 参考にした記事
 

@@ -1,0 +1,12 @@
+{% extends "base1.html" %} {% load bootstrap %} {% block title %}会員の詳細{% endblock title %} {% block content %}
+<h3>会員の詳細情報</h3>
+<h5>名前</h5>
+{{ member.name }}
+<h5>E-Mail</h5>
+{{ member.email }}
+<h5>年齢</h5>
+{{ member.age }}
+<br />
+<br />
+<a href="{% url 'crud:index' %}" class="btn btn-default btn-sm">戻る</a>
+{% endblock content %}

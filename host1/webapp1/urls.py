@@ -27,4 +27,12 @@ urlpatterns = [
     # https://sinyblog.com/django/django-allauth/
     path('', TemplateView.as_view(template_name='home.html'), name='home'), #追加。ログオン後のTOP画面の定義
     path('accounts/', include('allauth.urls')), #追加
+    #
+
+    path('practice1/page1.html', views.page1, name='page1'),
+
+    # メンバー一覧
+    path('members/', views.memberList, name='memberList'), # 追加
+    # メンバー読取
+    path('members/read', views.memberRead, name='memberRead'), # 追加
 ]
