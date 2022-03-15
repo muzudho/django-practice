@@ -32,7 +32,29 @@ urlpatterns = [
     path('practice1/page1.html', views.page1, name='page1'),
 
     # メンバー一覧
-    path('members/', views.memberList, name='memberList'), # 追加
+    path('members/', views.listMember, name='listMember'), # 追加
+    #                                        ----------
+    #                                        1
+    # 1. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
+
     # メンバー読取
-    path('members/read', views.memberRead, name='memberRead'), # 追加
+    path('members/read/<int:id>/', views.readMember, name='readMember'), # 追加
+    #     ----------------------
+    #     1
+    # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+
+    # メンバー削除
+    path('members/delete/<int:id>/', views.deleteMember, name='deleteMember'), # 追加
+    #     ------------------------
+    #     1
+    # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+
+    # メンバー作成
+    path('members/create/', views.upsertMember, name='createMember'), # 追加
+
+    # メンバー更新
+    path('members/update/<int:id>/', views.upsertMember, name='updateMember'), # 追加
+    #     ------------------------
+    #     1
+    # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
 ]

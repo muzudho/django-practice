@@ -1,34 +1,40 @@
 ---
-title: Djangoでモデルのインスタンスの一覧表示をしよう！
-tags: Django Docker
+title: Djangoでモデルのインスタンスの読取ページを作成しよう！
+tags: Django Docker crud
 author: muzudho1
 slide: false
 ---
 # 目的
 
 Webページ作成を練習したい。以下の簡単な例を説明する。  
+（※いわゆる CRUD の R）  
 
-`http://localhost:8000/members/` へアクセスすると、  
-さきほどモデルを作って管理画面で確認した、データを３件ほど表示したい。  
+`http://localhost:8000/members/read/1/` へアクセスすると、  
+id が 1 のメンバーを表示したい。  
 
 表示例:  
 
 ```plaintext
-一覧表示
-ID    氏名	       E-Mail                     年齢
-----  -----------  -------------------------  ----
-1     きふわらね    kifuwarane@example.com	  8
-2     きふわらずさ  kifuwarazusa@example.com	  7
-3     きふわらかく  kifuwarakaku@example.com	  6
+会員の詳細情報
+
+名前
+きふわらね
+
+E-Mail
+kifuwarane@example.com
+
+年齢
+8
 ```
 
 # はじめに
 
 前提知識:  
 
-| Key                    | Value                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| モデルを作っておくこと | [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2) |
+| Key                         | Value                                                                                                     |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 1. モデルを作っておくこと   | [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2)                     |
+| 2. 一覧表示を作っておくこと | [Djangoでモデルのインスタンスの一覧表示をしよう！](https://qiita.com/muzudho1/items/77668130b6d941596327) |
 
 この記事のアーキテクチャ:  
 
@@ -50,6 +56,7 @@ ID    氏名	       E-Mail                     年齢
 　│　　　　└── <たくさんのもの>
 　├── 📂webapp1
 　│　　├── 📂templates
+　│　　│    ├── 📂members
 　│　　│    └── 📂webapp1
 　│　　│        └── 📄<いろいろ>.html
 　│　　├── 📄admin.py
@@ -65,11 +72,11 @@ ID    氏名	       E-Mail                     年齢
 　└── <いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/members/list.html`:  
+📄`host1/webapp1/templates/members/read.html`:  
 
 ```html
 <!DOCTYPE html>
@@ -79,34 +86,28 @@ ID    氏名	       E-Mail                     年齢
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>メンバー一覧ページ</title>
+        <title>メンバー読取</title>
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
     </head>
     <body>
         <div class="container">
-            <h3>一覧表示</h3>
-
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>氏名</th>
-                        <th>E-Mail</th>
-                        <th>年齢</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for member in members %}
-                    <tr>
-                        <td>{{ member.id }}</td>
-                        <td>{{ member.name }}</td>
-                        <td>{{ member.email }}</td>
-                        <td>{{ member.age }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <h3>会員の詳細情報</h3>
+            <div class="card" style="width: 18rem">
+                <div class="card-body">
+                    <h5 class="card-title">名前</h5>
+                    <p class="card-text">{{ member.name }}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">E-Mail</h5>
+                    <p class="card-text">{{ member.email }}</p>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">年齢</h5>
+                    <p class="card-text">{{ member.age }}</p>
+                </div>
+            </div>
+            <a href="{% url 'listMember' %}" class="btn btn-default btn-sm">戻る</a>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -116,30 +117,30 @@ ID    氏名	       E-Mail                     年齢
 </html>
 ```
 
-# Step 2. views.pyファイルの編集
+# views.pyファイルの編集
 
-📄`views.py` は既存だろうから、以下のソースをマージしてほしい。  
+📄`views.py` は既存だろうから、マージしてほしい。  
 
 📄`host1/webapp1/views.py`:  
 
 ```py
 from django.http import HttpResponse
-from django.shortcuts import render #追加
+from django.shortcuts import render, get_object_or_404 #追加
 
 from .models import Member #追加
 
-# メンバー一覧
-def listMember(request):
-    template = loader.get_template('members/list.html')
+# メンバー読取
+def readMember(request, id=id):
+    template = loader.get_template('members/read.html')
     context = {
-        'members':Member.objects.all().order_by('id'), # id順にメンバーを全部取得
+        'member':Member.objects.get(pk=id), # idを指定してメンバーを１人取得
     }
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# urls.pyファイルの編集
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+📄`urls.py` は既存だろうから、マージしてほしい。  
 
 📄`host1/webapp1/urls.py`:  
 
@@ -150,19 +151,24 @@ from . import views
 urlpatterns = [
     # メンバー一覧
     path('members/', views.listMember, name='listMember'), # 追加
+    #                                        ----------
+    #                                        1
+    # 1. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
+
+    # メンバー読取
+    path('members/read/<int:id>/', views.readMember, name='readMember'), # 追加
+    #     ----------------------
+    #     1
+    # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Web画面へアクセス
 
 ```shell
 # （していなければ）Dockerコンテナの起動
 docker-compose up
 ```
 
-📖 [http://localhost:8000/members/](http://localhost:8000/members/)  
+📖 [http://localhost:8000/members/read/1/](http://localhost:8000/members/read/1/)  
 
-# 次の記事
-
-📖 [Djangoでモデルのインスタンスの読取ページを作成しよう！](https://qiita.com/muzudho1/items/ae362f53a670e265a7e4)  
-📖 [Djangoでモデルのインスタンスの削除ページを作成しよう！](https://qiita.com/muzudho1/items/32694c883331c75ef059)  

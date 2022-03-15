@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader # 追加
-from django.shortcuts import render, get_object_or_404 #追加
+from django.shortcuts import render, get_object_or_404, redirect #追加
 from .models import Member #追加
+from .forms import MemberForm #追加
 
 def index(request):
     return HttpResponse("Hello, world. You're at the webapp1 index.")
@@ -26,7 +27,7 @@ def page1(request):
     return HttpResponse(template.render(context, request))
 
 # メンバー一覧
-def memberList(request):
+def listMember(request):
     template = loader.get_template('members/list.html')
     context = {
         'members':Member.objects.all().order_by('id'), # id順にメンバーを全部取得
@@ -34,6 +35,46 @@ def memberList(request):
     return HttpResponse(template.render(context, request))
 
 # メンバー読取
-def memberRead(request, id=id):
-    member = get_object_or_404(Member, pk=id)
-    return render(request, 'members/read.html', {'member':member})
+def readMember(request, id=id):
+    template = loader.get_template('members/read.html')
+    context = {
+        'member':Member.objects.get(pk=id), # idを指定してメンバーを１人取得
+    }
+    return HttpResponse(template.render(context, request))
+
+# メンバー削除
+def deleteMember(request, id=id):
+    template = loader.get_template('members/delete.html')
+    
+    member = Member.objects.get(pk=id) # idを指定してメンバーを１人取得
+    name = member.name # 名前だけ取得しておく
+    member.delete()
+    context = {
+        'member': {
+            'name' : name
+        }
+    }
+    return HttpResponse(template.render(context, request))
+
+# メンバーの作成または更新
+def upsertMember(request, id=None):
+
+    if id: # idがあるとき（更新の時）
+        # idで検索して、結果を戻すか、404エラー
+        member = get_object_or_404(Member, pk=id)
+    else: # idが無いとき（作成の時）
+        member = Member()
+
+    # POSTの時（作成であれ更新であれ送信ボタンが押されたとき）
+    if request.method == 'POST':
+        # フォームを生成
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid(): # バリデーションがOKなら保存
+            member = form.save(commit=False)
+            member.save()
+            return redirect('listMember')
+    else: # GETの時（フォームを生成）
+        form = MemberForm(instance=member)
+
+    # 作成・更新画面を表示
+    return render(request, 'members/upsert.html', dict(form=form, id=id))
