@@ -78,3 +78,25 @@ def upsertMember(request, id=None):
 
     # 作成・更新画面を表示
     return render(request, 'members/upsert.html', dict(form=form, id=id))
+
+# Vuetify練習
+def readHello(request, id=id):
+    template = loader.get_template('vuetify2/hello1.html')
+    context = {
+    }
+    return HttpResponse(template.render(context, request))
+
+# Vuetify練習
+def readDataTable1(request, id=id):
+    template = loader.get_template('vuetify2/data-table1.html')
+    context = {
+    }
+    return HttpResponse(template.render(context, request))
+
+# Vuetify練習
+def readDataTable2(request, id=id):
+    template = loader.get_template('vuetify2/data-table2.html')
+    context = {
+        'dessertsJson': ''
+    }
+    return HttpResponse(template.render(context, request))

@@ -57,4 +57,18 @@ urlpatterns = [
     #     ------------------------
     #     1
     # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+
+    # Vuetify練習
+    path('vuetify2/hello1.html', views.readHello, name='readHello'), # 追加
+    #     --------------------                          ----------
+    #     1                                             2
+    # 1. `vuetify2/hello1.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
+
+    # Vuetify練習
+    path('vuetify2/data-table1.html', views.readDataTable1, name='readDataTable1'), # 追加
+    #     -------------------------                               --------------
+    #     1                                                       2
+    # 1. `vuetify2/data-table1.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 ]

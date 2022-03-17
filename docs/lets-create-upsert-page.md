@@ -225,3 +225,7 @@ docker-compose up
 👇 更新するとき、IDを付けろ。 IDは適宜変えてほしい。  
 
 📖 [http://localhost:8000/members/update/5/](http://localhost:8000/members/update/5/)  
+
+# 次の記事
+
+📖 [DjangoでフロントサイドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)

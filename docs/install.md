@@ -249,3 +249,8 @@ Lesson 6. CRUD
     * 📖 [Djangoでモデルのインスタンスの読取ページを作成しよう！](https://qiita.com/muzudho1/items/ae362f53a670e265a7e4)
     * 📖 [Djangoでモデルのインスタンスの削除ページを作成しよう！](https://qiita.com/muzudho1/items/32694c883331c75ef059)
     * 📖 [Djangoでモデルのインスタンスの作成／更新ページを作成しよう！](https://qiita.com/muzudho1/items/806ecdba1654ae169f37)
+
+Lesson 7. Vuetify
+
+* 📖 [DjangoでフロントサイドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
+    * 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)

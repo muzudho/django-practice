@@ -164,3 +164,6 @@ docker-compose up
 
 📖 [http://localhost:8000/members/delete/4/](http://localhost:8000/members/delete/4/)  
 
+# 次の記事
+
+📖 [DjangoでフロントサイドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
