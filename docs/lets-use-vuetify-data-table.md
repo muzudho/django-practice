@@ -198,12 +198,10 @@ Data table を作れば上がる。だから説明する。
 
 ```py
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404 #追加
-
-from .models import Member #追加
+from django.template import loader
 
 # Vuetify練習
-def readDataTable1(request, id=id):
+def readDataTable1(request):
     template = loader.get_template('vuetify2/data-table1.html')
     context = {
     }
@@ -238,3 +236,7 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/vuetify2/data-table1.html](http://localhost:8000/vuetify2/data-table1.html)  
+
+# 次の記事
+
+📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)  

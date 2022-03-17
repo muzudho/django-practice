@@ -1,3 +1,4 @@
+import json # 追加
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader # 追加
@@ -94,9 +95,13 @@ def readDataTable1(request, id=id):
     return HttpResponse(template.render(context, request))
 
 # Vuetify練習
-def readDataTable2(request, id=id):
+def readDataTable2(request):
     template = loader.get_template('vuetify2/data-table2.html')
+
+    with open('webapp1/static/desserts.json', mode='r', encoding='utf-8') as f:
+        doc = json.load(f)
+
     context = {
-        'dessertsJson': ''
+        'dessertsJson': json.dumps(doc)
     }
     return HttpResponse(template.render(context, request))

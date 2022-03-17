@@ -9,12 +9,10 @@ slide: false
 会員制のWebサイトのデモを作ることになった。  
 要件のうち特筆すべきは次の１点  
 
-* 身内でメンテナンスできる人を集めやすいプログラム言語、フレームワークを使ってほしい。  
-  ちなみにうちは 人工知能分野で、機械学習をしている人が多い  
-  （`実行速度　＜　メンテナンスできる人の集めやすさ`）  
-  （`メンテナンスのしやすさ　＜　募集して人がくるようなやつ`）
+* 身内でメンテナンスできる人を集めやすいプログラム言語、フレームワークを使ってほしい
 
-**Python**, **Django** はすぐに思いついた。  
+ちなみにうちは 人工知能分野で、機械学習をしている人が多い。  
+**Python** を使える人が多いから **Django** はすぐに思いついた。  
 
 また、（要件に反するが）四の五の言わさず **Docker** を押し付けることにした。  
 
@@ -254,3 +252,4 @@ Lesson 7. Vuetify
 
 * 📖 [DjangoでフロントサイドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
     * 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)
+        * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)

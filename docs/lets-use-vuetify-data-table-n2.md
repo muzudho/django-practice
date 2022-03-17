@@ -1,8 +1,13 @@
+---
+title: Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！
+tags: Django Docker Vuetify JSON
+author: muzudho1
+slide: false
+---
 # 目的
 
-Vuetify を自由自在に使えるよう、使用スキルを上げたい。  
-Data table を作れば上がる。だから説明する。  
-＜第２回＞  
+Vuetify に JSON形式でデータを渡したい。
+HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する。  
 
 # はじめに
 
@@ -154,7 +159,7 @@ Data table を作れば上がる。だから説明する。
 }
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 2. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -184,19 +189,19 @@ Data table を作れば上がる。だから説明する。
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
+            var dessertsDoc = JSON.parse("{{ dessertsJson|escapejs }}");
+
             new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
-                data: {{ dessertsJson }},
+                data: dessertsDoc,
             });
         </script>
     </body>
 </html>
 ```
 
-👆 `<v-data-table>` の説明は 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
-
-# Step 2. views.pyファイルの編集
+# Step 3. views.pyファイルの編集
 
 📄`views.py` は既存だろうから、マージしてほしい。  
 
@@ -205,21 +210,22 @@ Data table を作れば上がる。だから説明する。
 ```py
 import json # 追加
 from django.http import HttpResponse
+from django.template import loader
 
 # Vuetify練習
-def readDataTable2(request, id=id):
+def readDataTable2(request):
     template = loader.get_template('vuetify2/data-table2.html')
 
-    with open('desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
-        'dessertsJson': doc
+        'dessertsJson': json.dumps(doc)
     }
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# Step 4. urls.pyファイルの編集
 
 📄`urls.py` は既存だろうから、マージしてほしい。  
 
@@ -231,19 +237,26 @@ from . import views
 
 urlpatterns = [
     # Vuetify練習
-    path('vuetify2/data-table1.html', views.readDataTable1, name='readDataTable1'), # 追加
+    path('vuetify2/data-table2.html', views.readDataTable2, name='readDataTable2'), # 追加
     #     -------------------------                               --------------
     #     1                                                       2
-    # 1. `vuetify2/data-table1.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
+    # 1. `vuetify2/data-table2.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 ```shell
 # （していなければ）Dockerコンテナの起動
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify2/data-table1.html](http://localhost:8000/vuetify2/data-table1.html)  
+📖 [http://localhost:8000/vuetify2/data-table2.html](http://localhost:8000/vuetify2/data-table2.html)  
+
+# 参考にした記事
+
+* JSONをビューからテンプレートへ渡す方法
+    * 📖 [Django: passing JSON from view to template](https://stackoverflow.com/questions/31151229/django-passing-json-from-view-to-template)
+* Vuetifyのサンプルプログラム
+    * 📖 [Vuetify - Data tables - Dense](https://vuetifyjs.com/en/components/data-tables/#dense)

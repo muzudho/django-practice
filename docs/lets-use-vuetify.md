@@ -112,9 +112,7 @@ Django に最初から入っている HTMLレンダラー に満足できない�
 
 ```py
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404 #追加
-
-from .models import Member #追加
+from django.template import loader
 
 # Vuetify練習
 def readHello(request, id=id):
