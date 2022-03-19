@@ -78,4 +78,11 @@ urlpatterns = [
     #     1                                                       2
     # 1. `vuetify2/data-table2.html` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
+
+    # Vuetify練習
+    path('vuetify2/json-textarea1.html', views.readJsonTextarea1, name='readJsonTextarea1'), # 追加
+    #     ----------------------------                                  -----------------
+    #     1                                                             2
+    # 1. `vuetify2/json-textarea1.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 ]
