@@ -2,10 +2,11 @@
 #     📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 #     📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 import json
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
-class Websock1Consumer(AsyncJsonWebsocketConsumer):
+class Websock1Consumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("Connected")
         self.room_name = 'room_1'
         self.room_group_name = 'room_group_1'
 
@@ -27,19 +28,15 @@ class Websock1Consumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         """
         Receive message from WebSocket.
-        Get the event and send the appropriate event
         """
-        doc = json.loads(text_data)
-        message = doc.get("message", None)
-
+        print("Received")
         # Send message to room group
         await self.channel_layer.group_send(self.room_group_name, {
-            'message': message,
+            'message': text_data,
         })
 
     async def send_message(self, res):
         """ Receive message from room group """
+        print("Sent message")
         # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            "payload": res,
-        }))
+        await self.send(text_data=res)

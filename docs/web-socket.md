@@ -165,7 +165,7 @@ class Websock1Consumer(AsyncJsonWebsocketConsumer):
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/websock1/routing1.py`:  
+📄`host1/webapp1/routing1.py`:  
 
 ```py
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
@@ -191,12 +191,11 @@ from django.core.asgi import get_asgi_application           # 削除の取消
 # （削除） from channels.http import AsgiHandler
 from channels.auth import AuthMiddlewareStack               # 追加
 from channels.routing import ProtocolTypeRouter, URLRouter  # 追加
-import webapp1.websock1.routing1
-#      ------- -------- --------
-#      1       2        3
+import webapp1.routing1
+#      ------- --------
+#      1       2
 # 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Pythonファイル名（拡張子除く）
+# 2. Pythonファイル名（拡張子除く）
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
 #                                                -------
@@ -211,7 +210,7 @@ application = ProtocolTypeRouter({
     "http": get_asgi_application(), # 追加
     "websocket": AuthMiddlewareStack( # 追加
         URLRouter(
-            webapp1.websock1.routing1.websocket_urlpatterns
+            webapp1.routing1.websocket_urlpatterns
         )
     ),
 })
