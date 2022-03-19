@@ -6,3 +6,6 @@ psycopg2>=2.8
 
 # ユーザー認証
 django-allauth>=0.32.0
+
+# For web socket
+channels>=3.0

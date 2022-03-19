@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'allauth',                      #追加
     'allauth.account',              #追加
     'allauth.socialaccount',        #追加
+
+    # （追加） For web socket
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +78,11 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'webapp1.wsgi.application'
+# （削除） WSGI_APPLICATION = 'webapp1.wsgi.application'
+ASGI_APPLICATION = "webapp1.asgi.application"
+#                   -------
+#                   1
+# 1. アプリケーション フォルダー名
 
 
 # Database
