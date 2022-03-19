@@ -12,3 +12,16 @@ class Member(models.Model):
     # このオブジェクトを文字列にしたとき返るもの
     def __str__(self):
         return self.name
+
+class Dessert(models.Model):
+
+    name = models.CharField('Name', max_length=32)
+    calories = models.IntegerField('Calories', blank=True, default=0)
+    fat = models.FloatField('Fat (g)', blank=True, default=0)
+    carbs = models.IntegerField('Carbs (g)', blank=True, default=0)
+    protein = models.FloatField('Protein (g)', blank=True, default=0)
+    iron = models.CharField('Iron (%)', max_length=4, blank=True)
+
+    def __str__(self):
+        """このオブジェクトを文字列にしたとき返るもの"""
+        return self.name
