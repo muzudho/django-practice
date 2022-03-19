@@ -1,5 +1,5 @@
 import json # 追加
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader # 追加
 from django.shortcuts import render, get_object_or_404, redirect #追加
@@ -127,3 +127,10 @@ def readDataTable2b(request):
         'dessertsJson': form1Textarea1
     }
     return HttpResponse(template.render(context, request))
+
+# （追加）JSONでの応答練習
+def readJsonResponse1(request):
+    with open('webapp1/static/desserts.json', mode='r', encoding='utf-8') as f:
+        doc = json.load(f)
+
+    return JsonResponse(doc)

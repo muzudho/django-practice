@@ -1,7 +1,13 @@
+---
+title: DjangoのWebページへJSON形式のテキストを渡そう！
+tags: Django Vuetify JSON
+author: muzudho1
+slide: false
+---
 # 目的
 
-JSON を渡して、 Web ページで表示したい。
-サーバーへ JSON を渡す Web ページの作成方法と、渡された JSON を Vuetify で利用する Web ページの作成方法を説明する。  
+JSON形式のテキストをサーバーへ渡して、その内容を Web ページで表示したい。
+サーバーへデータを JSON形式で渡す Web ページの作成方法と、渡された JSON を Vuetify で利用する Web ページの作成方法を説明する。  
 
 # はじめに
 
@@ -262,7 +268,7 @@ import json
 from django.http import HttpResponse
 from django.template import loader
 
-# Vuetify練習
+# （追加）Vuetify練習
 def readJsonTextarea1(request):
     template = loader.get_template('vuetify2/json-textarea1.html')
 
@@ -296,17 +302,17 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Vuetify練習
-    path('vuetify2/json-textarea1.html', views.readJsonTextarea1, name='readJsonTextarea1'), # 追加
+    # （追加）Vuetify練習
+    path('vuetify2/json-textarea1.html', views.readJsonTextarea1, name='readJsonTextarea1'),
     #     ----------------------------                                  -----------------
     #     1                                                             2
     # 1. `vuetify2/json-textarea1.html` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
     # （追加）Vuetify練習
-    path('vuetify2/data-table2-b', views.readDataTable2b, name='readDataTable2b'), # 追加
+    path('vuetify2/data-table2-b', views.readDataTable2b, name='readDataTable2b'),
     #     ----------------------                                ---------------
-    #     1                                                         2
+    #     1                                                     2
     # 1. `vuetify2/data-table2-b` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readDataTable2b' %} のような形でURLを取得するのに使える
 ]
@@ -323,3 +329,7 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/vuetify2/json-textarea1.html](http://localhost:8000/vuetify2/json-textarea1.html)  
+
+# 次の記事
+
+📖 [DjangoのサーバーからデータをJSON形式のテキストで受信しよう！](https://qiita.com/muzudho1/items/d83760a6a4abadaf19c4)  
