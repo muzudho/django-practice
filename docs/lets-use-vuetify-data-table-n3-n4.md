@@ -51,101 +51,6 @@ JSON を渡して、 Web ページで表示したい。
 　└── <いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
-
-以下のファイルを作成してほしい。  
-
-📄`host1/webapp1/templates/vuetify2/json-textarea1.html`:  
-
-```html
-<!DOCTYPE html>
-<!-- See also: https://vuetifyjs.com/en/components/textareas/#counter -->
-<html>
-    <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
-    </head>
-    <body>
-        <div id="app">
-            <v-app>
-                <v-main>
-                    <v-container fluid>
-                        <v-textarea counter label="Text" :rules="rules" :value="value"></v-textarea>
-                    </v-container>
-                </v-main>
-            </v-app>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-        <script>
-            var dessertsDoc = JSON.parse("{{ dessertsJson|escapejs }}");
-
-            new Vue({
-                el: "#app",
-                vuetify: new Vuetify(),
-                data: {
-                    rules: [(v) => v.length <= 25 || "Max 25 characters"],
-                    value: "Hello!",
-                },
-            });
-        </script>
-    </body>
-</html>
-```
-
-# Step 2. views.pyファイルの編集
-
-📄`views.py` は既存だろうから、マージしてほしい。  
-
-📄`host1/webapp1/views.py`:  
-
-```py
-from django.http import HttpResponse
-from django.template import loader
-
-# Vuetify練習
-def readJsonTextarea1(request):
-    template = loader.get_template('vuetify2/json-textarea1.html')
-    context = {
-    }
-    return HttpResponse(template.render(context, request))
-```
-
-# Step 3. urls.pyファイルの編集
-
-📄`urls.py` は既存だろうから、マージしてほしい。  
-
-📄`host1/webapp1/urls.py`:  
-
-```py
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    # Vuetify練習
-    path('vuetify2/json-textarea1.html', views.readJsonTextarea1, name='readJsonTextarea1'), # 追加
-    #     ----------------------------                                  -----------------
-    #     1                                                             2
-    # 1. `vuetify2/json-textarea1.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
-]
-```
-
-# Step 4. Web画面へアクセス
-
-（していなければ）Dockerコンテナの起動  
-
-```shell
-cd host1
-
-docker-compose up
-```
-
-📖 [http://localhost:8000/vuetify2/json-textarea1.html](http://localhost:8000/vuetify2/json-textarea1.html)  
-
 # Step 1. JSONファイルの作成
 
 （再掲）以下のファイルを作成してほしい。  
@@ -253,3 +158,105 @@ docker-compose up
 ```
 
 👆 以上のデータは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
+
+# Step 2. HTMLファイルの作成
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/vuetify2/json-textarea1.html`:  
+
+```html
+<!DOCTYPE html>
+<!-- See also: https://vuetifyjs.com/en/components/textareas/#counter -->
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <v-textarea counter label="Text" :rules="rules" :value="value"></v-textarea>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            var dessertsDoc = JSON.parse("{{ dessertsJson|escapejs }}");
+
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    rules: [(v) => v.length <= 25 || "Max 25 characters"],
+                    value: "Hello!",
+                },
+            });
+        </script>
+    </body>
+</html>
+```
+
+# Step 3. views.pyファイルの編集
+
+📄`views.py` は既存だろうから、マージしてほしい。  
+
+📄`host1/webapp1/views.py`:  
+
+```py
+import json
+from django.http import HttpResponse
+from django.template import loader
+
+# Vuetify練習
+def readJsonTextarea1(request):
+    template = loader.get_template('vuetify2/json-textarea1.html')
+
+    with open('webapp1/static/desserts.json', mode='r', encoding='utf-8') as f:
+        doc = json.load(f)
+
+    context = {
+        'dessertsJson': json.dumps(doc)
+    }
+    return HttpResponse(template.render(context, request))
+```
+
+# Step 3. urls.pyファイルの編集
+
+📄`urls.py` は既存だろうから、マージしてほしい。  
+
+📄`host1/webapp1/urls.py`:  
+
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Vuetify練習
+    path('vuetify2/json-textarea1.html', views.readJsonTextarea1, name='readJsonTextarea1'), # 追加
+    #     ----------------------------                                  -----------------
+    #     1                                                             2
+    # 1. `vuetify2/json-textarea1.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
+]
+```
+
+# Step 4. Web画面へアクセス
+
+（していなければ）Dockerコンテナの起動  
+
+```shell
+cd host1
+
+docker-compose up
+```
+
+📖 [http://localhost:8000/vuetify2/json-textarea1.html](http://localhost:8000/vuetify2/json-textarea1.html)  
+
