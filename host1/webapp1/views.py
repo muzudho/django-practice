@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader # 追加
 from django.shortcuts import render, get_object_or_404, redirect #追加
-from .models import Member #追加
+from .models import Member,Dessert # 追加
 from .forms import MemberForm #追加
 
 def index(request):
@@ -134,3 +134,34 @@ def readJsonResponse1(request):
         doc = json.load(f)
 
     return JsonResponse(doc)
+
+# （追加）
+def readJsonTextarea2(request):
+    template = loader.get_template('vuetify2/json-textarea2.html')
+
+    with open('webapp1/static/desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+        doc = json.load(f)
+
+    context = {
+        'dessertsJson': json.dumps(doc)
+    }
+    return HttpResponse(template.render(context, request))
+
+# （追加）
+def readDataTable2c(request):
+    form1Textarea1 = request.POST["textarea1"]
+    doc = json.loads(form1Textarea1) # Dessert
+
+    record = Dessert(
+        name=doc["name"],
+        calories=doc["calories"],
+        fat=doc["fat"],
+        carbs=doc["carbs"],
+        protein=doc["protein"],
+        iron=doc["iron"])
+    record.save()
+
+    doc2 = {
+        'result': "Success"
+    }
+    return JsonResponse(doc2)

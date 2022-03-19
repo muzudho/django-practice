@@ -52,13 +52,7 @@ JSON形式のデータを、データベースへ格納したい。
 　└── <いろいろ>
 ```
 
-# Step 1. JSON形式のテキストをサーバーへ送る仕組み
-
-JSON形式のテキストをサーバーへ送信する方法は 以下の記事で触れたので用意しておいてほしい。  
-
-📖 [DjangoのWebページへJSON形式のテキストを渡そう！](https://qiita.com/muzudho1/items/c50859d9bde800d06a62)  
-
-# Step 2. models.pyファイルの編集
+# Step 1. models.pyファイルの編集
 
 JSONのデータを受け入れられる形をサーバー側で定義しておく必要がある。  
 おおまかに言って以下のような形だ。  
@@ -96,7 +90,7 @@ class Dessert(models.Model):
         return self.name
 ```
 
-# Step 3. コマンド実行
+# Step 2. コマンド実行
 
 ```shell
 cd host1
@@ -120,7 +114,7 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
 
 👆 これらのファイルは マイグレーション ファイル と呼ぶらしい。  
 
-# Step 4. コマンド実行＜その２＞
+# Step 3. コマンド実行＜その２＞
 
 ```shell
 docker-compose run --rm web python manage.py migrate
@@ -197,3 +191,165 @@ Iron (%):
 # Step 7. 登録した Dessert を確認してほしい
 
 `Members +Add` の `Desserts` リンクをクリックすると、一覧画面が出てくる。  
+
+# Step 8. JSONファイルの作成
+
+既に JSON 形式のテキストファイルを持っているなら、それを手入力するのは避け、  
+サーバーへ送信することでデータの入力が行われるようにしたい。  
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/static/desserts-placeholder.json`:  
+
+```json
+{
+    "name": "",
+    "calories": 0,
+    "fat": 0,
+    "carbs": 0,
+    "protein": 0,
+    "iron": "0%"
+}
+```
+
+# Step 9. HTMLファイルの作成
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/vuetify2/json-textarea2.html`:  
+
+```html
+<!DOCTYPE html>
+<!-- See also: https://vuetifyjs.com/en/components/textareas/#counter -->
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <form method="POST" action="data-table2-c">
+                            <!--                    =============
+                                                    1
+                            1. 宛先を間違えないように
+                            -->
+                            {% csrf_token %}
+                            <!--
+                               ==========
+                               2
+                            2. form要素の中に csrf_token を入れてください
+                            -->
+                            <v-textarea counter name="textarea1" label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
+                            <v-btn type="submit" class="mr-4">送信</v-btn>
+                        </form>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            var dessertsDoc = JSON.parse("{{ dessertsJson|escapejs }}");
+
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    rules: [(v) => v.length <= 3000 || "Max 3000 characters"],
+                    value: JSON.stringify(dessertsDoc, null, "    "),
+                },
+            });
+        </script>
+    </body>
+</html>
+```
+
+# Step 9. views.pyファイルの編集
+
+📄`views.py` は既存だろうから、マージしてほしい。  
+
+📄`host1/webapp1/views.py`:  
+
+```py
+import json
+from django.http import HttpResponse
+from django.http import JsonResponse
+from django.template import loader
+from .models import Dessert # 追加
+
+# （追加）
+def readJsonTextarea2(request):
+    template = loader.get_template('vuetify2/json-textarea2.html')
+
+    with open('webapp1/static/desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+        doc = json.load(f)
+
+    context = {
+        'dessertsJson': json.dumps(doc)
+    }
+    return HttpResponse(template.render(context, request))
+
+# （追加）
+def readDataTable2c(request):
+    form1Textarea1 = request.POST["textarea1"]
+    doc = json.parse(form1Textarea1) # Dessert
+
+    record = Dessert(
+        name=doc["name"],
+        calories=doc["calories"],
+        fat=doc["fat"],
+        carbs=doc["carbs"],
+        protein=doc["protein"],
+        iron=doc["iron"])
+    record.save()
+
+    doc2 = {
+        'result': "Success"
+    }
+    return JsonResponse(doc2)
+```
+
+# Step 10. urls.pyファイルの編集
+
+📄`urls.py` は既存だろうから、マージしてほしい。  
+
+📄`host1/webapp1/urls.py`:  
+
+```py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # （追加）
+    path('vuetify2/json-textarea2.html', views.readJsonTextarea2, name='readJsonTextarea2'),
+    #     ----------------------------                                  -----------------
+    #     1                                                             2
+    # 1. `vuetify2/json-textarea2.html` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
+
+    # （追加）
+    path('vuetify2/data-table2-c', views.readDataTable2c, name='readDataTable2c'),
+    #     ----------------------                                ---------------
+    #     1                                                     2
+    # 1. `vuetify2/data-table2-c` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2c' %} のような形でURLを取得するのに使える
+]
+```
+
+# Step 11. Web画面へアクセス
+
+（していなければ）Dockerコンテナの起動  
+
+```shell
+cd host1
+
+docker-compose up
+```
+
+📖 [http://localhost:8000/vuetify2/json-textarea2.html](http://localhost:8000/vuetify2/json-textarea2.html)  
