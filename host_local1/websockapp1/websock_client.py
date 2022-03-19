@@ -1,57 +1,94 @@
-# See also: 📖 [Python WebSocket通信の仕方：クライアント編](https://www.raspberrypirulo.net/entry/websocket-client)
+# See also:
+#     📖 [Python WebSocket通信の仕方：クライアント編](https://www.raspberrypirulo.net/entry/websocket-client)
+#     📖 [websocket-client - Examples](https://websocket-client.readthedocs.io/en/latest/examples.html)
+#     📖 [GitHub - websocket-client](https://github.com/websocket-client/websocket-client)
+import sys
+import traceback
 import websocket
+
 try:
-    import thread
+    import thread # 見つからない
 except ImportError:
-    import _thread as thread
+    import _thread as thread # websocket-client の GitHub ではこっちが使われている
+
 import time
+import argparse
+from main_finally import MainFinally
 
 class Websocket_Client():
 
-    def __init__(self, host_addr):
+    def __init__(self, url):
 
         # デバックログの表示/非表示設定
         websocket.enableTrace(True)
 
         # WebSocketAppクラスを生成
-        # 関数登録のために、ラムダ式を使用
-        self.ws = websocket.WebSocketApp(host_addr,
-            on_message = lambda ws, msg: self.on_message(ws, msg),
-            on_error   = lambda ws, msg: self.on_error(ws, msg),
-            on_close   = lambda ws: self.on_close(ws))
-        self.ws.on_open = lambda ws: self.on_open(ws)
+        self.websockApp = websocket.WebSocketApp(url,
+            on_open     = lambda ws: self.on_open(ws),
+            on_close    =lambda ws, close_status_code, close_msg: self.on_close(ws, close_status_code, close_msg),
+            on_message  = lambda ws, msg: self.on_message(ws, msg),
+            on_error    = lambda ws, msg: self.on_error(ws, msg))
 
-    # メッセージ受信に呼ばれる関数
+
     def on_message(self, ws, message):
+        """メッセージ受信に呼ばれる関数"""
         print("receive : {}".format(message))
 
-    # エラー時に呼ばれる関数
     def on_error(self, ws, error):
+        """エラー時に呼ばれる関数"""
         print(error)
 
-    # サーバーから切断時に呼ばれる関数
-    def on_close(self, ws):
+    def on_close(self, ws, close_status_code, close_msg):
+        """サーバーから切断時に呼ばれる関数"""
         print("### closed ###")
 
-    # サーバーから接続時に呼ばれる関数
     def on_open(self, ws):
-        thread.start_new_thread(self.run, ())
+        """サーバーから接続時に呼ばれる関数"""
+        thread.start_new_thread(self.run_worker, ())
 
-    # サーバーから接続時にスレッドで起動する関数
-    def run(self, *args):
+    def run_worker(self, *args):
+        """サーバーから接続時にスレッドで起動する関数"""
         while True:
             time.sleep(0.1)
             input_data = input("send data:") 
-            self.ws.send(input_data)
+            self.websockApp.send(input_data)
 
-        self.ws.close()
+    def clean_up(self):
+        self.websockApp.close()
         print("thread terminating...")
 
-    # websocketクライアント起動
     def run_forever(self):
-        self.ws.run_forever()
+        """websocketクライアント起動"""
+        self.websockApp.run_forever()
 
+# このファイルを直接実行したときは、以下の関数を呼び出します
+if __name__ == "__main__":
 
-HOST_ADDR = "ws://127.0.0.1:8000/websock1/"
-ws_client = Websocket_Client(HOST_ADDR)
-ws_client.run_forever()
+    class Main1:
+        def __init__(self):
+            self._client = None
+
+        def on_main(self):
+            parser = argparse.ArgumentParser(
+                description='サーバーのアドレスとポートを指定して、テキストを送信します')
+            parser.add_argument('--host', default="127.0.0.1", help='サーバーのホスト。規定値:127.0.0.1')
+            parser.add_argument('--port', type=int, default=8000, help='サーバーのポート。規定値:8000')
+            args = parser.parse_args()
+
+            url = f"ws://{args.host}:{args.port}/websock1/"
+            self._client = Websocket_Client(url)
+            self._client.run_forever()
+            return 0
+
+        def on_except(self, e):
+            """ここで例外キャッチ"""
+            traceback.print_exc()
+
+        def on_finally(self):
+            if self._client:
+                self._client.clean_up()
+
+            print("★これで終わり")
+            return 1
+
+    sys.exit(MainFinally.run(Main1()))
