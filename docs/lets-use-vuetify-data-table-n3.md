@@ -159,7 +159,7 @@ JSON を渡して、 Web ページで表示したい。
 
 👆 以上のデータは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
 
-# Step 2. HTMLファイルの作成
+# Step 2. HTMLファイルの作成＜その１＞
 
 以下のファイルを作成してほしい。  
 
@@ -180,7 +180,12 @@ JSON を渡して、 Web ページで表示したい。
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <v-textarea counter label="Text" :rules="rules" :value="value"></v-textarea>
+                        <form method="POST" action="data-table2-b">
+                            <!-- form要素の中に csrf_token を入れてください -->
+                            {% csrf_token %}
+                            <v-textarea counter name="textarea1" label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
+                            <v-btn type="submit" class="mr-4">送信</v-btn>
+                        </form>
                     </v-container>
                 </v-main>
             </v-app>
@@ -195,8 +200,8 @@ JSON を渡して、 Web ページで表示したい。
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    rules: [(v) => v.length <= 25 || "Max 25 characters"],
-                    value: "Hello!",
+                    rules: [(v) => v.length <= 3000 || "Max 3000 characters"],
+                    value: JSON.stringify(dessertsDoc, null, "    "),
                 },
             });
         </script>
@@ -204,7 +209,49 @@ JSON を渡して、 Web ページで表示したい。
 </html>
 ```
 
-# Step 3. views.pyファイルの編集
+# Step 3. HTMLファイルの作成＜その２＞
+
+（再掲）以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/vuetify2/data-table2.html`:  
+
+```html
+<!DOCTYPE html>
+<!-- See also: https://vuetifyjs.com/en/components/data-tables/#dense -->
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <v-data-table :headers="headers" :items="desserts" :items-per-page="5" class="elevation-1"></v-data-table>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            var dessertsDoc = JSON.parse("{{ dessertsJson|escapejs }}");
+
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: dessertsDoc,
+            });
+        </script>
+    </body>
+</html>
+```
+
+# Step 4. views.pyファイルの編集
 
 📄`views.py` は既存だろうから、マージしてほしい。  
 
@@ -226,9 +273,19 @@ def readJsonTextarea1(request):
         'dessertsJson': json.dumps(doc)
     }
     return HttpResponse(template.render(context, request))
+
+# （追加）Vuetify練習
+def readDataTable2b(request):
+    form1Textarea1 = request.POST["textarea1"]
+
+    template = loader.get_template('vuetify2/data-table2.html')
+    context = {
+        'dessertsJson': form1Textarea1
+    }
+    return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# Step 5. urls.pyファイルの編集
 
 📄`urls.py` は既存だろうから、マージしてほしい。  
 
@@ -245,10 +302,17 @@ urlpatterns = [
     #     1                                                             2
     # 1. `vuetify2/json-textarea1.html` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
+
+    # （追加）Vuetify練習
+    path('vuetify2/data-table2-b', views.readDataTable2b, name='readDataTable2b'), # 追加
+    #     ----------------------                                ---------------
+    #     1                                                         2
+    # 1. `vuetify2/data-table2-b` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2b' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
@@ -259,4 +323,3 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/vuetify2/json-textarea1.html](http://localhost:8000/vuetify2/json-textarea1.html)  
-

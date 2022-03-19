@@ -12,7 +12,12 @@
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <v-textarea counter label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
+                        <form method="POST" action="data-table2-b">
+                            <!-- form要素の中に csrf_token を入れてください -->
+                            {% csrf_token %}
+                            <v-textarea counter name="textarea1" label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
+                            <v-btn type="submit" class="mr-4">送信</v-btn>
+                        </form>
                     </v-container>
                 </v-main>
             </v-app>
@@ -27,7 +32,7 @@
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    rules: [(v) => v.length <= 25 || "Max 25 characters"],
+                    rules: [(v) => v.length <= 3000 || "Max 3000 characters"],
                     value: JSON.stringify(dessertsDoc, null, "    "),
                 },
             });
