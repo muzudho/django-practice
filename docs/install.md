@@ -264,3 +264,6 @@ Lesson 9. Socket
 
 * 📖 [ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c)
 
+Lesson 10. Web socket
+
+* 📖 [DjangoのWebサーバーとクライアント側のアプリで通信しよう！](https://qiita.com/muzudho1/items/9bad88a4092bf83a0f12)  
