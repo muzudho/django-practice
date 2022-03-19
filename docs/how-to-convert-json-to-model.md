@@ -1,6 +1,12 @@
+---
+title: DjangoでデータをサーバーへJSON形式で渡して、記憶させよう！
+tags: Django Docker Vuetify JSON
+author: muzudho1
+slide: false
+---
 # 目的
 
-JSON形式のデータを、データベースへ格納したい。  
+データをJSON形式で渡して、サーバーへ記憶させたい。  
 
 # はじめに
 
@@ -270,7 +276,7 @@ Iron (%):
 </html>
 ```
 
-# Step 9. views.pyファイルの編集
+# Step 10. views.pyファイルの編集
 
 📄`views.py` は既存だろうから、マージしてほしい。  
 
@@ -315,7 +321,7 @@ def readDataTable2c(request):
     return JsonResponse(doc2)
 ```
 
-# Step 10. urls.pyファイルの編集
+# Step 11. urls.pyファイルの編集
 
 📄`urls.py` は既存だろうから、マージしてほしい。  
 
@@ -342,7 +348,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 11. Web画面へアクセス
+# Step 12. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
@@ -353,3 +359,4 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/vuetify2/json-textarea2.html](http://localhost:8000/vuetify2/json-textarea2.html)  
+

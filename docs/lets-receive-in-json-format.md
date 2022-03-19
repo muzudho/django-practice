@@ -208,3 +208,7 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/practice1/json-response1](http://localhost:8000/practice1/json-response1)  
+
+# 次の記事
+
+📖 [DjangoでデータをサーバーへJSON形式で渡して、記憶させよう！](https://qiita.com/muzudho1/items/ed0ea262aaa327a2d12b)  
