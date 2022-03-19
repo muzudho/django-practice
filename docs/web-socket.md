@@ -216,3 +216,15 @@ application = ProtocolTypeRouter({
     ),
 })
 ```
+
+# Step 8. Dockerコンテナの起動
+
+（していなければ）Dockerコンテナの起動  
+
+```shell
+cd host1
+
+docker-compose up
+```
+
+# WIP

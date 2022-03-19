@@ -1,6 +1,7 @@
 import sys
 import traceback
 import socket
+import argparse
 from threading import Thread
 from main_finally import MainFinally
 
@@ -105,7 +106,13 @@ if __name__ == "__main__":
             self._client = None
 
         def on_main(self):
-            self._client = Client(server_host="127.0.0.1", server_port=5002)
+            parser = argparse.ArgumentParser(
+                description='サーバーのアドレスとポートを指定して、テキストを送信します')
+            parser.add_argument('--host', default="127.0.0.1", help='サーバーのホスト。規定値:127.0.0.1')
+            parser.add_argument('--port', type=int, default=5002, help='サーバーのポート。規定値:5002')
+            args = parser.parse_args()
+
+            self._client = Client(server_host=args.host, server_port=args.port)
             self._client.run()
             return 0
 
