@@ -48,6 +48,9 @@ INSTALLED_APPS = [
 
     # （追加） For web socket
     'channels',
+    
+    # （追加） For gRPC
+    'django_grpc_framework',
 ]
 
 MIDDLEWARE = [

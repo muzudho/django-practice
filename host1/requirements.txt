@@ -9,3 +9,10 @@ django-allauth>=0.32.0
 
 # For web socket
 channels>=3.0
+
+# For gRPC
+# （追加済みだろ） Django>=3.0,<4.0
+djangorestframework>=3.12.2
+djangogrpcframework>=0.2
+grpcio>=1.36.0
+grpcio-tools>=1.36.0

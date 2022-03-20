@@ -8,6 +8,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # 出力をPythonでバッファリングせずにターミナルに直接送信します
 ENV PYTHONUNBUFFERED=1
 
+# （追加） For gRPC Debug
+ENV http_proxy=
+ENV https_proxy=
+
 # コンテナに /code ディレクトリを作成し、以降、 /code ディレクトリで作業します
 WORKDIR /code
 

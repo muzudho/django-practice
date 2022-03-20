@@ -1,13 +1,13 @@
 ---
-title: DjangoのWebサーバーとクライアント側のアプリで通信しよう！
-tags: Django Docker websocket アプリ
+title: DjangoのWebサーバーとクライアント側のアプリ間でJSON形式のテキストを通信しよう！
+tags: Django Docker JSON websocket アプリ
 author: muzudho1
 slide: false
 ---
 # 目的
 
-Webサーバーとクライアント間で双方向の非同期通信をしたい。だからする。  
-その手法の１つの **Webソケット** を説明をする。  
+Webサーバーとクライアント間でテキストを双方向の非同期通信するのは前にやった。  
+今回は送受信するデータが JSON形式 しかないと割り切ってみる。  
 
 # はじめに
 
@@ -15,9 +15,9 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 
 前提知識:  
 
-| Key                  | Value                                                                        |
-| -------------------- | ---------------------------------------------------------------------------- |
-| ソケットを知っておく | 📖[ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c) |
+| Key                                                           | Value                                                                                                               |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Webサーバーとクライアント側のアプリで通信する方法を知っておく | 📖[DjangoのWebサーバーとクライアント側のアプリで通信しよう！](https://qiita.com/muzudho1/items/9bad88a4092bf83a0f12) |
 
 この記事のアーキテクチャ:  
 
@@ -25,6 +25,8 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 | ---------------- | ----------------------------------------- |
 | OS               | Windows10                                 |
 | Container        | Docker                                    |
+| Web framework    | Django                                    |
+| Communication    | JSON                                      |
 | Program Language | Python 3                                  |
 | Others           | Socket                                    |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
@@ -33,44 +35,45 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 
 ```plaintext
 ├── 📂host_local1
-│    └── 📂sockapp1
+│    └── 📂websockapp1
 │        ├── 📄main_finally.py
-│        └── 📄echo_server.py
+│        └── 📄websock_client.py
 └── 📂host1
      ├── 📂data
      │　　└── 📂db
-     │　　　　└── <たくさんのもの>
+     │         └── <たくさんのもの>
      ├── 📂webapp1
      │　　├── 📂templates
-     │　　│    └── 📂vuetify2
-     │　　│        ├── 📄hello1.html
-     │　　│        └── ＜いろいろ＞
+     │　　├── 📂websock1
+     │　　│    └── consumer1.py
+     │　　├── 📄asgi.py
      │　　├── 📄models.py
+     │　　├── 📄routing1.py
      │　　├── 📄settings.py
      │　　├── 📄urls.py
-     │　　├── 📄views.py
      │　　└── <いろいろ>
      ├── 📄.env
      ├── 🐳docker-compose.yml
      ├── 🐳Dockerfile
      ├── 📄manage.py
+     ├── 📄requirements.txt
      └── <いろいろ>
 ```
 
-# Step 1. requirements.txt ファイルの設定
+# Step 1. requirements.txt ファイルの編集
 
-ファイルの末尾にでも追加してほしい。  
+（無ければ）ファイルの末尾にでも追加してほしい。  
 
 📄host1/requirements.txt:  
 
 ```shell
-# For web socket
+# （追加） For web socket
 channels>=3.0
 ```
 
 # Step 2. settings.py ファイルの編集
 
-そしたら、以下の部分を編集してほしい。  
+（無ければ）以下の部分を編集してほしい。  
 `WSGI` から `ASGI` に乗り換えることをやっている。 `ASGI` は `WSGI` を兼ねるようだ。  
 
 📄host1/webapp1/settings.py:  
@@ -89,6 +92,7 @@ INSTALLED_APPS = [
 ]
 
 # （削除） WSGI_APPLICATION = 'webapp1.wsgi.application'
+# （追加）
 ASGI_APPLICATION = "webapp1.asgi.application"
 #                   -------
 #                   1
@@ -118,31 +122,38 @@ CHANNEL_LAYERS = {
 }
 ```
 
-# Step 3. asgi.py ファイルを編集＜その１＞
+# Step 3. asgi.py ファイルを編集
 
-以下のファイルを編集してほしい。  
+無ければ以下のファイルを作成、あればマージしてほしい。  
 
 📄`host1/webapp1/asgi.py`:  
 
 ```py
 import os
 
-# （削除） from django.core.asgi import get_asgi_application
-import django                                   # 追加
-from channels.http import AsgiHandler           # 追加
-from channels.routing import ProtocolTypeRouter # 追加
+from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack               # 追加
+from channels.routing import ProtocolTypeRouter, URLRouter  # 追加
+import webapp1.routing1
+#      ------- --------
+#      1       2
+# 1. アプリケーション フォルダー名
+# 2. Pythonファイル名（拡張子除く）
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
 #                                                -------
 #                                                1
 # 1. アプリケーション フォルダー名
 
-django.setup() # 追加
-
 # （削除） application = get_asgi_application()
+# （追加）
 application = ProtocolTypeRouter({
-  "http": AsgiHandler(),
-  ## IMPORTANT::Just HTTP for now. (We can add other protocols later.)
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            webapp1.routing1.websocket_urlpatterns
+        )
+    ),
 })
 ```
 
@@ -161,20 +172,24 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 5. consumer1.py ファイルを作成
+# Step 5. consumer2.py ファイルを作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/websock1/consumer1.py`:  
+📄`host1/webapp1/websock1/consumer2.py`:  
 
 ```py
 # See also:
 #     📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 #     📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 #     📖 [Channels - Channel Layers](https://channels.readthedocs.io/en/stable/topics/channel_layers.html)
-from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+#                                           ----
+#                                           1
+# 1. Json を使うものに変更
 
-class Websock1Consumer(AsyncWebsocketConsumer):
+
+class Consumer2(AsyncJsonWebsocketConsumer):
     async def connect(self):
         print("Connected")
         await self.accept()
@@ -182,13 +197,14 @@ class Websock1Consumer(AsyncWebsocketConsumer):
     async def disconnect(self, close_code):
         print("Disconnected")
 
-    async def receive(self, text_data):
+    async def receive_json(self, doc):
         """
-        Receive message from WebSocket.
+        Receive JSON from WebSocket.
+        And format check automatically.
         """
-        print("Received")
+        print("Received JSON")
         # Send message to WebSocket
-        await self.send(text_data=f"Echo: {text_data}")
+        await self.send(text_data=f"Echo: {doc}")
 
     async def send_message(self, res):
         """ Receive message from room group """
@@ -199,60 +215,30 @@ class Websock1Consumer(AsyncWebsocketConsumer):
 
 # Step 6. routing1.py ファイルを作成
 
-以下のファイルを作成してほしい。  
+無ければ以下のファイルを作成、あればマージしてほしい。  
 
 📄`host1/webapp1/routing1.py`:  
 
 ```py
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
-from webapp1.websock1.consumer1 import Websock1Consumer
+from webapp1.websock1.consumer2 import Consumer2 # 追加
+#    ------- -------- ---------
+#    1       2        3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 websocket_urlpatterns = [
-    url(r'^websock1/$', Websock1Consumer.as_asgi()),
+    # （追加）
+    url(r'^websock1-2/$', Consumer2.as_asgi()),
+    #     -------------
+    #     1
+    # 1. URLの一部
 ]
 ```
 
-# Step 7. asgi.py ファイルの編集＜その２＞
-
-`asgi.py` ファイルは既存なので、以下の部分をマージしてほしい。  
-
-📄host1/webapp1/asgi.py:  
-
-```py
-import os
-
-from django.core.asgi import get_asgi_application           # 削除の取消
-# （削除） import django
-# （削除） from channels.http import AsgiHandler
-from channels.auth import AuthMiddlewareStack               # 追加
-from channels.routing import ProtocolTypeRouter, URLRouter  # 追加
-import webapp1.routing1
-#      ------- --------
-#      1       2
-# 1. アプリケーション フォルダー名
-# 2. Pythonファイル名（拡張子除く）
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
-#                                                -------
-#                                                1
-# 1. アプリケーション フォルダー名
-
-# （削除） django.setup()
-
-# （削除） application = get_asgi_application()
-application = ProtocolTypeRouter({
-    # （削除） "http": AsgiHandler(),
-    "http": get_asgi_application(), # 追加
-    "websocket": AuthMiddlewareStack( # 追加
-        URLRouter(
-            webapp1.routing1.websocket_urlpatterns
-        )
-    ),
-})
-```
-
-# Step 8. Dockerコンテナの起動
+# Step 7. Dockerコンテナの起動
 
 （していなければ）Dockerコンテナの起動  
 
@@ -262,20 +248,20 @@ cd host1
 docker-compose up
 ```
 
-# Step 9. ローカルPCにPythonのパッケージ websocket-client をインストール
+# Step 8. ローカルPCにPythonのパッケージ websocket-client をインストール
 
 Step 1 ～ 8. は サーバーサイドだった。  
 Step 9. からは クライアントサイドを説明する。  
 
-あなたのPCでコマンドを打鍵してほしい。  
+（もうしているかもしれないが）あなたのPCでコマンドを打鍵してほしい。  
 
 ```shell
 pip install websocket-client
 ```
 
-# Step 10. main_finally.py ファイルを作成
+# Step 9. main_finally.py ファイルを作成
 
-以下のファイルを作成してほしい。  
+（無ければ）以下のファイルを作成してほしい。  
 
 ```plaintext
 ├── 📂host_local1
@@ -287,7 +273,7 @@ pip install websocket-client
          └── <いろいろ>
 ```
 
-📄`host_local1/websockapp1/main_finally.py`:  
+📄`host_local1/websockapp1/main_finally.py` （再掲）:  
 
 ```py
 import sys
@@ -362,7 +348,7 @@ class MainFinally:
         return return_code
 ```
 
-# Step 11. websock_client.py ファイルの作成
+# Step 10. websock_client.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -370,18 +356,20 @@ class MainFinally:
 ├── 📂host_local1
 │    ├── 📂sockapp1
 │    └── 📂websockapp1
+│        └── 📄client2.py        # ここに新規作成
 │        ├── 📄main_finally.py
-│        └── 📄websock_client.py # ここに新規作成
+│        └── 📄websock_client.py
 └── 📂host1                      # 既存
          ├── 📂data
          ├── 📂webapp1
          └── <いろいろ>
 ```
 
-📄`host_local1/websockapp1/websock_client.py`:  
+📄`host_local1/websockapp1/client2.py`:  
 
 ```py
 # See also:
+#     📖 [GitHub andrewgodwin/channels-examples/multichat/chat/consumers.py](https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py)
 #     📖 [Python WebSocket通信の仕方：クライアント編](https://www.raspberrypirulo.net/entry/websocket-client)
 #     📖 [websocket-client - Examples](https://websocket-client.readthedocs.io/en/latest/examples.html)
 #     📖 [GitHub - websocket-client](https://github.com/websocket-client/websocket-client)
@@ -390,15 +378,16 @@ import traceback
 import websocket
 
 try:
-    import thread # 見つからない
+    import thread  # 見つからない
 except ImportError:
-    import _thread as thread # websocket-client の GitHub ではこっちが使われている
+    import _thread as thread  # websocket-client の GitHub ではこっちが使われている
 
 import time
 import argparse
 from main_finally import MainFinally
 
-class Websocket_Client():
+
+class Client2():
 
     def __init__(self, url):
 
@@ -407,11 +396,13 @@ class Websocket_Client():
 
         # WebSocketAppクラスを生成
         self.websockApp = websocket.WebSocketApp(url,
-            on_open     = lambda ws: self.on_open(ws),
-            on_close    =lambda ws, close_status_code, close_msg: self.on_close(ws, close_status_code, close_msg),
-            on_message  = lambda ws, msg: self.on_message(ws, msg),
-            on_error    = lambda ws, msg: self.on_error(ws, msg))
-
+                                                 on_open=lambda ws: self.on_open(
+                                                     ws),
+                                                 on_close=lambda ws, close_status_code, close_msg: self.on_close(
+                                                     ws, close_status_code, close_msg),
+                                                 on_message=lambda ws, msg: self.on_message(
+                                                     ws, msg),
+                                                 on_error=lambda ws, msg: self.on_error(ws, msg))
 
     def on_message(self, ws, message):
         """メッセージ受信に呼ばれる関数"""
@@ -419,6 +410,7 @@ class Websocket_Client():
 
     def on_error(self, ws, error):
         """エラー時に呼ばれる関数"""
+        print("### error ###")
         print(error)
 
     def on_close(self, ws, close_status_code, close_msg):
@@ -433,7 +425,7 @@ class Websocket_Client():
         """サーバーから接続時にスレッドで起動する関数"""
         while True:
             time.sleep(0.1)
-            input_data = input("send data:") 
+            input_data = input("send JSON:")
             self.websockApp.send(input_data)
 
     def clean_up(self):
@@ -443,6 +435,7 @@ class Websocket_Client():
     def run_forever(self):
         """websocketクライアント起動"""
         self.websockApp.run_forever()
+
 
 # このファイルを直接実行したときは、以下の関数を呼び出します
 if __name__ == "__main__":
@@ -454,12 +447,17 @@ if __name__ == "__main__":
         def on_main(self):
             parser = argparse.ArgumentParser(
                 description='サーバーのアドレスとポートを指定して、テキストを送信します')
-            parser.add_argument('--host', default="127.0.0.1", help='サーバーのホスト。規定値:127.0.0.1')
-            parser.add_argument('--port', type=int, default=8000, help='サーバーのポート。規定値:8000')
+            parser.add_argument('--host', default="127.0.0.1",
+                                help='サーバーのホスト。規定値:127.0.0.1')
+            parser.add_argument('--port', type=int,
+                                default=8000, help='サーバーのポート。規定値:8000')
             args = parser.parse_args()
 
-            url = f"ws://{args.host}:{args.port}/websock1/"
-            self._client = Websocket_Client(url)
+            url = f"ws://{args.host}:{args.port}/websock1-2/"
+            #                                    ----------
+            #                                    1
+            # 1. URLを合わせるように注意
+            self._client = Client2(url)
             self._client.run_forever()
             return 0
 
@@ -477,16 +475,21 @@ if __name__ == "__main__":
     sys.exit(MainFinally.run(Main1()))
 ```
 
-# Step 12. コマンド実行
+# Step 11. コマンド実行
 
 ```shell
 cd host_local1/websockapp1
 
-python.exe -m websock_client
+python.exe -m client2
+#             -------
+#             1
+# 1. Pythonファイル名。拡張子抜き
 ```
 
 これで サーバー側とつながったはずだ。  
-適当な文字列 `hello` でも打鍵してほしい。  
+適当なJSON形式の文字列 `{"x"=1}` でも打鍵してほしい。  
+JSON形式として ふさわしくない文字列を送信するとサーバーが止まってしまう。  
+
 サーバー側、クライアント側ともに `[ctrl] + [C]` キーで終了する。  
 
 # 参考にした記事
@@ -500,3 +503,4 @@ python.exe -m websock_client
 📖 [Django を WebSocket サーバにする](https://qiita.com/ekzemplaro/items/a6b81bd1d181fdd0cc24)  
 📖 [django-channels を使った websocket を用いたチャットアプリの作成](https://zenn.dev/y_k/articles/e8878460fff3d5aa1d1d)  
 📖 [Django ChannelsでできるリアルタイムWeb](https://qiita.com/massa142/items/cbd508efe0c45b618b34)  
+📖 [GitHub andrewgodwin/channels-examples/multichat/chat/consumers.py](https://github.com/andrewgodwin/channels-examples/blob/master/multichat/chat/consumers.py)  
