@@ -174,8 +174,8 @@ function reset(){
     countOfMove = 0;
     myTurn = true;
     document.getElementById("alert_move").style.display = 'inline';
-    for (var i = 0; i < elementArrayOfSquare.length; i++){
-        elementArrayOfSquare[i].innerHTML = "";
+    for (const element of elementArrayOfSquare) {
+        element.innerHTML = "";
     }
 }
 
