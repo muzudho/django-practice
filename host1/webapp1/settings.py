@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'webapp1', # 追加
+    'webapp1',  # 追加
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,14 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 追加 allauth
-    'django.contrib.sites',         #追加
-    'allauth',                      #追加
-    'allauth.account',              #追加
-    'allauth.socialaccount',        #追加
+    'django.contrib.sites',  # 追加
+    'allauth',  # 追加
+    'allauth.account',  # 追加
+    'allauth.socialaccount',  # 追加
 
     # （追加） For web socket
     'channels',
-    
+
     # （追加） For gRPC
     'django_grpc_framework',
 ]
@@ -87,16 +87,38 @@ ASGI_APPLICATION = "webapp1.asgi.application"
 #                   1
 # 1. アプリケーション フォルダー名
 
+# （追加） See also: 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
+CHANNEL_LAYERS = {
+    'default': {
+        # Method 1: Via redis lab
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #     "hosts": [
+        #       'redis://h:<password>;@<redis Endpoint>:<port>'
+        #     ],
+        # },
+
+        # Method 2: Via local Redis
+        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        # 'CONFIG': {
+        #      "hosts": [('127.0.0.1', 6379)],
+        # },
+
+        # Method 3: Via In-memory channel layer
+        # Using this method.
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#DATABASES = {
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.sqlite3',
 #        'NAME': BASE_DIR / 'db.sqlite3',
 #    }
-#}
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -154,12 +176,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Allauth
 # https://sinyblog.com/django/django-allauth/
 
-SITE_ID = 1 # 動かしているサイトを識別するID
-LOGIN_REDIRECT_URL = 'home' # ログオン後に遷移するURLの指定
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/' # ログアウト後に遷移するURLの指定
- 
-EMAIL_HOST = 'smtp.gmail.com' # メールサーバの指定
-EMAIL_PORT = 587 # ポート番号の指定
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # メールサーバのGmailのアドレス
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # メールサーバのGmailのパスワード
-EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)
+SITE_ID = 1  # 動かしているサイトを識別するID
+LOGIN_REDIRECT_URL = 'home'  # ログオン後に遷移するURLの指定
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # ログアウト後に遷移するURLの指定
+
+EMAIL_HOST = 'smtp.gmail.com'  # メールサーバの指定
+EMAIL_PORT = 587  # ポート番号の指定
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # メールサーバのGmailのアドレス
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')  # メールサーバのGmailのパスワード
+EMAIL_USE_TLS = True  # TLSの設定（TRUE,FALSE)
