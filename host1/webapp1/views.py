@@ -187,7 +187,7 @@ def indexOfTicTacToe1(request):
     if request.method == "POST":
         room_code = request.POST.get("room_code")
         char_choice = request.POST.get("character_choice")
-        return redirect(f'/tic-tac-toe1/{room_code}?&choice={char_choice}')
+        return redirect(f'/tic-tac-toe1/{room_code}/?&choice={char_choice}')
     return render(request, "tic-tac-toe1/index.html", {})
 
 
