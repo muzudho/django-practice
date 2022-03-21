@@ -125,6 +125,12 @@ urlpatterns = [
     #     1                                                     2
     # 1. `vuetify2/data-table2-c` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readDataTable2c' %} のような形でURLを取得するのに使える
+
+    # （追加）
+    path('tic-tac-toe1/', views.indexOfTicTacToe1),
+    #     -------------
+    #     1
+    # 1. URLの一部
 ]
 
 

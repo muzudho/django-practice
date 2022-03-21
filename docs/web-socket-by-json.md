@@ -28,7 +28,7 @@ Webサーバーとクライアント間でテキストを双方向の非同期�
 | Web framework    | Django                                    |
 | Communication    | JSON                                      |
 | Program Language | Python 3                                  |
-| Others           | Socket                                    |
+| Others           | Web socket                                |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
 前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  

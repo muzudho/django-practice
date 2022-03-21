@@ -15,6 +15,9 @@ services:
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+    #                                   -------
+    #                                   1
+    # 1. Dockerコンテナ内のサーバーは localhost ではなく 0.0.0.0 と書く
     volumes:
       - .:/code
     ports:
@@ -26,7 +29,7 @@ services:
       - EMAIL_HOST_USER=${EMAIL_HOST_USER}
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
       # （追加） For gRPC Debug
-      - GRPC_TRACE=all
-      - GRPC_VERBOSITY=DEBUG
+      #- GRPC_TRACE=all
+      #- GRPC_VERBOSITY=DEBUG
     depends_on:
       - db

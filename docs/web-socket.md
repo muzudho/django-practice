@@ -26,7 +26,7 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 | OS               | Windows10                                 |
 | Container        | Docker                                    |
 | Program Language | Python 3                                  |
-| Others           | Socket                                    |
+| Others           | Web socket                                |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
 前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
@@ -488,6 +488,10 @@ python.exe -m websock_client
 これで サーバー側とつながったはずだ。  
 適当な文字列 `hello` でも打鍵してほしい。  
 サーバー側、クライアント側ともに `[ctrl] + [C]` キーで終了する。  
+
+# 次の記事
+
+📖 [DjangoのWebサーバーとクライアント側のアプリ間でJSON形式のテキストを通信しよう！](https://qiita.com/muzudho1/items/a3870c78f609a65debe0)
 
 # 参考にした記事
 
