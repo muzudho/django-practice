@@ -275,7 +275,12 @@ select {
 var roomCode = document.getElementById("game_board").getAttribute("room_code");
 var char_choice = document.getElementById("game_board").getAttribute("char_choice");
 
-var connectionString = 'ws://' + window.location.host + '/ws/play/' + roomCode + '/';
+var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomCode}/`;
+//                           ----------------------- -------------------------
+//                           1                       2
+// 1. ホスト アドレス
+// 2. URLの一部
+
 var gameSocket = new WebSocket(connectionString);
 // Game board for maintaing the state of the game
 var gameBoard = [
@@ -591,14 +596,148 @@ urlpatterns = [
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe1/<room_code>', views.playGameOfTicTacToe1),
-    #     ------------------------
+    path('tic-tac-toe1/<room_code>/', views.playGameOfTicTacToe1),
+    #     -------------------------
     #     1
     # 1. URLの一部。<room_code> に入った文字列は room_code 変数に渡されます
 ]
 ```
 
-# Step 12. Web画面へアクセス
+# Step 12. consumer1.py ファイルを作成する
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/tic_tac_toe1/consumer1.py`:  
+
+```py
+# See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
+import json
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+
+
+class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        self.room_name = self.scope['url_route']['kwargs']['room_code']
+        self.room_group_name = 'room_%s' % self.room_name
+
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        print("Disconnected")
+        # Leave room group
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        """
+        Receive message from WebSocket.
+        Get the event and send the appropriate event
+        """
+        response = json.loads(text_data)
+        event = response.get("event", None)
+        message = response.get("message", None)
+        if event == 'MOVE':
+            # Send message to room group
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_message',
+                'message': message,
+                "event": "MOVE"
+            })
+
+        if event == 'START':
+            # Send message to room group
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_message',
+                'message': message,
+                'event': "START"
+            })
+
+        if event == 'END':
+            # Send message to room group
+            await self.channel_layer.group_send(self.room_group_name, {
+                'type': 'send_message',
+                'message': message,
+                'event': "END"
+            })
+
+    async def send_message(self, res):
+        """ Receive message from room group """
+        # Send message to WebSocket
+        await self.send(text_data=json.dumps({
+            "payload": res,
+        }))
+```
+
+# Step 13. routing1.py ファイルを作成
+
+無ければ以下のファイルを作成、あればマージしてほしい。  
+
+📄`host1/webapp1/routing1.py`:  
+
+```py
+from django.conf.urls import url
+from webapp1.tic_tac_toe1.consumer1 import TicTacToeConsumer1  # 追加
+#    ------- ------------ ---------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
+websocket_urlpatterns = [
+    # （追加） For Tic-tac-toe
+    url(r'^tic-tac-toe1/(?P<room_code>\w+)/$', TicTacToeConsumer1.as_asgi()),
+    #     ----------------------------------
+    #     1
+    # 1. URLの一部（正規表現）の Django での書き方
+]
+```
+
+# Step 14. asgi.py ファイルを編集
+
+無ければ以下のファイルを作成、あればマージしてほしい。  
+
+📄`host1/webapp1/asgi.py`:  
+
+```py
+import os
+
+from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+import webapp1.routing1
+#      ------- --------
+#      1       2
+# 1. アプリケーション フォルダー名
+# 2. Pythonファイル名（拡張子除く）
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
+#                                                -------
+#                                                1
+# 1. アプリケーション フォルダー名
+
+# （削除） application = get_asgi_application()
+application = ProtocolTypeRouter({ # 追加
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            webapp1.routing1.websocket_urlpatterns
+            # -----
+            # 1
+            #
+            # 1. アプリケーション フォルダー名
+        )
+    ),
+})
+```
+
+# Step 15. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
@@ -609,3 +748,7 @@ docker-compose up
 ```
 
 📖 [http://localhost:8000/tic-tac-toe1/](http://localhost:8000/tic-tac-toe1/)  
+
+# 参考にした記事
+
+📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  

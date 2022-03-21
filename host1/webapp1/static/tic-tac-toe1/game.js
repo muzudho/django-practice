@@ -3,7 +3,12 @@
 var roomCode = document.getElementById("game_board").getAttribute("room_code");
 var char_choice = document.getElementById("game_board").getAttribute("char_choice");
 
-var connectionString = 'ws://' + window.location.host + '/ws/play/' + roomCode + '/';
+var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomCode}/`;
+//                           ----------------------- -------------------------
+//                           1                       2
+// 1. ホスト アドレス
+// 2. URLの一部
+
 var gameSocket = new WebSocket(connectionString);
 // Game board for maintaing the state of the game
 var gameBoard = [
@@ -26,9 +31,9 @@ let moveCount = 0; //Number of moves done
 let myturn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
-let elementArray = document.getElementsByClassName('square');
-for (var i = 0; i < elementArray.length; i++){
-    elementArray[i].addEventListener("click", event=>{
+let squareArray = document.getElementsByClassName('square');
+for (var i = 0; i < squareArray.length; i++){
+    squareArray[i].addEventListener("click", event=>{
         const index = event.path[0].getAttribute('data-index');
         if(gameBoard[index] == -1){
             if(!myturn){
@@ -69,7 +74,7 @@ function make_move(index, player){
         gameSocket.send(JSON.stringify(data))
     }
     // place the move in the game box.
-    elementArray[index].innerHTML = player;
+    squareArray[index].innerHTML = player;
     // check for the winner
     const win = checkWinner();
     if(myturn){
@@ -101,8 +106,8 @@ function reset(){
     moveCount = 0;
     myturn = true;
     document.getElementById("alert_move").style.display = 'inline';
-    for (var i = 0; i < elementArray.length; i++){
-        elementArray[i].innerHTML = "";
+    for (var i = 0; i < squareArray.length; i++){
+        squareArray[i].innerHTML = "";
     }
 }
 

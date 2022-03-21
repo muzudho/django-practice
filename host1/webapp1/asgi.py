@@ -30,10 +30,14 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
 # （削除） application = get_asgi_application()
 application = ProtocolTypeRouter({
     # （削除） "http": AsgiHandler(),
-    "http": get_asgi_application(), # 追加
-    "websocket": AuthMiddlewareStack( # 追加
+    "http": get_asgi_application(),  # 追加
+    "websocket": AuthMiddlewareStack(  # 追加
         URLRouter(
             webapp1.routing1.websocket_urlpatterns
+            # -----
+            # 1
+            #
+            # 1. アプリケーション フォルダー名
         )
     ),
 })
