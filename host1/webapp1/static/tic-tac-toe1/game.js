@@ -10,22 +10,80 @@ var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
 // 2. URLの一部
 
 var webSock1 = new WebSocket(connectionString);
+
+const PC_EMPTY = -1 // A square without piece; PC is piece
 // Game board for maintaing the state of the game
 var board = [
-    -1, -1, -1,
-    -1, -1, -1,
-    -1, -1, -1,
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
 ];
+
+// SQ is square
+// +---------+
+// | 0  1  2 |
+// | 3  4  5 |
+// | 6  7  8 |
+// +---------+
+const SQ_0 = 0
+const SQ_1 = 1
+const SQ_2 = 2
+const SQ_3 = 3
+const SQ_4 = 4
+const SQ_5 = 5
+const SQ_6 = 6
+const SQ_7 = 7
+const SQ_8 = 8
 // Winning indexes.
-winSquares = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
+arrayOfSquaresOfWinPattern = [
+    // +---------+
+    // | *  *  * |
+    // | .  .  . |
+    // | .  .  . |
+    // +---------+
+    [SQ_0, SQ_1, SQ_2],
+    // +---------+
+    // | .  .  . |
+    // | *  *  * |
+    // | .  .  . |
+    // +---------+
+    [SQ_3, SQ_4, SQ_5],
+    // +---------+
+    // | .  .  . |
+    // | .  .  . |
+    // | *  *  * |
+    // +---------+
+    [SQ_6, SQ_7, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | *  .  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_0, SQ_3, SQ_6],
+    // +---------+
+    // | .  *  . |
+    // | .  *  . |
+    // | .  *  . |
+    // +---------+
+    [SQ_1, SQ_4, SQ_7],
+    // +---------+
+    // | .  .  * |
+    // | .  .  * |
+    // | .  .  * |
+    // +---------+
+    [SQ_2, SQ_5, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | .  *  . |
+    // | .  .  * |
+    // +---------+
+    [SQ_0, SQ_4, SQ_8],
+    // +---------+
+    // | .  .  * |
+    // | .  *  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_2, SQ_4, SQ_6]
 ]
 let countOfMove = 0; // Number of moves done
 let myTurn = true; // Boolean variable to get the turn of the player.
@@ -35,7 +93,7 @@ let elementArrayOfSquare = document.getElementsByClassName('square');
 for (var i = 0; i < elementArrayOfSquare.length; i++){
     elementArrayOfSquare[i].addEventListener("click", event=>{
         const sq = event.path[0].getAttribute('data-index'); // Square; 0 <= sq
-        if(board[sq] == -1){
+        if(board[sq] == PC_EMPTY){
             if(!myTurn){
                 alert("Wait for other to place the move")
             }
@@ -64,7 +122,7 @@ function make_move(sq, myPiece){
         }
     }
 
-    if(board[sq] == -1){
+    if(board[sq] == PC_EMPTY){
         // if the valid move, update the board
         // state and send the move to the server.
         countOfMove++;
@@ -86,17 +144,17 @@ function make_move(sq, myPiece){
     // place the move in the game box.
     elementArrayOfSquare[sq].innerHTML = myPiece;
     // check for the winner
-    const win = checkWinner();
+    const isGameOver = IsGameOver();
     if(myTurn){
         // if player winner, send the END event.
-        if(win){
+        if(isGameOver){
             data = {
                 "event": "END",
                 "message": `${myPiece} is a winner. Play again?`
             }
             webSock1.send(JSON.stringify(data))
         }
-        else if(!win && countOfMove == 9){
+        else if(!isGameOver && countOfMove == 9){
             data = {
                 "event": "END",
                 "message": "It's a draw. Play again?"
@@ -109,9 +167,9 @@ function make_move(sq, myPiece){
 // function to reset the game.
 function reset(){
     board = [
-        -1, -1, -1,
-        -1, -1, -1,
-        -1, -1, -1,
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
     ];
     countOfMove = 0;
     myTurn = true;
@@ -123,55 +181,53 @@ function reset(){
 
 /**
  * check if their is winning move
- * @param {*} patternOfWin 
+ * @param {*} squaresOfWinPattern 
  * @returns 
  */
-const check = (patternOfWin) => {
-    if (
-      board[patternOfWin[0]] !== -1 &&
-      board[patternOfWin[0]] === board[patternOfWin[1]] &&
-      board[patternOfWin[0]] === board[patternOfWin[2]]
-    )   return true;
-    return false;
-};
+function isPieceInLine(squaresOfWinPattern) {
+    return board[squaresOfWinPattern[0]] !== PC_EMPTY &&
+        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] &&
+        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
+}
 
 /**
  * function to check if player is winner.
  * @returns I won
  */
-function checkWinner(){
-    let win = false;
+function IsGameOver(){
     if (5 <= countOfMove) {
-      winSquares.forEach((w) => {
-        if (check(w)) {
-          win = true;
-          windex = w;
+        for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
+            if (isPieceInLine(squaresOfWinPattern)) {
+                return true;
+            }
         }
-      });
     }
-    return win;
+    return false;
 }
 
-// Main function which handles the connection
-// of websocket.
+/**
+ * Main function which handles the connection
+ * of websocket.
+ */
 function connect() {
-    webSock1.onopen = function open() {
+    // on websocket open, send the START event.
+    webSock1.onopen = () => {
         console.log('WebSockets connection created.');
-        // on websocket open, send the START event.
         webSock1.send(JSON.stringify({
             "event": "START",
             "message": ""
         }));
     };
 
-    webSock1.onclose = function (e) {
+    webSock1.onclose = (e) => {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
         setTimeout(function () {
             connect();
         }, 1000);
     };
+
     // Sending the info about the room
-    webSock1.onmessage = function (e) {
+    webSock1.onmessage = (e) => {
         // On getting the message from the server
         // Do the appropriate steps on each event.
         let data = JSON.parse(e.data);
