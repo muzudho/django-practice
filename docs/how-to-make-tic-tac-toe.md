@@ -457,7 +457,7 @@ function connect() {
 connect();
 ```
 
-# Step 8. HTMLファイルの作成
+# Step 8. HTMLファイルの作成＜その１＞
 
 以下のファイルを作成してほしい。  
 
@@ -499,12 +499,55 @@ connect();
 </html>
 ```
 
-# Step 9. views.py ファイルを編集する
+# Step 9. HTMLファイルの作成＜その２＞
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/tic-tac-toe1/game.html`:  
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tic Tac Toe</title>
+        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="head">
+                <h1>TIC TAC TOE</h1>
+                <h3>Welcome to room_{{room_code}}</h3>
+            </div>
+            <div id="game_board" room_code="{{room_code}}" char_choice="{{char_choice}}">
+                <div class="square" data-index="0"></div>
+                <div class="square" data-index="1"></div>
+                <div class="square" data-index="2"></div>
+                <div class="square" data-index="3"></div>
+                <div class="square" data-index="4"></div>
+                <div class="square" data-index="5"></div>
+                <div class="square" data-index="6"></div>
+                <div class="square" data-index="7"></div>
+                <div class="square" data-index="8"></div>
+            </div>
+            <div id="alert_move">Your turn. Place your move <strong>{{char_choice}}</strong></div>
+        </div>
+
+        <script src="{% static 'tic-tac-toe1/game.js' %}"></script>
+        {% block javascript %} {% endblock javascript %}
+    </body>
+</html>
+```
+
+# Step 10. views.py ファイルを編集する
 
 📄`host1/webapp1/views.py` に、以下の記述を追加してほしい。  
 
 ```py
 from django.shortcuts import render, redirect
+from django.http import Http404 # 追加
 
 
 def indexOfTicTacToe1(request):
@@ -514,9 +557,21 @@ def indexOfTicTacToe1(request):
         char_choice = request.POST.get("character_choice")
         return redirect(f'/tic-tac-toe1/{room_code}?&choice={char_choice}')
     return render(request, "tic-tac-toe1/index.html", {})
+
+
+def playGameOfTicTacToe1(request, room_code):
+    """（追加） For Tic-tac-toe"""
+    choice = request.GET.get("choice")
+    if choice not in ['X', 'O']:
+        raise Http404("Choice does not exists")
+    context = {
+        "char_choice": choice,
+        "room_code": room_code
+    }
+    return render(request, "tic-tac-toe1/game.html", context)
 ```
 
-# Step 10. urls.py ファイルを編集する
+# Step 11. urls.py ファイルを編集する
 
 以下の記述を追加してほしい。  
 
@@ -534,10 +589,16 @@ urlpatterns = [
     #     -------------
     #     1
     # 1. URLの一部
+
+    # （追加）
+    path('tic-tac-toe1/<room_code>', views.playGameOfTicTacToe1),
+    #     ------------------------
+    #     1
+    # 1. URLの一部。<room_code> に入った文字列は room_code 変数に渡されます
 ]
 ```
 
-# Step 11. Web画面へアクセス
+# Step 12. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 

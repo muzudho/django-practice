@@ -1,5 +1,5 @@
 import json  # 追加
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.template import loader  # 追加
 from django.shortcuts import render, get_object_or_404, redirect  # 追加
@@ -189,3 +189,15 @@ def indexOfTicTacToe1(request):
         char_choice = request.POST.get("character_choice")
         return redirect(f'/tic-tac-toe1/{room_code}?&choice={char_choice}')
     return render(request, "tic-tac-toe1/index.html", {})
+
+
+def playGameOfTicTacToe1(request, room_code):
+    """（追加） For Tic-tac-toe"""
+    choice = request.GET.get("choice")
+    if choice not in ['X', 'O']:
+        raise Http404("Choice does not exists")
+    context = {
+        "char_choice": choice,
+        "room_code": room_code
+    }
+    return render(request, "tic-tac-toe1/game.html", context)
