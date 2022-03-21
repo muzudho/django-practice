@@ -90,9 +90,9 @@ let myTurn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
 let elementArrayOfSquare = document.getElementsByClassName('square');
-for (var i = 0; i < elementArrayOfSquare.length; i++){
-    elementArrayOfSquare[i].addEventListener("click", event=>{
-        const sq = event.path[0].getAttribute('data-index'); // Square; 0 <= sq
+for (const element of elementArrayOfSquare) {
+    element.addEventListener("click", event=>{
+        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
         if(board[sq] == PC_EMPTY){
             if(!myTurn){
                 alert("Wait for other to place the move")
@@ -100,7 +100,7 @@ for (var i = 0; i < elementArrayOfSquare.length; i++){
             else{
                 myTurn = false;
                 document.getElementById("alert_move").style.display = 'none'; // Hide
-                make_move(sq, myPiece);
+                makeMove(sq, myPiece);
             }
         }
     })
@@ -112,7 +112,7 @@ for (var i = 0; i < elementArrayOfSquare.length; i++){
  * @param {*} myPiece 
  * @returns 
  */
-function make_move(sq, myPiece){
+function makeMove(sq, myPiece){
     sq = parseInt(sq);
     let data = {
         "event": "MOVE",
@@ -144,17 +144,17 @@ function make_move(sq, myPiece){
     // place the move in the game box.
     elementArrayOfSquare[sq].innerHTML = myPiece;
     // check for the winner
-    const isGameOver = IsGameOver();
+    const gameOver = isGameOver();
     if(myTurn){
         // if player winner, send the END event.
-        if(isGameOver){
+        if(gameOver){
             data = {
                 "event": "END",
                 "message": `${myPiece} is a winner. Play again?`
             }
             webSock1.send(JSON.stringify(data))
         }
-        else if(!isGameOver && countOfMove == 9){
+        else if(!gameOver && countOfMove == 9){
             data = {
                 "event": "END",
                 "message": "It's a draw. Play again?"
@@ -194,7 +194,7 @@ function isPieceInLine(squaresOfWinPattern) {
  * function to check if player is winner.
  * @returns I won
  */
-function IsGameOver(){
+function isGameOver(){
     if (5 <= countOfMove) {
         for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
             if (isPieceInLine(squaresOfWinPattern)) {
@@ -247,7 +247,7 @@ function connect() {
             case "MOVE":
                 console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
                 if(message["player"] != myPiece){
-                    make_move(message["index"], message["player"])
+                    makeMove(message["index"], message["player"])
                     myTurn = true;
                     document.getElementById("alert_move").style.display = 'inline';
                 }

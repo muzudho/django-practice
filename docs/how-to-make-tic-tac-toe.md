@@ -270,163 +270,236 @@ select {
 📄`host1/webapp1/static/tic-tac-toe1/game.js`:  
 
 ```js
-// static/js/game.js
+// See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 
-var roomCode = document.getElementById("game_board").getAttribute("room_code");
-var char_choice = document.getElementById("game_board").getAttribute("char_choice");
+var roomName = document.getElementById("game_board").getAttribute("room_code");
+var myPiece = document.getElementById("game_board").getAttribute("char_choice");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomCode}/`;
+var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
 //                           ----------------------- -------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部
 
-var gameSocket = new WebSocket(connectionString);
+var webSock1 = new WebSocket(connectionString);
+
+const PC_EMPTY = -1 // A square without piece; PC is piece
 // Game board for maintaing the state of the game
-var gameBoard = [
-    -1, -1, -1,
-    -1, -1, -1,
-    -1, -1, -1,
+var board = [
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
+    PC_EMPTY, PC_EMPTY, PC_EMPTY,
 ];
+
+// SQ is square
+// +---------+
+// | 0  1  2 |
+// | 3  4  5 |
+// | 6  7  8 |
+// +---------+
+const SQ_0 = 0
+const SQ_1 = 1
+const SQ_2 = 2
+const SQ_3 = 3
+const SQ_4 = 4
+const SQ_5 = 5
+const SQ_6 = 6
+const SQ_7 = 7
+const SQ_8 = 8
 // Winning indexes.
-winIndices = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
+arrayOfSquaresOfWinPattern = [
+    // +---------+
+    // | *  *  * |
+    // | .  .  . |
+    // | .  .  . |
+    // +---------+
+    [SQ_0, SQ_1, SQ_2],
+    // +---------+
+    // | .  .  . |
+    // | *  *  * |
+    // | .  .  . |
+    // +---------+
+    [SQ_3, SQ_4, SQ_5],
+    // +---------+
+    // | .  .  . |
+    // | .  .  . |
+    // | *  *  * |
+    // +---------+
+    [SQ_6, SQ_7, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | *  .  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_0, SQ_3, SQ_6],
+    // +---------+
+    // | .  *  . |
+    // | .  *  . |
+    // | .  *  . |
+    // +---------+
+    [SQ_1, SQ_4, SQ_7],
+    // +---------+
+    // | .  .  * |
+    // | .  .  * |
+    // | .  .  * |
+    // +---------+
+    [SQ_2, SQ_5, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | .  *  . |
+    // | .  .  * |
+    // +---------+
+    [SQ_0, SQ_4, SQ_8],
+    // +---------+
+    // | .  .  * |
+    // | .  *  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_2, SQ_4, SQ_6]
 ]
-let moveCount = 0; //Number of moves done
-let myturn = true; // Boolean variable to get the turn of the player.
+let countOfMove = 0; // Number of moves done
+let myTurn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
-let elementArray = document.getElementsByClassName('square');
-for (var i = 0; i < elementArray.length; i++){
-    elementArray[i].addEventListener("click", event=>{
-        const index = event.path[0].getAttribute('data-index');
-        if(gameBoard[index] == -1){
-            if(!myturn){
+let elementArrayOfSquare = document.getElementsByClassName('square');
+for (const element of elementArrayOfSquare) {
+    element.addEventListener("click", event=>{
+        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
+        if(board[sq] == PC_EMPTY){
+            if(!myTurn){
                 alert("Wait for other to place the move")
             }
             else{
-                myturn = false;
+                myTurn = false;
                 document.getElementById("alert_move").style.display = 'none'; // Hide
-                make_move(index, char_choice);
+                makeMove(sq, myPiece);
             }
         }
     })
 }
 
-// Make a move
-function make_move(index, player){
-    index = parseInt(index);
+/**
+ * Make a move
+ * @param {*} sq - Square; 0 <= sq
+ * @param {*} myPiece 
+ * @returns 
+ */
+function makeMove(sq, myPiece){
+    sq = parseInt(sq);
     let data = {
         "event": "MOVE",
         "message": {
-            "index": index,
-            "player": player
+            "index": sq,
+            "player": myPiece
         }
     }
 
-    if(gameBoard[index] == -1){
-        // if the valid move, update the gameboard
+    if(board[sq] == PC_EMPTY){
+        // if the valid move, update the board
         // state and send the move to the server.
-        moveCount++;
-        if(player == 'X')
-            gameBoard[index] = 1;
-        else if(player == 'O')
-            gameBoard[index] = 0;
-        else{
-            alert("Invalid character choice");
-            return false;
+        countOfMove++;
+
+        switch (myPiece) {
+            case 'X':
+                board[sq] = 1;
+                break;
+            case 'O':
+                board[sq] = 0;
+                break;
+            default:
+                alert("Invalid character choice");
+                return false;
         }
-        gameSocket.send(JSON.stringify(data))
+
+        webSock1.send(JSON.stringify(data))
     }
     // place the move in the game box.
-    elementArray[index].innerHTML = player;
+    elementArrayOfSquare[sq].innerHTML = myPiece;
     // check for the winner
-    const win = checkWinner();
-    if(myturn){
+    const gameOver = isGameOver();
+    if(myTurn){
         // if player winner, send the END event.
-        if(win){
+        if(gameOver){
             data = {
                 "event": "END",
-                "message": `${player} is a winner. Play again?`
+                "message": `${myPiece} is a winner. Play again?`
             }
-            gameSocket.send(JSON.stringify(data))
+            webSock1.send(JSON.stringify(data))
         }
-        else if(!win && moveCount == 9){
+        else if(!gameOver && countOfMove == 9){
             data = {
                 "event": "END",
                 "message": "It's a draw. Play again?"
             }
-            gameSocket.send(JSON.stringify(data))
+            webSock1.send(JSON.stringify(data))
         }
     }
 }
 
 // function to reset the game.
 function reset(){
-    gameBoard = [
-        -1, -1, -1,
-        -1, -1, -1,
-        -1, -1, -1,
+    board = [
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
+        PC_EMPTY, PC_EMPTY, PC_EMPTY,
     ];
-    moveCount = 0;
-    myturn = true;
+    countOfMove = 0;
+    myTurn = true;
     document.getElementById("alert_move").style.display = 'inline';
-    for (var i = 0; i < elementArray.length; i++){
-        elementArray[i].innerHTML = "";
+    for (const element of elementArrayOfSquare) {
+        element.innerHTML = "";
     }
 }
 
-// check if their is winning move
-const check = (winIndex) => {
-    if (
-      gameBoard[winIndex[0]] !== -1 &&
-      gameBoard[winIndex[0]] === gameBoard[winIndex[1]] &&
-      gameBoard[winIndex[0]] === gameBoard[winIndex[2]]
-    )   return true;
-    return false;
-};
+/**
+ * check if their is winning move
+ * @param {*} squaresOfWinPattern 
+ * @returns 
+ */
+function isPieceInLine(squaresOfWinPattern) {
+    return board[squaresOfWinPattern[0]] !== PC_EMPTY &&
+        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] &&
+        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
+}
 
-// function to check if player is winner.
-function checkWinner(){
-    let win = false;
-    if (moveCount >= 5) {
-      winIndices.forEach((w) => {
-        if (check(w)) {
-          win = true;
-          windex = w;
+/**
+ * function to check if player is winner.
+ * @returns I won
+ */
+function isGameOver(){
+    if (5 <= countOfMove) {
+        for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
+            if (isPieceInLine(squaresOfWinPattern)) {
+                return true;
+            }
         }
-      });
     }
-    return win;
+    return false;
 }
 
-// Main function which handles the connection
-// of websocket.
+/**
+ * Main function which handles the connection
+ * of websocket.
+ */
 function connect() {
-    gameSocket.onopen = function open() {
+    // on websocket open, send the START event.
+    webSock1.onopen = () => {
         console.log('WebSockets connection created.');
-        // on websocket open, send the START event.
-        gameSocket.send(JSON.stringify({
+        webSock1.send(JSON.stringify({
             "event": "START",
             "message": ""
         }));
     };
 
-    gameSocket.onclose = function (e) {
+    webSock1.onclose = (e) => {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
         setTimeout(function () {
             connect();
         }, 1000);
     };
+
     // Sending the info about the room
-    gameSocket.onmessage = function (e) {
+    webSock1.onmessage = (e) => {
         // On getting the message from the server
         // Do the appropriate steps on each event.
         let data = JSON.parse(e.data);
@@ -445,9 +518,9 @@ function connect() {
                 break;
             case "MOVE":
                 console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
-                if(message["player"] != char_choice){
-                    make_move(message["index"], message["player"])
-                    myturn = true;
+                if(message["player"] != myPiece){
+                    makeMove(message["index"], message["player"])
+                    myTurn = true;
                     document.getElementById("alert_move").style.display = 'inline';
                 }
                 break;
@@ -457,9 +530,9 @@ function connect() {
         }
     };
 
-    if (gameSocket.readyState == WebSocket.OPEN) {
+    if (webSock1.readyState == WebSocket.OPEN) {
         console.log('Open socket.');
-        gameSocket.onopen();
+        webSock1.onopen();
     }
 }
 
@@ -502,9 +575,6 @@ connect();
                 <input type="submit" class="button" value="Start Game" />
             </form>
         </div>
-
-        <script src="{% static 'tic-tac-toe1/game.js' %}"></script>
-        {% block javascript %} {% endblock javascript %}
     </body>
 </html>
 ```
@@ -532,15 +602,15 @@ connect();
                 <h3>Welcome to room_{{room_code}}</h3>
             </div>
             <div id="game_board" room_code="{{room_code}}" char_choice="{{char_choice}}">
-                <div class="square" data-index="0"></div>
-                <div class="square" data-index="1"></div>
-                <div class="square" data-index="2"></div>
-                <div class="square" data-index="3"></div>
-                <div class="square" data-index="4"></div>
-                <div class="square" data-index="5"></div>
-                <div class="square" data-index="6"></div>
-                <div class="square" data-index="7"></div>
-                <div class="square" data-index="8"></div>
+                <div class="square" square="0"></div>
+                <div class="square" square="1"></div>
+                <div class="square" square="2"></div>
+                <div class="square" square="3"></div>
+                <div class="square" square="4"></div>
+                <div class="square" square="5"></div>
+                <div class="square" square="6"></div>
+                <div class="square" square="7"></div>
+                <div class="square" square="8"></div>
             </div>
             <div id="alert_move">Your turn. Place your move <strong>{{char_choice}}</strong></div>
         </div>
