@@ -133,10 +133,10 @@ urlpatterns = [
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe1/<str:room_code>/', views.playGameOfTicTacToe1),
+    path('tic-tac-toe1/<str:room_name>/', views.playGameOfTicTacToe1),
     #     -----------------------------
     #     1
-    # 1. URLの一部。<room_code> に入った文字列は room_code 変数に渡されます
+    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 ]
 
 

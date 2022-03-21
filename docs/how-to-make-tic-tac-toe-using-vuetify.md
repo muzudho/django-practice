@@ -1,7 +1,7 @@
 # 目的
 
-Webサーバーと、クライアント側のアプリ間で通信する練習をしたい。  
-１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）のサンプルプログラムがネットで公開されているから、それを作る方法を説明する。  
+前の記事で、１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）を作った。  
+これのフロントエンドを Vuetify に置き換えたい。  
 
 # はじめに
 
@@ -9,9 +9,9 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 
 前提知識:  
 
-| Key                                                                                 | Value                                                                                                                                     |
-| ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Webサーバーとクライアント側のアプリ間でJSON形式のテキストで通信する方法を知っておく | 📖[DjangoのWebサーバーとクライアント側のアプリ間でJSON形式のテキストを通信しよう！](https://qiita.com/muzudho1/items/a3870c78f609a65debe0) |
+| Key                                                            | Value                                                                                                                      |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Webブラウザ越しに２人対戦できる〇×ゲームの作成方法を知っておく | 📖[Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！](https://qiita.com/muzudho1/items/3bd5e55fbea2c0598e8b) |
 
 この記事のアーキテクチャ:  
 
@@ -19,11 +19,12 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 | ---------------- | ----------------------------------------- |
 | OS               | Windows10                                 |
 | Container        | Docker                                    |
-| Web framework    | Django                                    |
-| Communication    | JSON                                      |
-| Database         | Redis                                     |
 | Program Language | Python 3                                  |
-| Others           | Web socket                                |
+| Web framework    | Django                                    |
+| Communication    | Web socket                                |
+|                  | JSON                                      |
+| Database         | Redis                                     |
+| Frontend         | Vuetify                                   |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
 参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
@@ -33,19 +34,21 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 
 ```plaintext
 ├── 📂host_local1
-│    └── 📂websockapp1
-│        ├── 📄client2.py
-│        ├── 📄main_finally.py
-│        └── 📄websock_client.py
 └── 📂host1
      ├── 📂data
      │　　└── 📂db
      │         └── <たくさんのもの>
      ├── 📂webapp1
+     │　　├── 📂static
+     │　　│    └── 📂tic-tac-toe1
+     │　　│        ├── game.js
+     │　　│        └── main.css
      │　　├── 📂templates
-     │　　├── 📂websock1
-     │　　│    ├── consumer1.py
-     │　　│    └── consumer2.py
+     │　　│    └── 📂tic-tac-toe1
+     │　　│        ├── game.html
+     │　　│        └── index.html
+     │　　├── 📂tic_tac_toe1
+     │　　│    └── consumer1.py
      │　　├── 📄asgi.py
      │　　├── 📄models.py
      │　　├── 📄routing1.py

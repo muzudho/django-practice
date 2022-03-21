@@ -7,7 +7,7 @@ body {
   justify-content: center;
   align-items: center;
 }
-#game_board {
+#board {
   display: grid;
   grid-gap: 0.5em;
   grid-template-columns: repeat(3, 1fr);

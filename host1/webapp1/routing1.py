@@ -25,7 +25,7 @@ websocket_urlpatterns = [
     # 1. URLの一部
 
     # （追加） For Tic-tac-toe
-    url(r'^tic-tac-toe1/(?P<room_code>\w+)/$', TicTacToeConsumer1.as_asgi()),
+    url(r'^tic-tac-toe1/(?P<room_name>\w+)/$', TicTacToeConsumer1.as_asgi()),
     #     ----------------------------------
     #     1
     # 1. URLの一部（正規表現）の Django での書き方

@@ -1,7 +1,7 @@
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 
-var roomName = document.getElementById("game_board").getAttribute("room_code");
-var myPiece = document.getElementById("game_board").getAttribute("char_choice");
+var roomName = document.getElementById("board").getAttribute("room_name");
+var myPiece = document.getElementById("board").getAttribute("my_piece");
 
 var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
 //                           ----------------------- -------------------------
@@ -135,7 +135,7 @@ function makeMove(sq, myPiece){
                 board[sq] = 0;
                 break;
             default:
-                alert("Invalid character choice");
+                alert(`Invalid my piece = ${myPiece}`);
                 return false;
         }
 
