@@ -28,6 +28,8 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
         Receive message from WebSocket.
         Get the event and send the appropriate event
         """
+        print(
+            f"[Debug] Consumer1 receive text_data={text_data}")  # ちゃんと動いているようなら消す
         response = json.loads(text_data)
         event = response.get("event", None)
         message = response.get("message", None)

@@ -1,7 +1,7 @@
 # 目的
 
 Webサーバーと、クライアント側のアプリ間で通信する練習をしたい。  
-だから 〇×ゲーム（Tic tac toe）を作る方法を説明する。  
+１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）のサンプルプログラムがネットで公開されているから、それを作る方法を説明する。  
 
 # はじめに
 
@@ -435,13 +435,16 @@ function connect() {
         let event = data["event"];
         switch (event) {
             case "START":
+                console.log(`[Message] START e=${e.data}`); // ちゃんと動いているようなら消す
                 reset();
                 break;
             case "END":
+                console.log(`[Message] END e=${e.data}`); // ちゃんと動いているようなら消す
                 alert(message);
                 reset();
                 break;
             case "MOVE":
+                console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
                 if(message["player"] != char_choice){
                     make_move(message["index"], message["player"])
                     myturn = true;
@@ -449,11 +452,13 @@ function connect() {
                 }
                 break;
             default:
+                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
                 console.log("No event")
         }
     };
 
     if (gameSocket.readyState == WebSocket.OPEN) {
+        console.log('Open socket.');
         gameSocket.onopen();
     }
 }
@@ -640,6 +645,8 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
         Receive message from WebSocket.
         Get the event and send the appropriate event
         """
+        print(
+            f"[Debug] Consumer1 receive text_data={text_data}")  # ちゃんと動いているようなら消す
         response = json.loads(text_data)
         event = response.get("event", None)
         message = response.get("message", None)
@@ -746,6 +753,8 @@ cd host1
 
 docker-compose up
 ```
+
+このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
 📖 [http://localhost:8000/tic-tac-toe1/](http://localhost:8000/tic-tac-toe1/)  
 

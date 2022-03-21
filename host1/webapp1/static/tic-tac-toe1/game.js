@@ -1,23 +1,23 @@
-// static/js/game.js
+// See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 
-var roomCode = document.getElementById("game_board").getAttribute("room_code");
-var char_choice = document.getElementById("game_board").getAttribute("char_choice");
+var roomName = document.getElementById("game_board").getAttribute("room_code");
+var myPiece = document.getElementById("game_board").getAttribute("char_choice");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomCode}/`;
+var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
 //                           ----------------------- -------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部
 
-var gameSocket = new WebSocket(connectionString);
+var webSock1 = new WebSocket(connectionString);
 // Game board for maintaing the state of the game
-var gameBoard = [
+var board = [
     -1, -1, -1,
     -1, -1, -1,
     -1, -1, -1,
 ];
 // Winning indexes.
-winIndices = [
+winSquares = [
     [0, 1, 2],
     [3, 4, 5],
     [6, 7, 8],
@@ -27,105 +27,122 @@ winIndices = [
     [0, 4, 8],
     [2, 4, 6]
 ]
-let moveCount = 0; //Number of moves done
-let myturn = true; // Boolean variable to get the turn of the player.
+let countOfMove = 0; // Number of moves done
+let myTurn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
-let squareArray = document.getElementsByClassName('square');
-for (var i = 0; i < squareArray.length; i++){
-    squareArray[i].addEventListener("click", event=>{
-        const index = event.path[0].getAttribute('data-index');
-        if(gameBoard[index] == -1){
-            if(!myturn){
+let elementArrayOfSquare = document.getElementsByClassName('square');
+for (var i = 0; i < elementArrayOfSquare.length; i++){
+    elementArrayOfSquare[i].addEventListener("click", event=>{
+        const sq = event.path[0].getAttribute('data-index'); // Square; 0 <= sq
+        if(board[sq] == -1){
+            if(!myTurn){
                 alert("Wait for other to place the move")
             }
             else{
-                myturn = false;
+                myTurn = false;
                 document.getElementById("alert_move").style.display = 'none'; // Hide
-                make_move(index, char_choice);
+                make_move(sq, myPiece);
             }
         }
     })
 }
 
-// Make a move
-function make_move(index, player){
-    index = parseInt(index);
+/**
+ * Make a move
+ * @param {*} sq - Square; 0 <= sq
+ * @param {*} myPiece 
+ * @returns 
+ */
+function make_move(sq, myPiece){
+    sq = parseInt(sq);
     let data = {
         "event": "MOVE",
         "message": {
-            "index": index,
-            "player": player
+            "index": sq,
+            "player": myPiece
         }
     }
 
-    if(gameBoard[index] == -1){
-        // if the valid move, update the gameboard
+    if(board[sq] == -1){
+        // if the valid move, update the board
         // state and send the move to the server.
-        moveCount++;
-        if(player == 'X')
-            gameBoard[index] = 1;
-        else if(player == 'O')
-            gameBoard[index] = 0;
-        else{
-            alert("Invalid character choice");
-            return false;
+        countOfMove++;
+
+        switch (myPiece) {
+            case 'X':
+                board[sq] = 1;
+                break;
+            case 'O':
+                board[sq] = 0;
+                break;
+            default:
+                alert("Invalid character choice");
+                return false;
         }
-        gameSocket.send(JSON.stringify(data))
+
+        webSock1.send(JSON.stringify(data))
     }
     // place the move in the game box.
-    squareArray[index].innerHTML = player;
+    elementArrayOfSquare[sq].innerHTML = myPiece;
     // check for the winner
     const win = checkWinner();
-    if(myturn){
+    if(myTurn){
         // if player winner, send the END event.
         if(win){
             data = {
                 "event": "END",
-                "message": `${player} is a winner. Play again?`
+                "message": `${myPiece} is a winner. Play again?`
             }
-            gameSocket.send(JSON.stringify(data))
+            webSock1.send(JSON.stringify(data))
         }
-        else if(!win && moveCount == 9){
+        else if(!win && countOfMove == 9){
             data = {
                 "event": "END",
                 "message": "It's a draw. Play again?"
             }
-            gameSocket.send(JSON.stringify(data))
+            webSock1.send(JSON.stringify(data))
         }
     }
 }
 
 // function to reset the game.
 function reset(){
-    gameBoard = [
+    board = [
         -1, -1, -1,
         -1, -1, -1,
         -1, -1, -1,
     ];
-    moveCount = 0;
-    myturn = true;
+    countOfMove = 0;
+    myTurn = true;
     document.getElementById("alert_move").style.display = 'inline';
-    for (var i = 0; i < squareArray.length; i++){
-        squareArray[i].innerHTML = "";
+    for (var i = 0; i < elementArrayOfSquare.length; i++){
+        elementArrayOfSquare[i].innerHTML = "";
     }
 }
 
-// check if their is winning move
-const check = (winIndex) => {
+/**
+ * check if their is winning move
+ * @param {*} patternOfWin 
+ * @returns 
+ */
+const check = (patternOfWin) => {
     if (
-      gameBoard[winIndex[0]] !== -1 &&
-      gameBoard[winIndex[0]] === gameBoard[winIndex[1]] &&
-      gameBoard[winIndex[0]] === gameBoard[winIndex[2]]
+      board[patternOfWin[0]] !== -1 &&
+      board[patternOfWin[0]] === board[patternOfWin[1]] &&
+      board[patternOfWin[0]] === board[patternOfWin[2]]
     )   return true;
     return false;
 };
 
-// function to check if player is winner.
+/**
+ * function to check if player is winner.
+ * @returns I won
+ */
 function checkWinner(){
     let win = false;
-    if (moveCount >= 5) {
-      winIndices.forEach((w) => {
+    if (5 <= countOfMove) {
+      winSquares.forEach((w) => {
         if (check(w)) {
           win = true;
           windex = w;
@@ -138,23 +155,23 @@ function checkWinner(){
 // Main function which handles the connection
 // of websocket.
 function connect() {
-    gameSocket.onopen = function open() {
+    webSock1.onopen = function open() {
         console.log('WebSockets connection created.');
         // on websocket open, send the START event.
-        gameSocket.send(JSON.stringify({
+        webSock1.send(JSON.stringify({
             "event": "START",
             "message": ""
         }));
     };
 
-    gameSocket.onclose = function (e) {
+    webSock1.onclose = function (e) {
         console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
         setTimeout(function () {
             connect();
         }, 1000);
     };
     // Sending the info about the room
-    gameSocket.onmessage = function (e) {
+    webSock1.onmessage = function (e) {
         // On getting the message from the server
         // Do the appropriate steps on each event.
         let data = JSON.parse(e.data);
@@ -163,26 +180,31 @@ function connect() {
         let event = data["event"];
         switch (event) {
             case "START":
+                console.log(`[Message] START e=${e.data}`); // ちゃんと動いているようなら消す
                 reset();
                 break;
             case "END":
+                console.log(`[Message] END e=${e.data}`); // ちゃんと動いているようなら消す
                 alert(message);
                 reset();
                 break;
             case "MOVE":
-                if(message["player"] != char_choice){
+                console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
+                if(message["player"] != myPiece){
                     make_move(message["index"], message["player"])
-                    myturn = true;
+                    myTurn = true;
                     document.getElementById("alert_move").style.display = 'inline';
                 }
                 break;
             default:
+                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
                 console.log("No event")
         }
     };
 
-    if (gameSocket.readyState == WebSocket.OPEN) {
-        gameSocket.onopen();
+    if (webSock1.readyState == WebSocket.OPEN) {
+        console.log('Open socket.');
+        webSock1.onopen();
     }
 }
 
