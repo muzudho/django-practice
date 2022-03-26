@@ -74,7 +74,6 @@
 
 ```html
 <!DOCTYPE html>
-<!-- See also: https://vuetifyjs.com/en/getting-started/installation/#usage-with-cdn -->
 <html>
     <head>
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
@@ -87,32 +86,17 @@
         <div id="app">
             <v-app>
                 <v-main>
-                    <v-container>
+                    <v-container fluid>
                         <h1>Welcome to Tic Tac Toe Game</h1>
-                        <form method="POST">
+                        <v-form method="POST">
                             {% csrf_token %}
-                            <div class="form-control">
-                                <label for="room">Room id</label>
-                                <input id="room" type="text" name="room_name" required />
-                            </div>
 
-                            <template>
-                                <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name"></v-text-field>
-                                <v-card class="mx-auto" max-width="300" tile>
-                                    <v-list dense>
-                                        <v-subheader>Your piece</v-subheader>
-                                        <v-list-item-group v-model="selectedMyPiece" color="primary">
-                                            <v-list-item v-for="(piece, i) in pieces" :key="i">
-                                                <v-list-item-content>
-                                                    <v-list-item-title v-text="piece.text"></v-list-item-title>
-                                                </v-list-item-content>
-                                            </v-list-item>
-                                        </v-list-item-group>
-                                    </v-list>
-                                </v-card>
-                            </template>
-                            <v-btn type="submit"> Start Game </v-btn>
-                        </form>
+                            <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+
+                            <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+
+                            <v-btn block elevation="2" type="submit"> Start Game </v-btn>
+                        </v-form>
                     </v-container>
                 </v-main>
             </v-app>
@@ -126,16 +110,13 @@
                 vuetify: new Vuetify(),
                 data: {
                     room: {
-                        title: 'Elephant',
-                        rules: [v => v.length <= 25 || 'Max 25 characters'],
-                        wordsRules: [v => v.trim().split(' ').length <= 5 || 'Max 5 words'],
+                        title: "Elephant",
+                        rules: [(v) => v.length <= 25 || "Max 25 characters"],
+                        wordsRules: [(v) => v.trim().split(" ").length <= 5 || "Max 5 words"],
                     },
-                    selectedMyPiece: 1,
-                    pieces: [
-                        { text: 'X' },
-                        { text: 'O' },
-                    ],
-                ),
+                    selectedMyPiece: "X",
+                    pieces: ["X", "O"],
+                },
             });
         </script>
     </body>
@@ -147,40 +128,64 @@
 以下のファイルを作成してほしい。  
 
 📄`host1/webapp1/templates/tic-tac-toe2/game.html`:  
-                           ------------  
+                                      ^  
 
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
     </head>
     <body>
-        <div class="wrapper">
-            <div class="head">
-                <h1>TIC TAC TOE</h1>
-                <h3>Welcome to room_{{room_name}}</h3>
-            </div>
-            <div id="board" room_name="{{room_name}}" my_piece="{{my_piece}}">
-                <div class="square" square="0"></div>
-                <div class="square" square="1"></div>
-                <div class="square" square="2"></div>
-                <div class="square" square="3"></div>
-                <div class="square" square="4"></div>
-                <div class="square" square="5"></div>
-                <div class="square" square="6"></div>
-                <div class="square" square="7"></div>
-                <div class="square" square="8"></div>
-            </div>
-            <div id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></div>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+
+                        <h1>TIC TAC TOE</h1>
+                        <h3>Welcome to room_{{room_name}}</h3>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <v-row>
+                                <v-col><v-btn id="square0"></v-btn></v-col>
+                                <v-col><v-btn id="square1"></v-btn></v-col>
+                                <v-col><v-btn id="square2"></v-btn></v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col><v-btn id="square3"></v-btn></v-col>
+                                <v-col><v-btn id="square4"></v-btn></v-col>
+                                <v-col><v-btn id="square5"></v-btn></v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col><v-btn id="square6"></v-btn></v-col>
+                                <v-col><v-btn id="square7"></v-btn></v-col>
+                                <v-col><v-btn id="square8"></v-btn></v-col>
+                            </v-row>
+                            <input type="hidden" name="room_name" value="{{room_name}}" />
+                            <input type="hidden" name="my_piece" value="{{my_piece}}" />
+                        </form>
+                    </v-container>
+                </v-main>
+            </v-app>
         </div>
 
-        <script src="{% static 'tic-tac-toe1/game.js' %}"></script>
-        {% block javascript %} {% endblock javascript %}
+        <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+            });
+        </script>
     </body>
 </html>
 ```
@@ -190,7 +195,7 @@
 以下のファイルを作成してほしい。  
 
 📄`host1/webapp1/static/tic-tac-toe2/game.js`:  
-                        ------------  
+                                   ^  
 
 ```js
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
