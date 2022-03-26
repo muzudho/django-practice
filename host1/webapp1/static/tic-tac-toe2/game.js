@@ -1,7 +1,7 @@
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 
-var roomName = document.getElementById("board").getAttribute("room_name");
-var myPiece = document.getElementById("board").getAttribute("my_piece");
+var roomName = document.forms["form1"]["room_name"].value;
+var myPiece = document.forms["form1"]["my_piece"].value;
 
 var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
 //                           ----------------------- -------------------------
@@ -89,21 +89,34 @@ let countOfMove = 0; // Number of moves done
 let myTurn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
-let elementArrayOfSquare = document.getElementsByClassName('square');
+let elementArrayOfSquare = [
+    document.getElementById("square0"),
+    document.getElementById("square1"),
+    document.getElementById("square2"),
+    document.getElementById("square3"),
+    document.getElementById("square4"),
+    document.getElementById("square5"),
+    document.getElementById("square6"),
+    document.getElementById("square7"),
+    document.getElementById("square8"),
+];
+let sq = 0; // Square; 0 <= sq
 for (const element of elementArrayOfSquare) {
-    element.addEventListener("click", event=>{
-        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
-        if(board[sq] == PC_EMPTY){
-            if(!myTurn){
+    element.addEventListener("click", event => {
+        console.log(`sq=${sq}`)
+        if (board[sq] == PC_EMPTY) {
+            if (!myTurn) {
                 alert("Wait for other to place the move")
             }
-            else{
+            else {
                 myTurn = false;
                 document.getElementById("alert_move").style.display = 'none'; // Hide
                 makeMove(sq, myPiece);
             }
         }
-    })
+    });
+
+    sq += 1;
 }
 
 /**

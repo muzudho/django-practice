@@ -17,28 +17,36 @@
 
                         <h1>TIC TAC TOE</h1>
                         <h3>Welcome to room_{{room_name}}</h3>
-
-                        <form method="POST">
-                            {% csrf_token %}
-                            <v-row>
-                                <v-col><v-btn id="square0"></v-btn></v-col>
-                                <v-col><v-btn id="square1"></v-btn></v-col>
-                                <v-col><v-btn id="square2"></v-btn></v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col><v-btn id="square3"></v-btn></v-col>
-                                <v-col><v-btn id="square4"></v-btn></v-col>
-                                <v-col><v-btn id="square5"></v-btn></v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col><v-btn id="square6"></v-btn></v-col>
-                                <v-col><v-btn id="square7"></v-btn></v-col>
-                                <v-col><v-btn id="square8"></v-btn></v-col>
-                            </v-row>
-                            <input type="hidden" name="room_name" value="{{room_name}}" />
-                            <input type="hidden" name="my_piece" value="{{my_piece}}" />
-                        </form>
                     </v-container>
+
+                    <form name="form1" method="POST">
+                        {% csrf_token %}
+                        <v-container>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    <v-btn id="square0"></v-btn>
+                                    <v-btn id="square1"></v-btn>
+                                    <v-btn id="square2"></v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    <v-btn id="square3"></v-btn>
+                                    <v-btn id="square4"></v-btn>
+                                    <v-btn id="square5"></v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    <v-btn id="square6"></v-btn>
+                                    <v-btn id="square7"></v-btn>
+                                    <v-btn id="square8"></v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                        <input type="hidden" name="room_name" value="{{room_name}}" />
+                        <input type="hidden" name="my_piece" value="{{my_piece}}" />
+                    </form>
                 </v-main>
             </v-app>
         </div>
