@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- See also: https://vuetifyjs.com/en/getting-started/installation/#usage-with-cdn -->
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h1>Welcome to Tic Tac Toe Game</h1>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="form-control">
+                                <label for="room">Room id</label>
+                                <input id="room" type="text" name="room_name" required />
+                            </div>
+
+                            <template>
+                                <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name"></v-text-field>
+                                <v-card class="mx-auto" max-width="300" tile>
+                                    <v-list dense>
+                                        <v-subheader>Your piece</v-subheader>
+                                        <v-list-item-group v-model="selectedMyPiece" color="primary">
+                                            <v-list-item v-for="(piece, i) in pieces" :key="i">
+                                                <v-list-item-content>
+                                                    <v-list-item-title v-text="piece.text"></v-list-item-title>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </v-list-item-group>
+                                    </v-list>
+                                </v-card>
+                            </template>
+                            <v-btn type="submit"> Start Game </v-btn>
+                        </form>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    room: {
+                        title: 'Elephant',
+                        rules: [v => v.length <= 25 || 'Max 25 characters'],
+                        wordsRules: [v => v.trim().split(' ').length <= 5 || 'Max 5 words'],
+                    },
+                    selectedMyPiece: 1,
+                    pieces: [
+                        { text: 'X' },
+                        { text: 'O' },
+                    ],
+                ),
+            });
+        </script>
+    </body>
+</html>
