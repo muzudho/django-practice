@@ -1,6 +1,6 @@
 ---
 title: DjangoをDockerコンテナへインストールしよう！
-tags: Windows VisualStudioCode Docker Django
+tags: Windows VisualStudioCode Docker Django コンテナ
 author: muzudho1
 slide: false
 ---
@@ -127,6 +127,9 @@ services:
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+    #                                   -------
+    #                                   1
+    # 1. Dockerコンテナ内のサーバーは localhost ではなく 0.0.0.0 と書く
     volumes:
       - .:/code
     ports:

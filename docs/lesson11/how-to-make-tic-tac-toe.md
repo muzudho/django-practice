@@ -5,8 +5,6 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 
 # はじめに
 
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
-
 前提知識:  
 
 | Key                                                                                 | Value                                                                                                                                     |
@@ -26,10 +24,11 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 | Others           | Web socket                                |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
-参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
-わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
 ├── 📂host_local1
@@ -60,6 +59,9 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
      └── <いろいろ>
 ```
 
+以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
+わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
+
 # Step 1. requirements.txt ファイルの編集
 
 （無ければ）ファイルの末尾にでも追加してほしい。  
@@ -73,61 +75,7 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 channels_redis>=3.2
 ```
 
-# Step 2. docker-compose.yml ファイルの設定（再掲）
-
-この連載の既存の `docker-compose.yml` ファイルを用意してほしい。以下は抜粋。  
-
-📄`host1/docker-compose.yml` （抜粋）:
-
-```yaml
-version: "3.9"
-
-services:
-
-  # Djangoアプリ
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    #                                   -------
-    #                                   1
-    # 1. Dockerコンテナ内のサーバーは localhost ではなく 0.0.0.0 と書く
-    volumes:
-      - .:/code
-    ports:
-      - "8000:8000"
-```
-
-# Step 3. Dockerfile ファイルの設定（再掲）
-
-この連載の既存の `Dockerfile` ファイルを用意してほしい。以下は抜粋。  
-
-📄`host1/Dockerfile` （抜粋）:
-
-```yaml
-# See also: 📖[docker docs - Quickstart: Compose and Django](https://docs.docker.com/samples/django/)
-
-FROM python:3
-
-# Pythonのキャッシュファイル（__pycache__ディレクトリや.pycファイル）を作成するのを止めます
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# 出力をPythonでバッファリングせずにターミナルに直接送信します
-ENV PYTHONUNBUFFERED=1
-
-# コンテナに /code ディレクトリを作成し、以降、 /code ディレクトリで作業します
-WORKDIR /code
-
-# requirements.txtを /code/ ディレクトリへコピーします
-ADD requirements.txt /code/
-
-# requirements.txtに従ってpip installします
-RUN pip install -r requirements.txt
-
-# 開発環境のファイルを /code/ へコピーします
-COPY . /code/
-```
-
-# Step 4. settings.py ファイルの編集
+# Step 2. settings.py ファイルの編集
 
 （無ければ）以下の部分を編集してほしい。  
 
@@ -177,7 +125,7 @@ CHANNEL_LAYERS = {
 }
 ```
 
-# Step 5. コマンド実行
+# Step 3. コマンド実行
 
 Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
 
@@ -194,7 +142,7 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 6. main.css ファイルの作成
+# Step 4. main.css ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -263,7 +211,7 @@ select {
 }
 ```
 
-# Step 7. game.js ファイルの作成
+# Step 5. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -540,7 +488,7 @@ function connect() {
 connect();
 ```
 
-# Step 8. index.html ファイルの作成
+# Step 6. index.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -579,7 +527,7 @@ connect();
 </html>
 ```
 
-# Step 9. game.html ファイルの作成
+# Step 7. game.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -621,7 +569,7 @@ connect();
 </html>
 ```
 
-# Step 10. views.py ファイルの編集
+# Step 8. views.py ファイルの編集
 
 📄`host1/webapp1/views.py` に、以下の記述を追加してほしい。  
 
@@ -651,7 +599,7 @@ def playGameOfTicTacToe1(request, room_name):
     return render(request, "tic-tac-toe1/game.html", context)
 ```
 
-# Step 11. urls.py ファイルの編集
+# Step 9. urls.py ファイルの編集
 
 以下の記述を追加してほしい。  
 
@@ -678,7 +626,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 12. consumer1.py ファイルの作成
+# Step 10. consumer1.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -752,7 +700,7 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 13. routing1.py ファイルの作成
+# Step 11. routing1.py ファイルの作成
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
@@ -776,7 +724,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 14. asgi.py ファイルの編集
+# Step 12. asgi.py ファイルの編集
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
@@ -814,7 +762,7 @@ application = ProtocolTypeRouter({ # 追加
 })
 ```
 
-# Step 15. Web画面へアクセス
+# Step 13. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 

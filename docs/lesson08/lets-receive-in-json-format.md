@@ -1,3 +1,9 @@
+---
+title: DjangoのサーバーからデータをJSON形式のテキストで受信しよう！
+tags: Django Docker JSON 受信
+author: muzudho1
+slide: false
+---
 # 目的
 
 サーバーからデータをJSON形式で受信したい。  
