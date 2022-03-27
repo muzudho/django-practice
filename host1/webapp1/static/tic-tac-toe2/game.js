@@ -101,23 +101,23 @@ let elementArrayOfSquare = [
     document.getElementById("square7"),
     document.getElementById("square8"),
 ];
-let sq = 0; // Square; 0 <= sq
-for (const element of elementArrayOfSquare) {
-    element.addEventListener("click", event => {
-        console.log(`[Debug]sq=${sq}`)
-        if (board[sq] == PC_EMPTY) {
-            if (!myTurn) {
-                alert("Wait for other to place the move")
-            }
-            else {
-                myTurn = false;
-                document.getElementById("alert_move").style.display = 'none'; // Hide
-                makeMove(sq, myPiece);
-            }
-        }
-    });
 
-    sq += 1;
+/**
+ * 升ボタンをクリックしたとき
+ * @param {*} sq - Square; 0 <= sq
+ */
+function clickSquare(sq) {
+    console.log(`[Debug] clickSquare sq=${sq}`)
+    if (board[sq] == PC_EMPTY) {
+        if (!myTurn) {
+            alert("Wait for other to place the move")
+        }
+        else {
+            myTurn = false;
+            document.getElementById("alert_move").style.display = 'none'; // Hide
+            makeMove(sq, myPiece);
+        }
+    }
 }
 
 /**
