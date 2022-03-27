@@ -156,7 +156,7 @@ function makeMove(sq, myPiece){
         webSock1.send(JSON.stringify(data))
     }
     // place the move in the game box.
-    elementArrayOfSquare[sq].innerHTML = myPiece;
+    vue1.setPieceV(sq, myPiece);
     // check for the winner
     const gameOver = isGameOver();
     if(myTurn){
@@ -180,6 +180,7 @@ function makeMove(sq, myPiece){
 
 // function to reset the game.
 function reset(){
+    console.log('[Debug] reset()');
     board = [
         PC_EMPTY, PC_EMPTY, PC_EMPTY,
         PC_EMPTY, PC_EMPTY, PC_EMPTY,
@@ -188,8 +189,10 @@ function reset(){
     countOfMove = 0;
     myTurn = true;
     document.getElementById("alert_move").style.display = 'block';
-    for (const element of elementArrayOfSquare) {
-        element.innerHTML = "";
+
+    // ボタンのラベルをクリアー
+    for (let sq = 0; sq < elementArrayOfSquare.length; sq += 1){
+        vue1.setPieceV(sq, "");
     }
 }
 
