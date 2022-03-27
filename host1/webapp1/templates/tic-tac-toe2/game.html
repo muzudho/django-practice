@@ -13,8 +13,6 @@
             <v-app>
                 <v-main>
                     <v-container>
-                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-
                         <h1>TIC TAC TOE</h1>
                         <h3>Welcome to room_{{room_name}}</h3>
                     </v-container>
@@ -47,6 +45,9 @@
                         <input type="hidden" name="room_name" value="{{room_name}}" />
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
+                    <v-container>
+                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                    </v-container>
                 </v-main>
             </v-app>
         </div>

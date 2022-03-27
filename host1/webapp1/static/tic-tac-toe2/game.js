@@ -187,7 +187,7 @@ function reset(){
     ];
     countOfMove = 0;
     myTurn = true;
-    document.getElementById("alert_move").style.display = 'inline';
+    document.getElementById("alert_move").style.display = 'block';
     for (const element of elementArrayOfSquare) {
         element.innerHTML = "";
     }
@@ -263,7 +263,7 @@ function connect() {
                 if(message["player"] != myPiece){
                     makeMove(message["index"], message["player"])
                     myTurn = true;
-                    document.getElementById("alert_move").style.display = 'inline';
+                    document.getElementById("alert_move").style.display = 'block';
                 }
                 break;
             default:
