@@ -253,7 +253,7 @@ Lesson 6. CRUD
 
 Lesson 7. Vuetify
 
-* 📖 [DjangoでフロントサイドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
+* 📖 [DjangoでフロントエンドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
     * 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)
 
 Lesson 8. JSON

@@ -3,7 +3,8 @@
 var roomName = document.forms["form1"]["room_name"].value;
 var myPiece = document.forms["form1"]["my_piece"].value;
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
+var connectionString = `ws://${window.location.host}/tic-tac-toe2/${roomName}/`;
+//                                                              ^
 //                           ----------------------- -------------------------
 //                           1                       2
 // 1. ホスト アドレス
@@ -103,7 +104,7 @@ let elementArrayOfSquare = [
 let sq = 0; // Square; 0 <= sq
 for (const element of elementArrayOfSquare) {
     element.addEventListener("click", event => {
-        console.log(`sq=${sq}`)
+        console.log(`[Debug]sq=${sq}`)
         if (board[sq] == PC_EMPTY) {
             if (!myTurn) {
                 alert("Wait for other to place the move")

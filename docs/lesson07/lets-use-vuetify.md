@@ -1,5 +1,5 @@
 ---
-title: DjangoでフロントサイドにVuetifyを使おう！
+title: DjangoでフロントエンドにVuetifyを使おう！
 tags: Django Docker Vuetify
 author: muzudho1
 slide: false
@@ -8,7 +8,7 @@ slide: false
 
 Django に最初から入っている HTMLレンダラー に満足できない。  
 見た目を今風にしたい。  
-そこでフロントサイドに Vuetify を使う。  
+そこでフロントエンドに Vuetify を使う。  
 
 # はじめに
 
