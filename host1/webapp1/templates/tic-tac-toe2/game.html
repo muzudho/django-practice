@@ -23,27 +23,27 @@
                             <v-row justify="center" dense>
                                 <v-col>
                                     {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                    <v-btn id="square0" v-on:click="clickSquareV(0)">{{labelsOfPiece[0]}}</v-btn>
-                                    <v-btn id="square1" v-on:click="clickSquareV(1)">{{labelsOfPiece[1]}}</v-btn>
-                                    <v-btn id="square2" v-on:click="clickSquareV(2)">{{labelsOfPiece[2]}}</v-btn>
+                                    <v-btn id="square0" v-on:click="clickSquare(0)">{{label0}}</v-btn>
+                                    <v-btn id="square1" v-on:click="clickSquare(1)">{{label1}}</v-btn>
+                                    <v-btn id="square2" v-on:click="clickSquare(2)">{{label2}}</v-btn>
                                     {% endverbatim %}
                                 </v-col>
                             </v-row>
                             <v-row justify="center" dense>
                                 <v-col>
                                     {% verbatim %}
-                                    <v-btn id="square3" v-on:click="clickSquareV(3)">{{labelsOfPiece[3]}}</v-btn>
-                                    <v-btn id="square4" v-on:click="clickSquareV(4)">{{labelsOfPiece[4]}}</v-btn>
-                                    <v-btn id="square5" v-on:click="clickSquareV(5)">{{labelsOfPiece[5]}}</v-btn>
+                                    <v-btn id="square3" v-on:click="clickSquare(3)">{{label3}}</v-btn>
+                                    <v-btn id="square4" v-on:click="clickSquare(4)">{{label4}}</v-btn>
+                                    <v-btn id="square5" v-on:click="clickSquare(5)">{{label5}}</v-btn>
                                     {% endverbatim %}
                                 </v-col>
                             </v-row>
                             <v-row justify="center" dense>
                                 <v-col>
                                     {% verbatim %}
-                                    <v-btn id="square6" v-on:click="clickSquareV(6)">{{labelsOfPiece[6]}}</v-btn>
-                                    <v-btn id="square7" v-on:click="clickSquareV(7)">{{labelsOfPiece[7]}}</v-btn>
-                                    <v-btn id="square8" v-on:click="clickSquareV(8)">{{labelsOfPiece[8]}}</v-btn>
+                                    <v-btn id="square6" v-on:click="clickSquare(6)">{{label6}}</v-btn>
+                                    <v-btn id="square7" v-on:click="clickSquare(7)">{{label7}}</v-btn>
+                                    <v-btn id="square8" v-on:click="clickSquare(8)">{{label8}}</v-btn>
                                     {% endverbatim %}
                                 </v-col>
                             </v-row>
@@ -72,7 +72,15 @@
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    labelsOfPiece: ["", "", "", "", "", "", "", "", ""],
+                    label0: "",
+                    label1: "",
+                    label2: "",
+                    label3: "",
+                    label4: "",
+                    label5: "",
+                    label6: "",
+                    label7: "",
+                    label8: "",
                 },
                 // page loaded
                 mounted: () => {
@@ -89,14 +97,14 @@
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.setPieceV(sq, "");
+                            this.setLabelOfButton(sq, "");
                         }
                     },
                     /**
                      * 升ボタンをクリックしたとき
                      * @param {*} sq - Square; 0 <= sq
                      */
-                    clickSquareV(sq) {
+                    clickSquare(sq) {
                         console.log(`[Debug] Vue#clickSquare sq=${sq}`);
                         if (game1.board[sq] == PC_EMPTY) {
                             if (!game1.myTurn) {
@@ -108,9 +116,40 @@
                             }
                         }
                     },
-                    setPieceV(sq, piece) {
-                        // alert(`[Debug] Vue#setPieceV sq=${sq} piece=${piece} this.labelsOfPiece=${this.labelsOfPiece}`);
-                        this.labelsOfPiece[sq] = piece;
+                    setLabelOfButton(sq, piece) {
+                        // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        switch (parseInt(sq)) {
+                            case 0:
+                                this.label0 = piece;
+                                break;
+                            case 1:
+                                this.label1 = piece;
+                                break;
+                            case 2:
+                                this.label2 = piece;
+                                break;
+                            case 3:
+                                this.label3 = piece;
+                                break;
+                            case 4:
+                                this.label4 = piece;
+                                break;
+                            case 5:
+                                this.label5 = piece;
+                                break;
+                            case 6:
+                                this.label6 = piece;
+                                break;
+                            case 7:
+                                this.label7 = piece;
+                                break;
+                            case 8:
+                                this.label8 = piece;
+                                break;
+                            default:
+                                alert(`[Error] sq=${sq}`);
+                                break;
+                        }
                     },
                 },
             });

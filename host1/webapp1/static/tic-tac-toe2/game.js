@@ -128,7 +128,7 @@ class Game {
         }
 
         // place the move in the game box.
-        vue1.setPieceV(sq, myPiece);
+        vue1.setLabelOfButton(sq, myPiece);
         // check for the winner
         const gameOver = this.isGameOver();
         if(this.myTurn){
