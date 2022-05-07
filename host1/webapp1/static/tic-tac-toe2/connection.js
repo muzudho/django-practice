@@ -20,7 +20,7 @@ class Connection {
      * @param {*} onCloseWebSocket - 例: サーバー側にエラーがあって接続が切れたりなど
      * @param {*} setMessage 
      */
-    setup(onOpenWebSocket, onCloseWebSocket, setMessage) {
+    setup(onOpenWebSocket, onCloseWebSocket, setMessageFromServer) {
         console.log(`[Debug] Connection#setup`)
         this.webSock1 = new WebSocket(this.connectionString);
 
@@ -33,7 +33,7 @@ class Connection {
             // Do the appropriate steps on each event.
             let data1 = JSON.parse(e.data);
             let message = data1["message"];
-            setMessage(message)
+            setMessageFromServer(message)
         };
 
         //call the connect function at the start.
