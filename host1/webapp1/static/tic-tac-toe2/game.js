@@ -83,7 +83,12 @@ let myTurn = true; // Boolean variable to get the turn of the player.
 // VueJSでの、ページ読込完了時
 function onVueLoaded() {
     console.log(`[Debug] onVueLoaded`)
-    connection_setup()
+
+    var funcSetRequest = (event, message) => {
+        console.log(`[setRequest] event=${event} message=${message}`); // ちゃんと動いているようなら消す
+    }
+
+    connection_setup(funcSetRequest)
 }
 
 /**
@@ -205,65 +210,3 @@ function isGameOver(){
     }
     return false;
 }
-
-/**
- * Main function which handles the connection
- * of websocket.
- */
-function connect() {
-    // on websocket open, send the START event.
-    webSock1.onopen = () => {
-        console.log('WebSockets connection created.');
-        webSock1.send(JSON.stringify({
-            "event": "START",
-            "message": ""
-        }));
-    };
-
-    webSock1.onclose = (e) => {
-        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        setTimeout(function () {
-            connect();
-        }, 1000);
-    };
-
-    // Sending the info about the room
-    webSock1.onmessage = (e) => {
-        // On getting the message from the server
-        // Do the appropriate steps on each event.
-        let data = JSON.parse(e.data);
-        data = data["payload"];
-        let message = data['message'];
-        let event = data["event"];
-        switch (event) {
-            case "START":
-                console.log(`[Message] START e=${e.data}`); // ちゃんと動いているようなら消す
-                reset();
-                break;
-            case "END":
-                console.log(`[Message] END e=${e.data}`); // ちゃんと動いているようなら消す
-                alert(message);
-                reset();
-                break;
-            case "MOVE":
-                console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
-                if(message["player"] != myPiece){
-                    makeMove(message["index"], message["player"])
-                    myTurn = true;
-                    document.getElementById("alert_move").style.display = 'block';
-                }
-                break;
-            default:
-                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
-                console.log("No event")
-        }
-    };
-
-    if (webSock1.readyState == WebSocket.OPEN) {
-        console.log('Open socket.');
-        webSock1.onopen();
-    }
-}
-
-//call the connect function at the start.
-connect();
