@@ -210,6 +210,9 @@ class Connection {
         // 1. ホスト アドレス
         // 2. URLの一部
         console.log(`[Debug] Connection#constructor roomName=${this.roomName} myPiece=${this.myPiece} connectionString=${this.connectionString}`)
+
+        // 再接続中表示フラグ
+        this.isReconnectingDisplay = false
     }
 
     /**
@@ -219,33 +222,51 @@ class Connection {
      * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      */
-    setup(onOpenWebSocket, onCloseWebSocket, setMessageFromServer) {
-        console.log(`[Debug] Connection#setup`)
-        this.webSock1 = new WebSocket(this.connectionString);
-        this.webSock1.onopen = onOpenWebSocket;
-        this.webSock1.onclose = onCloseWebSocket;
+    connect(onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
+        console.log(`[Connection#connect] Start`)
 
-        // 設定: サーバーからメッセージを受信したとき
-        this.webSock1.onmessage = (e) => {
-            // JSON を解析、メッセージだけ抽出
-            let data1 = JSON.parse(e.data);
-            let message = data1["message"];
-            setMessageFromServer(message)
-        };
+        // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
+        try {
+            // 接続できないと、この生成に失敗する。catch もできない
+            this.webSock1 = new WebSocket(this.connectionString);
 
-        // Webソケットを接続します
-        this.connect();
-    }
+            this.webSock1.onopen = onOpenWebSocket;
+            this.webSock1.onclose = onCloseWebSocket;
 
-    /**
-     * Main function which handles the connection
-     * of websocket.
-     */
-    connect() {
-        if (this.webSock1.readyState == WebSocket.OPEN) {
-            console.log('Open socket.');
-            this.webSock1.onopen();
+            // 設定: サーバーからメッセージを受信したとき
+            this.webSock1.onmessage = (e) => {
+                // JSON を解析、メッセージだけ抽出
+                let data1 = JSON.parse(e.data);
+                let message = data1["message"];
+                setMessageFromServer(message)
+            };
+
+            // this.webSock1.onerror = onWebSocketError;
+            this.webSock1.addEventListener('error', (event1) => {
+                onWebSocketError(event1)
+            })
+
+            // 状態を表示
+            if (this.webSock1.readyState == WebSocket.CONNECTING) {
+                // 未接続
+                console.log('[Connect] Connecting socket.');
+            } else if (this.webSock1.readyState == WebSocket.OPEN) {
+                console.log('[Connect] Open socket.');
+                this.webSock1.onopen();
+            } else if (this.webSock1.readyState == WebSocket.CLOSING) {
+                console.log('[Connect] Closing socket.');
+            } else if (this.webSock1.readyState == WebSocket.CLOSED) {
+                // サーバーが落ちたりしたときは、ここ
+                console.log('[Connect] Closed socket.');
+            } else {
+                console.log(`[Connect] webSock1.readyState=${this.webSock1.readyState}`);
+            }
+
+        } catch (error) {
+            // キャッチで捕まえられない
+            console.log(`[Connect] Exception ${error}`);
         }
+
     }
 }
 ```
@@ -411,6 +432,9 @@ class Game {
 
         // 自分の手番ではない
         this.isMyTurn = false;
+
+        // 相手の手番に着手しないでください
+        this.isWaitForOther = false;
     }
 
     /**
@@ -534,8 +558,12 @@ class Engine {
     /**
      * 生成
      * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     * @param {*} reconnect - 再接続ラムダ関数
      */
-    constructor(onSetMessageFromServer) {
+    constructor(onSetMessageFromServer, reconnect) {
+        this._onSetMessageFromServer = onSetMessageFromServer
+        this._reconnect = reconnect
+
         // 接続
         this._connection = new Connection();
         // メッセージ一覧
@@ -543,41 +571,25 @@ class Engine {
         // ゲーム
         this._game = new Game();
 
-        this._connection.setup(
-            // Webソケットを開かれたとき
-            () => {
-                console.log('WebSockets connection created.');
-                let response = this.protocolMessages.createStart()
-                this.connection.webSock1.send(JSON.stringify(response))
-            },
-            // Webソケットが閉じられたとき
-            (e) => {
-                console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${e.reason}`);
-                setTimeout(function () {
-                    this.connection.connect();
-                }, 1000);
-            },
-            // サーバーからのメッセージを受信したとき
-            onSetMessageFromServer,
-        )
-
         // １手進めたとき
         this._game.onDoMove = (sq, myPiece) => {
             let response = this.protocolMessages.createDoMove(sq, myPiece)
-            this.connection.webSock1.send(JSON.stringify(response))
+            this._connection.webSock1.send(JSON.stringify(response))
         }
 
         // どちらかが勝ったとき
         this._game.onWon = (myPiece) => {
             let response = this.protocolMessages.createWon(myPiece)
-            this.connection.webSock1.send(JSON.stringify(response))
+            this._connection.webSock1.send(JSON.stringify(response))
         }
 
         // 引き分けたとき
         this._game.onDraw = () => {
             let response = this.protocolMessages.createDraw()
-            this.connection.webSock1.send(JSON.stringify(response))
+            this._connection.webSock1.send(JSON.stringify(response))
         }
+
+        this.connect()
     }
 
     /**
@@ -599,6 +611,32 @@ class Engine {
      */
     get game() {
         return this._game
+    }
+
+    /**
+     * 接続
+     */
+    connect() {
+        this._connection.connect(
+            // Webソケットを開かれたとき
+            () => {
+                console.log('WebSockets connection created.');
+                let response = this.protocolMessages.createStart()
+                this._connection.webSock1.send(JSON.stringify(response))
+            },
+            // Webソケットが閉じられたとき
+            (e) => {
+                console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${e.reason}`);
+                // 1回だけ再接続を試みます
+                this._reconnect()
+            },
+            // サーバーからのメッセージを受信したとき
+            this._onSetMessageFromServer,
+            // エラー時
+            (e) => {
+                console.log(`Socket is error. ${e.reason}`);
+            }
+        )
     }
 }
 ```
@@ -666,8 +704,7 @@ function createSetMessageFromServer() {
                     vue1.engine.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
                     vue1.engine.game.isMyTurn = true;
-                    // 自分の手番ならアラートを常時表示
-                    vue1.refreshVisibilityOfAlertYourMove();
+                    vue1.engine.game.isWaitForOther = false;
                 }
                 break;
 
@@ -828,13 +865,15 @@ function createSetMessageFromServer() {
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
                     <v-container>
-                        <v-alert id="alert_your_move" type="info" color="green">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-                        {% verbatim %}
-                        <v-alert id="alert_result" type="success" color="blue">{{result}}</v-alert>
-                        {% endverbatim %}
+                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
                     </v-container>
                     <v-container>
-                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        <v-alert type="warning" color="orange" v-show="isAlertWaitForOther()">Wait for other to place the move</v-alert>
+                        {% verbatim %}
+                        <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
+                        {% endverbatim %}
+                        <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
                 </v-main>
             </v-app>
@@ -856,11 +895,33 @@ function createSetMessageFromServer() {
             const RESULT_LOST = "Lost";
             const RESULT_DRAW = "Draw";
 
+            /**
+             * 再接続関数の作成
+             * @return ラムダ関数
+             */
+            function packReconnect() {
+                // 5秒後に1回だけ再接続にトライします。
+                // そのあと接続が切れれば また再接続が呼び出されるので連続します
+                return () => {
+                    console.log("[Reconnect] Start...");
+                    vue1.engine.connection.isReconnectingDisplay = true;
+
+                    setTimeout(() => {
+                        // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
+                        console.log("[Reconnect] Try...");
+                        vue1.engine.connect();
+
+                        vue1.engine.connection.isReconnectingDisplay = false;
+                        console.log("[Reconnect] End");
+                    }, 5000);
+                };
+            }
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(createSetMessageFromServer()),
+                    engine: new Engine(createSetMessageFromServer(), packReconnect()),
                     state: STATE_DURING_GAME,
                     result: "",
                     label0: PC_EMPTY_LABEL,
@@ -886,9 +947,6 @@ function createSetMessageFromServer() {
 
                         this.engine.game.init(this.engine.connection.myPiece);
 
-                        // アラートの表示切替
-                        this.refreshVisibilityOfAlertYourMove();
-
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
                             this.setLabelOfButton(sq, PC_EMPTY_LABEL);
@@ -902,27 +960,14 @@ function createSetMessageFromServer() {
                         // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
                         if (this.engine.game.board[sq] == PC_EMPTY) {
                             if (!this.engine.game.isMyTurn) {
-                                alert("Wait for other to place the move");
+                                // Wait for other to place the move
+                                console.log("Wait for other to place the move");
+                                this.engine.game.isWaitForOther = true;
                             } else {
                                 this.engine.game.isMyTurn = false;
 
-                                // アラートの表示切替
-                                this.refreshVisibilityOfAlertYourMove();
-
                                 this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
                             }
-                        }
-                    },
-                    /**
-                     * 対局中で、自分の手番ならアラートを常時表示
-                     */
-                    refreshVisibilityOfAlertYourMove() {
-                        // console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
-                        if (this.state == STATE_DURING_GAME && this.engine.game.isMyTurn) {
-                            document.getElementById("alert_your_move").style.visibility = "visible";
-                        } else {
-                            // Hide
-                            document.getElementById("alert_your_move").style.visibility = "hidden";
                         }
                     },
                     /**
@@ -931,7 +976,7 @@ function createSetMessageFromServer() {
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
-                        // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
                         switch (sq) {
                             case 0:
                                 this.label0 = piece;
@@ -977,10 +1022,6 @@ function createSetMessageFromServer() {
                      */
                     setState(state) {
                         this.state = state;
-
-                        // アラートの表示切替
-                        this.refreshVisibilityOfAlertYourMove();
-                        this.refreshVisibilityOfAlertResult();
                     },
                     /**
                      *
@@ -1016,14 +1057,25 @@ function createSetMessageFromServer() {
                         }
                     },
                     /**
+                     * 対局中で、自分の手番ならアラートを常時表示
+                     */
+                    isAlertYourMoveShow() {
+                        return this.state == STATE_DURING_GAME && this.engine.game.isMyTurn;
+                    },
+                    isAlertWaitForOther() {
+                        return this.engine.game.isWaitForOther;
+                    },
+                    /**
                      * 対局が終了していたら、結果を常時表示
                      */
-                    refreshVisibilityOfAlertResult() {
-                        if (this.state == STATE_GAME_IS_OVER) {
-                            document.getElementById("alert_result").style.visibility = "visible";
-                        } else {
-                            document.getElementById("alert_result").style.visibility = "hidden";
-                        }
+                    isAlertResultShow() {
+                        return this.state == STATE_GAME_IS_OVER;
+                    },
+                    /**
+                     * 再接続中表示中なら、アラートを常時表示
+                     */
+                    isAlertReconnectingShow() {
+                        return this.engine.connection.isReconnectingDisplay;
                     },
                 },
             });
