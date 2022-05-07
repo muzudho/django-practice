@@ -22,8 +22,8 @@ class Engine {
                 this.connection.webSock1.send(JSON.stringify(response))
             },
             // Webソケットが閉じられたとき
-            () => {
-                console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+            (e) => {
+                console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${e.reason}`);
                 setTimeout(function () {
                     this.connection.connect();
                 }, 1000);
