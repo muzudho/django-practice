@@ -43,7 +43,8 @@ class Connection {
             let event = data2["event"];
             let message = data2['message'];
 
-            console.log(`[Debug] Connection#webSock1.onmessage setRequest=${setRequest} event=${event} message=${message}`)
+            console.log(`[Debug] Connection#webSock1.onmessage event=${event} message=${message}`)
+            // console.log(`[Debug] Connection#webSock1.onmessage setRequest=${setRequest}`)
 
             setRequest(event, message)
         };

@@ -6,11 +6,9 @@ from webapp1.tic_tac_toe2.protocol import Protocol
 
 class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
     #          ^
-
     def __init__(self):
-        super().__init__()
+        super()
         self.protocol1 = Protocol()
-
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'room_{self.room_name}'
