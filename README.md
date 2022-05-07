@@ -14,9 +14,16 @@ cd host1
 docker-compose up
 ```
 
+* 起動に失敗することがある。そのときは再実行してください
 * http://localhost:8000
 * [Ctrl]+[C]キーで停止
 
+URL
+
+* http://localhost:8000/tic-tac-toe1/
+* http://localhost:8000/tic-tac-toe2/
+
+# Others
 
 別ターミナルから:  
 

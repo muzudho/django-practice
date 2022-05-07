@@ -58,6 +58,7 @@
             </v-app>
         </div>
 
+        <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -68,6 +69,10 @@
                 vuetify: new Vuetify(),
                 data: {
                     labelsOfPiece: ["", "", "", "", "", "", "", "", ""],
+                },
+                // At page load
+                mounted: () => {
+                    onVueLoaded();
                 },
                 methods: {
                     clickSquareV: (sq) => {

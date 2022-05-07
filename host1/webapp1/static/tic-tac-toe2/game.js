@@ -1,20 +1,10 @@
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 
-var roomName = document.forms["form1"]["room_name"].value;
-var myPiece = document.forms["form1"]["my_piece"].value;
-
-var connectionString = `ws://${window.location.host}/tic-tac-toe2/${roomName}/`;
-//                                                              ^
-//                           ----------------------- -------------------------
-//                           1                       2
-// 1. ホスト アドレス
-// 2. URLの一部
-
-var webSock1 = new WebSocket(connectionString);
-
 const PC_EMPTY = -1 // A square without piece; PC is piece
+const BOARD_AREA = 9 // All squares count
+
 // Game board for maintaing the state of the game
-var board = [
+let board = [
     PC_EMPTY, PC_EMPTY, PC_EMPTY,
     PC_EMPTY, PC_EMPTY, PC_EMPTY,
     PC_EMPTY, PC_EMPTY, PC_EMPTY,
@@ -86,21 +76,15 @@ arrayOfSquaresOfWinPattern = [
     // +---------+
     [SQ_2, SQ_4, SQ_6]
 ]
+
 let countOfMove = 0; // Number of moves done
 let myTurn = true; // Boolean variable to get the turn of the player.
 
-// Add the click event listener on every block.
-let elementArrayOfSquare = [
-    document.getElementById("square0"),
-    document.getElementById("square1"),
-    document.getElementById("square2"),
-    document.getElementById("square3"),
-    document.getElementById("square4"),
-    document.getElementById("square5"),
-    document.getElementById("square6"),
-    document.getElementById("square7"),
-    document.getElementById("square8"),
-];
+// VueJSでの、ページ読込完了時
+function onVueLoaded() {
+    console.log(`[Debug] onVueLoaded`)
+    connection_setup()
+}
 
 /**
  * 升ボタンをクリックしたとき
@@ -191,7 +175,7 @@ function reset(){
     document.getElementById("alert_move").style.display = 'block';
 
     // ボタンのラベルをクリアー
-    for (let sq = 0; sq < elementArrayOfSquare.length; sq += 1){
+    for (let sq = 0; sq < BOARD_AREA; sq += 1){
         vue1.setPieceV(sq, "");
     }
 }
