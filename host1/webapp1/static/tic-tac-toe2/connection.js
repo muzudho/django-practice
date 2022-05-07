@@ -18,9 +18,9 @@ class Connection {
      * 
      * @param {*} onOpenWebSocket - on websocket open, send the START event.
      * @param {*} onCloseWebSocket - 例: サーバー側にエラーがあって接続が切れたりなど
-     * @param {*} setRequest 
+     * @param {*} setMessage 
      */
-    setup(onOpenWebSocket, onCloseWebSocket, setRequest) {
+    setup(onOpenWebSocket, onCloseWebSocket, setMessage) {
         console.log(`[Debug] Connection#setup`)
         this.webSock1 = new WebSocket(this.connectionString);
 
@@ -33,14 +33,8 @@ class Connection {
             // On getting the message from the server
             // Do the appropriate steps on each event.
             let data1 = JSON.parse(e.data);
-            let data2 = data1["payload"];
-            let event = data2["event"];
-            let message = data2['message'];
-
-            console.log(`[Debug] Connection#webSock1.onmessage event=${event} message=${message}`)
-            // console.log(`[Debug] Connection#webSock1.onmessage setRequest=${setRequest}`)
-
-            setRequest(event, message)
+            let message = data1["payload"];
+            setMessage(message)
         };
 
         //call the connect function at the start.

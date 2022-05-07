@@ -119,12 +119,12 @@
                     },
                     /**
                      * 升ボタンのラベル変更
-                     * @param {*} sq - Square; 0 <= sq
+                     * @param {number} sq - Square; 0 <= sq
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
                         // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
-                        switch (parseInt(sq)) {
+                        switch (sq) {
                             case 0:
                                 this.label0 = piece;
                                 break;

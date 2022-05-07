@@ -39,10 +39,8 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         print(
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
         response = json.loads(text_data)
-        event = response.get("event", None)
-        message = response.get("message", None)
 
-        response = self.protocol.execute(event, message)
+        response = self.protocol.execute(response)
 
         # Send message to room group
         await self.channel_layer.group_send(self.room_group_name, response)

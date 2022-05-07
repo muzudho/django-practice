@@ -3,13 +3,15 @@ class Protocol():
     def __init__(self):
         pass
 
-    def execute(self, event, message):
+    def execute(self, response):
+        event = response.get("event", None)
+
         if event == 'E_End':
             # 対局終了
             return {
                 'type': 'send_message',
                 'event': "E_End",
-                'message': message,
+                'text': response.get("text", None),
             }
 
         elif event == 'E_Move':
@@ -17,7 +19,8 @@ class Protocol():
             return {
                 'type': 'send_message',
                 "event": "E_Move",
-                'message': message,
+                'sq': response.get("sq", None),
+                'myPiece': response.get("myPiece", None),
             }
 
         elif event == 'E_Start':
@@ -25,7 +28,6 @@ class Protocol():
             return {
                 'type': 'send_message',
                 'event': "E_Start",
-                'message': message,
             }
 
         raise ValueError(f"Unknown event: {event}")

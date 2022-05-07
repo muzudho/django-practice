@@ -32,9 +32,13 @@ class Engine {
                     this.connection.connect();
                 }, 1000);
             },
-            // setRequest
-            (event, message) => {
-                console.log(`[setRequest] event=${event}`); // ちゃんと動いているようなら消す
+            // setMessage
+            (message) => {
+                let event = message["event"];
+                let text = message['text'];
+                let sq = message['sq'];
+                let myPiece = message['myPiece'];
+                console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece}`); // ちゃんと動いているようなら消す
 
                 switch (event) {
                     case "E_Start":
@@ -42,13 +46,14 @@ class Engine {
                         break;
 
                     case "E_End":
-                        alert(`${message}`); // 勝ち、または引分けの表示
+                        alert(text); // 勝ち、または引分けの表示
                         vue1.reset();
                         break;
 
                     case "E_Move":
-                        if(message["player"] != engine1.connection.myPiece){
-                            engine1.game.makeMove(parseInt(message["index"]), message["player"])
+                        if (myPiece != engine1.connection.myPiece) {
+                            // 相手の手番なら、自動で動かします
+                            engine1.game.makeMove(parseInt(sq), myPiece)
                             engine1.game.myTurn = true;
                             document.getElementById("alert_your_move").style.display = 'block';
                         }
