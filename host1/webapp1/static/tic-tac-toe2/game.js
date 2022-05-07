@@ -2,9 +2,17 @@
  * PC は Piece （駒、石、などの意味）の略です。
  * @type {number}
  */
-const PC_EMPTY = -1 // Pieceがないことを表します
-const PC_O = 0
+const PC_EMPTY = 0 // Pieceがないことを表します
 const PC_X = 1
+const PC_O = 2
+
+/**
+ * ラベル
+ * @type {string}
+ */
+const PC_EMPTY_LABEL = ""
+const PC_X_LABEL = "X"
+const PC_O_LABEL = "O"
 
 /**
  * 盤上の升の数
@@ -90,8 +98,7 @@ WIN_PATTERN = [
  */
 class Game {
     constructor() {
-        // 初期化
-        this.reset()
+        this.clear()
 
         // イベントリスナー
         this._onDoMove = () => {}
@@ -121,9 +128,9 @@ class Game {
     }
 
     /**
-     * 初期化
+     * クリアー
      */
-    reset() {
+    clear() {
         // 盤面
         this.board = [
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
@@ -131,8 +138,31 @@ class Game {
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
         ];
 
-        this.countOfMove = 0;   // 何手目
-        this.myTurn = true;     // 自分の手番か
+        // 何手目
+        this.countOfMove = 0;
+
+        // 自分の手番ではない
+        this.isMyTurn = false;
+    }
+
+    /**
+     * 初期化
+     */
+    init(myPiece) {
+        this.clear()
+
+        // 自分の手番か
+        {
+            let isMyTurn;
+            if (myPiece == PC_X_LABEL) {
+                isMyTurn = true;
+            } else {
+                isMyTurn = false;
+            }
+            this.isMyTurn = isMyTurn;
+        }
+
+        // イベントハンドラはそのまま
     }
 
     /**
@@ -167,7 +197,7 @@ class Game {
         // ボタンのラベルを更新
         vue1.setLabelOfButton(sq, myPiece);
 
-        if(this.myTurn){
+        if(this.isMyTurn){
             // 終局判定
             const gameOver = this.isGameOver();
 

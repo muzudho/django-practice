@@ -16,22 +16,25 @@ function createSetMessageFromServer() {
 
         switch (event) {
             case "StoC_Start":
-                // 画面を初期化
-                vue1.reset();
+                // 対局開始の一斉通知
+                vue1.init();   // 画面を初期化
                 break;
 
             case "StoC_End":
+                // 対局終了の一斉通知
                 alert(text);    // 勝ち、または引分けの表示
-                vue1.reset();   // 画面を初期化
+                vue1.init();   // 画面を初期化
                 break;
 
             case "StoC_Move":
+                // 指し手の一斉通知
                 if (myPiece != engine1.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
                     engine1.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
-                    engine1.game.myTurn = true;
-                    document.getElementById("alert_your_move").style.display = "block";
+                    engine1.game.isMyTurn = true;
+                    // 自分の手番ならアラートを常時表示
+                    vue1.refreshVisibilityOfAlertYourMove();
                 }
                 break;
 

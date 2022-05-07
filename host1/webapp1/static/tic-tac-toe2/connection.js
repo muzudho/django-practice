@@ -22,7 +22,7 @@ class Connection {
         //                      1                            2
         // 1. ホスト アドレス
         // 2. URLの一部
-        console.log($`[Debug] Connection#constructor roomName=${this.roomName} myPiece=${this.myPiece} connectionString=${this.connectionString}`)
+        console.log(`[Debug] Connection#constructor roomName=${this.roomName} myPiece=${this.myPiece} connectionString=${this.connectionString}`)
     }
 
     /**

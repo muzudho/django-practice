@@ -37,6 +37,7 @@ class Engine {
      * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
      */
     setup(onSetMessageFromServer) {
+
         this.connection.setup(
             // Webソケットを開かれたとき
             () => {

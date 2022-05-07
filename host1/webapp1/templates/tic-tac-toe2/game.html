@@ -89,17 +89,18 @@
                     engine1.setup(createSetMessageFromServer());
                 },
                 methods: {
-                    // function to reset the game.
-                    reset() {
-                        console.log("[Debug] Vue#reset()");
+                    // 画面を初期化
+                    init() {
+                        console.log("[Debug] Vue#init()");
 
-                        engine1.game.reset();
+                        engine1.game.init(engine1.connection.myPiece);
 
-                        document.getElementById("alert_your_move").style.display = "block";
+                        // 自分の手番ならアラートを常時表示
+                        this.refreshVisibilityOfAlertYourMove();
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.setLabelOfButton(sq, "");
+                            this.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
                     },
                     /**
@@ -109,13 +110,27 @@
                     clickSquare(sq) {
                         console.log(`[Debug] Vue#clickSquare sq=${sq}`);
                         if (engine1.game.board[sq] == PC_EMPTY) {
-                            if (!engine1.game.myTurn) {
+                            if (!engine1.game.isMyTurn) {
                                 alert("Wait for other to place the move");
                             } else {
-                                engine1.game.myTurn = false;
-                                document.getElementById("alert_your_move").style.display = "none"; // Hide
+                                engine1.game.isMyTurn = false;
+
+                                // 自分の手番ならアラートを常時表示
+                                this.refreshVisibilityOfAlertYourMove();
+
                                 engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
                             }
+                        }
+                    },
+                    /**
+                     * 自分の手番ならアラートを常時表示
+                     */
+                    refreshVisibilityOfAlertYourMove() {
+                        console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${engine1.game.isMyTurn}`);
+                        if (engine1.game.isMyTurn) {
+                            document.getElementById("alert_your_move").style.display = "block";
+                        } else {
+                            document.getElementById("alert_your_move").style.display = "none"; // Hide
                         }
                     },
                     /**

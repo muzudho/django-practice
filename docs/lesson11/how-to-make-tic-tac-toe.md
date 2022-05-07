@@ -776,6 +776,10 @@ docker-compose up
 
 📖 [http://localhost:8000/tic-tac-toe1/](http://localhost:8000/tic-tac-toe1/)  
 
+# 次の記事
+
+📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)
+
 # 参考にした記事
 
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  

@@ -1210,6 +1210,10 @@ docker-compose up
 
 📖 [http://localhost:8000/tic-tac-toe2/](http://localhost:8000/tic-tac-toe2/)  
 
+# 次の記事
+
+* 📖 [Django さくらVPS 備忘録](https://qiita.com/muzudho1/items/1d3b4b5608716463184c)
+
 # 参考にした記事
 
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  
