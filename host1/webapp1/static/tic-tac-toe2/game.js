@@ -80,15 +80,36 @@ arrayOfSquaresOfWinPattern = [
 let countOfMove = 0; // Number of moves done
 let myTurn = true; // Boolean variable to get the turn of the player.
 
+let connection;
+
 // VueJSでの、ページ読込完了時
 function onVueLoaded() {
     console.log(`[Debug] onVueLoaded`)
 
     var funcSetRequest = (event, message) => {
         console.log(`[setRequest] event=${event} message=${message}`); // ちゃんと動いているようなら消す
+        switch (event) {
+            case "START":
+                reset();
+                break;
+            case "END":
+                alert(message);
+                reset();
+                break;
+            case "MOVE":
+                if(message["player"] != myPiece){
+                    makeMove(message["index"], message["player"])
+                    myTurn = true;
+                    document.getElementById("alert_move").style.display = 'block';
+                }
+                break;
+            default:
+                console.log("No event")
+        }
     }
 
-    connection_setup(funcSetRequest)
+    connection = new Connection()
+    connection.setup(funcSetRequest)
 }
 
 /**
