@@ -55,6 +55,9 @@
                     <v-container>
                         <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                     </v-container>
+                    <v-container>
+                        <v-btn block elevation="2" v-on:click="clickNewGame()" :disabled="isDisabledNewGameButton()"> New Game </v-btn>
+                    </v-container>
                 </v-main>
             </v-app>
         </div>
@@ -73,6 +76,7 @@
                 vuetify: new Vuetify(),
                 data: {
                     engine: new Engine(createSetMessageFromServer()),
+                    state: "OnGoing",
                     label0: "",
                     label1: "",
                     label2: "",
@@ -91,7 +95,8 @@
                 methods: {
                     // 画面を初期化
                     init() {
-                        console.log("[Debug] Vue#init()");
+                        // console.log("[Debug] Vue#init()");
+                        this.setState("OnGoing");
 
                         this.engine.game.init(this.engine.connection.myPiece);
 
@@ -108,7 +113,7 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
                         if (this.engine.game.board[sq] == PC_EMPTY) {
                             if (!this.engine.game.isMyTurn) {
                                 alert("Wait for other to place the move");
@@ -126,11 +131,14 @@
                      * 自分の手番ならアラートを常時表示
                      */
                     refreshVisibilityOfAlertYourMove() {
-                        console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
+                        // console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
                         if (this.engine.game.isMyTurn) {
-                            document.getElementById("alert_your_move").style.display = "block";
+                            // document.getElementById("alert_your_move").style.display = "block";
+                            document.getElementById("alert_your_move").style.visibility = "visible";
                         } else {
-                            document.getElementById("alert_your_move").style.display = "none"; // Hide
+                            // Hide
+                            // document.getElementById("alert_your_move").style.display = "none";
+                            document.getElementById("alert_your_move").style.visibility = "hidden";
                         }
                     },
                     /**
@@ -171,6 +179,30 @@
                             default:
                                 alert(`[Error] sq=${sq}`);
                                 break;
+                        }
+                    },
+                    /**
+                     *
+                     */
+                    clickNewGame() {
+                        console.log(`New Game`);
+                        this.init();
+                    },
+                    /**
+                     *
+                     */
+                    setState(state) {
+                        this.state = state;
+                    },
+                    /**
+                     *
+                     */
+                    isDisabledNewGameButton() {
+                        switch (this.state) {
+                            case "EndOfGame":
+                                return false; // Enable
+                            default:
+                                return true; // Disable
                         }
                     },
                 },
