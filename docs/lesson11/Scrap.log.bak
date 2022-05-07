@@ -64,7 +64,7 @@
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
-# Step 1. protocol_messages.js ファイルの作成
+# Step 2. protocol_messages.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -133,7 +133,7 @@ class ProtocolMessages {
 }
 ```
 
-# Step 2. connection.js ファイルの作成
+# Step 3. connection.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -212,7 +212,7 @@ class Connection {
 }
 ```
 
-# Step 3. game.js ファイルの作成
+# Step 4. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -441,284 +441,161 @@ class Game {
 }
 ```
 
-
-
-# Step 5. game.js ファイルの作成
+# Step 5. engine.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/static/tic-tac-toe1/game.js`:  
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 📂tic-tac-toe2
+       　　            ├── connection.js
+       　　            ├── engine.js 👈
+       　　            ├── game.js
+       　　            └── protocol_messages.js
+```
 
 ```js
-// See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
-
-var roomName = document.getElementById("board").getAttribute("room_name");
-var myPiece = document.getElementById("board").getAttribute("my_piece");
-
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
-//                           ----------------------- -------------------------
-//                           1                       2
-// 1. ホスト アドレス
-// 2. URLの一部
-
-var webSock1 = new WebSocket(connectionString);
-
-const PC_EMPTY = -1 // A square without piece; PC is piece
-// Game board for maintaing the state of the game
-var board = [
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-];
-
-// SQ is square
-// +---------+
-// | 0  1  2 |
-// | 3  4  5 |
-// | 6  7  8 |
-// +---------+
-const SQ_0 = 0
-const SQ_1 = 1
-const SQ_2 = 2
-const SQ_3 = 3
-const SQ_4 = 4
-const SQ_5 = 5
-const SQ_6 = 6
-const SQ_7 = 7
-const SQ_8 = 8
-// Winning indexes.
-arrayOfSquaresOfWinPattern = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6]
-]
-let countOfMove = 0; // Number of moves done
-let myTurn = true; // Boolean variable to get the turn of the player.
-
-// Add the click event listener on every block.
-let elementArrayOfSquare = document.getElementsByClassName('square');
-for (const element of elementArrayOfSquare) {
-    element.addEventListener("click", event=>{
-        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
-        if(board[sq] == PC_EMPTY){
-            if(!myTurn){
-                alert("Wait for other to place the move")
-            }
-            else{
-                myTurn = false;
-                document.getElementById("alert_move").style.display = 'none'; // Hide
-                makeMove(sq, myPiece);
-            }
-        }
-    })
-}
-
 /**
- * Make a move
- * @param {*} sq - Square; 0 <= sq
- * @param {*} myPiece 
- * @returns 
+ * ゲームエンジン
  */
-function makeMove(sq, myPiece){
-    sq = parseInt(sq);
-    let data = {
-        "event": "MOVE",
-        "message": {
-            "index": sq,
-            "player": myPiece
-        }
+class Engine {
+    constructor() {
+        // 接続
+        this._connection = new Connection();
+        // メッセージ一覧
+        this._protocolMessages = new ProtocolMessages();
+        // ゲーム
+        this._game = new Game();
     }
 
-    if(board[sq] == PC_EMPTY){
-        // if the valid move, update the board
-        // state and send the move to the server.
-        countOfMove++;
-
-        switch (myPiece) {
-            case 'X':
-                board[sq] = 1;
-                break;
-            case 'O':
-                board[sq] = 0;
-                break;
-            default:
-                alert(`Invalid my piece = ${myPiece}`);
-                return false;
-        }
-
-        webSock1.send(JSON.stringify(data))
+    /**
+     * 接続
+     */
+    get connection() {
+        return this._connection
     }
-    // place the move in the game box.
-    elementArrayOfSquare[sq].innerHTML = myPiece;
-    // check for the winner
-    const gameOver = isGameOver();
-    if(myTurn){
-        // if player winner, send the END event.
-        if(gameOver){
-            data = {
-                "event": "END",
-                "message": `${myPiece} is a winner. Play again?`
-            }
-            webSock1.send(JSON.stringify(data))
+
+    /**
+     * メッセージ一覧
+     */
+    get protocolMessages() {
+        return this._protocolMessages
+    }
+
+    /**
+     * ゲーム
+     */
+    get game() {
+        return this._game
+    }
+
+    /**
+     * 準備
+     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     */
+    setup(onSetMessageFromServer) {
+        this.connection.setup(
+            // Webソケットを開かれたとき
+            () => {
+                console.log('WebSockets connection created.');
+                let response = this.protocolMessages.createStart()
+                this.connection.webSock1.send(JSON.stringify(response))
+            },
+            // Webソケットが閉じられたとき
+            () => {
+                console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+                setTimeout(function () {
+                    this.connection.connect();
+                }, 1000);
+            },
+            // サーバーからのメッセージを受信したとき
+            onSetMessageFromServer,
+        )
+
+        // １手進めたとき
+        this.game.onDoMove = (sq, myPiece) => {
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
         }
-        else if(!gameOver && countOfMove == 9){
-            data = {
-                "event": "END",
-                "message": "It's a draw. Play again?"
-            }
-            webSock1.send(JSON.stringify(data))
+
+        // どちらかが勝ったとき
+        this.game.onWon = (myPiece) => {
+            let response = this.protocolMessages.createWon(myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+
+        // 引き分けたとき
+        this.game.onDraw = () => {
+            let response = this.protocolMessages.createDraw()
+            this.connection.webSock1.send(JSON.stringify(response))
         }
     }
 }
+```
 
-// function to reset the game.
-function reset(){
-    board = [
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    ];
-    countOfMove = 0;
-    myTurn = true;
-    document.getElementById("alert_move").style.display = 'inline';
-    for (const element of elementArrayOfSquare) {
-        element.innerHTML = "";
-    }
-}
+# Step 6. protocol_main.js ファイルの作成
 
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 📂tic-tac-toe2
+       　　            ├── connection.js
+       　　            ├── engine.js
+       　　            ├── game.js
+       　　            ├── protocol_main.js 👈
+       　　            └── protocol_messages.js
+```
+
+```js
 /**
- * check if their is winning move
- * @param {*} squaresOfWinPattern 
- * @returns 
+ * サーバーからのメッセージをセットする関数を返します
+ * @returns 関数
  */
-function isPieceInLine(squaresOfWinPattern) {
-    return board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
-}
+function createSetMessageFromServer() {
+    return (message) => {
+        // イベント
+        let event = message["event"];
+        // テキスト
+        let text = message["text"];
+        // 升番号
+        let sq = message["sq"];
+        // X か O
+        let myPiece = message["myPiece"];
+        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece}`); // ちゃんと動いているようなら消す
 
-/**
- * function to check if player is winner.
- * @returns I won
- */
-function isGameOver(){
-    if (5 <= countOfMove) {
-        for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
-            if (isPieceInLine(squaresOfWinPattern)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-/**
- * Main function which handles the connection
- * of websocket.
- */
-function connect() {
-    // on websocket open, send the START event.
-    webSock1.onopen = () => {
-        console.log('WebSockets connection created.');
-        webSock1.send(JSON.stringify({
-            "event": "START",
-            "message": ""
-        }));
-    };
-
-    webSock1.onclose = (e) => {
-        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        setTimeout(function () {
-            connect();
-        }, 1000);
-    };
-
-    // Sending the info about the room
-    webSock1.onmessage = (e) => {
-        // On getting the message from the server
-        // Do the appropriate steps on each event.
-        let data = JSON.parse(e.data);
-        data = data["payload"];
-        let message = data['message'];
-        let event = data["event"];
         switch (event) {
-            case "START":
-                console.log(`[Message] START e=${e.data}`); // ちゃんと動いているようなら消す
-                reset();
+            case "StoC_Start":
+                // 画面を初期化
+                vue1.reset();
                 break;
-            case "END":
-                console.log(`[Message] END e=${e.data}`); // ちゃんと動いているようなら消す
-                alert(message);
-                reset();
+
+            case "StoC_End":
+                alert(text);    // 勝ち、または引分けの表示
+                vue1.reset();   // 画面を初期化
                 break;
-            case "MOVE":
-                console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
-                if(message["player"] != myPiece){
-                    makeMove(message["index"], message["player"])
-                    myTurn = true;
-                    document.getElementById("alert_move").style.display = 'inline';
+
+            case "StoC_Move":
+                if (myPiece != engine1.connection.myPiece) {
+                    // 相手の手番なら、自動で動かします
+                    engine1.game.makeMove(parseInt(sq), myPiece);
+                    // 自分の手番に変更
+                    engine1.game.myTurn = true;
+                    document.getElementById("alert_your_move").style.display = "block";
                 }
                 break;
+
             default:
-                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
-                console.log("No event")
+                console.log("No event");
         }
     };
-
-    if (webSock1.readyState == WebSocket.OPEN) {
-        console.log('Open socket.');
-        webSock1.onopen();
-    }
 }
-
-//call the connect function at the start.
-connect();
 ```
+
 
 # Step 6. index.html ファイルの作成
 

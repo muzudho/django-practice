@@ -64,7 +64,37 @@
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
-# Step 1. protocol_messages.js ファイルの作成
+# Step 1. favicon.ico ファイルの設置
+
+favicon.ico は、例えば 以下のサイトで作れる。作ってきてほしい。  
+
+📖 [Favicon Generator. For real.](https://realfavicongenerator.net/)  
+
+例えば、以下の場所に置いてほしい  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 🚀favicon.ico 👈
+```
+
+favicon.ico を有効にするには HTML で設定する必要があるが、まだ作成しない。以下は例。あとで全体を再掲する。  
+
+```plaintext
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        中略
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+以下略
+```
+
+# Step 2. protocol_messages.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -133,7 +163,7 @@ class ProtocolMessages {
 }
 ```
 
-# Step 2. connection.js ファイルの作成
+# Step 3. connection.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -212,7 +242,7 @@ class Connection {
 }
 ```
 
-# Step 3. game.js ファイルの作成
+# Step 4. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -438,6 +468,161 @@ class Game {
             this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[1]] &&
             this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[2]];
     }
+}
+```
+
+# Step 5. engine.js ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 📂tic-tac-toe2
+       　　            ├── connection.js
+       　　            ├── engine.js 👈
+       　　            ├── game.js
+       　　            └── protocol_messages.js
+```
+
+```js
+/**
+ * ゲームエンジン
+ */
+class Engine {
+    constructor() {
+        // 接続
+        this._connection = new Connection();
+        // メッセージ一覧
+        this._protocolMessages = new ProtocolMessages();
+        // ゲーム
+        this._game = new Game();
+    }
+
+    /**
+     * 接続
+     */
+    get connection() {
+        return this._connection
+    }
+
+    /**
+     * メッセージ一覧
+     */
+    get protocolMessages() {
+        return this._protocolMessages
+    }
+
+    /**
+     * ゲーム
+     */
+    get game() {
+        return this._game
+    }
+
+    /**
+     * 準備
+     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     */
+    setup(onSetMessageFromServer) {
+        this.connection.setup(
+            // Webソケットを開かれたとき
+            () => {
+                console.log('WebSockets connection created.');
+                let response = this.protocolMessages.createStart()
+                this.connection.webSock1.send(JSON.stringify(response))
+            },
+            // Webソケットが閉じられたとき
+            () => {
+                console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+                setTimeout(function () {
+                    this.connection.connect();
+                }, 1000);
+            },
+            // サーバーからのメッセージを受信したとき
+            onSetMessageFromServer,
+        )
+
+        // １手進めたとき
+        this.game.onDoMove = (sq, myPiece) => {
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+
+        // どちらかが勝ったとき
+        this.game.onWon = (myPiece) => {
+            let response = this.protocolMessages.createWon(myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+
+        // 引き分けたとき
+        this.game.onDraw = () => {
+            let response = this.protocolMessages.createDraw()
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+    }
+}
+```
+
+# Step 6. protocol_main.js ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 📂tic-tac-toe2
+       　　            ├── connection.js
+       　　            ├── engine.js
+       　　            ├── game.js
+       　　            ├── protocol_main.js 👈
+       　　            └── protocol_messages.js
+```
+
+```js
+/**
+ * サーバーからのメッセージをセットする関数を返します
+ * @returns 関数
+ */
+function createSetMessageFromServer() {
+    return (message) => {
+        // イベント
+        let event = message["event"];
+        // テキスト
+        let text = message["text"];
+        // 升番号
+        let sq = message["sq"];
+        // X か O
+        let myPiece = message["myPiece"];
+        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece}`); // ちゃんと動いているようなら消す
+
+        switch (event) {
+            case "StoC_Start":
+                // 画面を初期化
+                vue1.reset();
+                break;
+
+            case "StoC_End":
+                alert(text);    // 勝ち、または引分けの表示
+                vue1.reset();   // 画面を初期化
+                break;
+
+            case "StoC_Move":
+                if (myPiece != engine1.connection.myPiece) {
+                    // 相手の手番なら、自動で動かします
+                    engine1.game.makeMove(parseInt(sq), myPiece);
+                    // 自分の手番に変更
+                    engine1.game.myTurn = true;
+                    document.getElementById("alert_your_move").style.display = "block";
+                }
+                break;
+
+            default:
+                console.log("No event");
+        }
+    };
 }
 ```
 
