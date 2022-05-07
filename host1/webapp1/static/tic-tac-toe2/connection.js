@@ -23,9 +23,7 @@ class Connection {
     setup(onOpenWebSocket, onCloseWebSocket, setMessageFromServer) {
         console.log(`[Debug] Connection#setup`)
         this.webSock1 = new WebSocket(this.connectionString);
-
         this.webSock1.onopen = onOpenWebSocket;
-
         this.webSock1.onclose = onCloseWebSocket;
 
         // On getting the message from the server.
