@@ -5,21 +5,21 @@ class ProtocolMessages {
      */
     createWon(myPiece) {
         return {
-            "event": "E_End",
+            "event": "CtoS_End",
             "text": `${myPiece} is a winner. Play again?`
         }
     }
 
     createDraw() {
         return {
-            "event": "E_End",
+            "event": "CtoS_End",
             "text": "It's a draw. Play again?"
         }
     }
 
     createDoMove(sq, myPiece) {
         return {
-            "event": "E_Move",
+            "event": "CtoS_Move",
             "sq": sq,
             "myPiece": myPiece,
         }
@@ -27,7 +27,7 @@ class ProtocolMessages {
 
     createStart() {
         return {
-            "event": "E_Start",
+            "event": "CtoS_Start",
         }
     }
 }

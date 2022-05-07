@@ -28,12 +28,11 @@ class Connection {
 
         this.webSock1.onclose = onCloseWebSocket;
 
-        // Sending the info about the room
+        // On getting the message from the server.
         this.webSock1.onmessage = (e) => {
-            // On getting the message from the server
             // Do the appropriate steps on each event.
             let data1 = JSON.parse(e.data);
-            let message = data1["payload"];
+            let message = data1["message"];
             setMessage(message)
         };
 

@@ -45,9 +45,9 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         # Send message to room group
         await self.channel_layer.group_send(self.room_group_name, response)
 
-    async def send_message(self, res):
+    async def send_message(self, message):
         """ Receive message from room group """
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
-            "payload": res,
+            "message": message,
         }))
