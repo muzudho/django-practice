@@ -1,4 +1,4 @@
-class Protocol {
+class ProtocolMessages {
 
     /**
      * if player winner, send the END event.

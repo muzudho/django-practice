@@ -1,7 +1,7 @@
 class Engine {
     constructor() {
         this._connection = new Connection();
-        this._protocol = new Protocol();
+        this._protocolMessages = new ProtocolMessages();
         this._game = new Game();
     }
 
@@ -9,8 +9,8 @@ class Engine {
         return this._connection
     }
 
-    get protocol() {
-        return this._protocol
+    get protocolMessages() {
+        return this._protocolMessages
     }
 
     get game() {
@@ -22,7 +22,7 @@ class Engine {
             // onOpenWebSocket
             () => {
                 console.log('WebSockets connection created.');
-                let response = this.protocol.createStart()
+                let response = this.protocolMessages.createStart()
                 this.connection.webSock1.send(JSON.stringify(response))
             },
             // onCloseWebSocket
@@ -63,19 +63,19 @@ class Engine {
 
         // １手進めたとき
         this.game.onDoMove = (sq, myPiece) => {
-            let response = this.protocol.createDoMove(sq, myPiece)
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
             this.connection.webSock1.send(JSON.stringify(response))
         }
 
         // どちらかが勝ったとき
         this.game.onWon = (myPiece) => {
-            let response = this.protocol.createWon(myPiece)
+            let response = this.protocolMessages.createWon(myPiece)
             this.connection.webSock1.send(JSON.stringify(response))
         }
 
         // 引き分けたとき
         this.game.onDraw = () => {
-            let response = this.protocol.createDraw()
+            let response = this.protocolMessages.createDraw()
             this.connection.webSock1.send(JSON.stringify(response))
         }
     }
