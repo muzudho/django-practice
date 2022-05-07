@@ -329,60 +329,6 @@ const SQ_7 = 7
 const SQ_8 = 8
 
 /**
- * 石が３つ並んでいるパターン
- */
-WIN_PATTERN = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6]
-]
-
-/**
  * ゲーム
  */
 class Game {
@@ -391,8 +337,6 @@ class Game {
 
         // イベントリスナー
         this._onDoMove = () => {}
-        this._onWon = () => {}
-        this._onDraw = () => {}
     }
 
     /**
@@ -400,20 +344,6 @@ class Game {
      */
     set onDoMove(func) {
         this._onDoMove = func
-    }
-
-    /**
-     * 勝ったとき
-     */
-    set onWon(func) {
-        this._onWon = func
-    }
-
-    /**
-     * 引き分けたとき
-     */
-    set onDraw(func) {
-        this._onDraw = func
     }
 
     /**
@@ -472,10 +402,10 @@ class Game {
 
             // 石を置きます
             switch (myPiece) {
-                case 'X':
+                case PC_X_LABEL:
                     this.board[sq] = PC_X;
                     break;
-                case 'O':
+                case PC_O_LABEL:
                     this.board[sq] = PC_O;
                     break;
                 default:
@@ -486,34 +416,132 @@ class Game {
             this._onDoMove(sq, myPiece)
         }
 
-        // ボタンのラベルを更新
-        vue1.setLabelOfButton(sq, myPiece);
+        return true
+    }
+}
+```
 
-        if(this.isMyTurn){
+# Step 5. judge.js ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      ├── 📂tic-tac-toe2
+       　　      │    ├── connection.js
+       　　      │    ├── game.js
+       　　      │    ├── judge.js 👈
+       　　      │    └── protocol_messages.js
+       　　      └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 石が３つ並んでいるパターン
+ */
+WIN_PATTERN = [
+    // +---------+
+    // | *  *  * |
+    // | .  .  . |
+    // | .  .  . |
+    // +---------+
+    [SQ_0, SQ_1, SQ_2],
+    // +---------+
+    // | .  .  . |
+    // | *  *  * |
+    // | .  .  . |
+    // +---------+
+    [SQ_3, SQ_4, SQ_5],
+    // +---------+
+    // | .  .  . |
+    // | .  .  . |
+    // | *  *  * |
+    // +---------+
+    [SQ_6, SQ_7, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | *  .  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_0, SQ_3, SQ_6],
+    // +---------+
+    // | .  *  . |
+    // | .  *  . |
+    // | .  *  . |
+    // +---------+
+    [SQ_1, SQ_4, SQ_7],
+    // +---------+
+    // | .  .  * |
+    // | .  .  * |
+    // | .  .  * |
+    // +---------+
+    [SQ_2, SQ_5, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | .  *  . |
+    // | .  .  * |
+    // +---------+
+    [SQ_0, SQ_4, SQ_8],
+    // +---------+
+    // | .  .  * |
+    // | .  *  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_2, SQ_4, SQ_6]
+]
+
+class Judge {
+    constructor(game) {
+        this._game = game
+
+        // イベントリスナー
+        this._onWon = () => {}
+        this._onDraw = () => {}
+    }
+
+    /**
+     * 勝ったとき
+     */
+    set onWon(func) {
+        this._onWon = func
+    }
+
+    /**
+     * 引き分けたとき
+     */
+    set onDraw(func) {
+        this._onDraw = func
+    }
+
+    /**
+     * 勝敗判定
+     */
+    judge(myPiece) {
+        if(this._game.isMyTurn){
             // 終局判定
-            const gameOver = this.isGameOver();
+            const gameOver = this.#isGameOver();
 
             // 打った後、負けと判定されたなら、相手が負け
             if (gameOver) {
                 this._onWon(myPiece)
             }
             // 盤が埋まったら引き分け
-            else if (!gameOver && this.countOfMove == 9) {
+            else if (!gameOver && this._game.countOfMove == 9) {
                 this._onDraw()
             }
         }
-
-        return true
     }
 
     /**
      * 手番を持っている方が勝っているか？
      * @returns 勝ちなら真、それ以外は偽
      */
-    isGameOver(){
-        if (5 <= this.countOfMove) {
+    #isGameOver(){
+        if (5 <= this._game.countOfMove) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
-                if (this.isPieceInLine(squaresOfWinPattern)) {
+                if (this.#isPieceInLine(squaresOfWinPattern)) {
                     return true;
                 }
             }
@@ -526,15 +554,15 @@ class Game {
      * @param {*} squaresOfWinPattern - 勝ちパターン
      * @returns 並んでいれば真、それ以外は偽
      */
-    isPieceInLine(squaresOfWinPattern) {
-        return this.board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-            this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[1]] &&
-            this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[2]];
+    #isPieceInLine(squaresOfWinPattern) {
+        return this._game.board[squaresOfWinPattern[0]] !== PC_EMPTY &&
+            this._game.board[squaresOfWinPattern[0]] === this._game.board[squaresOfWinPattern[1]] &&
+            this._game.board[squaresOfWinPattern[0]] === this._game.board[squaresOfWinPattern[2]];
     }
 }
 ```
 
-# Step 5. engine.js ファイルの作成
+# Step 6. engine.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -546,6 +574,7 @@ class Game {
        　　      │    ├── connection.js
        　　      │    ├── engine.js 👈
        　　      │    ├── game.js
+       　　      │    ├── judge.js
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
 ```
@@ -570,26 +599,33 @@ class Engine {
         this._protocolMessages = new ProtocolMessages();
         // ゲーム
         this._game = new Game();
-
-        // １手進めたとき
-        this._game.onDoMove = (sq, myPiece) => {
-            let response = this.protocolMessages.createDoMove(sq, myPiece)
-            this._connection.webSock1.send(JSON.stringify(response))
-        }
+        // 勝敗判定
+        this._judge = new Judge(this._game);
 
         // どちらかが勝ったとき
-        this._game.onWon = (myPiece) => {
+        this._judge.onWon = (myPiece) => {
             let response = this.protocolMessages.createWon(myPiece)
             this._connection.webSock1.send(JSON.stringify(response))
         }
 
         // 引き分けたとき
-        this._game.onDraw = () => {
+        this._judge.onDraw = () => {
             let response = this.protocolMessages.createDraw()
             this._connection.webSock1.send(JSON.stringify(response))
         }
 
         this.connect()
+    }
+
+    setup(setLabelOfButton) {
+        // １手進めたとき
+        this._game.onDoMove = (sq, myPiece) => {
+            // ボタンのラベルを更新
+            setLabelOfButton(sq, myPiece);
+
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
+            this._connection.webSock1.send(JSON.stringify(response))
+        }
     }
 
     /**
@@ -611,6 +647,13 @@ class Engine {
      */
     get game() {
         return this._game
+    }
+
+    /**
+     * 勝敗判定
+     */
+    get judge() {
+        return this._judge
     }
 
     /**
@@ -641,7 +684,7 @@ class Engine {
 }
 ```
 
-# Step 6. protocol_main.js ファイルの作成
+# Step 7. protocol_main.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -653,6 +696,7 @@ class Engine {
        　　      │    ├── connection.js
        　　      │    ├── engine.js
        　　      │    ├── game.js
+       　　      │    ├── judge.js
        　　      │    ├── protocol_main.js 👈
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
@@ -702,6 +746,8 @@ function createSetMessageFromServer() {
                 if (myPiece != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
                     vue1.engine.game.makeMove(parseInt(sq), myPiece);
+                    vue1.engine.judge.judge(myPiece);
+
                     // 自分の手番に変更
                     vue1.engine.game.isMyTurn = true;
                     vue1.engine.game.isWaitForOther = false;
@@ -715,7 +761,7 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 7. index.html ファイルの作成
+# Step 8. index.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -727,6 +773,7 @@ function createSetMessageFromServer() {
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -788,7 +835,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 8. game.html ファイルの作成
+# Step 9. game.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -800,6 +847,7 @@ function createSetMessageFromServer() {
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -882,6 +930,7 @@ function createSetMessageFromServer() {
         <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/judge.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
 
@@ -942,6 +991,8 @@ function createSetMessageFromServer() {
                 methods: {
                     // 画面を初期化
                     init() {
+                        this.engine.setup(this.packSetLabelOfButton());
+
                         // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
@@ -1009,6 +1060,14 @@ function createSetMessageFromServer() {
                                 alert(`[Error] sq=${sq}`);
                                 break;
                         }
+                    },
+                    /**
+                     * @return {*} ラムダ関数
+                     */
+                    packSetLabelOfButton() {
+                        return (sq, piece) => {
+                            this.setLabelOfButton(sq, piece);
+                        };
                     },
                     /**
                      *
@@ -1084,7 +1143,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 9. protocol.py ファイルの作成
+# Step 10. protocol.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1096,6 +1155,7 @@ function createSetMessageFromServer() {
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1143,7 +1203,7 @@ class Protocol():
         raise ValueError(f"Unknown event: {event}")
 ```
 
-# Step 10. consumer1.py ファイルの作成
+# Step 11. consumer1.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1155,6 +1215,7 @@ class Protocol():
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1224,7 +1285,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 11. views.py ファイルの編集
+# Step 12. views.py ファイルの編集
 
 以下のファイルを編集してほしい。  
 
@@ -1236,6 +1297,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1283,7 +1345,7 @@ def playGameOfTicTacToe2(request, room_name):
     #                                  ^
 ```
 
-# Step 12. urls.py ファイルの編集
+# Step 13. urls.py ファイルの編集
 
 以下のファイルを編集してほしい。  
 
@@ -1295,6 +1357,7 @@ def playGameOfTicTacToe2(request, room_name):
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1334,7 +1397,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 13. routing1.py ファイルの編集
+# Step 14. routing1.py ファイルの編集
 
 以下のファイルを編集してほしい。  
 
@@ -1346,6 +1409,7 @@ urlpatterns = [
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
+       　　│    │    ├── judge.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1387,7 +1451,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 14. Web画面へアクセス
+# Step 15. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
