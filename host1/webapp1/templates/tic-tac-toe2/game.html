@@ -81,11 +81,21 @@
             const RESULT_LOST = "Lost";
             const RESULT_DRAW = "Draw";
 
+            /**
+             * 再接続関数の作成
+             * @return ラムダ関数
+             */
+            function packReconnect() {
+                return () => {
+                    vue1.engine.connection.connect();
+                };
+            }
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(createSetMessageFromServer()),
+                    engine: new Engine(createSetMessageFromServer(), packReconnect()),
                     state: STATE_DURING_GAME,
                     result: "",
                     label0: PC_EMPTY_LABEL,
