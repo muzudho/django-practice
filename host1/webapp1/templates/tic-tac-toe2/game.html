@@ -56,7 +56,7 @@
                         <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                     </v-container>
                     <v-container>
-                        <v-btn block elevation="2" v-on:click="clickNewGame()" :disabled="isDisabledNewGameButton()"> New Game </v-btn>
+                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
                     </v-container>
                 </v-main>
             </v-app>
@@ -71,12 +71,15 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
+            const STATE_DURING_GAME = "DuringGame";
+            const STATE_END_OF_GAME = "EndOfGame";
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     engine: new Engine(createSetMessageFromServer()),
-                    state: "OnGoing",
+                    state: STATE_DURING_GAME,
                     label0: "",
                     label1: "",
                     label2: "",
@@ -96,11 +99,11 @@
                     // 画面を初期化
                     init() {
                         // console.log("[Debug] Vue#init()");
-                        this.setState("OnGoing");
+                        this.setState(STATE_DURING_GAME);
 
                         this.engine.game.init(this.engine.connection.myPiece);
 
-                        // 自分の手番ならアラートを常時表示
+                        // アラートの表示切替
                         this.refreshVisibilityOfAlertYourMove();
 
                         // ボタンのラベルをクリアー
@@ -120,7 +123,7 @@
                             } else {
                                 this.engine.game.isMyTurn = false;
 
-                                // 自分の手番ならアラートを常時表示
+                                // アラートの表示切替
                                 this.refreshVisibilityOfAlertYourMove();
 
                                 this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
@@ -128,16 +131,14 @@
                         }
                     },
                     /**
-                     * 自分の手番ならアラートを常時表示
+                     * 対局中で、自分の手番ならアラートを常時表示
                      */
                     refreshVisibilityOfAlertYourMove() {
                         // console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
-                        if (this.engine.game.isMyTurn) {
-                            // document.getElementById("alert_your_move").style.display = "block";
+                        if (this.state == STATE_DURING_GAME && this.engine.game.isMyTurn) {
                             document.getElementById("alert_your_move").style.visibility = "visible";
                         } else {
                             // Hide
-                            // document.getElementById("alert_your_move").style.display = "none";
                             document.getElementById("alert_your_move").style.visibility = "hidden";
                         }
                     },
@@ -184,8 +185,8 @@
                     /**
                      *
                      */
-                    clickNewGame() {
-                        console.log(`New Game`);
+                    clickPlayAgain() {
+                        console.log(`Play Again`);
                         this.init();
                     },
                     /**
@@ -193,13 +194,16 @@
                      */
                     setState(state) {
                         this.state = state;
+
+                        // アラートの表示切替
+                        this.refreshVisibilityOfAlertYourMove();
                     },
                     /**
                      *
                      */
-                    isDisabledNewGameButton() {
+                    isDisabledPlayAgainButton() {
                         switch (this.state) {
-                            case "EndOfGame":
+                            case STATE_END_OF_GAME:
                                 return false; // Enable
                             default:
                                 return true; // Disable

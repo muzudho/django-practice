@@ -22,9 +22,8 @@ function createSetMessageFromServer() {
 
             case "StoC_End":
                 // 対局終了の一斉通知
-                vue1.setState("EndOfGame"); // 画面を対局終了状態へ
-                alert(text);                // 勝ち、または引分けの表示
-                // vue1.init();   // 画面を初期化
+                vue1.setState(STATE_END_OF_GAME);   // 画面を対局終了状態へ
+                alert(text);                        // 勝ち、または引分けの表示
                 break;
 
             case "StoC_Move":
