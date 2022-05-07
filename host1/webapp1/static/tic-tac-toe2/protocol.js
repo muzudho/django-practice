@@ -1,6 +1,6 @@
 function protocol_setup() {
     connection1.setup((event, message) => {
-        console.log(`[setRequest] event=${event} message=${message}`); // ちゃんと動いているようなら消す
+        console.log(`[connection1.setup] event=${event}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "START":
@@ -16,7 +16,7 @@ function protocol_setup() {
                 if(message["player"] != connection1.myPiece){
                     game1.makeMove(parseInt(message["index"]), message["player"])
                     game1.myTurn = true;
-                    document.getElementById("alert_move").style.display = 'block';
+                    document.getElementById("alert_your_move").style.display = 'block';
                 }
                 break;
             
