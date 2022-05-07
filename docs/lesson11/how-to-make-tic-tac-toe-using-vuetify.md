@@ -1,3 +1,9 @@
+---
+title: Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編
+tags: Django Vuetify
+author: muzudho1
+slide: false
+---
 # 目的
 
 前の記事で、１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）を作った。  
@@ -136,7 +142,7 @@ class ProtocolMessages {
     createDraw() {
         return {
             "event": "CtoS_End",
-            "text": "It's a draw. Play again?"
+            "winner": PC_EMPTY_LABEL,
         }
     }
 
@@ -158,7 +164,7 @@ class ProtocolMessages {
     createWon(myPiece) {
         return {
             "event": "CtoS_End",
-            "text": `${myPiece} is a winner. Play again?`
+            "winner": myPiece,
         }
     }
 }
@@ -264,9 +270,17 @@ class Connection {
  * PC は Piece （駒、石、などの意味）の略です。
  * @type {number}
  */
-const PC_EMPTY = -1 // Pieceがないことを表します
-const PC_O = 0
+const PC_EMPTY = 0 // Pieceがないことを表します
 const PC_X = 1
+const PC_O = 2
+
+/**
+ * ラベル
+ * @type {string}
+ */
+const PC_EMPTY_LABEL = ""
+const PC_X_LABEL = "X"
+const PC_O_LABEL = "O"
 
 /**
  * 盤上の升の数
@@ -352,8 +366,7 @@ WIN_PATTERN = [
  */
 class Game {
     constructor() {
-        // 初期化
-        this.reset()
+        this.clear()
 
         // イベントリスナー
         this._onDoMove = () => {}
@@ -383,9 +396,9 @@ class Game {
     }
 
     /**
-     * 初期化
+     * クリアー
      */
-    reset() {
+    clear() {
         // 盤面
         this.board = [
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
@@ -393,8 +406,31 @@ class Game {
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
         ];
 
-        this.countOfMove = 0;   // 何手目
-        this.myTurn = true;     // 自分の手番か
+        // 何手目
+        this.countOfMove = 0;
+
+        // 自分の手番ではない
+        this.isMyTurn = false;
+    }
+
+    /**
+     * 初期化
+     */
+    init(myPiece) {
+        this.clear()
+
+        // 自分の手番か
+        {
+            let isMyTurn;
+            if (myPiece == PC_X_LABEL) {
+                isMyTurn = true;
+            } else {
+                isMyTurn = false;
+            }
+            this.isMyTurn = isMyTurn;
+        }
+
+        // イベントハンドラはそのまま
     }
 
     /**
@@ -429,7 +465,7 @@ class Game {
         // ボタンのラベルを更新
         vue1.setLabelOfButton(sq, myPiece);
 
-        if(this.myTurn){
+        if(this.isMyTurn){
             // 終局判定
             const gameOver = this.isGameOver();
 
@@ -495,13 +531,53 @@ class Game {
  * ゲームエンジン
  */
 class Engine {
-    constructor() {
+    /**
+     * 生成
+     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     */
+    constructor(onSetMessageFromServer) {
         // 接続
         this._connection = new Connection();
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
         // ゲーム
         this._game = new Game();
+
+        this._connection.setup(
+            // Webソケットを開かれたとき
+            () => {
+                console.log('WebSockets connection created.');
+                let response = this.protocolMessages.createStart()
+                this.connection.webSock1.send(JSON.stringify(response))
+            },
+            // Webソケットが閉じられたとき
+            () => {
+                console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+                setTimeout(function () {
+                    this.connection.connect();
+                }, 1000);
+            },
+            // サーバーからのメッセージを受信したとき
+            onSetMessageFromServer,
+        )
+
+        // １手進めたとき
+        this._game.onDoMove = (sq, myPiece) => {
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+
+        // どちらかが勝ったとき
+        this._game.onWon = (myPiece) => {
+            let response = this.protocolMessages.createWon(myPiece)
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
+
+        // 引き分けたとき
+        this._game.onDraw = () => {
+            let response = this.protocolMessages.createDraw()
+            this.connection.webSock1.send(JSON.stringify(response))
+        }
     }
 
     /**
@@ -523,48 +599,6 @@ class Engine {
      */
     get game() {
         return this._game
-    }
-
-    /**
-     * 準備
-     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
-     */
-    setup(onSetMessageFromServer) {
-        this.connection.setup(
-            // Webソケットを開かれたとき
-            () => {
-                console.log('WebSockets connection created.');
-                let response = this.protocolMessages.createStart()
-                this.connection.webSock1.send(JSON.stringify(response))
-            },
-            // Webソケットが閉じられたとき
-            () => {
-                console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-                setTimeout(function () {
-                    this.connection.connect();
-                }, 1000);
-            },
-            // サーバーからのメッセージを受信したとき
-            onSetMessageFromServer,
-        )
-
-        // １手進めたとき
-        this.game.onDoMove = (sq, myPiece) => {
-            let response = this.protocolMessages.createDoMove(sq, myPiece)
-            this.connection.webSock1.send(JSON.stringify(response))
-        }
-
-        // どちらかが勝ったとき
-        this.game.onWon = (myPiece) => {
-            let response = this.protocolMessages.createWon(myPiece)
-            this.connection.webSock1.send(JSON.stringify(response))
-        }
-
-        // 引き分けたとき
-        this.game.onDraw = () => {
-            let response = this.protocolMessages.createDraw()
-            this.connection.webSock1.send(JSON.stringify(response))
-        }
     }
 }
 ```
@@ -601,26 +635,39 @@ function createSetMessageFromServer() {
         let sq = message["sq"];
         // X か O
         let myPiece = message["myPiece"];
-        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece}`); // ちゃんと動いているようなら消す
+        // 勝者
+        let winner = message["winner"];
+        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "StoC_Start":
-                // 画面を初期化
-                vue1.reset();
+                // 対局開始の一斉通知
+                vue1.init();   // 画面を初期化
                 break;
 
             case "StoC_End":
-                alert(text);    // 勝ち、または引分けの表示
-                vue1.reset();   // 画面を初期化
+                // 対局終了の一斉通知
+                let result;
+                if (winner == PC_EMPTY_LABEL) {
+                    result = RESULT_DRAW
+                } else if (winner == vue1.engine.connection.myPiece) {
+                    result = RESULT_WON
+                } else {
+                    result = RESULT_LOST
+                }
+
+                vue1.setGameIsOver(result);
                 break;
 
             case "StoC_Move":
-                if (myPiece != engine1.connection.myPiece) {
+                // 指し手の一斉通知
+                if (myPiece != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    engine1.game.makeMove(parseInt(sq), myPiece);
+                    vue1.engine.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
-                    engine1.game.myTurn = true;
-                    document.getElementById("alert_your_move").style.display = "block";
+                    vue1.engine.game.isMyTurn = true;
+                    // 自分の手番ならアラートを常時表示
+                    vue1.refreshVisibilityOfAlertYourMove();
                 }
                 break;
 
@@ -781,7 +828,13 @@ function createSetMessageFromServer() {
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
                     <v-container>
-                        <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        <v-alert id="alert_your_move" type="info" color="green">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        {% verbatim %}
+                        <v-alert id="alert_result" type="success" color="blue">{{result}}</v-alert>
+                        {% endverbatim %}
+                    </v-container>
+                    <v-container>
+                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
                     </v-container>
                 </v-main>
             </v-app>
@@ -796,38 +849,49 @@ function createSetMessageFromServer() {
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            let engine1 = new Engine();
+            const STATE_DURING_GAME = "DuringGame";
+            const STATE_GAME_IS_OVER = "GameIsOver";
+
+            const RESULT_WON = "Won";
+            const RESULT_LOST = "Lost";
+            const RESULT_DRAW = "Draw";
 
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    label0: "",
-                    label1: "",
-                    label2: "",
-                    label3: "",
-                    label4: "",
-                    label5: "",
-                    label6: "",
-                    label7: "",
-                    label8: "",
+                    engine: new Engine(createSetMessageFromServer()),
+                    state: STATE_DURING_GAME,
+                    result: "",
+                    label0: PC_EMPTY_LABEL,
+                    label1: PC_EMPTY_LABEL,
+                    label2: PC_EMPTY_LABEL,
+                    label3: PC_EMPTY_LABEL,
+                    label4: PC_EMPTY_LABEL,
+                    label5: PC_EMPTY_LABEL,
+                    label6: PC_EMPTY_LABEL,
+                    label7: PC_EMPTY_LABEL,
+                    label8: PC_EMPTY_LABEL,
                 },
                 // page loaded
                 mounted: () => {
-                    engine1.setup(createSetMessageFromServer());
+                    // ここで Vue の準備完了後の処理ができる。
+                    // ただし、まだ this は初期化されてない
                 },
                 methods: {
-                    // function to reset the game.
-                    reset() {
-                        console.log("[Debug] Vue#reset()");
+                    // 画面を初期化
+                    init() {
+                        // console.log("[Debug] Vue#init()");
+                        this.setState(STATE_DURING_GAME);
 
-                        engine1.game.reset();
+                        this.engine.game.init(this.engine.connection.myPiece);
 
-                        document.getElementById("alert_your_move").style.display = "block";
+                        // アラートの表示切替
+                        this.refreshVisibilityOfAlertYourMove();
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.setLabelOfButton(sq, "");
+                            this.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
                     },
                     /**
@@ -835,15 +899,30 @@ function createSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[Debug] Vue#clickSquare sq=${sq}`);
-                        if (engine1.game.board[sq] == PC_EMPTY) {
-                            if (!engine1.game.myTurn) {
+                        // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        if (this.engine.game.board[sq] == PC_EMPTY) {
+                            if (!this.engine.game.isMyTurn) {
                                 alert("Wait for other to place the move");
                             } else {
-                                engine1.game.myTurn = false;
-                                document.getElementById("alert_your_move").style.display = "none"; // Hide
-                                engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
+                                this.engine.game.isMyTurn = false;
+
+                                // アラートの表示切替
+                                this.refreshVisibilityOfAlertYourMove();
+
+                                this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
                             }
+                        }
+                    },
+                    /**
+                     * 対局中で、自分の手番ならアラートを常時表示
+                     */
+                    refreshVisibilityOfAlertYourMove() {
+                        // console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
+                        if (this.state == STATE_DURING_GAME && this.engine.game.isMyTurn) {
+                            document.getElementById("alert_your_move").style.visibility = "visible";
+                        } else {
+                            // Hide
+                            document.getElementById("alert_your_move").style.visibility = "hidden";
                         }
                     },
                     /**
@@ -884,6 +963,66 @@ function createSetMessageFromServer() {
                             default:
                                 alert(`[Error] sq=${sq}`);
                                 break;
+                        }
+                    },
+                    /**
+                     *
+                     */
+                    clickPlayAgain() {
+                        console.log(`Play Again`);
+                        this.init();
+                    },
+                    /**
+                     *
+                     */
+                    setState(state) {
+                        this.state = state;
+
+                        // アラートの表示切替
+                        this.refreshVisibilityOfAlertYourMove();
+                        this.refreshVisibilityOfAlertResult();
+                    },
+                    /**
+                     *
+                     */
+                    isDisabledPlayAgainButton() {
+                        switch (this.state) {
+                            case STATE_GAME_IS_OVER:
+                                return false; // Enable
+                            default:
+                                return true; // Disable
+                        }
+                    },
+                    /**
+                     * 対局は終了しました
+                     */
+                    setGameIsOver(result) {
+                        console.log(`[setGameIsOver] result=${result}`);
+
+                        this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
+
+                        switch (result) {
+                            case RESULT_DRAW:
+                                this.result = "It's a draw.";
+                                break;
+                            case RESULT_WON:
+                                this.result = "You win!";
+                                break;
+                            case RESULT_LOST:
+                                this.result = "You lose.";
+                                break;
+                            default:
+                                throw `unknown result = ${result}`;
+                        }
+                    },
+                    /**
+                     * 対局が終了していたら、結果を常時表示
+                     */
+                    refreshVisibilityOfAlertResult() {
+                        if (this.state == STATE_GAME_IS_OVER) {
+                            document.getElementById("alert_result").style.visibility = "visible";
+                        } else {
+                            document.getElementById("alert_result").style.visibility = "hidden";
                         }
                     },
                 },
@@ -930,7 +1069,7 @@ class Protocol():
             return {
                 'type': 'send_message',
                 'event': "StoC_End",
-                'text': response.get("text", None),
+                'winner': response.get("winner", None),
             }
 
         elif event == 'CtoS_Move':
