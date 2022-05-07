@@ -8,7 +8,7 @@ function protocol_setup() {
                 break;
             
             case "END":
-                alert(message);
+                alert(`[Notice] ${message}`);
                 vue1.reset();
                 break;
             
