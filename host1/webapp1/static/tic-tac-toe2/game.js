@@ -40,60 +40,6 @@ const SQ_7 = 7
 const SQ_8 = 8
 
 /**
- * 石が３つ並んでいるパターン
- */
-WIN_PATTERN = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6]
-]
-
-/**
  * ゲーム
  */
 class Game {
@@ -102,8 +48,6 @@ class Game {
 
         // イベントリスナー
         this._onDoMove = () => {}
-        this._onWon = () => {}
-        this._onDraw = () => {}
     }
 
     /**
@@ -111,20 +55,6 @@ class Game {
      */
     set onDoMove(func) {
         this._onDoMove = func
-    }
-
-    /**
-     * 勝ったとき
-     */
-    set onWon(func) {
-        this._onWon = func
-    }
-
-    /**
-     * 引き分けたとき
-     */
-    set onDraw(func) {
-        this._onDraw = func
     }
 
     /**
@@ -183,10 +113,10 @@ class Game {
 
             // 石を置きます
             switch (myPiece) {
-                case 'X':
+                case PC_X_LABEL:
                     this.board[sq] = PC_X;
                     break;
-                case 'O':
+                case PC_O_LABEL:
                     this.board[sq] = PC_O;
                     break;
                 default:
@@ -197,49 +127,6 @@ class Game {
             this._onDoMove(sq, myPiece)
         }
 
-        // ボタンのラベルを更新
-        vue1.setLabelOfButton(sq, myPiece);
-
-        if(this.isMyTurn){
-            // 終局判定
-            const gameOver = this.isGameOver();
-
-            // 打った後、負けと判定されたなら、相手が負け
-            if (gameOver) {
-                this._onWon(myPiece)
-            }
-            // 盤が埋まったら引き分け
-            else if (!gameOver && this.countOfMove == 9) {
-                this._onDraw()
-            }
-        }
-
         return true
-    }
-
-    /**
-     * 手番を持っている方が勝っているか？
-     * @returns 勝ちなら真、それ以外は偽
-     */
-    isGameOver(){
-        if (5 <= this.countOfMove) {
-            for (let squaresOfWinPattern of WIN_PATTERN) {
-                if (this.isPieceInLine(squaresOfWinPattern)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 石が３つ並んでいるか？
-     * @param {*} squaresOfWinPattern - 勝ちパターン
-     * @returns 並んでいれば真、それ以外は偽
-     */
-    isPieceInLine(squaresOfWinPattern) {
-        return this.board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-            this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[1]] &&
-            this.board[squaresOfWinPattern[0]] === this.board[squaresOfWinPattern[2]];
     }
 }

@@ -70,6 +70,7 @@
         <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/judge.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
 
@@ -130,6 +131,8 @@
                 methods: {
                     // 画面を初期化
                     init() {
+                        this.engine.setup(this.packSetLabelOfButton());
+
                         // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
@@ -197,6 +200,14 @@
                                 alert(`[Error] sq=${sq}`);
                                 break;
                         }
+                    },
+                    /**
+                     * @return {*} ラムダ関数
+                     */
+                    packSetLabelOfButton() {
+                        return (sq, piece) => {
+                            this.setLabelOfButton(sq, piece);
+                        };
                     },
                     /**
                      *

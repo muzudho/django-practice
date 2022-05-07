@@ -17,26 +17,33 @@ class Engine {
         this._protocolMessages = new ProtocolMessages();
         // ゲーム
         this._game = new Game();
-
-        // １手進めたとき
-        this._game.onDoMove = (sq, myPiece) => {
-            let response = this.protocolMessages.createDoMove(sq, myPiece)
-            this._connection.webSock1.send(JSON.stringify(response))
-        }
+        // 勝敗判定
+        this._judge = new Judge(this._game);
 
         // どちらかが勝ったとき
-        this._game.onWon = (myPiece) => {
+        this._judge.onWon = (myPiece) => {
             let response = this.protocolMessages.createWon(myPiece)
             this._connection.webSock1.send(JSON.stringify(response))
         }
 
         // 引き分けたとき
-        this._game.onDraw = () => {
+        this._judge.onDraw = () => {
             let response = this.protocolMessages.createDraw()
             this._connection.webSock1.send(JSON.stringify(response))
         }
 
         this.connect()
+    }
+
+    setup(setLabelOfButton) {
+        // １手進めたとき
+        this._game.onDoMove = (sq, myPiece) => {
+            // ボタンのラベルを更新
+            setLabelOfButton(sq, myPiece);
+
+            let response = this.protocolMessages.createDoMove(sq, myPiece)
+            this._connection.webSock1.send(JSON.stringify(response))
+        }
     }
 
     /**
@@ -58,6 +65,13 @@ class Engine {
      */
     get game() {
         return this._game
+    }
+
+    /**
+     * 勝敗判定
+     */
+    get judge() {
+        return this._judge
     }
 
     /**
