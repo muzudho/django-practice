@@ -26,7 +26,7 @@ class ProtocolMessages {
     createDraw() {
         return {
             "event": "CtoS_End",
-            "text": "It's a draw."
+            "winner": PC_EMPTY_LABEL,
         }
     }
 
@@ -48,7 +48,7 @@ class ProtocolMessages {
     createWon(myPiece) {
         return {
             "event": "CtoS_End",
-            "text": `${myPiece} is a winner.`
+            "winner": myPiece,
         }
     }
 }

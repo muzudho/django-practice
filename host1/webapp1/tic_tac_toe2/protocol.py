@@ -11,7 +11,7 @@ class Protocol():
             return {
                 'type': 'send_message',
                 'event': "StoC_End",
-                'text': response.get("text", None),
+                'winner': response.get("winner", None),
             }
 
         elif event == 'CtoS_Move':

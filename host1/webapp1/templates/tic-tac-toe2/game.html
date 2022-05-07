@@ -74,6 +74,10 @@
             const STATE_DURING_GAME = "DuringGame";
             const STATE_END_OF_GAME = "EndOfGame";
 
+            const RESULT_WON = "Won";
+            const RESULT_LOST = "Lost";
+            const RESULT_DRAW = "Draw";
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
@@ -207,6 +211,28 @@
                                 return false; // Enable
                             default:
                                 return true; // Disable
+                        }
+                    },
+                    /**
+                     * 対局は終了しました
+                     */
+                    setGameIsOver(result) {
+                        console.log(`[setGameIsOver] result=${result}`);
+
+                        this.setState(STATE_END_OF_GAME); // 画面を対局終了状態へ
+
+                        switch (result) {
+                            case RESULT_DRAW:
+                                alert("It's a draw.");
+                                break;
+                            case RESULT_WON:
+                                alert("You win!");
+                                break;
+                            case RESULT_LOST:
+                                alert("You lose.");
+                                break;
+                            default:
+                                throw `unknown result = ${result}`;
                         }
                     },
                 },
