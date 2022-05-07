@@ -131,7 +131,7 @@ class Game {
         vue1.setPieceV(sq, myPiece);
         // check for the winner
         const gameOver = this.isGameOver();
-        if(myTurn){
+        if(this.myTurn){
             // if player winner, send the END event.
             if(gameOver){
                 connection.webSock1.send(JSON.stringify(
@@ -141,7 +141,7 @@ class Game {
                     }
                 ))
             }
-            else if(!gameOver && countOfMove == 9){
+            else if(!gameOver && this.countOfMove == 9){
                 connection.webSock1.send(JSON.stringify(
                     {
                         "event": "END",
@@ -157,7 +157,7 @@ class Game {
      * @returns I won
      */
     isGameOver(){
-        if (5 <= countOfMove) {
+        if (5 <= this.countOfMove) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 if (this.isPieceInLine(squaresOfWinPattern)) {
                     return true;

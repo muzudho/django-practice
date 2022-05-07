@@ -23,7 +23,7 @@ function onVueLoaded() {
             case "MOVE":
                 if(message["player"] != connection.myPiece){
                     game.makeMove(parseInt(message["index"]), message["player"])
-                    myTurn = true;
+                    game.myTurn = true;
                     document.getElementById("alert_move").style.display = 'block';
                 }
                 break;
@@ -39,12 +39,12 @@ function onVueLoaded() {
  */
 function clickSquare(sq) {
     console.log(`[Debug] clickSquare sq=${sq}`)
-    if (board[sq] == PC_EMPTY) {
-        if (!myTurn) {
+    if (game.board[sq] == PC_EMPTY) {
+        if (!game.myTurn) {
             alert("Wait for other to place the move")
         }
         else {
-            myTurn = false;
+            game.myTurn = false;
             document.getElementById("alert_move").style.display = 'none'; // Hide
             game.makeMove(parseInt(sq), connection.myPiece);
         }
@@ -57,16 +57,10 @@ function reset() {
 
     game.reset()
 
-    console.log('[Debug] view_model#reset() - 2');
-
     document.getElementById("alert_move").style.display = 'block';
-
-    console.log('[Debug] view_model#reset() - 3');
 
     // ボタンのラベルをクリアー
     for (let sq = 0; sq < BOARD_AREA; sq += 1){
         vue1.setPieceV(sq, "");
     }
-
-    console.log('[Debug] view_model#reset() - 4');
 }

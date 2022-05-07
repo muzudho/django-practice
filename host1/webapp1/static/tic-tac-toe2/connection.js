@@ -13,7 +13,7 @@ class Connection {
     }
 
     setup(setRequest) {
-        console.log(`[Debug] Connection#setup setRequest=${setRequest}`)
+        console.log(`[Debug] Connection#setup`)
         this.webSock1 = new WebSocket(this.connectionString);
 
         // on websocket open, send the START event.
