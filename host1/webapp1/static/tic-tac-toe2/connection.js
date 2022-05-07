@@ -31,7 +31,7 @@ class Connection {
             // 例: サーバー側にエラーがあって接続が切れたりなど
             console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
             setTimeout(function () {
-                connection1.connect();
+                engine1.connection.connect();
             }, 1000);
         };
 

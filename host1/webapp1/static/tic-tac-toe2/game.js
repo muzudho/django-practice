@@ -115,7 +115,7 @@ class Game {
                     return false;
             }
 
-            connection1.webSock1.send(JSON.stringify(
+            engine1.connection.webSock1.send(JSON.stringify(
                 {
                     "event": "E_Move",
                     "message":
@@ -129,12 +129,13 @@ class Game {
 
         // place the move in the game box.
         vue1.setLabelOfButton(sq, myPiece);
+
         // check for the winner
         const gameOver = this.isGameOver();
         if(this.myTurn){
             // if player winner, send the END event.
             if(gameOver){
-                connection1.webSock1.send(JSON.stringify(
+                engine1.connection.webSock1.send(JSON.stringify(
                     {
                         "event": "E_End",
                         "message": `${myPiece} is a winner. Play again?`
@@ -142,7 +143,7 @@ class Game {
                 ))
             }
             else if(!gameOver && this.countOfMove == 9){
-                connection1.webSock1.send(JSON.stringify(
+                engine1.connection.webSock1.send(JSON.stringify(
                     {
                         "event": "E_End",
                         "message": "It's a draw. Play again?"
