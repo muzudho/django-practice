@@ -56,6 +56,11 @@
                         <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                     </v-container>
                     <v-container>
+                        {% verbatim %}
+                        <v-alert type="success" v-show="isResultShow()">{{result}}</v-alert>
+                        {% endverbatim %}
+                    </v-container>
+                    <v-container>
                         <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
                     </v-container>
                 </v-main>
@@ -84,15 +89,16 @@
                 data: {
                     engine: new Engine(createSetMessageFromServer()),
                     state: STATE_DURING_GAME,
-                    label0: "",
-                    label1: "",
-                    label2: "",
-                    label3: "",
-                    label4: "",
-                    label5: "",
-                    label6: "",
-                    label7: "",
-                    label8: "",
+                    result: "",
+                    label0: PC_EMPTY_LABEL,
+                    label1: PC_EMPTY_LABEL,
+                    label2: PC_EMPTY_LABEL,
+                    label3: PC_EMPTY_LABEL,
+                    label4: PC_EMPTY_LABEL,
+                    label5: PC_EMPTY_LABEL,
+                    label6: PC_EMPTY_LABEL,
+                    label7: PC_EMPTY_LABEL,
+                    label8: PC_EMPTY_LABEL,
                 },
                 // page loaded
                 mounted: () => {
@@ -223,17 +229,23 @@
 
                         switch (result) {
                             case RESULT_DRAW:
-                                alert("It's a draw.");
+                                this.result = "It's a draw.";
                                 break;
                             case RESULT_WON:
-                                alert("You win!");
+                                this.result = "You win!";
                                 break;
                             case RESULT_LOST:
-                                alert("You lose.");
+                                this.result = "You lose.";
                                 break;
                             default:
                                 throw `unknown result = ${result}`;
                         }
+                    },
+                    /**
+                     * 結果を表示するか？
+                     */
+                    isResultShow() {
+                        return this.state == STATE_END_OF_GAME;
                     },
                 },
             });
