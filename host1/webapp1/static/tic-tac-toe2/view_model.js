@@ -10,7 +10,7 @@ function onVueLoaded() {
 
     connection = new Connection()
 
-    var funcSetRequest = (event, message) => {
+    connection.setup((event, message) => {
         console.log(`[setRequest] event=${event} message=${message}`); // ちゃんと動いているようなら消す
         switch (event) {
             case "START":
@@ -30,9 +30,7 @@ function onVueLoaded() {
             default:
                 console.log("No event")
         }
-    }
-
-    connection.setup(funcSetRequest)
+    })
 }
 
 /**
@@ -55,14 +53,20 @@ function clickSquare(sq) {
 
 // function to reset the game.
 function reset() {
-    console.log('[Debug] reset()');
-    
+    console.log('[Debug] view_model#reset()');
+
     game.reset()
 
+    console.log('[Debug] view_model#reset() - 2');
+
     document.getElementById("alert_move").style.display = 'block';
+
+    console.log('[Debug] view_model#reset() - 3');
 
     // ボタンのラベルをクリアー
     for (let sq = 0; sq < BOARD_AREA; sq += 1){
         vue1.setPieceV(sq, "");
     }
+
+    console.log('[Debug] view_model#reset() - 4');
 }

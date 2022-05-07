@@ -72,12 +72,13 @@ WIN_PATTERN = [
 
 class Game {
     constructor() {
+        console.log('[Debug] Game#constructor()');
         this.reset()
     }
 
     reset() {
         console.log('[Debug] Game#reset()');
-        
+
         // Game board for maintaing the state of the game
         this.board = [
             PC_EMPTY, PC_EMPTY, PC_EMPTY,

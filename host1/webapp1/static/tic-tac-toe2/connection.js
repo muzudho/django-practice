@@ -13,7 +13,7 @@ class Connection {
     }
 
     setup(setRequest) {
-        console.log(`[Debug] connection#setup`)
+        console.log(`[Debug] Connection#setup setRequest=${setRequest}`)
         this.webSock1 = new WebSocket(this.connectionString);
 
         // on websocket open, send the START event.
@@ -38,8 +38,10 @@ class Connection {
             // Do the appropriate steps on each event.
             let data1 = JSON.parse(e.data);
             let data2 = data1["payload"];
-            let message = data2['message'];
             let event = data2["event"];
+            let message = data2['message'];
+
+            console.log(`[Debug] Connection#webSock1.onmessage setRequest=${setRequest} event=${event} message=${message}`)
 
             setRequest(event, message)
         };

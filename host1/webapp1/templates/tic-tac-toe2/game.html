@@ -76,11 +76,13 @@
                     onVueLoaded();
                 },
                 methods: {
-                    clickSquareV: (sq) => {
+                    clickSquareV(sq) {
                         clickSquare(sq);
                     },
-                    setPieceV: (sq, piece) => {
-                        alert(`setPieceV sq=${sq} piece=${piece} this.data.labelsOfPiece=${this.data.labelsOfPiece}`);
+                    setPieceV(sq, piece) {
+                        // alert(`[Debug] Vue#setPieceV sq=${sq} piece=${piece}`);
+
+                        // alert(`[Debug] Vue#setPieceV this.labelsOfPiece=${this.labelsOfPiece}`);
                         this.labelsOfPiece[sq] = piece;
                     },
                 },
