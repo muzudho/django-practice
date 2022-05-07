@@ -56,11 +56,11 @@
                         <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
                     </v-container>
                     <v-container>
-                        <v-alert id="alert_your_move" type="info" color="green">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                         {% verbatim %}
-                        <v-alert id="alert_result" type="success" color="blue">{{result}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
                         {% endverbatim %}
-                        <v-alert id="alert_reconnecting" type="warning" color="orange">Reconnecting...</v-alert>
+                        <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
                 </v-main>
             </v-app>
@@ -92,7 +92,6 @@
                 return () => {
                     console.log("[Reconnect] Start...");
                     vue1.engine.connection.isReconnectingDisplay = true;
-                    vue1.refreshVisibilityOfAlertReconnecting();
 
                     setTimeout(() => {
                         // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
@@ -100,7 +99,6 @@
                         vue1.engine.connect();
 
                         vue1.engine.connection.isReconnectingDisplay = false;
-                        vue1.refreshVisibilityOfAlertReconnecting();
                         console.log("[Reconnect] End");
                     }, 5000);
                 };
@@ -134,9 +132,6 @@
                         // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
-                        // アラートの表示切替
-                        this.refreshVisibilityOfAlertReconnecting();
-
                         this.engine.game.init(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
@@ -156,23 +151,8 @@
                             } else {
                                 this.engine.game.isMyTurn = false;
 
-                                // アラートの表示切替
-                                this.refreshVisibilityOfAlertYourMove();
-
                                 this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
                             }
-                        }
-                    },
-                    /**
-                     * 対局中で、自分の手番ならアラートを常時表示
-                     */
-                    refreshVisibilityOfAlertYourMove() {
-                        // console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
-                        if (this.state == STATE_DURING_GAME && this.engine.game.isMyTurn) {
-                            document.getElementById("alert_your_move").style.visibility = "visible";
-                        } else {
-                            // Hide
-                            document.getElementById("alert_your_move").style.visibility = "hidden";
                         }
                     },
                     /**
@@ -227,10 +207,6 @@
                      */
                     setState(state) {
                         this.state = state;
-
-                        // アラートの表示切替
-                        this.refreshVisibilityOfAlertYourMove();
-                        this.refreshVisibilityOfAlertResult();
                     },
                     /**
                      *
@@ -266,24 +242,22 @@
                         }
                     },
                     /**
+                     * 対局中で、自分の手番ならアラートを常時表示
+                     */
+                    isAlertYourMoveShow() {
+                        return this.state == STATE_DURING_GAME && this.engine.game.isMyTurn;
+                    },
+                    /**
                      * 対局が終了していたら、結果を常時表示
                      */
-                    refreshVisibilityOfAlertResult() {
-                        if (this.state == STATE_GAME_IS_OVER) {
-                            document.getElementById("alert_result").style.visibility = "visible";
-                        } else {
-                            document.getElementById("alert_result").style.visibility = "hidden";
-                        }
+                    isAlertResultShow() {
+                        return this.state == STATE_GAME_IS_OVER;
                     },
                     /**
                      * 再接続中表示中なら、アラートを常時表示
                      */
-                    refreshVisibilityOfAlertReconnecting() {
-                        if (this.engine.connection.isReconnectingDisplay) {
-                            document.getElementById("alert_reconnecting").style.visibility = "visible";
-                        } else {
-                            document.getElementById("alert_reconnecting").style.visibility = "hidden";
-                        }
+                    isAlertReconnectingShow() {
+                        return this.engine.connection.isReconnectingDisplay;
                     },
                 },
             });

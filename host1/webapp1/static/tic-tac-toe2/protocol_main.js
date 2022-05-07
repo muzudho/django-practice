@@ -43,8 +43,6 @@ function createSetMessageFromServer() {
                     vue1.engine.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
                     vue1.engine.game.isMyTurn = true;
-                    // 自分の手番ならアラートを常時表示
-                    vue1.refreshVisibilityOfAlertYourMove();
                 }
                 break;
 
