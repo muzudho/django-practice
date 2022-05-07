@@ -4,7 +4,7 @@ class Connection {
         console.log(`[Debug] constructor`)
         this.roomName = document.forms["form1"]["room_name"].value;
         this.myPiece = document.forms["form1"]["my_piece"].value;
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe2/${roomName}/`;
+        this.connectionString = `ws://${window.location.host}/tic-tac-toe2/${this.roomName}/`;
         //                                                               ^
         //                      ---------------------------- -------------------------
         //                      1                            2
