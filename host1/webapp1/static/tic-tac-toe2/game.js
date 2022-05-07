@@ -115,16 +115,8 @@ class Game {
                     return false;
             }
 
-            engine1.connection.webSock1.send(JSON.stringify(
-                {
-                    "event": "E_Move",
-                    "message":
-                    {
-                        "index": sq,
-                        "player": myPiece
-                    }
-                }
-            ))
+            // ëóêM
+            engine1.protocol.sendDoMove(sq, myPiece)
         }
 
         // place the move in the game box.
@@ -134,21 +126,13 @@ class Game {
         const gameOver = this.isGameOver();
         if(this.myTurn){
             // if player winner, send the END event.
-            if(gameOver){
-                engine1.connection.webSock1.send(JSON.stringify(
-                    {
-                        "event": "E_End",
-                        "message": `${myPiece} is a winner. Play again?`
-                    }
-                ))
+            if (gameOver) {
+                // ëóêM
+                engine1.protocol.sendWon(myPiece)
             }
-            else if(!gameOver && this.countOfMove == 9){
-                engine1.connection.webSock1.send(JSON.stringify(
-                    {
-                        "event": "E_End",
-                        "message": "It's a draw. Play again?"
-                    }
-                ))
+            else if (!gameOver && this.countOfMove == 9) {
+                // ëóêM
+                engine1.protocol.sendDraw()
             }
         }
     }

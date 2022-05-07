@@ -21,10 +21,7 @@ class Connection {
         // on websocket open, send the START event.
         this.webSock1.onopen = () => {
             console.log('WebSockets connection created.');
-            this.webSock1.send(JSON.stringify({
-                "event": "E_Start",
-                "message": ""
-            }));
+            engine1.protocol.sendStart()
         };
 
         this.webSock1.onclose = (e) => {
