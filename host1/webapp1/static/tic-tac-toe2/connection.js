@@ -14,23 +14,19 @@ class Connection {
         // 2. URLの一部
     }
 
-    setup(setRequest) {
+    /**
+     * 
+     * @param {*} onOpenWebSocket - on websocket open, send the START event.
+     * @param {*} onCloseWebSocket - 例: サーバー側にエラーがあって接続が切れたりなど
+     * @param {*} setRequest 
+     */
+    setup(onOpenWebSocket, onCloseWebSocket, setRequest) {
         console.log(`[Debug] Connection#setup`)
         this.webSock1 = new WebSocket(this.connectionString);
 
-        // on websocket open, send the START event.
-        this.webSock1.onopen = () => {
-            console.log('WebSockets connection created.');
-            engine1.protocol.sendStart()
-        };
+        this.webSock1.onopen = onOpenWebSocket;
 
-        this.webSock1.onclose = (e) => {
-            // 例: サーバー側にエラーがあって接続が切れたりなど
-            console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-            setTimeout(function () {
-                engine1.connection.connect();
-            }, 1000);
-        };
+        this.webSock1.onclose = onCloseWebSocket;
 
         // Sending the info about the room
         this.webSock1.onmessage = (e) => {
