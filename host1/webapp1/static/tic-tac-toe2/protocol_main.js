@@ -43,6 +43,7 @@ function createSetMessageFromServer() {
                     vue1.engine.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
                     vue1.engine.game.isMyTurn = true;
+                    vue1.engine.game.isWaitForOther = false;
                 }
                 break;
 

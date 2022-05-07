@@ -143,6 +143,9 @@ class Game {
 
         // 自分の手番ではない
         this.isMyTurn = false;
+
+        // 相手の手番に着手しないでください
+        this.isWaitForOther = false;
     }
 
     /**

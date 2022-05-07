@@ -57,6 +57,7 @@
                     </v-container>
                     <v-container>
                         <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        <v-alert type="warning" color="orange" v-show="isAlertWaitForOther()">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
                         {% endverbatim %}
@@ -147,7 +148,9 @@
                         // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
                         if (this.engine.game.board[sq] == PC_EMPTY) {
                             if (!this.engine.game.isMyTurn) {
-                                alert("Wait for other to place the move");
+                                // Wait for other to place the move
+                                console.log("Wait for other to place the move");
+                                this.engine.game.isWaitForOther = true;
                             } else {
                                 this.engine.game.isMyTurn = false;
 
@@ -246,6 +249,9 @@
                      */
                     isAlertYourMoveShow() {
                         return this.state == STATE_DURING_GAME && this.engine.game.isMyTurn;
+                    },
+                    isAlertWaitForOther() {
+                        return this.engine.game.isWaitForOther;
                     },
                     /**
                      * 対局が終了していたら、結果を常時表示
