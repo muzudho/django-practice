@@ -16,4 +16,23 @@ class Engine {
     get game() {
         return this._game
     }
+
+    setup() {
+        this.protocol.setup();
+
+        // １手進めたとき
+        this.game.onDoMove = (sq, myPiece) => {
+            this.protocol.sendDoMove(sq, myPiece)
+        }
+
+        // どちらかが勝ったとき
+        this.game.onWon = (myPiece) => {
+            this.protocol.sendWon(myPiece)
+        }
+
+        // 引き分けたとき
+        this.game.onDraw = () => {
+            this.protocol.sendDraw()
+        }
+    }
 }

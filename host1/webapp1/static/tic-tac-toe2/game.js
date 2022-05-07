@@ -75,13 +75,21 @@ class Game {
         console.log('[Debug] Game#constructor()');
         this.reset()
 
-        this._doMove = () => {
-            // Ignored
-        }
+        this._onDoMove = () => {}
+        this._onWon = () => {}
+        this._onDraw = () => {}
     }
 
-    set doMove(func) {
-        this._doMove = func
+    set onDoMove(func) {
+        this._onDoMove = func
+    }
+
+    set onWon(func) {
+        this._onWon = func
+    }
+
+    set onDraw(func) {
+        this._onDraw = func
     }
 
     reset() {
@@ -123,8 +131,7 @@ class Game {
                     return false;
             }
 
-            // Send
-            engine1.protocol.sendDoMove(sq, myPiece)
+            this._onDoMove(sq, myPiece)
         }
 
         // place the move in the game box.
@@ -135,12 +142,10 @@ class Game {
         if(this.myTurn){
             // if player winner, send the END event.
             if (gameOver) {
-                // Send
-                engine1.protocol.sendWon(myPiece)
+                this._onWon(myPiece)
             }
             else if (!gameOver && this.countOfMove == 9) {
-                // Send
-                engine1.protocol.sendDraw()
+                this._onDraw()
             }
         }
     }
