@@ -22,15 +22,16 @@ class Connection {
         this.webSock1.onopen = () => {
             console.log('WebSockets connection created.');
             this.webSock1.send(JSON.stringify({
-                "event": "START",
+                "event": "E_Start",
                 "message": ""
             }));
         };
 
         this.webSock1.onclose = (e) => {
+            // 例: サーバー側にエラーがあって接続が切れたりなど
             console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
             setTimeout(function () {
-                this.connect();
+                connection1.connect();
             }, 1000);
         };
 

@@ -3,7 +3,7 @@ class Protocol():
     def __init__(self):
         pass
 
-    def execute(event, message):
+    def execute(self, event, message):
         if event == 'E_End':
             # 対局終了
             return {

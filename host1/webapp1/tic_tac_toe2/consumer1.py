@@ -9,9 +9,10 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
 
     def __init__(self):
         super().__init__()
-        self.protocol1 = Protocol()
+        self.protocol = Protocol()
 
     async def connect(self):
+        print("Connect")
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'room_{self.room_name}'
 
@@ -36,33 +37,15 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         Get the event and send the appropriate event
         """
         print(
-            f"[Debug] Consumer1 receive text_data={text_data}")  # ちゃんと動いているようなら消す
+            f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
         response = json.loads(text_data)
         event = response.get("event", None)
         message = response.get("message", None)
-        if event == 'MOVE':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                "event": "MOVE"
-            })
 
-        if event == 'START':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                'event': "START"
-            })
+        response = self.protocol.execute(event, message)
 
-        if event == 'END':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                'event': "END"
-            })
+        # Send message to room group
+        await self.channel_layer.group_send(self.room_group_name, response)
 
     async def send_message(self, res):
         """ Receive message from room group """

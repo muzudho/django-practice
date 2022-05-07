@@ -3,16 +3,16 @@ function protocol_setup() {
         console.log(`[connection1.setup] event=${event}`); // ちゃんと動いているようなら消す
 
         switch (event) {
-            case "START":
+            case "E_Start":
                 vue1.reset();
                 break;
             
-            case "END":
+            case "E_End":
                 alert(`[Notice] ${message}`);
                 vue1.reset();
                 break;
             
-            case "MOVE":
+            case "E_Move":
                 if(message["player"] != connection1.myPiece){
                     game1.makeMove(parseInt(message["index"]), message["player"])
                     game1.myTurn = true;
