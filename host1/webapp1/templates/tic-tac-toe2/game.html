@@ -68,12 +68,11 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            let engine1 = new Engine();
-
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    engine: new Engine(createSetMessageFromServer()),
                     label0: "",
                     label1: "",
                     label2: "",
@@ -86,14 +85,15 @@
                 },
                 // page loaded
                 mounted: () => {
-                    engine1.setup(createSetMessageFromServer());
+                    // ここで Vue の準備完了後の処理ができる。
+                    // ただし、まだ this は初期化されてない
                 },
                 methods: {
                     // 画面を初期化
                     init() {
                         console.log("[Debug] Vue#init()");
 
-                        engine1.game.init(engine1.connection.myPiece);
+                        this.engine.game.init(this.engine.connection.myPiece);
 
                         // 自分の手番ならアラートを常時表示
                         this.refreshVisibilityOfAlertYourMove();
@@ -109,16 +109,16 @@
                      */
                     clickSquare(sq) {
                         console.log(`[Debug] Vue#clickSquare sq=${sq}`);
-                        if (engine1.game.board[sq] == PC_EMPTY) {
-                            if (!engine1.game.isMyTurn) {
+                        if (this.engine.game.board[sq] == PC_EMPTY) {
+                            if (!this.engine.game.isMyTurn) {
                                 alert("Wait for other to place the move");
                             } else {
-                                engine1.game.isMyTurn = false;
+                                this.engine.game.isMyTurn = false;
 
                                 // 自分の手番ならアラートを常時表示
                                 this.refreshVisibilityOfAlertYourMove();
 
-                                engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
+                                this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
                             }
                         }
                     },
@@ -126,8 +126,8 @@
                      * 自分の手番ならアラートを常時表示
                      */
                     refreshVisibilityOfAlertYourMove() {
-                        console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${engine1.game.isMyTurn}`);
-                        if (engine1.game.isMyTurn) {
+                        console.log(`[Debug] Vue#refreshVisibilityOfAlertYourMove() isMyTurn=${this.engine.game.isMyTurn}`);
+                        if (this.engine.game.isMyTurn) {
                             document.getElementById("alert_your_move").style.display = "block";
                         } else {
                             document.getElementById("alert_your_move").style.display = "none"; // Hide

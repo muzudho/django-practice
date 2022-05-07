@@ -28,11 +28,11 @@ function createSetMessageFromServer() {
 
             case "StoC_Move":
                 // 指し手の一斉通知
-                if (myPiece != engine1.connection.myPiece) {
+                if (myPiece != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    engine1.game.makeMove(parseInt(sq), myPiece);
+                    vue1.engine.game.makeMove(parseInt(sq), myPiece);
                     // 自分の手番に変更
-                    engine1.game.isMyTurn = true;
+                    vue1.engine.game.isMyTurn = true;
                     // 自分の手番ならアラートを常時表示
                     vue1.refreshVisibilityOfAlertYourMove();
                 }
