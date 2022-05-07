@@ -52,32 +52,61 @@
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
                     <v-container>
-                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                        <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                     </v-container>
                 </v-main>
             </v-app>
         </div>
 
         <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/view_model.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/protocol.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
+            let connection1 = new Connection();
+            let game1 = new Game();
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     labelsOfPiece: ["", "", "", "", "", "", "", "", ""],
                 },
-                // At page load
+                // page loaded
                 mounted: () => {
-                    onVueLoaded();
+                    protocol_setup();
                 },
                 methods: {
+                    // function to reset the game.
+                    reset() {
+                        console.log("[Debug] Vue#reset()");
+
+                        game1.reset();
+
+                        document.getElementById("alert_your_move").style.display = "block";
+
+                        // ボタンのラベルをクリアー
+                        for (let sq = 0; sq < BOARD_AREA; sq += 1) {
+                            this.setPieceV(sq, "");
+                        }
+                    },
+                    /**
+                     * 升ボタンをクリックしたとき
+                     * @param {*} sq - Square; 0 <= sq
+                     */
                     clickSquareV(sq) {
-                        clickSquare(sq);
+                        console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        if (game1.board[sq] == PC_EMPTY) {
+                            if (!game1.myTurn) {
+                                alert("Wait for other to place the move");
+                            } else {
+                                game1.myTurn = false;
+                                document.getElementById("alert_your_move").style.display = "none"; // Hide
+                                game1.makeMove(parseInt(sq), connection1.myPiece);
+                            }
+                        }
                     },
                     setPieceV(sq, piece) {
                         // alert(`[Debug] Vue#setPieceV sq=${sq} piece=${piece} this.labelsOfPiece=${this.labelsOfPiece}`);

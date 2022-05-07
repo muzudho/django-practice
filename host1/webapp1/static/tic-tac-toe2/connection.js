@@ -1,3 +1,5 @@
+// See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
+
 class Connection {
     constructor()
     {

@@ -115,7 +115,7 @@ class Game {
                     return false;
             }
 
-            connection.webSock1.send(JSON.stringify(
+            connection1.webSock1.send(JSON.stringify(
                 {
                     "event": "MOVE",
                     "message":
@@ -134,7 +134,7 @@ class Game {
         if(this.myTurn){
             // if player winner, send the END event.
             if(gameOver){
-                connection.webSock1.send(JSON.stringify(
+                connection1.webSock1.send(JSON.stringify(
                     {
                         "event": "END",
                         "message": `${myPiece} is a winner. Play again?`
@@ -142,7 +142,7 @@ class Game {
                 ))
             }
             else if(!gameOver && this.countOfMove == 9){
-                connection.webSock1.send(JSON.stringify(
+                connection1.webSock1.send(JSON.stringify(
                     {
                         "event": "END",
                         "message": "It's a draw. Play again?"
