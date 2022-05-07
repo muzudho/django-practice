@@ -23,6 +23,10 @@ URL
 * http://localhost:8000/tic-tac-toe1/
 * http://localhost:8000/tic-tac-toe2/
 
+Product
+
+* http://tic.warabenture.com:8000/tic-tac-toe2/
+
 # Others
 
 別ターミナルから:  

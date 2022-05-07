@@ -1,22 +1,16 @@
+/**
+ * メッセージ一覧
+ *
+ * * クライアントからサーバーへ送る
+ */
 class ProtocolMessages {
 
     /**
-     * if player winner, send the END event.
+     * どちらかのプレイヤーが石を置いたとき
+     * @param {*} sq - 升番号
+     * @param {*} myPiece - X か O
+     * @returns メッセージ
      */
-    createWon(myPiece) {
-        return {
-            "event": "CtoS_End",
-            "text": `${myPiece} is a winner. Play again?`
-        }
-    }
-
-    createDraw() {
-        return {
-            "event": "CtoS_End",
-            "text": "It's a draw. Play again?"
-        }
-    }
-
     createDoMove(sq, myPiece) {
         return {
             "event": "CtoS_Move",
@@ -25,9 +19,36 @@ class ProtocolMessages {
         }
     }
 
+    /**
+     * 引き分けたとき
+     * @returns メッセージ
+     */
+    createDraw() {
+        return {
+            "event": "CtoS_End",
+            "text": "It's a draw. Play again?"
+        }
+    }
+
+    /**
+     * 対局を開始したとき
+     * @returns メッセージ
+     */
     createStart() {
         return {
             "event": "CtoS_Start",
+        }
+    }
+
+    /**
+     * どちらかのプレイヤーが勝ったとき
+     * @param {*} myPiece - X か O
+     * @returns メッセージ
+     */
+    createWon(myPiece) {
+        return {
+            "event": "CtoS_End",
+            "text": `${myPiece} is a winner. Play again?`
         }
     }
 }

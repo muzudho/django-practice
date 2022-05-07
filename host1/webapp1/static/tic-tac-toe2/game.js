@@ -1,13 +1,26 @@
+/**
+ * PC は Piece （駒、石、などの意味）の略です。
+ * @type {number}
+ */
+const PC_EMPTY = -1 // Pieceがないことを表します
+const PC_O = 0
+const PC_X = 1
 
-const PC_EMPTY = -1 // A square without piece; PC is piece
-const BOARD_AREA = 9 // All squares count
+/**
+ * 盤上の升の数
+ * @type {number}
+ */
+const BOARD_AREA = 9
 
-// SQ is square
-// +---------+
-// | 0  1  2 |
-// | 3  4  5 |
-// | 6  7  8 |
-// +---------+
+/**
+ * SQ is square
+ * +---------+
+ * | 0  1  2 |
+ * | 3  4  5 |
+ * | 6  7  8 |
+ * +---------+
+ * @type {number}
+ */
 const SQ_0 = 0
 const SQ_1 = 1
 const SQ_2 = 2
@@ -18,7 +31,9 @@ const SQ_6 = 6
 const SQ_7 = 7
 const SQ_8 = 8
 
-// Winning indexes.
+/**
+ * 石が３つ並んでいるパターン
+ */
 WIN_PATTERN = [
     // +---------+
     // | *  *  * |
@@ -70,61 +85,76 @@ WIN_PATTERN = [
     [SQ_2, SQ_4, SQ_6]
 ]
 
+/**
+ * ゲーム
+ */
 class Game {
     constructor() {
-        console.log('[Debug] Game#constructor()');
+        // 初期化
         this.reset()
 
+        // イベントリスナー
         this._onDoMove = () => {}
         this._onWon = () => {}
         this._onDraw = () => {}
     }
 
+    /**
+     * 石を置いたとき
+     */
     set onDoMove(func) {
         this._onDoMove = func
     }
 
+    /**
+     * 勝ったとき
+     */
     set onWon(func) {
         this._onWon = func
     }
 
+    /**
+     * 引き分けたとき
+     */
     set onDraw(func) {
         this._onDraw = func
     }
 
+    /**
+     * 初期化
+     */
     reset() {
-        console.log('[Debug] Game#reset()');
-
-        // Game board for maintaing the state of the game
+        // 盤面
         this.board = [
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
             PC_EMPTY, PC_EMPTY, PC_EMPTY,
         ];
 
-        this.countOfMove = 0; // Number of moves done
-        this.myTurn = true; // Boolean variable to get the turn of the player.
+        this.countOfMove = 0;   // 何手目
+        this.myTurn = true;     // 自分の手番か
     }
 
     /**
-     * Make a move
-     * @param {number} sq - Square; 0 <= sq
-     * @param {*} myPiece 
-     * @returns 
+     * 石を置きます
+     * @param {number} sq - 升番号; 0 <= sq
+     * @param {*} myPiece - X か O
+     * @returns 石を置けたら真、それ以外は偽
      */
     makeMove(sq, myPiece){
 
-        if(this.board[sq] == PC_EMPTY){
-            // if the valid move, update the board
-            // state and send the move to the server.
-            this.countOfMove++;
+        if (this.board[sq] == PC_EMPTY) {
+            // 空升なら
 
+            this.countOfMove++; // 何手目を＋１
+
+            // 石を置きます
             switch (myPiece) {
                 case 'X':
-                    this.board[sq] = 1;
+                    this.board[sq] = PC_X;
                     break;
                 case 'O':
-                    this.board[sq] = 0;
+                    this.board[sq] = PC_O;
                     break;
                 default:
                     alert(`[Error] Invalid my piece = ${myPiece}`);
@@ -134,25 +164,29 @@ class Game {
             this._onDoMove(sq, myPiece)
         }
 
-        // place the move in the game box.
+        // ボタンのラベルを更新
         vue1.setLabelOfButton(sq, myPiece);
 
-        // check for the winner
-        const gameOver = this.isGameOver();
         if(this.myTurn){
-            // if player winner, send the END event.
+            // 終局判定
+            const gameOver = this.isGameOver();
+
+            // 打った後、負けと判定されたなら、相手が負け
             if (gameOver) {
                 this._onWon(myPiece)
             }
+            // 盤が埋まったら引き分け
             else if (!gameOver && this.countOfMove == 9) {
                 this._onDraw()
             }
         }
+
+        return true
     }
 
     /**
-     * function to check if player is winner.
-     * @returns I won
+     * 手番を持っている方が勝っているか？
+     * @returns 勝ちなら真、それ以外は偽
      */
     isGameOver(){
         if (5 <= this.countOfMove) {
@@ -166,9 +200,9 @@ class Game {
     }
 
     /**
-     * check if their is winning move
-     * @param {*} squaresOfWinPattern 
-     * @returns 
+     * 石が３つ並んでいるか？
+     * @param {*} squaresOfWinPattern - 勝ちパターン
+     * @returns 並んでいれば真、それ以外は偽
      */
     isPieceInLine(squaresOfWinPattern) {
         return this.board[squaresOfWinPattern[0]] !== PC_EMPTY &&

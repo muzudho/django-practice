@@ -441,145 +441,13 @@ class Game {
 }
 ```
 
-# Step 1. index.html ファイルの作成
+
+
+# Step 5. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe2/index.html`:  
-                           ------------  
-
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
-        <title>Tic Tac Toe</title>
-    </head>
-    <body>
-        <div id="app">
-            <v-app>
-                <v-main>
-                    <v-container fluid>
-                        <h1>Welcome to Tic Tac Toe Game</h1>
-                        <v-form method="POST">
-                            {% csrf_token %}
-
-                            <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
-
-                            <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
-
-                            <v-btn block elevation="2" type="submit"> Start Game </v-btn>
-                        </v-form>
-                    </v-container>
-                </v-main>
-            </v-app>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-        <script>
-            new Vue({
-                el: "#app",
-                vuetify: new Vuetify(),
-                data: {
-                    room: {
-                        title: "Elephant",
-                        rules: [(v) => v.length <= 25 || "Max 25 characters"],
-                        wordsRules: [(v) => v.trim().split(" ").length <= 5 || "Max 5 words"],
-                    },
-                    selectedMyPiece: "X",
-                    pieces: ["X", "O"],
-                },
-            });
-        </script>
-    </body>
-</html>
-```
-
-# Step 2. game.html ファイルの作成
-
-以下のファイルを作成してほしい。  
-
-📄`host1/webapp1/templates/tic-tac-toe2/game.html`:  
-                                      ^  
-
-```html
-{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
-<!DOCTYPE html>
-<html>
-    <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
-        <title>Tic Tac Toe</title>
-    </head>
-    <body>
-        <div id="app">
-            <v-app>
-                <v-main>
-                    <v-container>
-                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-
-                        <h1>TIC TAC TOE</h1>
-                        <h3>Welcome to room_{{room_name}}</h3>
-                    </v-container>
-
-                    <form method="POST">
-                        {% csrf_token %}
-                        <v-container>
-                            <v-row justify="center" dense>
-                                <v-col>
-                                    <v-btn id="square0"></v-btn>
-                                    <v-btn id="square1"></v-btn>
-                                    <v-btn id="square2"></v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" dense>
-                                <v-col>
-                                    <v-btn id="square3"></v-btn>
-                                    <v-btn id="square4"></v-btn>
-                                    <v-btn id="square5"></v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row justify="center" dense>
-                                <v-col>
-                                    <v-btn id="square6"></v-btn>
-                                    <v-btn id="square7"></v-btn>
-                                    <v-btn id="square8"></v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                        <input type="hidden" name="room_name" value="{{room_name}}" />
-                        <input type="hidden" name="my_piece" value="{{my_piece}}" />
-                    </form>
-                </v-main>
-            </v-app>
-        </div>
-
-        <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
-
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-        <script>
-            new Vue({
-                el: "#app",
-                vuetify: new Vuetify(),
-            });
-        </script>
-    </body>
-</html>
-```
-
-# Step 3. game.js ファイルの作成
-
-以下のファイルを作成してほしい。  
-
-📄`host1/webapp1/static/tic-tac-toe2/game.js`:  
-                                   ^  
+📄`host1/webapp1/static/tic-tac-toe1/game.js`:  
 
 ```js
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
@@ -852,30 +720,107 @@ function connect() {
 connect();
 ```
 
-# Step 4. views.py ファイルの編集
+# Step 6. index.html ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/tic-tac-toe1/index.html`:  
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tic Tac Toe</title>
+        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
+    </head>
+    <body>
+        <div class="wrapper">
+            <h1>Welcome to Tic Tac Toe Game</h1>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-control">
+                    <label for="room">Room id</label>
+                    <input id="room" type="text" name="room_name" required />
+                </div>
+                <div class="form-control">
+                    <label for="item_of_my_piece">Your character</label>
+                    <select for="item_of_my_piece" name="my_piece">
+                        <option value="X">X</option>
+                        <option value="O">O</option>
+                    </select>
+                </div>
+                <input type="submit" class="button" value="Start Game" />
+            </form>
+        </div>
+    </body>
+</html>
+```
+
+# Step 7. game.html ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+📄`host1/webapp1/templates/tic-tac-toe1/game.html`:  
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tic Tac Toe</title>
+        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="head">
+                <h1>TIC TAC TOE</h1>
+                <h3>Welcome to room_{{room_name}}</h3>
+            </div>
+            <div id="board" room_name="{{room_name}}" my_piece="{{my_piece}}">
+                <div class="square" square="0"></div>
+                <div class="square" square="1"></div>
+                <div class="square" square="2"></div>
+                <div class="square" square="3"></div>
+                <div class="square" square="4"></div>
+                <div class="square" square="5"></div>
+                <div class="square" square="6"></div>
+                <div class="square" square="7"></div>
+                <div class="square" square="8"></div>
+            </div>
+            <div id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></div>
+        </div>
+
+        <script src="{% static 'tic-tac-toe1/game.js' %}"></script>
+        {% block javascript %} {% endblock javascript %}
+    </body>
+</html>
+```
+
+# Step 8. views.py ファイルの編集
 
 📄`host1/webapp1/views.py` に、以下の記述を追加してほしい。  
 
 ```py
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404 # 追加
 
 
-#                   v
-def indexOfTicTacToe2(request):
-    """（追加） For Tic-tac-toe2"""
+def indexOfTicTacToe1(request):
+    """（追加） For Tic-tac-toe"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe2/{room_name}/?&mypiece={myPiece}')
-        #                             ^
-    return render(request, "tic-tac-toe2/index.html", {})
-    #                                  ^
+        return redirect(f'/tic-tac-toe1/{room_name}/?&mypiece={myPiece}')
+    return render(request, "tic-tac-toe1/index.html", {})
 
 
-#                      v
-def playGameOfTicTacToe2(request, room_name):
-    """（追加） For Tic-tac-toe2"""
+def playGameOfTicTacToe1(request, room_name):
+    """（追加） For Tic-tac-toe"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
         raise Http404(f"My piece '{myPiece}' does not exists")
@@ -883,11 +828,10 @@ def playGameOfTicTacToe2(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "tic-tac-toe2/game.html", context)
-    #                                  ^
+    return render(request, "tic-tac-toe1/game.html", context)
 ```
 
-# Step 5. urls.py ファイルの編集
+# Step 9. urls.py ファイルの編集
 
 以下の記述を追加してほしい。  
 
@@ -901,27 +845,24 @@ urlpatterns = [
     # ...略...
 
     # （追加）
-    path('tic-tac-toe2/', views.indexOfTicTacToe2),
-    #                ^                          ^
+    path('tic-tac-toe1/', views.indexOfTicTacToe1),
     #     -------------
     #     1
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe2/<str:room_name>/', views.playGameOfTicTacToe2),
-    #                ^                                             ^
+    path('tic-tac-toe1/<str:room_name>/', views.playGameOfTicTacToe1),
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 ]
 ```
 
-# Step 6. consumer1.py ファイルの作成
+# Step 10. consumer1.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/tic_tac_toe2/consumer1.py`:  
-                            ^  
+📄`host1/webapp1/tic_tac_toe1/consumer1.py`:  
 
 ```py
 # See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
@@ -929,8 +870,7 @@ import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 
-#              v
-class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
+class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'room_%s' % self.room_name
@@ -992,7 +932,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 7. routing1.py ファイルの作成
+# Step 11. routing1.py ファイルの作成
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
@@ -1000,8 +940,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
 
 ```py
 from django.conf.urls import url
-from webapp1.tic_tac_toe2.consumer1 import TicTacToe2Consumer1  # 追加
-#                       ^                           ^
+from webapp1.tic_tac_toe1.consumer1 import TicTacToeConsumer1  # 追加
 #    ------- ------------ ---------
 #    1       2            3
 # 1. アプリケーション フォルダー名
@@ -1009,20 +948,53 @@ from webapp1.tic_tac_toe2.consumer1 import TicTacToe2Consumer1  # 追加
 # 3. Python ファイル名。拡張子抜き
 
 websocket_urlpatterns = [
-    # （追加） For Tic-tac-toe2
-    url(r'^tic-tac-toe2/(?P<room_name>\w+)/$', TicTacToe2Consumer1.as_asgi()),
-    #                 ^                                 ^
+    # （追加） For Tic-tac-toe
+    url(r'^tic-tac-toe1/(?P<room_name>\w+)/$', TicTacToeConsumer1.as_asgi()),
     #     ----------------------------------
     #     1
     # 1. URLの一部（正規表現）の Django での書き方
 ]
 ```
 
-# Step 8. asgi.py ファイルに変更はありません
+# Step 12. asgi.py ファイルの編集
 
-📄`host1/webapp1/asgi.py` に変更はありません。  
+無ければ以下のファイルを作成、あればマージしてほしい。  
 
-# Step 9. Web画面へアクセス
+📄`host1/webapp1/asgi.py`:  
+
+```py
+import os
+
+from django.core.asgi import get_asgi_application
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+import webapp1.routing1
+#      ------- --------
+#      1       2
+# 1. アプリケーション フォルダー名
+# 2. Pythonファイル名（拡張子除く）
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webapp1.settings')
+#                                                -------
+#                                                1
+# 1. アプリケーション フォルダー名
+
+# （削除） application = get_asgi_application()
+application = ProtocolTypeRouter({ # 追加
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            webapp1.routing1.websocket_urlpatterns
+            # -----
+            # 1
+            #
+            # 1. アプリケーション フォルダー名
+        )
+    ),
+})
+```
+
+# Step 13. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
@@ -1034,7 +1006,7 @@ docker-compose up
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe2/](http://localhost:8000/tic-tac-toe2/)  
+📖 [http://localhost:8000/tic-tac-toe1/](http://localhost:8000/tic-tac-toe1/)  
 
 # 参考にした記事
 
