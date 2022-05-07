@@ -53,13 +53,14 @@
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
                     <v-container>
+                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+                    </v-container>
+                    <v-container>
                         <v-alert id="alert_your_move" type="info" color="green">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                         {% verbatim %}
                         <v-alert id="alert_result" type="success" color="blue">{{result}}</v-alert>
                         {% endverbatim %}
-                    </v-container>
-                    <v-container>
-                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+                        <v-alert id="alert_reconnecting" type="warning" color="orange">Reconnecting...</v-alert>
                     </v-container>
                 </v-main>
             </v-app>
@@ -86,8 +87,22 @@
              * @return ラムダ関数
              */
             function packReconnect() {
+                // 5秒後に1回だけ再接続にトライします。
+                // そのあと接続が切れれば また再接続が呼び出されるので連続します
                 return () => {
-                    vue1.engine.connection.connect();
+                    console.log("[Reconnect] Start...");
+                    vue1.engine.connection.isReconnectingDisplay = true;
+                    vue1.refreshVisibilityOfAlertReconnecting();
+
+                    setTimeout(() => {
+                        // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
+                        console.log("[Reconnect] Try...");
+                        vue1.engine.connect();
+
+                        vue1.engine.connection.isReconnectingDisplay = false;
+                        vue1.refreshVisibilityOfAlertReconnecting();
+                        console.log("[Reconnect] End");
+                    }, 5000);
                 };
             }
 
@@ -119,10 +134,10 @@
                         // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.game.init(this.engine.connection.myPiece);
-
                         // アラートの表示切替
-                        this.refreshVisibilityOfAlertYourMove();
+                        this.refreshVisibilityOfAlertReconnecting();
+
+                        this.engine.game.init(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -166,7 +181,7 @@
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
-                        // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
                         switch (sq) {
                             case 0:
                                 this.label0 = piece;
@@ -258,6 +273,16 @@
                             document.getElementById("alert_result").style.visibility = "visible";
                         } else {
                             document.getElementById("alert_result").style.visibility = "hidden";
+                        }
+                    },
+                    /**
+                     * 再接続中表示中なら、アラートを常時表示
+                     */
+                    refreshVisibilityOfAlertReconnecting() {
+                        if (this.engine.connection.isReconnectingDisplay) {
+                            document.getElementById("alert_reconnecting").style.visibility = "visible";
+                        } else {
+                            document.getElementById("alert_reconnecting").style.visibility = "hidden";
                         }
                     },
                 },
