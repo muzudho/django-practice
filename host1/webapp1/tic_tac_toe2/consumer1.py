@@ -1,4 +1,6 @@
-# See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
+# 参考にした記事
+# -------------
+# 📖[Django Channels and WebSockets](https: // blog.logrocket.com/django-channels-and-websockets/)
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from webapp1.tic_tac_toe2.protocol import Protocol
@@ -12,6 +14,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         self.protocol = Protocol()
 
     async def connect(self):
+        """接続"""
         print("Connect")
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'room_{self.room_name}'
@@ -24,6 +27,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+        """切断"""
         print("Disconnected")
         # Leave room group
         await self.channel_layer.group_discard(
@@ -32,22 +36,19 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         )
 
     async def receive(self, text_data):
-        """
-        Receive message from WebSocket.
-        Get the event and send the appropriate event
-        """
+        """クライアントからのメッセージの受信"""
+
         print(
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
-        response = json.loads(text_data)
 
-        response = self.protocol.execute(response)
+        request = json.loads(text_data)
+        response = self.protocol.execute(request)
 
-        # Send message to room group
+        # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
 
     async def send_message(self, message):
-        """ Receive message from room group """
-        # Send message to WebSocket
+        """メッセージ送信"""
         await self.send(text_data=json.dumps({
             "message": message,
         }))

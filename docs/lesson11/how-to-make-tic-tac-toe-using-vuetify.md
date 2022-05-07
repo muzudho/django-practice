@@ -102,8 +102,9 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      └── 📂tic-tac-toe2
-       　　            └── protocol_messages.js 👈
+       　　      ├── 📂tic-tac-toe2
+       　　      │    └── protocol_messages.js 👈
+       　　      └── 🚀favicon.ico
 ```
 
 ```js
@@ -171,9 +172,10 @@ class ProtocolMessages {
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      └── 📂tic-tac-toe2
-       　　            ├── connection.js 👈
-       　　            └── protocol_messages.js
+       　　      ├── 📂tic-tac-toe2
+       　　      │    ├── connection.js 👈
+       　　      │    └── protocol_messages.js
+       　　      └── 🚀favicon.ico
 ```
 
 ```js
@@ -250,10 +252,11 @@ class Connection {
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      └── 📂tic-tac-toe2
-       　　            ├── connection.js
-       　　            ├── game.js 👈
-       　　            └── protocol_messages.js
+       　　      ├── 📂tic-tac-toe2
+       　　      │    ├── connection.js
+       　　      │    ├── game.js 👈
+       　　      │    └── protocol_messages.js
+       　　      └── 🚀favicon.ico
 ```
 
 ```js
@@ -479,11 +482,12 @@ class Game {
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      └── 📂tic-tac-toe2
-       　　            ├── connection.js
-       　　            ├── engine.js 👈
-       　　            ├── game.js
-       　　            └── protocol_messages.js
+       　　      ├── 📂tic-tac-toe2
+       　　      │    ├── connection.js
+       　　      │    ├── engine.js 👈
+       　　      │    ├── game.js
+       　　      │    └── protocol_messages.js
+       　　      └── 🚀favicon.ico
 ```
 
 ```js
@@ -573,12 +577,13 @@ class Engine {
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      └── 📂tic-tac-toe2
-       　　            ├── connection.js
-       　　            ├── engine.js
-       　　            ├── game.js
-       　　            ├── protocol_main.js 👈
-       　　            └── protocol_messages.js
+       　　      ├── 📂tic-tac-toe2
+       　　      │    ├── connection.js
+       　　      │    ├── engine.js
+       　　      │    ├── game.js
+       　　      │    ├── protocol_main.js 👈
+       　　      │    └── protocol_messages.js
+       　　      └── 🚀favicon.ico
 ```
 
 ```js
@@ -634,12 +639,13 @@ function createSetMessageFromServer() {
 └── 📂host1
      └── 📂webapp1
        　　├── 📂static
-       　　│    └── 📂tic-tac-toe2
-       　　│          ├── connection.js
-       　　│          ├── engine.js
-       　　│          ├── game.js
-       　　│          ├── protocol_main.js
-       　　│          └── protocol_messages.js
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
        　　└── 📂templates
        　　      └── 📂tic-tac-toe2
        　　            └── index.html 👈
@@ -706,12 +712,13 @@ function createSetMessageFromServer() {
 └── 📂host1
      └── 📂webapp1
        　　├── 📂static
-       　　│    └── 📂tic-tac-toe2
-       　　│          ├── connection.js
-       　　│          ├── engine.js
-       　　│          ├── game.js
-       　　│          ├── protocol_main.js
-       　　│          └── protocol_messages.js
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
        　　└── 📂templates
        　　      └── 📂tic-tac-toe2
        　　            ├── index.html
@@ -886,14 +893,178 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 4. views.py ファイルの編集
+# Step 9. protocol.py ファイルの作成
 
-📄`host1/webapp1/views.py` に、以下の記述を追加してほしい。  
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
+       　　├── 📂templates
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── index.html
+       　　│          └── game.html
+       　　└── 📂tic-tac-toe2
+       　　      └── protocol.py 👈
+```
+
+```py
+class Protocol():
+    """サーバープロトコル"""
+
+    def execute(self, response):
+        """サーバーからクライアントへ送信するメッセージの作成"""
+
+        event = response.get("event", None)
+
+        if event == 'CtoS_End':
+            # 対局終了時
+            return {
+                'type': 'send_message',
+                'event': "StoC_End",
+                'text': response.get("text", None),
+            }
+
+        elif event == 'CtoS_Move':
+            # 石を置いたとき
+            return {
+                'type': 'send_message',
+                "event": "StoC_Move",
+                'sq': response.get("sq", None),
+                'myPiece': response.get("myPiece", None),
+            }
+
+        elif event == 'CtoS_Start':
+            # 対局開始時
+            return {
+                'type': 'send_message',
+                'event': "StoC_Start",
+            }
+
+        raise ValueError(f"Unknown event: {event}")
+```
+
+# Step 10. consumer1.py ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
+       　　├── 📂templates
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── index.html
+       　　│          └── game.html
+       　　└── 📂tic-tac-toe2
+       　　      ├── consumer1.py 👈
+       　　      └── protocol.py
+```
+
+```py
+# 参考にした記事
+# -------------
+# 📖[Django Channels and WebSockets](https: // blog.logrocket.com/django-channels-and-websockets/)
+import json
+from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from webapp1.tic_tac_toe2.protocol import Protocol
+
+
+class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
+    #          ^
+
+    def __init__(self):
+        super().__init__()
+        self.protocol = Protocol()
+
+    async def connect(self):
+        """接続"""
+        print("Connect")
+        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_group_name = f'room_{self.room_name}'
+
+        # Join room group
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        """切断"""
+        print("Disconnected")
+        # Leave room group
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        """クライアントからのメッセージの受信"""
+
+        print(
+            f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
+
+        request = json.loads(text_data)
+        response = self.protocol.execute(request)
+
+        # 部屋のメンバーに一斉送信します
+        await self.channel_layer.group_send(self.room_group_name, response)
+
+    async def send_message(self, message):
+        """メッセージ送信"""
+        await self.send(text_data=json.dumps({
+            "message": message,
+        }))
+```
+
+# Step 11. views.py ファイルの編集
+
+以下のファイルを編集してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
+       　　├── 📂templates
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── index.html
+       　　│          └── game.html
+       　　├── 📂tic-tac-toe2
+       　　│    ├── consumer1.py
+       　　│    └── protocol.py
+       　　└── views.py 👈
+```
+
+👇追加する部分のみ抜粋
 
 ```py
 from django.shortcuts import render, redirect
 from django.http import Http404
 
+# ...中略...
 
 #                   v
 def indexOfTicTacToe2(request):
@@ -921,11 +1092,33 @@ def playGameOfTicTacToe2(request, room_name):
     #                                  ^
 ```
 
-# Step 5. urls.py ファイルの編集
+# Step 12. urls.py ファイルの編集
 
-以下の記述を追加してほしい。  
+以下のファイルを編集してほしい。  
 
-📄`host1/webapp1/urls.py` （抜粋）:
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
+       　　├── 📂templates
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── index.html
+       　　│          └── game.html
+       　　├── 📂tic-tac-toe2
+       　　│    ├── consumer1.py
+       　　│    └── protocol.py
+       　　├── urls.py 👈
+       　　└── views.py
+```
+
+👇追加する部分のみ抜粋
 
 ```py
 from django.urls import path
@@ -950,90 +1143,36 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. consumer1.py ファイルの作成
+# Step 13. routing1.py ファイルの編集
 
-以下のファイルを作成してほしい。  
+以下のファイルを編集してほしい。  
 
-📄`host1/webapp1/tic_tac_toe2/consumer1.py`:  
-                            ^  
-
-```py
-# See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
-import json
-from channels.generic.websocket import AsyncJsonWebsocketConsumer
-
-
-#              v
-class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
-    async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'room_%s' % self.room_name
-
-        # Join room group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        print("Disconnected")
-        # Leave room group
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    async def receive(self, text_data):
-        """
-        Receive message from WebSocket.
-        Get the event and send the appropriate event
-        """
-        print(
-            f"[Debug] Consumer1 receive text_data={text_data}")  # ちゃんと動いているようなら消す
-        response = json.loads(text_data)
-        event = response.get("event", None)
-        message = response.get("message", None)
-        if event == 'MOVE':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                "event": "MOVE"
-            })
-
-        if event == 'START':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                'event': "START"
-            })
-
-        if event == 'END':
-            # Send message to room group
-            await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
-                'message': message,
-                'event': "END"
-            })
-
-    async def send_message(self, res):
-        """ Receive message from room group """
-        # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            "payload": res,
-        }))
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    ├── 📂tic-tac-toe2
+       　　│    │    ├── connection.js
+       　　│    │    ├── engine.js
+       　　│    │    ├── game.js
+       　　│    │    ├── protocol_main.js
+       　　│    │    └── protocol_messages.js
+       　　│    └── 🚀favicon.ico
+       　　├── 📂templates
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── index.html
+       　　│          └── game.html
+       　　├── 📂tic-tac-toe2
+       　　│    ├── consumer1.py
+       　　│    └── protocol.py
+       　　├── routing1.py 👈
+       　　├── urls.py
+       　　└── views.py
 ```
 
-# Step 7. routing1.py ファイルの作成
-
-無ければ以下のファイルを作成、あればマージしてほしい。  
-
-📄`host1/webapp1/routing1.py`:  
+👇追加する部分のみ抜粋
 
 ```py
-from django.conf.urls import url
 from webapp1.tic_tac_toe2.consumer1 import TicTacToe2Consumer1  # 追加
 #                       ^                           ^
 #    ------- ------------ ---------
@@ -1042,7 +1181,12 @@ from webapp1.tic_tac_toe2.consumer1 import TicTacToe2Consumer1  # 追加
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
+# ...中略...
+
 websocket_urlpatterns = [
+
+    # ...中略...
+
     # （追加） For Tic-tac-toe2
     url(r'^tic-tac-toe2/(?P<room_name>\w+)/$', TicTacToe2Consumer1.as_asgi()),
     #                 ^                                 ^
@@ -1052,11 +1196,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 8. asgi.py ファイルに変更はありません
-
-📄`host1/webapp1/asgi.py` に変更はありません。  
-
-# Step 9. Web画面へアクセス
+# Step 14. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 
