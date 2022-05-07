@@ -74,6 +74,14 @@ class Game {
     constructor() {
         console.log('[Debug] Game#constructor()');
         this.reset()
+
+        this._doMove = () => {
+            // Ignored
+        }
+    }
+
+    set doMove(func) {
+        this._doMove = func
     }
 
     reset() {
@@ -111,11 +119,11 @@ class Game {
                     this.board[sq] = 0;
                     break;
                 default:
-                    alert(`Invalid my piece = ${myPiece}`);
+                    alert(`[Error] Invalid my piece = ${myPiece}`);
                     return false;
             }
 
-            // ëóêM
+            // Send
             engine1.protocol.sendDoMove(sq, myPiece)
         }
 
@@ -127,11 +135,11 @@ class Game {
         if(this.myTurn){
             // if player winner, send the END event.
             if (gameOver) {
-                // ëóêM
+                // Send
                 engine1.protocol.sendWon(myPiece)
             }
             else if (!gameOver && this.countOfMove == 9) {
-                // ëóêM
+                // Send
                 engine1.protocol.sendDraw()
             }
         }

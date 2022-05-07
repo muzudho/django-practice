@@ -68,7 +68,6 @@
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
             let engine1 = new Engine();
-            let game1 = new Game();
 
             let vue1 = new Vue({
                 el: "#app",
@@ -93,7 +92,7 @@
                     reset() {
                         console.log("[Debug] Vue#reset()");
 
-                        game1.reset();
+                        engine1.game.reset();
 
                         document.getElementById("alert_your_move").style.display = "block";
 
@@ -108,13 +107,13 @@
                      */
                     clickSquare(sq) {
                         console.log(`[Debug] Vue#clickSquare sq=${sq}`);
-                        if (game1.board[sq] == PC_EMPTY) {
-                            if (!game1.myTurn) {
+                        if (engine1.game.board[sq] == PC_EMPTY) {
+                            if (!engine1.game.myTurn) {
                                 alert("Wait for other to place the move");
                             } else {
-                                game1.myTurn = false;
+                                engine1.game.myTurn = false;
                                 document.getElementById("alert_your_move").style.display = "none"; // Hide
-                                game1.makeMove(parseInt(sq), engine1.connection.myPiece);
+                                engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
                             }
                         }
                     },

@@ -12,14 +12,14 @@ class Protocol {
                     break;
 
                 case "E_End":
-                    alert(`[Notice] ${message}`);
+                    alert(`${message}`); // 勝ち、または引分けの表示
                     vue1.reset();
                     break;
 
                 case "E_Move":
                     if(message["player"] != engine1.connection.myPiece){
-                        game1.makeMove(parseInt(message["index"]), message["player"])
-                        game1.myTurn = true;
+                        engine1.game.makeMove(parseInt(message["index"]), message["player"])
+                        engine1.game.myTurn = true;
                         document.getElementById("alert_your_move").style.display = 'block';
                     }
                     break;
