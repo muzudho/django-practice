@@ -64,6 +64,36 @@
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
+# Step 1. favicon.ico ファイルの設置
+
+favicon.ico は、例えば 以下のサイトで作れる。作ってきてほしい。  
+
+📖 [Favicon Generator. For real.](https://realfavicongenerator.net/)  
+
+例えば、以下の場所に置いてほしい  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　└── 📂static
+       　　      └── 🚀favicon.ico 👈
+```
+
+favicon.ico を有効にするには HTML で設定する必要があるが、まだ作成しない。以下は例。あとで全体を再掲する。  
+
+```plaintext
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        中略
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+以下略
+```
+
 # Step 2. protocol_messages.js ファイルの作成
 
 以下のファイルを作成してほしい。  
@@ -596,45 +626,266 @@ function createSetMessageFromServer() {
 }
 ```
 
-
-# Step 6. index.html ファイルの作成
+# Step 7. index.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe1/index.html`:  
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── connection.js
+       　　│          ├── engine.js
+       　　│          ├── game.js
+       　　│          ├── protocol_main.js
+       　　│          └── protocol_messages.js
+       　　└── 📂templates
+       　　      └── 📂tic-tac-toe2
+       　　            └── index.html 👈
+```
 
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
     </head>
     <body>
-        <div class="wrapper">
-            <h1>Welcome to Tic Tac Toe Game</h1>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-control">
-                    <label for="room">Room id</label>
-                    <input id="room" type="text" name="room_name" required />
-                </div>
-                <div class="form-control">
-                    <label for="item_of_my_piece">Your character</label>
-                    <select for="item_of_my_piece" name="my_piece">
-                        <option value="X">X</option>
-                        <option value="O">O</option>
-                    </select>
-                </div>
-                <input type="submit" class="button" value="Start Game" />
-            </form>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <h1>Welcome to Tic Tac Toe Game</h1>
+                        <v-form method="POST">
+                            {% csrf_token %}
+
+                            <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+
+                            <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+
+                            <v-btn block elevation="2" type="submit"> Start Game </v-btn>
+                        </v-form>
+                    </v-container>
+                </v-main>
+            </v-app>
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    room: {
+                        title: "Elephant",
+                        rules: [(v) => v.length <= 25 || "Max 25 characters"],
+                        wordsRules: [(v) => v.trim().split(" ").length <= 5 || "Max 5 words"],
+                    },
+                    selectedMyPiece: "X",
+                    pieces: ["X", "O"],
+                },
+            });
+        </script>
     </body>
 </html>
 ```
+
+# Step 8. game.html ファイルの作成
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── connection.js
+       　　│          ├── engine.js
+       　　│          ├── game.js
+       　　│          ├── protocol_main.js
+       　　│          └── protocol_messages.js
+       　　└── 📂templates
+       　　      └── 📂tic-tac-toe2
+       　　            ├── index.html
+       　　            └── game.html 👈
+```
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h1>TIC TAC TOE</h1>
+                        <h3>Welcome to room_{{room_name}}</h3>
+                    </v-container>
+
+                    <form name="form1" method="POST">
+                        {% csrf_token %}
+                        <v-container>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                    <v-btn id="square0" v-on:click="clickSquare(0)">{{label0}}</v-btn>
+                                    <v-btn id="square1" v-on:click="clickSquare(1)">{{label1}}</v-btn>
+                                    <v-btn id="square2" v-on:click="clickSquare(2)">{{label2}}</v-btn>
+                                    {% endverbatim %}
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    {% verbatim %}
+                                    <v-btn id="square3" v-on:click="clickSquare(3)">{{label3}}</v-btn>
+                                    <v-btn id="square4" v-on:click="clickSquare(4)">{{label4}}</v-btn>
+                                    <v-btn id="square5" v-on:click="clickSquare(5)">{{label5}}</v-btn>
+                                    {% endverbatim %}
+                                </v-col>
+                            </v-row>
+                            <v-row justify="center" dense>
+                                <v-col>
+                                    {% verbatim %}
+                                    <v-btn id="square6" v-on:click="clickSquare(6)">{{label6}}</v-btn>
+                                    <v-btn id="square7" v-on:click="clickSquare(7)">{{label7}}</v-btn>
+                                    <v-btn id="square8" v-on:click="clickSquare(8)">{{label8}}</v-btn>
+                                    {% endverbatim %}
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                        <input type="hidden" name="room_name" value="{{room_name}}" />
+                        <input type="hidden" name="my_piece" value="{{my_piece}}" />
+                    </form>
+                    <v-container>
+                        <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let engine1 = new Engine();
+
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    label0: "",
+                    label1: "",
+                    label2: "",
+                    label3: "",
+                    label4: "",
+                    label5: "",
+                    label6: "",
+                    label7: "",
+                    label8: "",
+                },
+                // page loaded
+                mounted: () => {
+                    engine1.setup(createSetMessageFromServer());
+                },
+                methods: {
+                    // function to reset the game.
+                    reset() {
+                        console.log("[Debug] Vue#reset()");
+
+                        engine1.game.reset();
+
+                        document.getElementById("alert_your_move").style.display = "block";
+
+                        // ボタンのラベルをクリアー
+                        for (let sq = 0; sq < BOARD_AREA; sq += 1) {
+                            this.setLabelOfButton(sq, "");
+                        }
+                    },
+                    /**
+                     * 升ボタンをクリックしたとき
+                     * @param {*} sq - Square; 0 <= sq
+                     */
+                    clickSquare(sq) {
+                        console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        if (engine1.game.board[sq] == PC_EMPTY) {
+                            if (!engine1.game.myTurn) {
+                                alert("Wait for other to place the move");
+                            } else {
+                                engine1.game.myTurn = false;
+                                document.getElementById("alert_your_move").style.display = "none"; // Hide
+                                engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
+                            }
+                        }
+                    },
+                    /**
+                     * 升ボタンのラベル変更
+                     * @param {number} sq - Square; 0 <= sq
+                     * @param {*} piece - text
+                     */
+                    setLabelOfButton(sq, piece) {
+                        // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        switch (sq) {
+                            case 0:
+                                this.label0 = piece;
+                                break;
+                            case 1:
+                                this.label1 = piece;
+                                break;
+                            case 2:
+                                this.label2 = piece;
+                                break;
+                            case 3:
+                                this.label3 = piece;
+                                break;
+                            case 4:
+                                this.label4 = piece;
+                                break;
+                            case 5:
+                                this.label5 = piece;
+                                break;
+                            case 6:
+                                this.label6 = piece;
+                                break;
+                            case 7:
+                                this.label7 = piece;
+                                break;
+                            case 8:
+                                this.label8 = piece;
+                                break;
+                            default:
+                                alert(`[Error] sq=${sq}`);
+                                break;
+                        }
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
+```
+
 
 # Step 7. game.html ファイルの作成
 

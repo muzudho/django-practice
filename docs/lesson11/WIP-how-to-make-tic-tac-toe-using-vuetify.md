@@ -626,17 +626,31 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 1. index.html ファイルの作成
+# Step 7. index.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe2/index.html`:  
-                           ------------  
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── connection.js
+       　　│          ├── engine.js
+       　　│          ├── game.js
+       　　│          ├── protocol_main.js
+       　　│          └── protocol_messages.js
+       　　└── 📂templates
+       　　      └── 📂tic-tac-toe2
+       　　            └── index.html 👈
+```
 
 ```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
@@ -684,18 +698,32 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 2. game.html ファイルの作成
+# Step 8. game.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe2/game.html`:  
-                                      ^  
+```plaintext
+└── 📂host1
+     └── 📂webapp1
+       　　├── 📂static
+       　　│    └── 📂tic-tac-toe2
+       　　│          ├── connection.js
+       　　│          ├── engine.js
+       　　│          ├── game.js
+       　　│          ├── protocol_main.js
+       　　│          └── protocol_messages.js
+       　　└── 📂templates
+       　　      └── 📂tic-tac-toe2
+       　　            ├── index.html
+       　　            └── game.html 👈
+```
 
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
         <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
@@ -707,334 +735,155 @@ function createSetMessageFromServer() {
             <v-app>
                 <v-main>
                     <v-container>
-                        <v-alert type="success" id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-
                         <h1>TIC TAC TOE</h1>
                         <h3>Welcome to room_{{room_name}}</h3>
                     </v-container>
 
-                    <form method="POST">
+                    <form name="form1" method="POST">
                         {% csrf_token %}
                         <v-container>
                             <v-row justify="center" dense>
                                 <v-col>
-                                    <v-btn id="square0"></v-btn>
-                                    <v-btn id="square1"></v-btn>
-                                    <v-btn id="square2"></v-btn>
+                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                    <v-btn id="square0" v-on:click="clickSquare(0)">{{label0}}</v-btn>
+                                    <v-btn id="square1" v-on:click="clickSquare(1)">{{label1}}</v-btn>
+                                    <v-btn id="square2" v-on:click="clickSquare(2)">{{label2}}</v-btn>
+                                    {% endverbatim %}
                                 </v-col>
                             </v-row>
                             <v-row justify="center" dense>
                                 <v-col>
-                                    <v-btn id="square3"></v-btn>
-                                    <v-btn id="square4"></v-btn>
-                                    <v-btn id="square5"></v-btn>
+                                    {% verbatim %}
+                                    <v-btn id="square3" v-on:click="clickSquare(3)">{{label3}}</v-btn>
+                                    <v-btn id="square4" v-on:click="clickSquare(4)">{{label4}}</v-btn>
+                                    <v-btn id="square5" v-on:click="clickSquare(5)">{{label5}}</v-btn>
+                                    {% endverbatim %}
                                 </v-col>
                             </v-row>
                             <v-row justify="center" dense>
                                 <v-col>
-                                    <v-btn id="square6"></v-btn>
-                                    <v-btn id="square7"></v-btn>
-                                    <v-btn id="square8"></v-btn>
+                                    {% verbatim %}
+                                    <v-btn id="square6" v-on:click="clickSquare(6)">{{label6}}</v-btn>
+                                    <v-btn id="square7" v-on:click="clickSquare(7)">{{label7}}</v-btn>
+                                    <v-btn id="square8" v-on:click="clickSquare(8)">{{label8}}</v-btn>
+                                    {% endverbatim %}
                                 </v-col>
                             </v-row>
                         </v-container>
                         <input type="hidden" name="room_name" value="{{room_name}}" />
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
+                    <v-container>
+                        <v-alert type="success" id="alert_your_move">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
+                    </v-container>
                 </v-main>
             </v-app>
         </div>
 
+        <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
         <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
+        <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            new Vue({
+            let engine1 = new Engine();
+
+            let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
+                data: {
+                    label0: "",
+                    label1: "",
+                    label2: "",
+                    label3: "",
+                    label4: "",
+                    label5: "",
+                    label6: "",
+                    label7: "",
+                    label8: "",
+                },
+                // page loaded
+                mounted: () => {
+                    engine1.setup(createSetMessageFromServer());
+                },
+                methods: {
+                    // function to reset the game.
+                    reset() {
+                        console.log("[Debug] Vue#reset()");
+
+                        engine1.game.reset();
+
+                        document.getElementById("alert_your_move").style.display = "block";
+
+                        // ボタンのラベルをクリアー
+                        for (let sq = 0; sq < BOARD_AREA; sq += 1) {
+                            this.setLabelOfButton(sq, "");
+                        }
+                    },
+                    /**
+                     * 升ボタンをクリックしたとき
+                     * @param {*} sq - Square; 0 <= sq
+                     */
+                    clickSquare(sq) {
+                        console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        if (engine1.game.board[sq] == PC_EMPTY) {
+                            if (!engine1.game.myTurn) {
+                                alert("Wait for other to place the move");
+                            } else {
+                                engine1.game.myTurn = false;
+                                document.getElementById("alert_your_move").style.display = "none"; // Hide
+                                engine1.game.makeMove(parseInt(sq), engine1.connection.myPiece);
+                            }
+                        }
+                    },
+                    /**
+                     * 升ボタンのラベル変更
+                     * @param {number} sq - Square; 0 <= sq
+                     * @param {*} piece - text
+                     */
+                    setLabelOfButton(sq, piece) {
+                        // alert(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        switch (sq) {
+                            case 0:
+                                this.label0 = piece;
+                                break;
+                            case 1:
+                                this.label1 = piece;
+                                break;
+                            case 2:
+                                this.label2 = piece;
+                                break;
+                            case 3:
+                                this.label3 = piece;
+                                break;
+                            case 4:
+                                this.label4 = piece;
+                                break;
+                            case 5:
+                                this.label5 = piece;
+                                break;
+                            case 6:
+                                this.label6 = piece;
+                                break;
+                            case 7:
+                                this.label7 = piece;
+                                break;
+                            case 8:
+                                this.label8 = piece;
+                                break;
+                            default:
+                                alert(`[Error] sq=${sq}`);
+                                break;
+                        }
+                    },
+                },
             });
         </script>
     </body>
 </html>
-```
-
-# Step 3. game.js ファイルの作成
-
-以下のファイルを作成してほしい。  
-
-📄`host1/webapp1/static/tic-tac-toe2/game.js`:  
-                                   ^  
-
-```js
-// See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
-
-var roomName = document.getElementById("board").getAttribute("room_name");
-var myPiece = document.getElementById("board").getAttribute("my_piece");
-
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
-//                           ----------------------- -------------------------
-//                           1                       2
-// 1. ホスト アドレス
-// 2. URLの一部
-
-var webSock1 = new WebSocket(connectionString);
-
-const PC_EMPTY = -1 // A square without piece; PC is piece
-// Game board for maintaing the state of the game
-var board = [
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-];
-
-// SQ is square
-// +---------+
-// | 0  1  2 |
-// | 3  4  5 |
-// | 6  7  8 |
-// +---------+
-const SQ_0 = 0
-const SQ_1 = 1
-const SQ_2 = 2
-const SQ_3 = 3
-const SQ_4 = 4
-const SQ_5 = 5
-const SQ_6 = 6
-const SQ_7 = 7
-const SQ_8 = 8
-// Winning indexes.
-arrayOfSquaresOfWinPattern = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6]
-]
-let countOfMove = 0; // Number of moves done
-let myTurn = true; // Boolean variable to get the turn of the player.
-
-// Add the click event listener on every block.
-let elementArrayOfSquare = document.getElementsByClassName('square');
-for (const element of elementArrayOfSquare) {
-    element.addEventListener("click", event=>{
-        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
-        if(board[sq] == PC_EMPTY){
-            if(!myTurn){
-                alert("Wait for other to place the move")
-            }
-            else{
-                myTurn = false;
-                document.getElementById("alert_move").style.display = 'none'; // Hide
-                makeMove(sq, myPiece);
-            }
-        }
-    })
-}
-
-/**
- * Make a move
- * @param {*} sq - Square; 0 <= sq
- * @param {*} myPiece 
- * @returns 
- */
-function makeMove(sq, myPiece){
-    sq = parseInt(sq);
-    let data = {
-        "event": "MOVE",
-        "message": {
-            "index": sq,
-            "player": myPiece
-        }
-    }
-
-    if(board[sq] == PC_EMPTY){
-        // if the valid move, update the board
-        // state and send the move to the server.
-        countOfMove++;
-
-        switch (myPiece) {
-            case 'X':
-                board[sq] = 1;
-                break;
-            case 'O':
-                board[sq] = 0;
-                break;
-            default:
-                alert(`Invalid my piece = ${myPiece}`);
-                return false;
-        }
-
-        webSock1.send(JSON.stringify(data))
-    }
-    // place the move in the game box.
-    elementArrayOfSquare[sq].innerHTML = myPiece;
-    // check for the winner
-    const gameOver = isGameOver();
-    if(myTurn){
-        // if player winner, send the END event.
-        if(gameOver){
-            data = {
-                "event": "END",
-                "message": `${myPiece} is a winner. Play again?`
-            }
-            webSock1.send(JSON.stringify(data))
-        }
-        else if(!gameOver && countOfMove == 9){
-            data = {
-                "event": "END",
-                "message": "It's a draw. Play again?"
-            }
-            webSock1.send(JSON.stringify(data))
-        }
-    }
-}
-
-// function to reset the game.
-function reset(){
-    board = [
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    ];
-    countOfMove = 0;
-    myTurn = true;
-    document.getElementById("alert_move").style.display = 'inline';
-    for (const element of elementArrayOfSquare) {
-        element.innerHTML = "";
-    }
-}
-
-/**
- * check if their is winning move
- * @param {*} squaresOfWinPattern 
- * @returns 
- */
-function isPieceInLine(squaresOfWinPattern) {
-    return board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
-}
-
-/**
- * function to check if player is winner.
- * @returns I won
- */
-function isGameOver(){
-    if (5 <= countOfMove) {
-        for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
-            if (isPieceInLine(squaresOfWinPattern)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-/**
- * Main function which handles the connection
- * of websocket.
- */
-function connect() {
-    // on websocket open, send the START event.
-    webSock1.onopen = () => {
-        console.log('WebSockets connection created.');
-        webSock1.send(JSON.stringify({
-            "event": "START",
-            "message": ""
-        }));
-    };
-
-    webSock1.onclose = (e) => {
-        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
-        setTimeout(function () {
-            connect();
-        }, 1000);
-    };
-
-    // Sending the info about the room
-    webSock1.onmessage = (e) => {
-        // On getting the message from the server
-        // Do the appropriate steps on each event.
-        let data = JSON.parse(e.data);
-        data = data["payload"];
-        let message = data['message'];
-        let event = data["event"];
-        switch (event) {
-            case "START":
-                console.log(`[Message] START e=${e.data}`); // ちゃんと動いているようなら消す
-                reset();
-                break;
-            case "END":
-                console.log(`[Message] END e=${e.data}`); // ちゃんと動いているようなら消す
-                alert(message);
-                reset();
-                break;
-            case "MOVE":
-                console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
-                if(message["player"] != myPiece){
-                    makeMove(message["index"], message["player"])
-                    myTurn = true;
-                    document.getElementById("alert_move").style.display = 'inline';
-                }
-                break;
-            default:
-                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
-                console.log("No event")
-        }
-    };
-
-    if (webSock1.readyState == WebSocket.OPEN) {
-        console.log('Open socket.');
-        webSock1.onopen();
-    }
-}
-
-//call the connect function at the start.
-connect();
 ```
 
 # Step 4. views.py ファイルの編集
