@@ -1,17 +1,9 @@
----
-title: DjangoのWebサーバーとクライアント側のアプリで通信しよう！
-tags: Django Docker websocket アプリ
-author: muzudho1
-slide: false
----
 # 目的
 
 Webサーバーとクライアント間で双方向の非同期通信をしたい。だからする。  
-その手法の１つの **Webソケット** を説明をする。  
+その手法の１つの **Webソケット** ならできる。  
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -29,51 +21,70 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 | Others           | Web socket                                |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-├── 📂host_local1
-│    └── 📂sockapp1
-│        ├── 📄main_finally.py
-│        └── 📄echo_server.py
-└── 📂host1
-     ├── 📂data
-     │　　└── 📂db
-     │　　　　└── <たくさんのもの>
-     ├── 📂webapp1
-     │　　├── 📂templates
-     │　　│    └── 📂vuetify2
-     │　　│        ├── 📄hello1.html
-     │　　│        └── ＜いろいろ＞
-     │　　├── 📄models.py
-     │　　├── 📄settings.py
-     │　　├── 📄urls.py
-     │　　├── 📄views.py
-     │　　└── <いろいろ>
-     ├── 📄.env
-     ├── 🐳docker-compose.yml
-     ├── 🐳Dockerfile
-     ├── 📄manage.py
-     └── <いろいろ>
+    ├── 📂host_local1
+    │    └── 📂sockapp1
+    │        ├── 📄client.py
+    │        ├── 📄echo_server.py
+    │        └── 📄main_finally.py
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂static
+        │   │   └── 📂vuetify-practice
+        │   │       └── 📄desserts.json
+        │   ├── 📂templates
+        │   │   └── 📂<いろいろ>-practice
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📄admin.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
-# Step 1. requirements.txt ファイルの設定
+# Step 1. プログラミング環境の編集 - requirements.txt ファイル
 
-ファイルの末尾にでも追加してほしい。  
+以下のファイルに追加してほしい。末尾で構わない。  
 
-📄host1/requirements.txt:  
+```plaintext
+    └── 📂host1
+👉      └── 📄requirements.txt
+```
 
 ```shell
 # For web socket
 channels>=3.0
 ```
 
-# Step 2. settings.py ファイルの編集
+# Step 2. 設定の編集 - settings.py ファイル
 
 そしたら、以下の部分を編集してほしい。  
 `WSGI` から `ASGI` に乗り換えることをやっている。 `ASGI` は `WSGI` を兼ねるようだ。  
 
-📄host1/webapp1/settings.py:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+👉      │   └── 📄settings.py
+        └── 📄requirements.txt
+```
 
 ```py
 INSTALLED_APPS = [
@@ -118,11 +129,17 @@ CHANNEL_LAYERS = {
 }
 ```
 
-# Step 3. asgi.py ファイルを編集＜その１＞
+# Step 3. 設定の編集 - asgi.py ファイル＜その１＞
 
 以下のファイルを編集してほしい。  
 
-📄`host1/webapp1/asgi.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+👉      │   ├── 📄asgi.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
+```
 
 ```py
 import os
@@ -165,7 +182,15 @@ docker-compose up
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/websock1/consumer1.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂websock1
+👉      │   │   └── 📄consumer1.py
+        │   ├── 📄asgi.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
+```
 
 ```py
 # See also:
@@ -201,7 +226,16 @@ class Websock1Consumer(AsyncWebsocketConsumer):
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/routing1.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂websock1
+        │   │   └── 📄consumer1.py
+        │   ├── 📄asgi.py
+👉      │   ├── 📄routing1.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
+```
 
 ```py
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
@@ -213,11 +247,20 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 7. asgi.py ファイルの編集＜その２＞
+# Step 7. 設定の編集 - asgi.py ファイル＜その２＞
 
 `asgi.py` ファイルは既存なので、以下の部分をマージしてほしい。  
 
-📄host1/webapp1/asgi.py:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂websock1
+        │   │   └── 📄consumer1.py
+👉      │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
+```
 
 ```py
 import os
@@ -273,93 +316,29 @@ Step 9. からは クライアントサイドを説明する。
 pip install websocket-client
 ```
 
-# Step 10. main_finally.py ファイルを作成
+# Step 10. 複製 - main_finally.py ファイル
 
-以下のファイルを作成してほしい。  
+以下の記事で掲載した main_finally.py ファイルを複製してほしい。  
+
+* 📖 [ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c)
+  * 📄`host1/webapp1/static/vuetify-practice/desserts.json`
+
+以下のファイルをコピー＆ペーストしてほしい。  
 
 ```plaintext
-├── 📂host_local1
-│    └── 📂websockapp1
-│        └── 📄main_finally.py  # ここに新規作成
-└── 📂host1                     # 既存
-         ├── 📂data
-         ├── 📂webapp1
-         └── <いろいろ>
-```
-
-📄`host_local1/websockapp1/main_finally.py`:  
-
-```py
-import sys
-import signal
-
-
-class MainFinally:
-    """アプリケーション終了時に、必ず終了処理を実行するための仕掛けです。
-    See also: 📖 [Python で終了時に必ず何か実行したい](https://qiita.com/qualitia_cdev/items/f536002791671c6238e3)
-
-    Examples
-    --------
-    import sys
-    import traceback
-    from .main_finally import MainFinally
-
-    class Main1:
-        def on_main(self):
-            # ここで通常の処理
-            return 0
-
-        def on_except(self, e):
-            # ここで例外キャッチ
-            traceback.print_exc()
-
-        def on_finally(self):
-            # ここで終了処理
-            return 1
-
-
-    # このファイルを直接実行したときは、以下の関数を呼び出します
-    if __name__ == "__main__":
-        sys.exit(MainFinally.run(Main1()))
-    """
-
-    @classmethod
-    def run(clazz, target):
-        """アプリケーション終了時に必ず on_finally()メソッドを呼び出します。
-        通常の処理は on_main()メソッドに書いてください
-
-        Parameters
-        ----------
-        target : class
-            on_main(), on_except(), on_finally()メソッドが定義されたクラスです
-        """
-        def sigterm_handler(_signum, _frame) -> None:
-            sys.exit(1)
-
-        # 強制終了のシグナルを受け取ったら、強制終了するようにします
-        signal.signal(signal.SIGTERM, sigterm_handler)
-
-        try:
-            # ここで何か処理
-            return_code = target.on_main()
-
-        except Exception as e:
-            # ここで例外キャッチ
-            target.on_except(e)
-
-        finally:
-            # 強制終了のシグナルを無視するようにしてから、クリーンアップ処理へ進みます
-            signal.signal(signal.SIGTERM, signal.SIG_IGN)
-            signal.signal(signal.SIGINT, signal.SIG_IGN)
-
-            # ここで終了処理
-            return_code = target.on_finally()
-
-            # 強制終了のシグナルを有効に戻します
-            signal.signal(signal.SIGTERM, signal.SIG_DFL)
-            signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-        return return_code
+    ├── 📂host_local1
+    │    ├── 📂sockapp1
+👉  │    │   └── 📄main_finally.py  # ここからコピー
+    │    └── 📂websockapp1
+👉  │        └── 📄main_finally.py  # ここへペースト
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂websock1
+        │   │   └── 📄consumer1.py
+        │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
 ```
 
 # Step 11. websock_client.py ファイルの作成
@@ -367,18 +346,21 @@ class MainFinally:
 以下のファイルを作成してほしい。  
 
 ```plaintext
-├── 📂host_local1
-│    ├── 📂sockapp1
-│    └── 📂websockapp1
-│        ├── 📄main_finally.py
-│        └── 📄websock_client.py # ここに新規作成
-└── 📂host1                      # 既存
-         ├── 📂data
-         ├── 📂webapp1
-         └── <いろいろ>
+    ├── 📂host_local1
+    │    ├── 📂sockapp1
+    │    │   └── 📄main_finally.py
+    │    └── 📂websockapp1
+    │        ├── 📄main_finally.py
+👉  │        └── 📄websock_client.py
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂websock1
+        │   │   └── 📄consumer1.py
+        │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
+        │   └── 📄settings.py
+        └── 📄requirements.txt
 ```
-
-📄`host_local1/websockapp1/websock_client.py`:  
 
 ```py
 # See also:
