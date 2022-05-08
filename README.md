@@ -22,6 +22,7 @@ URL
 
 * http://localhost:8000/tic-tac-toe1/
 * http://localhost:8000/tic-tac-toe2/
+* http://localhost:8000/tic-tac-toe3/
 
 Product
 

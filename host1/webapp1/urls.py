@@ -151,6 +151,20 @@ urlpatterns = [
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+
+    # （追加）
+    path('tic-tac-toe3/', views.indexOfTicTacToe3),
+    #                ^                          ^
+    #     -------------
+    #     1
+    # 1. URLの一部
+
+    # （追加）
+    path('tic-tac-toe3/<str:room_name>/', views.playGameOfTicTacToe3),
+    #                ^                                             ^
+    #     -----------------------------
+    #     1
+    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 ]
 
 
