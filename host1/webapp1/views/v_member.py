@@ -42,7 +42,7 @@ def deleteMember(request, id=id):
     template = loader.get_template('members/delete.html')
 
     member = Member.objects.get(pk=id)  # idを指定してメンバーを１人取得
-    name = member.name  # 名前だけ取得しておく
+    name = member.name  # 名前だけまだ使う
     member.delete()
     context = {
         'member': {

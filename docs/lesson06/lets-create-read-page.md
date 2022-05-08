@@ -75,7 +75,6 @@ kifuwarane@example.com
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/members/read.html`:  
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
