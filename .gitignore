@@ -1,3 +1,7 @@
+# (^q^)
+
+*.bak
+
 # Django
 
 host1/data/db
