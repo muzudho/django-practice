@@ -36,7 +36,7 @@
 　│　　├── 📂static
 　│　　│    └── 📄desserts.json
 　│　　├── 📂templates
-　│　　│    └── 📂vuetify2
+　│　　│    └── 📂vuetify-practice
 　│　　│        ├── 📄data-table1.html
 　│　　│        ├── 📄data-table2.html
 　│　　│        ├── 📄hello1.html
@@ -58,7 +58,7 @@
 以下の記事で掲載した JSON ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/static/vuetify-practice/desserts.json`:
+  * 📄`host1/webapp1/static/vuetify-practice/desserts.json`
 
 ```plaintext
     └── 📂host1
