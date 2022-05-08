@@ -1,7 +1,8 @@
 # 目的
 
 Webサーバーと、クライアント側のアプリ間で通信する練習をしたい。  
-１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）のサンプルプログラムがネットで公開されているから、それを作る方法を説明する。  
+だから 〇×ゲーム（Tic tac toe）のサンプルプログラムを真似する。  
+１人２役で２窓で遊ぶ。  
 
 # はじめに
 
@@ -31,101 +32,64 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-├── 📂host_local1
-│    └── 📂websockapp1
-│        ├── 📄client2.py
-│        ├── 📄main_finally.py
-│        └── 📄websock_client.py
-└── 📂host1
-     ├── 📂data
-     │　　└── 📂db
-     │         └── <たくさんのもの>
-     ├── 📂webapp1
-     │　　├── 📂templates
-     │　　├── 📂websock1
-     │　　│    ├── consumer1.py
-     │　　│    └── consumer2.py
-     │　　├── 📄asgi.py
-     │　　├── 📄models.py
-     │　　├── 📄routing1.py
-     │　　├── 📄settings.py
-     │　　├── 📄urls.py
-     │　　└── <いろいろ>
-     ├── 📄.env
-     ├── 🐳docker-compose.yml
-     ├── 🐳Dockerfile
-     ├── 📄manage.py
-     ├── 📄requirements.txt
-     └── <いろいろ>
+    ├── 📂host_local1
+    │    ├── 📂sockapp1
+    │    │   ├── 📄client.py
+    │    │   ├── 📄echo_server.py
+    │    │   └── 📄main_finally.py
+    │    └── 📂websockapp1
+    │        ├── 📄client2.py
+    │        ├── 📄main_finally.py
+    │        └── 📄websock_client.py
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂static
+        │   │   └── 📂vuetify-practice
+        │   │       └── 📄desserts.json
+        │   ├── 📂templates
+        │   │   └── 📂<いろいろ>-practice
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂websock1
+        │   │   ├── consumer1.py
+        │   │   └── consumer2.py
+        │   ├── 📄admin.py
+        │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
-# Step 1. requirements.txt ファイルの編集
+# Step 1. プログラミング環境更新 - requirements.txt ファイル
 
 （無ければ）ファイルの末尾にでも追加してほしい。  
 
-📄host1/requirements.txt:  
+```plaintext
+    └── 📂host1
+👉      └── 📄requirements.txt
+```
 
 ```shell
-# （追加） For Tic-tac-toe
-# （追加済みだろ） Django>=3.0,<4.0
-# （追加済みだろ） channels>=3.0
 channels_redis>=3.2
 ```
 
-# Step 2. settings.py ファイルの編集
-
-（無ければ）以下の部分を編集してほしい。  
-
-📄host1/webapp1/settings.py:  
-
-```py
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-
-    # （追加） For Tic-tac-toe
-    'channels',
-]
-
-# （削除） WSGI_APPLICATION = 'webapp1.wsgi.application'
-# （追加）
-ASGI_APPLICATION = "webapp1.asgi.application"
-#                   -------
-#                   1
-# 1. アプリケーション フォルダー名
-
-# （追加） See also: 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
-CHANNEL_LAYERS = {
-    'default': {
-        ### Method 1: Via redis lab
-        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        # 'CONFIG': {
-        #     "hosts": [
-        #       'redis://h:<password>;@<redis Endpoint>:<port>' 
-        #     ],
-        # },
-
-        ### Method 2: Via local Redis
-        # 'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        # 'CONFIG': {
-        #      "hosts": [('127.0.0.1', 6379)],
-        # },
-
-        ### Method 3: Via In-memory channel layer
-        ## Using this method.
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    },
-}
-```
-
-# Step 3. コマンド実行
+# Step 2. コマンド実行
 
 Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
 
@@ -142,11 +106,18 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 4. main.css ファイルの作成
+# Step 3. Web ページのスタイル作成 - main.css ファイル
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/static/tic-tac-toe1/main.css`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   └── 📂static
+        │       └── 📂tic-tac-toe1
+👉      │           └── 📄main.css
+        └── 📄requirements.txt
+```
 
 ```css
 /* static/css/main.css */
@@ -211,11 +182,19 @@ select {
 }
 ```
 
-# Step 5. game.js ファイルの作成
+# Step 4. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/static/tic-tac-toe1/game.js`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   └── 📂static
+        │       └── 📂tic-tac-toe1
+👉      │           ├── 📄game.js
+        │           └── 📄main.css
+        └── 📄requirements.txt
+```
 
 ```js
 // See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
@@ -488,11 +467,22 @@ function connect() {
 connect();
 ```
 
-# Step 6. index.html ファイルの作成
+# Step 5. index.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe1/index.html`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   └── 📂templates
+        │       └── 📂tic-tac-toe1
+👉      │           └── 📄index.html
+        └── 📄requirements.txt
+```
 
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
@@ -527,11 +517,23 @@ connect();
 </html>
 ```
 
-# Step 7. game.html ファイルの作成
+# Step 6. game.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/tic-tac-toe1/game.html`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   └── 📂templates
+        │       └── 📂tic-tac-toe1
+👉      │           ├── 📄game.html
+        │           └── 📄index.html
+        └── 📄requirements.txt
+```
 
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
@@ -569,13 +571,29 @@ connect();
 </html>
 ```
 
-# Step 8. views.py ファイルの編集
+# Step 7. ビュー編集 - v_tic_tac_toe1.py ファイル
 
-📄`host1/webapp1/views.py` に、以下の記述を追加してほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   ├── 📂templates
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.html
+        │   │       └── 📄index.html
+        │   └── 📂views
+👉      │       └── 📄v_tic_tac_toe1.py
+        └── 📄requirements.txt
+```
 
 ```py
+from django.http import Http404
 from django.shortcuts import render, redirect
-from django.http import Http404 # 追加
 
 
 def indexOfTicTacToe1(request):
@@ -599,38 +617,78 @@ def playGameOfTicTacToe1(request, room_name):
     return render(request, "tic-tac-toe1/game.html", context)
 ```
 
-# Step 9. urls.py ファイルの編集
+# Step 8. ルート編集 - urls.py ファイル
 
-以下の記述を追加してほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
-📄`host1/webapp1/urls.py` （抜粋）:
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   ├── 📂templates
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.html
+        │   │       └── 📄index.html
+        │   ├── 📂views
+        │   │   └── 📄v_tic_tac_toe1.py
+👉      │   └── 📄urls.py
+        └── 📄requirements.txt
+```
 
 ```py
 from django.urls import path
-from . import views
+
+from webapp1.views import v_tic_tac_toe1
+#    ------- -----        --------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
     # ...略...
 
-    # （追加）
-    path('tic-tac-toe1/', views.indexOfTicTacToe1),
-    #     -------------
-    #     1
-    # 1. URLの一部
+    # 〇×ゲームの練習１
+    path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
+    #     -------------   --------------------------------
+    #     1               2
+    # 1. URLの `tic-tac-toe1/` というパスにマッチする
+    # 2. v_tic_tac_toe1.py ファイルの indexOfTicTacToe1 メソッド
 
-    # （追加）
-    path('tic-tac-toe1/<str:room_name>/', views.playGameOfTicTacToe1),
-    #     -----------------------------
-    #     1
-    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+    # 〇×ゲームの練習１
+    path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
+    #     -----------------------------   -----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe1.py ファイルの playGameOfTicTacToe1 メソッド
 ]
 ```
 
-# Step 10. consumer1.py ファイルの作成
+# Step 9. consumer1.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/tic_tac_toe1/consumer1.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   ├── 📂templates
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.html
+        │   │       └── 📄index.html
+        │   ├── 📂tic_tac_toe1
+👉      │   │   └── 📄consumer1.py
+        │   ├── 📂views
+        │   │   └── 📄v_tic_tac_toe1.py
+        │   └── 📄urls.py
+        └── 📄requirements.txt
+```
 
 ```py
 # See also: 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
@@ -700,35 +758,78 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 11. routing1.py ファイルの作成
+# Step 10. ルート編集 - routing1.py ファイル
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
-📄`host1/webapp1/routing1.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   ├── 📂templates
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.html
+        │   │       └── 📄index.html
+        │   ├── 📂tic_tac_toe1
+        │   │   └── 📄consumer1.py
+        │   ├── 📂views
+        │   │   └── 📄v_tic_tac_toe1.py
+👉      │   ├── 📄routing1.py
+        │   └── 📄urls.py
+        └── 📄requirements.txt
+```
 
 ```py
 from django.conf.urls import url
+
+# 〇×ゲームの練習１
 from webapp1.tic_tac_toe1.consumer1 import TicTacToeConsumer1  # 追加
-#    ------- ------------ ---------
-#    1       2            3
+#    ------- ------------ ---------        ------------------
+#    1       2            3                4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 websocket_urlpatterns = [
-    # （追加） For Tic-tac-toe
+    # ...中略...
+
+    # 〇×ゲームの練習１
     url(r'^tic-tac-toe1/(?P<room_name>\w+)/$', TicTacToeConsumer1.as_asgi()),
-    #     ----------------------------------
-    #     1
+    #     ----------------------------------   ----------------------------
+    #     1                                    2
     # 1. URLの一部（正規表現）の Django での書き方
+    # 2. ASGI形式での書き方
 ]
 ```
 
-# Step 12. asgi.py ファイルの編集
+# Step 11. 設定の編集 - asgi.py ファイル
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
-📄`host1/webapp1/asgi.py`:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │   ├── 📂static
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.js
+        │   │       └── 📄main.css
+        │   ├── 📂templates
+        │   │   └── 📂tic-tac-toe1
+        │   │       ├── 📄game.html
+        │   │       └── 📄index.html
+        │   ├── 📂tic_tac_toe1
+        │   │   └── 📄consumer1.py
+        │   ├── 📂views
+        │   │   └── 📄v_tic_tac_toe1.py
+👉      │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
+        │   └── 📄urls.py
+        └── 📄requirements.txt
+```
 
 ```py
 import os
@@ -762,7 +863,7 @@ application = ProtocolTypeRouter({ # 追加
 })
 ```
 
-# Step 13. Web画面へアクセス
+# Step 12. Web画面へアクセス
 
 （していなければ）Dockerコンテナの起動  
 

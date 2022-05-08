@@ -193,15 +193,19 @@ urlpatterns = [
     # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
+    # 〇×ゲームの練習１
     path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
-    #     -------------
-    #     1
-    # 1. URLの一部
+    #     -------------   --------------------------------
+    #     1               2
+    # 1. URLの `tic-tac-toe1/` というパスにマッチする
+    # 2. v_tic_tac_toe1.py ファイルの indexOfTicTacToe1 メソッド
 
+    # 〇×ゲームの練習１
     path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
-    #     -----------------------------
-    #     1
-    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+    #     -----------------------------   -----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe1.py ファイルの playGameOfTicTacToe1 メソッド
 
     path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
     #                ^                          ^

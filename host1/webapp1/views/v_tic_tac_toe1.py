@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render, redirect
 
+
 def indexOfTicTacToe1(request):
     """（追加） For Tic-tac-toe"""
     if request.method == "POST":
