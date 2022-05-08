@@ -2,7 +2,7 @@
 from django.db import models
 
 
-class MTicTacToeRoom3(models.Model):
+class TicTacToeRoom3(models.Model):
     """Tic-tac-toe3の部屋のモデル"""
 
     # プロパティの仕様を決める感じで

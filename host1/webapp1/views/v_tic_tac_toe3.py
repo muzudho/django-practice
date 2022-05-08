@@ -1,12 +1,13 @@
 from django.http import Http404
 from django.shortcuts import render, redirect
-from webapp1.models.tic_tac_toe3.m_tic_tac_toe_room import MTicTacToeRoom3
-#                              ^                                    ^
-#    ------- ------------------- ------------------
-#    1       2                   3
+from webapp1.models.m_tic_tac_toe3 import TicTacToeRoom3
+#                                ^                     ^
+#    ------- ------ --------------        --------------
+#    1       2      3                     4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 
 #                   v

@@ -23,17 +23,21 @@ from webapp1.services import UserService  # 追加
 #    1
 # 1. アプリケーション フォルダー名
 
-from webapp1.views.tic_tac_toe3 import v_tic_tac_toe_room
-#                             ^
-#    ------- ------------------        ------------------
-#    1       2                         3
+from webapp1.views import v_index
+#    ------- -----        -------
+#    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
+from webapp1.views import v_login_user, v_page1, v_member, v_read_hello, v_read_table1, \
+    v_read_table2, v_read_json_textarea1, v_read_table2o2, v_read_json_response1, \
+    v_read_json_textarea2, v_read_table2o3, v_tic_tac_toe1, v_tic_tac_toe2, \
+    v_tic_tac_toe3
+
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('login-user', views.loginUser, name='loginUser'),
+    path('', v_index.index, name='index'),
+    path('login-user', v_login_user.loginUser, name='loginUser'),
     path('admin/', admin.site.urls),
 
     # Allauth
@@ -43,125 +47,143 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # 追加
     #
 
-    path('practice1/page1.html', views.page1, name='page1'),
+    path('practice1/page1.html', v_page1.page1, name='page1'),
 
     # メンバー一覧
-    path('members/', views.listMember, name='listMember'),  # 追加
-    #                                        ----------
-    #                                        1
-    # 1. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
+    path('members/', v_member.listMember, name='listMember'),  # 追加
+    #     --------                              ----------
+    #     1                                     2
+    # 1. `members/` というURLにマッチする
+    # 2. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 
     # メンバー読取
-    path('members/read/<int:id>/', views.readMember, name='readMember'),  # 追加
+    path('members/read/<int:id>/', v_member.readMember, name='readMember'),  # 追加
     #     ----------------------
     #     1
     # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
 
     # メンバー削除
-    path('members/delete/<int:id>/', views.deleteMember, name='deleteMember'),  # 追加
-    #     ------------------------
-    #     1
-    # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    path('members/delete/<int:id>/',
+         # -----------------------
+         # 1
+         # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+         v_member.deleteMember, name='deleteMember'),  # 追加
 
     # メンバー作成
-    path('members/create/', views.upsertMember, name='createMember'),  # 追加
+    path('members/create/', v_member.upsertMember, name='createMember'),  # 追加
 
     # メンバー更新
-    path('members/update/<int:id>/', views.upsertMember, name='updateMember'),  # 追加
-    #     ------------------------
-    #     1
-    # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    path('members/update/<int:id>/',
+         # -----------------------
+         # 1
+         # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+         v_member.upsertMember, name='updateMember'),  # 追加
 
     # Vuetify練習
-    path('vuetify2/hello1.html', views.readHello, name='readHello'),  # 追加
-    #     --------------------                          ----------
-    #     1                                             2
+    path('vuetify2/hello1.html', v_read_hello.readHello, name='readHello'),  # 追加
+    #     --------------------                                 ---------
+    #     1                                                    2
     # 1. `vuetify2/hello1.html` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify2/data-table1.html', views.readDataTable1,
+    path('vuetify2/data-table1.html', v_read_table1.readDataTable1,
+         # ------------------------
+         # 1
+         # 1. `vuetify2/data-table1.html` というURLにマッチ
          name='readDataTable1'),  # 追加
-    #     -------------------------                               --------------
-    #     1                                                       2
-    # 1. `vuetify2/data-table1.html` というURLにマッチする
+    #          --------------
+    #          2
     # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify2/data-table2.html', views.readDataTable2,
-         name='readDataTable2'),  # 追加
-    #     -------------------------                               --------------
-    #     1                                                       2
-    # 1. `vuetify2/data-table2.html` というURLにマッチする
+    path('vuetify2/data-table2.html', v_read_table2.readDataTable2,
+         # ------------------------
+         # 1
+         # 1. `vuetify2/data-table2.html` というURLにマッチする
+         name='readDataTable2'),
+    #          --------------
+    #          2
     # 2. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify2/json-textarea1.html', views.readJsonTextarea1,
-         name='readJsonTextarea1'),  # 追加
-    #     ----------------------------                                  -----------------
-    #     1                                                             2
-    # 1. `vuetify2/json-textarea1.html` というURLにマッチする
+    path('vuetify2/json-textarea1.html', v_read_json_textarea1.readJsonTextarea1,
+         # ---------------------------
+         # 1
+         # 1. `vuetify2/json-textarea1.html` というURLにマッチする
+         name='readJsonTextarea1'),
+    #          -----------------
+    #          2
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
     # （追加）Vuetify練習
-    path('vuetify2/data-table2-b', views.readDataTable2b,
-         name='readDataTable2b'),  # 追加
-    #     ----------------------                                ---------------
-    #     1                                                         2
-    # 1. `vuetify2/data-table2-b` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable2b' %} のような形でURLを取得するのに使える
+    path('vuetify2/data-table2o2', v_read_table2o2.readDataTable2o2,
+         # ---------------------
+         # 1
+         # 1. `vuetify2/data-table2o2` というURLにマッチする
+         name='readDataTable2o2'),
+    #          ----------------
+    #          2
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 
     # （追加）Vuetify練習
     path('practice1/json-response1',
-         views.readJsonResponse1, name='readJsonResponse1'),
-    #     ------------------------                                  -----------------
-    #     1                                                         2
-    # 1. `practice1/json-response1` というURLにマッチする
+         # -----------------------
+         # 1
+         # 1. `practice1/json-response1` というURLにマッチする
+         v_read_json_response1.readJsonResponse1, name='readJsonResponse1'),
+    #                                                   -----------------
+    #                                                   2
     # 2. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
     # （追加）
     path('vuetify2/json-textarea2.html',
-         views.readJsonTextarea2, name='readJsonTextarea2'),
-    #     ----------------------------                                  -----------------
-    #     1                                                             2
-    # 1. `vuetify2/json-textarea2.html` というURLにマッチする
+         # ---------------------------
+         # 1
+         # 1. `vuetify2/json-textarea2.html` というURLにマッチする
+         v_read_json_textarea2.readJsonTextarea2, name='readJsonTextarea2'),
+    #                                                   -----------------
+    #                                                   2
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
     # （追加）
-    path('vuetify2/data-table2-c', views.readDataTable2c, name='readDataTable2c'),
-    #     ----------------------                                ---------------
-    #     1                                                     2
-    # 1. `vuetify2/data-table2-c` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable2c' %} のような形でURLを取得するのに使える
+    path('vuetify2/data-table2o3',
+         # ---------------------
+         # 1
+         # 1. `vuetify2/data-table2o3` というURLにマッチする
+         v_read_table2o3.readDataTable2o3, name='readDataTable2o3'),
+    #                                            ----------------
+    #                                            2
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
     # （追加）
-    path('tic-tac-toe1/', views.indexOfTicTacToe1),
+    path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
     #     -------------
     #     1
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe1/<str:room_name>/', views.playGameOfTicTacToe1),
+    path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 
     # （追加）
-    path('tic-tac-toe2/', views.indexOfTicTacToe2),
+    path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
     #                ^                          ^
     #     -------------
     #     1
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe2/<str:room_name>/', views.playGameOfTicTacToe2),
+    path('tic-tac-toe2/<str:room_name>/', v_tic_tac_toe2.playGameOfTicTacToe2),
     #                ^                                             ^
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 
     # （追加）
-    path('tic-tac-toe3/', v_tic_tac_toe_room.indexOfTicTacToe3),
+    path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^
     #     -------------
     #     1
@@ -173,7 +195,7 @@ urlpatterns = [
          # ----------------------------
          # 1
          # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
-         v_tic_tac_toe_room.playGameOfTicTacToe3),
+         v_tic_tac_toe3.playGameOfTicTacToe3),
     #                                          ^
 ]
 
