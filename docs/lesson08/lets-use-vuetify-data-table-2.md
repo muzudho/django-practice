@@ -56,7 +56,6 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/static/desserts.json`:  
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
@@ -294,7 +293,7 @@ urlpatterns = [
          name='readDataTable2'),
     #          --------------
     #          3
-    # 1. `vuetify2/data-table2.html` というURLにマッチする
+    # 1. URLの `vuetify-practice/data-table2` というパスにマッチする
     # 2. v_vuetify_practice.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
