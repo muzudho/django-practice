@@ -1,16 +1,8 @@
----
-title: DjangoでデータをサーバーへJSON形式で渡して、記憶させよう！
-tags: Django Docker Vuetify JSON
-author: muzudho1
-slide: false
----
 # 目的
 
 データをJSON形式で渡して、サーバーへ記憶させたい。  
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -30,7 +22,11 @@ slide: false
 | Data format | JSON                                      |
 | Editor      | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
 📂host1
@@ -41,7 +37,7 @@ slide: false
 　│　　├── 📂static
 　│　　│    └── 📄desserts.json
 　│　　├── 📂templates
-　│　　│    └── 📂vuetify2
+　│　　│    └── 📂vuetify-practice
 　│　　│        ├── 📄data-table1.html
 　│　　│        ├── 📄data-table2.html
 　│　　│        ├── 📄hello1.html
@@ -58,7 +54,7 @@ slide: false
 　└── <いろいろ>
 ```
 
-# Step 1. models.pyファイルの編集
+# Step 1. モデル編集 - m_dessert.py ファイル
 
 JSONのデータを受け入れられる形をサーバー側で定義しておく必要がある。  
 おおまかに言って以下のような形だ。  
@@ -77,13 +73,22 @@ JSONのデータを受け入れられる形をサーバー側で定義してお�
 以上から、以下のコードを記述してほしい。  
 ファイルは既存だろうから、マージしてほしい。  
 
-📄`host1/webapp1/models.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂models
+👉              └── 📄m_dessert.py
+```
 
 ```py
+# See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92
 from django.db import models
 
-class Dessert(models.Model):
 
+class Dessert(models.Model):
+    """デザート"""
+
+    # プロパティの仕様を決める感じで
     name = models.CharField('Name', max_length=32)
     calories = models.IntegerField('Calories', blank=True, default=0)
     fat = models.FloatField('Fat (g)', blank=True, default=0)
@@ -91,6 +96,7 @@ class Dessert(models.Model):
     protein = models.FloatField('Protein (g)', blank=True, default=0)
     iron = models.CharField('Iron (%)', max_length=4, blank=True)
 
+    # このオブジェクトを文字列にしたとき返るもの
     def __str__(self):
         """このオブジェクトを文字列にしたとき返るもの"""
         return self.name
@@ -110,12 +116,14 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
 以下のディレクトリーとファイルが生成される。  
 
 ```plaintext
-📂host1
-　└── 📂webapp1
-　 　　└── 📂migrations
-　 　　     ├── 📄__init__.py
-　 　　     ├── ＜既存のいろいろなファイル＞
-　 　　     └── 📄0002_dessert.py
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+👉          ├── 📂migrations
+👉          │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+👉          │   └── 📄0002_dessert.py
+            └── 📂models
+                └── 📄m_dessert.py
 ```
 
 👆 これらのファイルは マイグレーション ファイル と呼ぶらしい。  
@@ -128,17 +136,28 @@ docker-compose run --rm web python manage.py migrate
 
 👆 ここまでやって マイグレーション という作業が終わるらしい。  
 
-# Step 4. admin.py を作成
+# Step 4. 管理画面更新 - admin.py ファイル
 
-以下のファイルを作成してほしい。既存ならマージしてほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
-📄`host1/webapp1/admin.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂migrations
+            │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+            │   └── 📄0002_dessert.py
+            ├── 📂models
+            │   └── 📄m_dessert.py
+👉          └── 📄admin.py
+```
 
 ```py
 from django.contrib import admin
-from .models import Dessert # 追加
+from .models.m_dessert import Dessert
 
-admin.site.register(Dessert) # 追加
+# Register your models here.
+admin.site.register(Dessert)
 ```
 
 👆 管理画面から Dessert オブジェクトを編集できるようにした。  
@@ -205,7 +224,20 @@ Iron (%):
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/static/desserts-placeholder.json`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂migrations
+            │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+            │   └── 📄0002_dessert.py
+            ├── 📂models
+            │   └── 📄m_dessert.py
+            ├── 📂static
+            │   └── 📂json-practice
+👉          │       └── 📄desserts-placeholder.json
+            └── 📄admin.py
+```
 
 ```json
 {
@@ -222,7 +254,23 @@ Iron (%):
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/vuetify2/json-textarea2.html`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂migrations
+            │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+            │   └── 📄0002_dessert.py
+            ├── 📂models
+            │   └── 📄m_dessert.py
+            ├── 📂static
+            │   └── 📂json-practice
+            │       └── 📄desserts-placeholder.json
+            ├── 📂templates
+            │   └── 📂json-practice
+👉          │       └── 📄json-textarea2.html
+            └── 📄admin.py
+```
 
 ```html
 <!DOCTYPE html>
@@ -239,7 +287,7 @@ Iron (%):
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <form method="POST" action="data-table2-c">
+                        <form method="POST" action="data-table2o3">
                             <!--                    =============
                                                     1
                             1. 宛先を間違えないように
@@ -276,24 +324,53 @@ Iron (%):
 </html>
 ```
 
-# Step 10. views.pyファイルの編集
+# Step 10. ビュー編集 - v_json_practice.py ファイル
 
-📄`views.py` は既存だろうから、マージしてほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
-📄`host1/webapp1/views.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂migrations
+            │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+            │   └── 📄0002_dessert.py
+            ├── 📂models
+            │   └── 📄m_dessert.py
+            ├── 📂static
+            │   └── 📂json-practice
+            │       └── 📄desserts-placeholder.json
+            ├── 📂templates
+            │   └── 📂json-practice
+            │       └── 📄json-textarea2.html
+            ├── 📂views
+👉          │   └── 📄v_json_practice.py
+            └── 📄admin.py
+```
 
 ```py
 import json
 from django.http import HttpResponse
-from django.http import JsonResponse
 from django.template import loader
-from .models import Dessert # 追加
 
-# （追加）
+from webapp1.models.m_dessert import Dessert
+#    ------- ------ ---------        -------
+#    1       2      3                4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+
 def readJsonTextarea2(request):
-    template = loader.get_template('vuetify2/json-textarea2.html')
+    """JSONでの応答練習"""
+    template = loader.get_template('json-practice/json-textarea2.html')
+    #                               ---------------------------------
+    #                               1
+    # 1. host1/webapp1/templates/json-practice/json-textarea2.html を取ってきます。
+    #                            ---------------------------------
 
-    with open('webapp1/static/desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/json-practice/desserts-placeholder.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -301,10 +378,11 @@ def readJsonTextarea2(request):
     }
     return HttpResponse(template.render(context, request))
 
-# （追加）
-def readDataTable2c(request):
+
+def readDataTable2o3(request):
+    """JSONでの応答練習"""
     form1Textarea1 = request.POST["textarea1"]
-    doc = json.parse(form1Textarea1) # Dessert
+    doc = json.loads(form1Textarea1)  # Dessert
 
     record = Dessert(
         name=doc["name"],
@@ -321,30 +399,65 @@ def readDataTable2c(request):
     return JsonResponse(doc2)
 ```
 
-# Step 11. urls.pyファイルの編集
+# Step 11. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、マージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
-📄`host1/webapp1/urls.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂migrations
+            │   ├── 📄__init__.py
+            │   ├── ＜既存のいろいろなファイル＞
+            │   └── 📄0002_dessert.py
+            ├── 📂models
+            │   └── 📄m_dessert.py
+            ├── 📂static
+            │   └── 📂json-practice
+            │       └── 📄desserts-placeholder.json
+            ├── 📂templates
+            │   └── 📂json-practice
+            │       └── 📄json-textarea2.html
+            ├── 📂views
+            │   └── 📄v_json_practice.py
+            ├── 📄admin.py
+👉          └── 📄urls.py
+```
 
 ```py
 from django.urls import path
-from . import views
+
+from webapp1.views import v_json_practice
+#    ------- -----        ---------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
-    # （追加）
-    path('vuetify2/json-textarea2.html', views.readJsonTextarea2, name='readJsonTextarea2'),
-    #     ----------------------------                                  -----------------
-    #     1                                                             2
-    # 1. `vuetify2/json-textarea2.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
+    # ...中略...
 
-    # （追加）
-    path('vuetify2/data-table2-c', views.readDataTable2c, name='readDataTable2c'),
-    #     ----------------------                                ---------------
-    #     1                                                     2
-    # 1. `vuetify2/data-table2-c` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable2c' %} のような形でURLを取得するのに使える
+    # JSONでの応答練習
+    path('json-practice/textarea2',
+         # ----------------------
+         # 1
+         v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
+    #    ---------------------------------        -----------------
+    #    2                                        3
+    # 1. URLの `json-practice/textarea2` というパスにマッチする
+    # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
+
+    # JSONでの応答練習
+    path('json-practice/data-table2o3',
+         # --------------------------
+         # 1
+         v_json_practice.readDataTable2o3, name='readDataTable2o3'),
+    #    --------------------------------        ----------------
+    #    2                                       3
+    # 1. URLの `json-practice/data-table2o3` というパスにマッチする
+    # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
+    # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -358,5 +471,8 @@ cd host1
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify2/json-textarea2.html](http://localhost:8000/vuetify2/json-textarea2.html)  
+📖 [http://localhost:8000/json-practice/textarea2](http://localhost:8000/json-practice/textarea2)  
 
+# 次の記事
+
+📖 [ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c)  

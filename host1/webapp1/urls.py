@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, \
-    v_read_json_textarea2, v_read_table2o3, v_tic_tac_toe1, v_tic_tac_toe2, \
+    v_tic_tac_toe1, v_tic_tac_toe2, \
     v_tic_tac_toe3
 
 urlpatterns = [
@@ -77,11 +77,11 @@ urlpatterns = [
 
     # メンバー削除
     path('members/delete/<int:id>/',
-         # -----------------------
+         # ------------------------
          # 1
          v_member.deleteMember, name='deleteMember'),
-    #    ---------------------        ------------
-    #    2                            3
+    #   ---------------------        ------------
+    #   2                            3
     # 1. URLの `members/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_member.py ファイルの deleteMember メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteMember' %} のような形でURLを取得するのに使える
@@ -171,22 +171,26 @@ urlpatterns = [
     # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
-    path('vuetify2/json-textarea2.html',
-         # ---------------------------
+    # JSONでの応答練習
+    path('json-practice/textarea2',
+         # ----------------------
          # 1
-         # 1. `vuetify2/json-textarea2.html` というURLにマッチする
-         v_read_json_textarea2.readJsonTextarea2, name='readJsonTextarea2'),
-    #                                                   -----------------
-    #                                                   2
-    # 2. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
+         v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
+    #    ---------------------------------        -----------------
+    #    2                                        3
+    # 1. URLの `json-practice/textarea2` というパスにマッチする
+    # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
-    path('vuetify2/data-table2o3',
-         # ---------------------
+    # JSONでの応答練習
+    path('json-practice/data-table2o3',
+         # --------------------------
          # 1
-         # 1. `vuetify2/data-table2o3` というURLにマッチする
-         v_read_table2o3.readDataTable2o3, name='readDataTable2o3'),
-    #                                            ----------------
-    #                                            2
+         v_json_practice.readDataTable2o3, name='readDataTable2o3'),
+    #    --------------------------------        ----------------
+    #    2                                       3
+    # 1. URLの `json-practice/data-table2o3` というパスにマッチする
+    # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
     path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
