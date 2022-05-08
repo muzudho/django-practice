@@ -1,17 +1,9 @@
----
-title: DjangoでVuetifyのData tableを使おう！
-tags: Django Docker Vuetify datatable
-author: muzudho1
-slide: false
----
 # 目的
 
 Vuetify を自由自在に使えるよう、使用スキルを上げたい。  
 Data table を作れば上がる。だから説明する。  
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -29,34 +21,48 @@ Data table を作れば上がる。だから説明する。
 | Frontside | Vuetify                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-📂host1
-　├── 📂data
-　│　　└── 📂db
-　│　　　　└── <たくさんのもの>
-　├── 📂webapp1
-　│　　├── 📂templates
-　│　　│    └── 📂vuetify2
-　│　　│        └── 📄hello1.html
-　│　　├── 📄models.py
-　│　　├── 📄settings.py
-　│　　├── 📄urls.py
-　│　　├── 📄views.py
-　│　　└── <いろいろ>
-　├── 📄.env
-　├── 🐳docker-compose.yml
-　├── 🐳Dockerfile
-　├── 📄manage.py
-　└── <いろいろ>
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂templates
+        │   │   └── 📂vuetify-practice
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📄admin.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
 # Step 1. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/vuetify2/data-table1.html`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂vuetify-practice
+👉                  └── 📄data-table1.html
+```
 
 ```html
 <!DOCTYPE html>
@@ -190,41 +196,78 @@ Data table を作れば上がる。だから説明する。
 
 👆 `<v-data-table>` の説明は 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
 
-# Step 2. views.pyファイルの編集
+# Step 2. ビュー編集 - v_vuetify_practice.py ファイル
 
-📄`views.py` は既存だろうから、マージしてほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
-📄`host1/webapp1/views.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── data-table1.html
+            └── 📂views
+👉              └── 📄v_vuetify_practice.py
+```
 
 ```py
 from django.http import HttpResponse
 from django.template import loader
 
-# Vuetify練習
-def readDataTable1(request):
-    template = loader.get_template('vuetify2/data-table1.html')
+
+def readDataTable1(request, id=id):
+    """Vuetify練習"""
+
+    template = loader.get_template('vuetify-practice/data-table1.html')
+    #                               ---------------------------------
+    #                               1
+    # 1. host1/webapp1/templates/vuetify-practice/data-table1.html を取ってきます。
+    #                            ---------------------------------
+
     context = {
     }
+
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# Step 3. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、マージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
-📄`host1/webapp1/urls.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── 📄data-table1.html
+            ├── 📂views
+            │   └── 📄v_vuetify_practice.py
+👉          └── 📄urls.py
+```
 
 ```py
 from django.urls import path
-from . import views
+
+from webapp1.views import v_vuetify_practice
+#    ------- -----        ------------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
+    # ...中略...
+
     # Vuetify練習
-    path('vuetify2/data-table1.html', views.readDataTable1, name='readDataTable1'), # 追加
-    #     -------------------------                               --------------
-    #     1                                                       2
-    # 1. `vuetify2/data-table1.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
+    path('vuetify-practice/data-table1', v_vuetify_practice.readDataTable1,
+         # ---------------------------   ---------------------------------
+         # 1                             2
+         name='readDataTable1'),
+    #          --------------
+    #          3
+    # 1. `vuetify-practice/data-table1` というURLにマッチ
+    # 2. v_vuetify_practice.py ファイルの readDataTable1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -235,7 +278,7 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify2/data-table1.html](http://localhost:8000/vuetify2/data-table1.html)  
+📖 [http://localhost:8000/vuetify-practice/data-table1](http://localhost:8000/vuetify-practice/data-table1)  
 
 # 次の記事
 

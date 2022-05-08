@@ -29,7 +29,7 @@ from webapp1.views import v_index
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
-from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, v_read_table1, \
+from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_read_table2, v_read_json_textarea1, v_read_table2o2, v_read_json_response1, \
     v_read_json_textarea2, v_read_table2o3, v_tic_tac_toe1, v_tic_tac_toe2, \
     v_tic_tac_toe3
@@ -63,7 +63,7 @@ urlpatterns = [
     path('members/', v_member.listMember, name='listMember'),
     #     --------   -------------------        ----------
     #     1          2                          3
-    # 1. `members/` というURLにマッチする
+    # 1. URLの `members/` というパスにマッチする
     # 2. v_member.py ファイルの listMember メソッド
     # 3. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 
@@ -71,7 +71,7 @@ urlpatterns = [
     path('members/read/<int:id>/', v_member.readMember, name='readMember'),
     #     ----------------------   -------------------        ----------
     #     1                        2                          3
-    # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. URLの `members/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_member.py ファイルの readMember メソッド
     # 3. HTMLテンプレートの中で {% url 'readMember' %} のような形でURLを取得するのに使える
 
@@ -82,7 +82,7 @@ urlpatterns = [
          v_member.deleteMember, name='deleteMember'),
     #    ---------------------        ------------
     #    2                            3
-    # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. URLの `members/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_member.py ファイルの deleteMember メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteMember' %} のような形でURLを取得するのに使える
 
@@ -90,7 +90,7 @@ urlpatterns = [
     path('members/create/', v_member.upsertMember, name='createMember'),
     #     ---------------   ---------------------        ------------
     #     1                 2                            3
-    # 1. `members/create/` というURLにマッチする
+    # 1. URLの `members/create/` というパスにマッチする
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
 
@@ -101,39 +101,40 @@ urlpatterns = [
          v_member.upsertMember, name='updateMember'),
     #    ---------------------        ------------
     #    2                            3
-    # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. URLの `members/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify-practice/hello1.html',
-         # ---------------------------
+    path('vuetify-practice/hello1',
+         # ----------------------
          # 1
          v_vuetify_practice.readHello, name='readHello'),
     #     ---------------------------        ---------
     #     2                                  3
-    # 1. `vuetify2/hello1.html` というURLにマッチする
+    # 1. URLの `vuetify-practice/hello1` というパスにマッチする
     # 2. v_vuetify_practice.py ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify2/data-table1.html', v_read_table1.readDataTable1,
-         # ------------------------
-         # 1
-         # 1. `vuetify2/data-table1.html` というURLにマッチ
+    path('vuetify-practice/data-table1', v_vuetify_practice.readDataTable1,
+         # --------------------------------   ---------------------------------
+         # 1                                  2
          name='readDataTable1'),
     #          --------------
-    #          2
-    # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
+    #          3
+    # 1. URLの `vuetify-practice/data-table1` というパスにマッチする
+    # 2. v_vuetify_practice.py ファイルの readDataTable1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
     path('vuetify2/data-table2.html', v_read_table2.readDataTable2,
          # ------------------------
          # 1
-         # 1. `vuetify2/data-table2.html` というURLにマッチする
          name='readDataTable2'),
     #          --------------
     #          2
+    # 1. `vuetify2/data-table2.html` というURLにマッチする
     # 2. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 
     # Vuetify練習

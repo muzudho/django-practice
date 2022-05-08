@@ -167,13 +167,13 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/hello1.html',
-         # ---------------------------
+    path('vuetify-practice/hello1',
+         # ----------------------
          # 1
          v_vuetify_practice.readHello, name='readHello'),
     #     ---------------------------        ---------
     #     2                                  3
-    # 1. `vuetify2/hello1.html` というURLにマッチする
+    # 1. URLの `vuetify-practice/hello1` というパスにマッチする
     # 2. v_vuetify_practice.py ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 ]
@@ -186,7 +186,7 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify-practice/hello1.html](http://localhost:8000/vuetify-practice/hello1.html)  
+📖 [http://localhost:8000/vuetify-practice/hello1](http://localhost:8000/vuetify-practice/hello1)  
 
 # 次の記事
 
