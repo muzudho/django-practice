@@ -207,17 +207,21 @@ urlpatterns = [
     # 1. URLの `tic-tac-toe1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe1.py ファイルの playGameOfTicTacToe1 メソッド
 
+    # 〇×ゲームの練習２
     path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
-    #                ^                          ^
-    #     -------------
-    #     1
-    # 1. URLの一部
+    #                ^                                   ^
+    #     -------------   --------------------------------
+    #     1               2
+    # 1. URLの `tic-tac-toe2/` というパスにマッチする
+    # 2. v_tic_tac_toe2.py ファイルの indexOfTicTacToe2 メソッド
 
+    # 〇×ゲームの練習２
     path('tic-tac-toe2/<str:room_name>/', v_tic_tac_toe2.playGameOfTicTacToe2),
-    #                ^                                             ^
-    #     -----------------------------
-    #     1
-    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+    #                ^                                                      ^
+    #     -----------------------------   -----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe2.py ファイルの playGameOfTicTacToe2 メソッド
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^

@@ -760,7 +760,7 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
 
 # Step 10. ルート編集 - routing1.py ファイル
 
-無ければ以下のファイルを作成、あればマージしてほしい。  
+以下のファイルを無ければ作成、あればマージしてほしい。  
 
 ```plaintext
     └── 📂host1

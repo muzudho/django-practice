@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 
 #                   v
 def indexOfTicTacToe2(request):
-    """（追加） For Tic-tac-toe2"""
+    """〇×ゲームの練習２"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
@@ -16,7 +16,7 @@ def indexOfTicTacToe2(request):
 
 #                      v
 def playGameOfTicTacToe2(request, room_name):
-    """（追加） For Tic-tac-toe2"""
+    """〇×ゲームの練習２"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
         raise Http404(f"My piece '{myPiece}' does not exists")
