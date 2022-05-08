@@ -1,6 +1,6 @@
 ---
 title: Djangoでユーザー認証を付けよう！
-tags: Django Docker Allauth
+tags: Django Docker Allauth ユーザー認証
 author: muzudho1
 slide: false
 ---
@@ -33,6 +33,10 @@ slide: false
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 | Database  | PostgreSQL                                |
 
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
 # Step 1. Gmail 側の設定をしよう
 
 パスワードを忘れたとき、パスワード変更画面のURLがメールで飛んでくる仕掛けはよくある。  
@@ -51,7 +55,11 @@ Googleのアカウントから、
 パスワードのような漏れて困るものは ソースではなく 📄`.env` ファイルに書くのを習慣にし、
 このファイルは 📄`.gitignore` ファイルを設定することで（あるいは既に設定してあって） リモートのGitリポジトリにプッシュしないようにしてほしい。  
 
-📄host1/.env
+```plaintext
+    └── 📂host1
+👉      ├── 📄.env
+        └── <いろいろ>
+```
 
 ```plaintext
 EMAIL_HOST_USER=あなたのGmailアドレス
@@ -64,7 +72,12 @@ EMAIL_HOST_PASSWORD=あなたのGmailアドレスのアプリパスワード
 
 以下のファイルの該当箇所を追記してほしい
 
-📄host1/docker-compose.yml
+```plaintext
+    └── 📂host1
+        ├── 📄.env
+👉      ├── 🐳docker-compose.yml
+        └── <いろいろ>
+```
 
 ```yaml
   # Djangoアプリ
@@ -82,7 +95,13 @@ EMAIL_HOST_PASSWORD=あなたのGmailアドレスのアプリパスワード
 
 ファイルの末尾にでも追加してほしい。  
 
-📄host1/requirements.txt:  
+```plaintext
+    └── 📂host1
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+👉      ├── 📄requirements.txt
+        └── <いろいろ>
+```
 
 ```shell
 # ユーザー認証
@@ -93,7 +112,16 @@ django-allauth>=0.32.0
 
 以下のように該当箇所を追加してほしい。  
 
-📄host1/webapp1/settings.py:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+👉      │　　├── 📄settings.py
+        │　　└── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 📄requirements.txt
+        └── <いろいろ>
+```
 
 ```py
 INSTALLED_APPS = [
@@ -128,7 +156,17 @@ EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)
 
 以下のように該当箇所を追加してほしい。  
 
-📄host1/webapp1/urls.py:  
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │　　├── 📄settings.py
+👉      │　　├── 📄urls.py
+        │　　└── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 📄requirements.txt
+        └── <いろいろ>
+```
 
 ```py
 from django.contrib import admin
@@ -167,8 +205,7 @@ docker-compose up
 
 # 次の記事
 
-* 📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)
-    * 📖 [Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)  
+📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
 
 # 参考にした記事
 
