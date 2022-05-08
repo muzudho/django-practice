@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import TemplateView  # 追加
-from . import views
-import account_pb2_grpc                  # 追加
-from webapp1.services import UserService  # 追加
+from django.views.generic import TemplateView
+import account_pb2_grpc
+from webapp1.services import UserService
 #    -------
 #    1
 # 1. アプリケーション フォルダー名
@@ -42,8 +41,8 @@ urlpatterns = [
     # Allauth
     # https://sinyblog.com/django/django-allauth/
     path('', TemplateView.as_view(template_name='home.html'),
-         name='home'),  # 追加。ログオン後のTOP画面の定義
-    path('accounts/', include('allauth.urls')),  # 追加
+         name='home'),  # ログオン後のTOP画面の定義
+    path('accounts/', include('allauth.urls')),
     #
 
     path('practice1/page1', v_page1.page1, name='page1'),
@@ -61,14 +60,15 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # メンバー一覧
-    path('members/', v_member.listMember, name='listMember'),  # 追加
-    #     --------                              ----------
-    #     1                                     2
+    path('members/', v_member.listMember, name='listMember'),
+    #     --------   -------------------        ----------
+    #     1          2                          3
     # 1. `members/` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
+    # 2. v_member.py ファイルの listMember メソッド
+    # 3. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 
     # メンバー読取
-    path('members/read/<int:id>/', v_member.readMember, name='readMember'),  # 追加
+    path('members/read/<int:id>/', v_member.readMember, name='readMember'),
     #     ----------------------
     #     1
     # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
@@ -78,20 +78,20 @@ urlpatterns = [
          # -----------------------
          # 1
          # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
-         v_member.deleteMember, name='deleteMember'),  # 追加
+         v_member.deleteMember, name='deleteMember'),
 
     # メンバー作成
-    path('members/create/', v_member.upsertMember, name='createMember'),  # 追加
+    path('members/create/', v_member.upsertMember, name='createMember'),
 
     # メンバー更新
     path('members/update/<int:id>/',
          # -----------------------
          # 1
          # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
-         v_member.upsertMember, name='updateMember'),  # 追加
+         v_member.upsertMember, name='updateMember'),
 
     # Vuetify練習
-    path('vuetify2/hello1.html', v_read_hello.readHello, name='readHello'),  # 追加
+    path('vuetify2/hello1.html', v_read_hello.readHello, name='readHello'),
     #     --------------------                                 ---------
     #     1                                                    2
     # 1. `vuetify2/hello1.html` というURLにマッチする
@@ -102,7 +102,7 @@ urlpatterns = [
          # ------------------------
          # 1
          # 1. `vuetify2/data-table1.html` というURLにマッチ
-         name='readDataTable1'),  # 追加
+         name='readDataTable1'),
     #          --------------
     #          2
     # 2. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
@@ -127,7 +127,7 @@ urlpatterns = [
     #          2
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
-    # （追加）Vuetify練習
+    # Vuetify練習
     path('vuetify2/data-table2o2', v_read_table2o2.readDataTable2o2,
          # ---------------------
          # 1
@@ -137,7 +137,7 @@ urlpatterns = [
     #          2
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 
-    # （追加）Vuetify練習
+    # Vuetify練習
     path('practice1/json-response1',
          # -----------------------
          # 1
@@ -147,7 +147,6 @@ urlpatterns = [
     #                                                   2
     # 2. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
-    # （追加）
     path('vuetify2/json-textarea2.html',
          # ---------------------------
          # 1
@@ -157,7 +156,6 @@ urlpatterns = [
     #                                                   2
     # 2. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
-    # （追加）
     path('vuetify2/data-table2o3',
          # ---------------------
          # 1
@@ -167,40 +165,34 @@ urlpatterns = [
     #                                            2
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
-    # （追加）
     path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
     #     -------------
     #     1
     # 1. URLの一部
 
-    # （追加）
     path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 
-    # （追加）
     path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
     #                ^                          ^
     #     -------------
     #     1
     # 1. URLの一部
 
-    # （追加）
     path('tic-tac-toe2/<str:room_name>/', v_tic_tac_toe2.playGameOfTicTacToe2),
     #                ^                                             ^
     #     -----------------------------
     #     1
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 
-    # （追加）
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^
     #     -------------
     #     1
     # 1. URLの一部
 
-    # （追加）
     path('tic-tac-toe3/<str:room_name>/',
          #           ^
          # ----------------------------
@@ -211,6 +203,6 @@ urlpatterns = [
 ]
 
 
-def grpc_handlers(server):  # 追加
+def grpc_handlers(server):
     account_pb2_grpc.add_UserControllerServicer_to_server(
         UserService.as_servicer(), server)
