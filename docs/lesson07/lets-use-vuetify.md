@@ -1,9 +1,3 @@
----
-title: DjangoでフロントエンドにVuetifyを使おう！
-tags: Django Docker Vuetify
-author: muzudho1
-slide: false
----
 # 目的
 
 Django に最初から入っている HTMLレンダラー に満足できない。  
@@ -11,8 +5,6 @@ Django に最初から入っている HTMLレンダラー に満足できない�
 そこでフロントエンドに Vuetify を使う。  
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -33,40 +25,48 @@ Django に最初から入っている HTMLレンダラー に満足できない�
 | Frontside | Vuetify                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-📂host1
-　├── 📂data
-　│　　└── 📂db
-　│　　　　└── <たくさんのもの>
-　├── 📂webapp1
-　│　　├── 📂templates
-　│　　│    ├── 📂members
-　│　　│    |   ├── 📄delete.html
-　│　　│    |   ├── 📄list.html
-　│　　│    |   ├── 📄read.html
-　│　　│    │   └── 📄upsert.html
-　│　　│    └── 📂webapp1
-　│　　│        └── 📄<いろいろ>.html
-　│　　├── 📄admin.py
-　│　　├── 📄models.py
-　│　　├── 📄settings.py
-　│　　├── 📄urls.py
-　│　　├── 📄views.py
-　│　　└── <いろいろ>
-　├── 📄.env
-　├── 🐳docker-compose.yml
-　├── 🐳Dockerfile
-　├── 📄manage.py
-　└── <いろいろ>
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂templates
+        │   │   └── 📂members
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📄admin.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
 # Step 1. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/vuetify2/hello1.html`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂vuetify-practice
+👉                  └── 📄hello1.html
+```
 
 ```html
 <!DOCTYPE html>
@@ -104,41 +104,78 @@ Django に最初から入っている HTMLレンダラー に満足できない�
 
 👆 `<v-alert>` の説明は 📖[Vuetify Alerts Usage](https://vuetifyjs.com/en/components/alerts/#usage) のページにある。  
 
-# Step 2. views.pyファイルの編集
+# Step 2. ビュー編集 - v_vuetify_practice.py ファイル
 
-📄`views.py` は既存だろうから、マージしてほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
-📄`host1/webapp1/views.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── 📄hello1.html
+            └── 📂views
+👉              └── 📄v_vuetify_practice.py
+```
 
 ```py
 from django.http import HttpResponse
 from django.template import loader
 
-# Vuetify練習
+
 def readHello(request, id=id):
-    template = loader.get_template('vuetify2/hello1.html')
+    """Vuetify練習"""
+
+    template = loader.get_template('vuetify-practice/hello1.html')
+    #                               ----------------------------
+    #                               1
+    # 1. host1/webapp1/templates/vuetify-practice/hello1.html を取ってきます。
+    #                            ----------------------------
+
     context = {
     }
+
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# Step 3. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、マージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
-📄`host1/webapp1/urls.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── 📄hello1.html
+            ├── 📂views
+            │   └── 📄v_vuetify_practice.py
+👉          └── 📄urls.py
+```
 
 ```py
 from django.urls import path
-from . import views
+
+from webapp1.views import v_vuetify_practice
+#    ------- -----        ------------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
+    # ...中略...
+
     # Vuetify練習
-    path('vuetify2/hello1.html', views.readHello, name='readHello'), # 追加
-    #     --------------------                          ----------
-    #     1                                             2
+    path('vuetify-practice/hello1.html',
+         # ---------------------------
+         # 1
+         v_vuetify_practice.readHello, name='readHello'),
+    #     ---------------------------        ---------
+    #     2                                  3
     # 1. `vuetify2/hello1.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
+    # 2. v_vuetify_practice.py ファイルの readHello メソッド
+    # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -149,7 +186,7 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify2/hello1.html](http://localhost:8000/vuetify2/hello1.html)  
+📖 [http://localhost:8000/vuetify-practice/hello1.html](http://localhost:8000/vuetify-practice/hello1.html)  
 
 # 次の記事
 
