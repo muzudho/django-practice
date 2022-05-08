@@ -23,6 +23,14 @@ from webapp1.services import UserService  # 追加
 #    1
 # 1. アプリケーション フォルダー名
 
+from webapp1.views.tic_tac_toe3 import v_tic_tac_toe_room
+#                             ^
+#    ------- ------------------        ------------------
+#    1       2                         3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
 urlpatterns = [
     path('', views.index, name='index'),
     path('login-user', views.loginUser, name='loginUser'),
@@ -153,18 +161,20 @@ urlpatterns = [
     # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
 
     # （追加）
-    path('tic-tac-toe3/', views.indexOfTicTacToe3),
-    #                ^                          ^
+    path('tic-tac-toe3/', v_tic_tac_toe_room.indexOfTicTacToe3),
+    #                ^                    ^
     #     -------------
     #     1
     # 1. URLの一部
 
     # （追加）
-    path('tic-tac-toe3/<str:room_name>/', views.playGameOfTicTacToe3),
-    #                ^                                             ^
-    #     -----------------------------
-    #     1
-    # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+    path('tic-tac-toe3/<str:room_name>/',
+         #           ^
+         # ----------------------------
+         # 1
+         # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+         v_tic_tac_toe_room.playGameOfTicTacToe3),
+    #                                          ^
 ]
 
 
