@@ -1,17 +1,9 @@
----
-title: Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！
-tags: Django Docker Vuetify JSON
-author: muzudho1
-slide: false
----
 # 目的
 
-Vuetify に JSON形式でデータを渡したい。
-HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する。  
+Vuetify に JSON形式でデータを渡したい。  
+HTML の中の JavaScript に JSON を動的に埋め込もう。  
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -29,28 +21,35 @@ HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する
 | Frontside | Vuetify                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-📂host1
-　├── 📂data
-　│　　└── 📂db
-　│　　　　└── <たくさんのもの>
-　├── 📂webapp1
-　│　　├── 📂templates
-　│　　│    └── 📂vuetify2
-　│　　│        ├── 📄data-table1.html
-　│　　│        └── 📄hello1.html
-　│　　├── 📄models.py
-　│　　├── 📄settings.py
-　│　　├── 📄urls.py
-　│　　├── 📄views.py
-　│　　└── <いろいろ>
-　├── 📄.env
-　├── 🐳docker-compose.yml
-　├── 🐳Dockerfile
-　├── 📄manage.py
-　└── <いろいろ>
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂templates
+        │   │   └── 📂vuetify-practice
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📄admin.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
 # Step 1. JSONファイルの作成
@@ -58,6 +57,13 @@ HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する
 以下のファイルを作成してほしい。  
 
 📄`host1/webapp1/static/desserts.json`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                └── 📂vuetify-practice
+👉                  └── 📄desserts.json
+```
 
 ```json
 {
@@ -163,7 +169,16 @@ HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/templates/vuetify2/data-table2.html`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂vuetify-practice
+            │       └── 📄desserts.json
+            └── 📂templates
+                └── 📂vuetify-practice
+👉                  └── 📄data-table2.html
+```
 
 ```html
 <!DOCTYPE html>
@@ -201,22 +216,38 @@ HTML の中の JavaScript に JSON を動的に埋め込む方法を説明する
 </html>
 ```
 
-# Step 3. views.pyファイルの編集
+# Step 3. ビュー編集 - v_vuetify_practice.py ファイル
 
-📄`views.py` は既存だろうから、マージしてほしい。  
+以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
-📄`host1/webapp1/views.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂vuetify-practice
+            │       └── 📄desserts.json
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── data-table2.html
+            └── 📂views
+👉              └── 📄v_vuetify_practice.py
+```
 
 ```py
-import json # 追加
+import json  # 追加
 from django.http import HttpResponse
 from django.template import loader
 
-# Vuetify練習
-def readDataTable2(request):
-    template = loader.get_template('vuetify2/data-table2.html')
 
-    with open('webapp1/static/desserts.json', mode='r', encoding='utf-8') as f:
+def readDataTable2(request):
+    """Vuetify練習"""
+    template = loader.get_template('vuetify-practice/data-table2.html')
+    #                               ---------------------------------
+    #                               1
+    # 1. host1/webapp1/templates/vuetify-practice/data-table2.html を取ってきます。
+    #                            ---------------------------------
+
+    with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -225,23 +256,47 @@ def readDataTable2(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 4. urls.pyファイルの編集
+# Step 4. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、マージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
-📄`host1/webapp1/urls.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂vuetify-practice
+            │       └── 📄desserts.json
+            ├── 📂templates
+            │   └── 📂vuetify-practice
+            │       └── 📄data-table2.html
+            ├── 📂views
+            │   └── 📄v_vuetify_practice.py
+👉          └── 📄urls.py
+```
 
 ```py
 from django.urls import path
-from . import views
+
+from webapp1.views import v_vuetify_practice
+#    ------- -----        ------------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
+    # ...中略...
+
     # Vuetify練習
-    path('vuetify2/data-table2.html', views.readDataTable2, name='readDataTable2'), # 追加
-    #     -------------------------                               --------------
-    #     1                                                       2
+    path('vuetify-practice/data-table2.html', v_vuetify_practice.readDataTable2,
+         # --------------------------------   ---------------------------------
+         # 1                                  2
+         name='readDataTable2'),
+    #          --------------
+    #          3
     # 1. `vuetify2/data-table2.html` というURLにマッチする
-    # 2. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
+    # 2. v_vuetify_practice.py ファイルの readDataTable2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -252,7 +307,11 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify2/data-table2.html](http://localhost:8000/vuetify2/data-table2.html)  
+📖 [http://localhost:8000/vuetify-practice/data-table2](http://localhost:8000/vuetify-practice/data-table2)  
+
+# 次の記事
+
+📖 [DjangoのWebページへJSON形式のテキストを渡そう！](https://qiita.com/muzudho1/items/c50859d9bde800d06a62)  
 
 # 参考にした記事
 
@@ -260,7 +319,3 @@ docker-compose up
     * 📖 [Django: passing JSON from view to template](https://stackoverflow.com/questions/31151229/django-passing-json-from-view-to-template)
 * Vuetifyのサンプルプログラム
     * 📖 [Vuetify - Data tables - Dense](https://vuetifyjs.com/en/components/data-tables/#dense)
-
-# 次の記事
-
-📖 [DjangoのWebページへJSON形式のテキストを渡そう！](https://qiita.com/muzudho1/items/c50859d9bde800d06a62)  
