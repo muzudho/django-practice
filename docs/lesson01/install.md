@@ -1,23 +1,6 @@
----
-title: DjangoをDockerコンテナへインストールしよう！
-tags: Windows VisualStudioCode Docker Django コンテナ
-author: muzudho1
-slide: false
----
 # 目的
 
-ゲーム対局サーバーを作ることにした。  
-最重要の要件は次の１点。  
-
-* なるべく多くの人がコード編集に参加できるようにしたい
-
-関わる人は 人工知能分野で、機械学習をしている人が多い。  
-そこで **Python** 、 **Django** を選んだ。  
-
-以下は自分用に追加で課したもの
-
-* 会員制のWebサイトにする
-* Docker を使う
+環境を用意する。  
 
 # はじめに
 
@@ -32,6 +15,8 @@ slide: false
 
 一番参考になる元記事は 📖[Quickstart: Compose and Django](https://docs.docker.com/samples/django/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 # Step 1. 開発環境の確認
 
@@ -224,63 +209,4 @@ docker-compose up
 
 # 次の記事
 
-学習コストが低くなるように並べてあります。数字の小さな Lesson から読み進めてください。  
-
-Lesson 1. Install  
-
-* 📖 `DjangoをDockerコンテナへインストールしよう！` (この記事)  
-
-Lesson 2. Auth  
-
-* 📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)
-
-Lesson 3. Page  
-
-* 📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)
-    * 📖 [Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
-
-Lesson 4. Super-user  
-
-* 📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)
-
-Lesson 5. Model  
-
-* 📖 [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2)
-
-Lesson 6. CRUD  
-
-* 📖 [Djangoでモデルのインスタンスの一覧表示をしよう！](https://qiita.com/muzudho1/items/77668130b6d941596327)
-    * 📖 [Djangoでモデルのインスタンスの読取ページを作成しよう！](https://qiita.com/muzudho1/items/ae362f53a670e265a7e4)
-    * 📖 [Djangoでモデルのインスタンスの削除ページを作成しよう！](https://qiita.com/muzudho1/items/32694c883331c75ef059)
-    * 📖 [Djangoでモデルのインスタンスの作成／更新ページを作成しよう！](https://qiita.com/muzudho1/items/806ecdba1654ae169f37)
-
-Lesson 7. Vuetify
-
-* 📖 [DjangoでフロントエンドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
-    * 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)
-
-Lesson 8. JSON
-
-* 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-    * 📖 [DjangoのWebページへJSON形式のテキストを渡そう！](https://qiita.com/muzudho1/items/c50859d9bde800d06a62)
-* 📖 [DjangoのサーバーからデータをJSON形式のテキストで受信しよう！](https://qiita.com/muzudho1/items/d83760a6a4abadaf19c4)
-* 📖 [DjangoでデータをサーバーへJSON形式で渡して、記憶させよう！](https://qiita.com/muzudho1/items/ed0ea262aaa327a2d12b)
-
-Lesson 9. Socket
-
-* 📖 [ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c)
-
-Lesson 10. Web socket
-
-* 📖 [DjangoのWebサーバーとクライアント側のアプリで通信しよう！](https://qiita.com/muzudho1/items/9bad88a4092bf83a0f12)
-    * 📖 [DjangoのWebサーバーとクライアント側のアプリ間でJSON形式のテキストを通信しよう！](https://qiita.com/muzudho1/items/a3870c78f609a65debe0)
-
-Lesson 11. Tic tac toe
-
-* 📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！](https://qiita.com/muzudho1/items/3bd5e55fbea2c0598e8b)
-    * 📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)
-
-Lesson 12. Open server
-
-* 📖 [Django さくらVPS 備忘録](https://qiita.com/muzudho1/items/1d3b4b5608716463184c)
-
+📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)  
