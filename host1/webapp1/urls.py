@@ -88,6 +88,11 @@ urlpatterns = [
 
     # メンバー作成
     path('members/create/', v_member.upsertMember, name='createMember'),
+    #     ---------------   ---------------------        ------------
+    #     1                 2                            3
+    # 1. `members/create/` というURLにマッチする
+    # 2. v_member.py ファイルの upsertMember メソッド
+    # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
 
     # メンバー更新
     path('members/update/<int:id>/',
@@ -95,6 +100,10 @@ urlpatterns = [
          # 1
          # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
          v_member.upsertMember, name='updateMember'),
+    #    ---------------------        ------------
+    #    2                            3
+    # 2. v_member.py ファイルの upsertMember メソッド
+    # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
     path('vuetify2/hello1.html', v_read_hello.readHello, name='readHello'),
