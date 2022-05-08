@@ -1,9 +1,3 @@
----
-title: DjangoをDockerコンテナへインストールしよう！
-tags: Windows VisualStudioCode Docker Django コンテナ
-author: muzudho1
-slide: false
----
 # 目的
 
 ゲーム対局サーバーを作ることにした。  
@@ -19,13 +13,18 @@ slide: false
 * 会員制のWebサイトにする
 * Docker を使う
 
-# 目次
+# ここは目次
 
-学習コストが低くなるように並べている。数字の小さな Lesson から読み進めてほしい。  
+学習コストが低くなるように並べている。  
+数字の小さな Lesson から　上から下へ１つずつ、飛ばさず全部　読み進めてほしい。  
+
+Table of Contents
+
+* 📖 `DjangoとDockerでゲーム対局サーバーを作ろう！` (この記事)  
 
 Lesson 1. Install  
 
-* 📖 `DjangoをDockerコンテナへインストールしよう！` (この記事)  
+* 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/48e69ed17d70a8f171a7)  
 
 Lesson 2. Auth  
 
