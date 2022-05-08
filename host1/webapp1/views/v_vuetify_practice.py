@@ -1,4 +1,4 @@
-import json  # 追加
+import json
 from django.http import HttpResponse
 from django.template import loader
 

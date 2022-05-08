@@ -30,7 +30,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
-    v_read_json_response1, \
+    v_json_practice, \
     v_read_json_textarea2, v_read_table2o3, v_tic_tac_toe1, v_tic_tac_toe2, \
     v_tic_tac_toe3
 
@@ -161,14 +161,15 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice1/json-response1',
-         # -----------------------
+    path('json-practice/response1',
+         # ----------------------
          # 1
-         # 1. `practice1/json-response1` というURLにマッチする
-         v_read_json_response1.readJsonResponse1, name='readJsonResponse1'),
-    #                                                   -----------------
-    #                                                   2
-    # 2. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
+         v_json_practice.readJsonResponse1, name='readJsonResponse1'),
+    #    ---------------------------------        -----------------
+    #    2                                        3
+    # 1. URLの `practice1/json-response1` というパスにマッチする
+    # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
     path('vuetify2/json-textarea2.html',
          # ---------------------------
