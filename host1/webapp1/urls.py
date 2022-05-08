@@ -37,7 +37,6 @@ from webapp1.views import v_login_user, v_page1, v_member, v_read_hello, v_read_
 
 urlpatterns = [
     path('', v_index.index, name='index'),
-    path('login-user', v_login_user.loginUser, name='loginUser'),
     path('admin/', admin.site.urls),
 
     # Allauth
@@ -47,7 +46,19 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # 追加
     #
 
-    path('practice1/page1.html', v_page1.page1, name='page1'),
+    path('practice1/page1', v_page1.page1, name='page1'),
+    #     ---------------   -------------        -----
+    #     1                 2                    3
+    # 1. URLの `practice1/page1` というパスにマッチする
+    # 2. v_page1.py ファイルの page1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
+
+    path('login-user', v_login_user.loginUser, name='loginUser'),
+    #     ----------   ----------------------        ---------
+    #     1            2                             3
+    # 1. URLの `login-user` というパスにマッチする
+    # 2. v_login_user.py ファイルの loginUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # メンバー一覧
     path('members/', v_member.listMember, name='listMember'),  # 追加

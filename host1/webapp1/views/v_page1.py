@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.template import loader  # 追加
+from django.template import loader
 
 
 def page1(request):

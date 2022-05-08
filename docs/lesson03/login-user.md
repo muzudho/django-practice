@@ -1,23 +1,17 @@
----
-title: Djangoでログインユーザー情報を表示しよう！
-tags: Django Docker Allauth
-author: muzudho1
-slide: false
----
 # 目的
 
-画面に下記のようなログインしている自分のユーザー情報を表示する方法を説明する。  
+ログインしている自分のユーザー情報を表示したい。  
+フォーマットは以下のように考えている。  
 
 ```
 Login user.
-id: 1
-username: Muzudho
-email: admin@example.com
+
+* id: 1
+* username: Muzudho
+* email: admin@example.com
 ```
 
 # はじめに
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 前提知識:  
 
@@ -34,22 +28,32 @@ email: admin@example.com
 | Auth      | allauth                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-前の記事から続いていて、ディレクトリ構成を抜粋すると 以下のようになっている。  
+この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
+
+この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-📂host1
-　├── 📂data
-　│　　└── 📂db
-　│　　　　└── （たくさんのもの）
-　├── 📂webapp1
-　│　　├── 📄settings.py
-　│　　├── 📄urls.py
-　│　　└── <いろいろ>
-　├── 📄.env
-　├── 🐳docker-compose.yml
-　├── 🐳Dockerfile
-　├── 📄manage.py
-　└── <いろいろ>
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── <たくさんのもの>
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂templates
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ構造を繰り返す
+        │   │       └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📄settings.py
+        │   ├── 📄urls.py
+        │   └── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        └── <いろいろ>
 ```
 
 # Step 1. HTMLファイルを置く
@@ -57,14 +61,12 @@ email: admin@example.com
 以下のディレクトリ、ファイルを作成してほしい。  
 
 ```plaintext
-📂host1
-　└── 📂webapp1                      # アプリケーション フォルダー
-　 　　└── 📂templates
-　 　　　　└── 📂webapp1              # もう１回 アプリケーション フォルダー
-　 　　        └── 📄login-user.html
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ構造を繰り返す
+                    └── 📄login-user.html
 ```
-
-📄`host1/webapp1/templates/webapp1/login-user.html`:  
 
 ```html
 <html>
@@ -79,26 +81,35 @@ email: admin@example.com
 </html>
 ```
 
-# Step 2. views.py を編集
+# Step 2. ビュー作成 - v_login_user.py ファイル
 
 以下のファイルを作成してほしい。  
 
 ```plaintext
-📂host1
-　└── 📂webapp1
-　 　　└── 📄views.py
+    └── 📂host1
+        └── 📂webapp1
+            ├── 📂templates
+            │   └── 📂webapp1
+            │       └── 📄login-user.html
+            └── 📂views
+👉              └── 📄v_login_user.py
 ```
-
-📄`host1/webapp1/views.py`:  
 
 ```py
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.template import loader
 
+
 @login_required
 def loginUser(request):
+
     template = loader.get_template('webapp1/login-user.html')
+    #                               -----------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/login-user.html を取ってきます。
+    #                            -----------------------
+    #    webapp1 が２回出てくるのはテクニックのようです
 
     user = request.user
     context = {
@@ -109,15 +120,41 @@ def loginUser(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.py を編集
+# Step 3. ルート編集 - urls.py ファイル
 
 以下のファイルの該当箇所を追記してほしい
 
-📄`host1/webapp1/urls.py`:  
+```plaintext
+    └── 📂host1
+        └── 📂webapp1
+            ├── 📂templates
+            │   └── 📂webapp1
+            │       └── 📄login-user.html
+            ├── 📂views
+            │   └── 📄v_login_user.py
+👉          └── 📄urls.py
+```
 
 ```py
+# 冒頭
+from webapp1.views import v_login_user
+#    ------- -----        ------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
+# ...中略...
+
 urlpatterns = [
-    path('login-user', views.loginUser, name='loginUser'), # 追加
+    # ...中略...
+
+    path('login-user', v_login_user.loginUser, name='loginUser'),
+    #     ----------   ----------------------        ---------
+    #     1            2                             3
+    # 1. URLの `login-user` というパスにマッチする
+    # 2. v_login_user.py ファイルの loginUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 ]
 ```
 
