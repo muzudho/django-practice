@@ -77,7 +77,7 @@ urlpatterns = [
     # 2. v_member.py ファイルの readMember メソッド
     # 3. HTMLテンプレートの中で {% url 'readMember' %} のような形でURLを取得するのに使える
 
-    # メンバー削除
+    # 会員削除
     path('members/delete/<int:id>/',
          # ------------------------
          # 1
@@ -240,6 +240,17 @@ urlpatterns = [
     # 1. URLの `rooms/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_room.py ファイルの readRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
+
+    # 部屋削除
+    path('rooms/delete/<int:id>/',
+         # ------------------------
+         # 1
+         v_room.deleteRoom, name='deleteRoom'),
+    #   ---------------------        ------------
+    #   2                            3
+    # 1. URLの `rooms/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの deleteRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^

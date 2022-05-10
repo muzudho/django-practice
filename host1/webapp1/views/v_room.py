@@ -26,3 +26,18 @@ def readRoom(request, id=id):
         'room': Room.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
     return HttpResponse(template.render(context, request))
+
+
+def deleteRoom(request, id=id):
+    """部屋削除"""
+    template = loader.get_template('rooms/delete.html')
+
+    room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
+    name = room.name  # 名前だけまだ使う
+    room.delete()
+    context = {
+        'room': {
+            'name': name
+        }
+    }
+    return HttpResponse(template.render(context, request))
