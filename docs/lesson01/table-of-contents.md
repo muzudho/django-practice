@@ -80,3 +80,7 @@ Lesson 12. Open server
 
 * 📖 [Django さくらVPS 備忘録](https://qiita.com/muzudho1/items/1d3b4b5608716463184c)
 
+Lesson 13. Make room
+
+* 📖 [Djangoでゲーム対局部屋を登録しよう！](https://qiita.com/muzudho1/items/e1cf253dd6929bcd708d)
+* 📖 [Djangoでゲーム対局部屋を一覧しよう！](https://qiita.com/muzudho1/items/346c286d4f99850afe23)

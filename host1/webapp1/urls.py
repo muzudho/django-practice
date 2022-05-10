@@ -32,10 +32,12 @@ from webapp1.views import v_index
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, \
     v_tic_tac_toe1, v_tic_tac_toe2, \
-    v_tic_tac_toe3
+    v_tic_tac_toe3, v_room
 
 urlpatterns = [
     path('', v_index.index, name='index'),
+
+    # 管理画面に入りたい
     path('admin/', admin.site.urls),
 
     # Allauth
@@ -222,6 +224,14 @@ urlpatterns = [
     #     1                               2
     # 1. URLの `tic-tac-toe2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe2.py ファイルの playGameOfTicTacToe2 メソッド
+
+    # 部屋一覧
+    path('rooms/', v_room.listRoom, name='listRoom'),
+    #     ------   ---------------        ----------
+    #     1        2                      3
+    # 1. URLの `rooms/` というパスにマッチする
+    # 2. v_room.py ファイルの listRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^
