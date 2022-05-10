@@ -88,7 +88,7 @@ urlpatterns = [
     # 2. v_member.py ファイルの deleteMember メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteMember' %} のような形でURLを取得するのに使える
 
-    # メンバー作成
+    # 会員作成
     path('members/create/', v_member.upsertMember, name='createMember'),
     #     ---------------   ---------------------        ------------
     #     1                 2                            3
@@ -96,7 +96,7 @@ urlpatterns = [
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
 
-    # メンバー更新
+    # 会員更新
     path('members/update/<int:id>/',
          # -----------------------
          # 1
@@ -251,6 +251,25 @@ urlpatterns = [
     # 1. URLの `rooms/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_room.py ファイルの deleteRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
+
+    # 部屋作成
+    path('rooms/create/', v_room.upsertRoom, name='createRoom'),
+    #     -------------   -----------------        ----------
+    #     1               2                        3
+    # 1. URLの `rooms/create/` というパスにマッチする
+    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
+
+    # 部屋更新
+    path('rooms/update/<int:id>/',
+         # ---------------------
+         # 1
+         v_room.upsertRoom, name='updateRoom'),
+    #    -----------------        ----------
+    #    2                        3
+    # 1. URLの `rooms/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^

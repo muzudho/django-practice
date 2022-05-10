@@ -2,17 +2,17 @@
 
 （※いわゆる CRUD の C と U）  
 
-`http://localhost:8000/members/upsert/4/` へアクセスすると、  
-id が 4 のメンバーが存在しないときは新規作成を、  
-id が 4 のメンバーが既に存在するなら更新をしたい。  
+`http://localhost:8000/rooms/upsert/4/` へアクセスすると、  
+id が 4 の部屋が存在しないときは新規作成を、  
+id が 4 の部屋が既に存在するなら更新をしたい。  
 
 👇 表示例（新規作成のとき）:  
 
 ```plaintext
-会員の作成
+部屋の作成
 
-氏名:                       E-Mail:                     年齢:
-      --------------------         --------------------      --------------------
+部屋名:                       盤面:                     棋譜:
+       --------------------       --------------------     --------------------
 
 送信
 戻る
@@ -21,10 +21,10 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
 👇 表示例（更新のとき）:  
 
 ```plaintext
-会員の更新
+部屋の更新
 
-氏名: ほげ                  E-Mail: hoge@example.com     年齢: 3
-      --------------------         --------------------       --------------------
+部屋名: Lion                  盤面: XOXOXOXOX            年齢: 012345678
+       --------------------       --------------------      --------------------
 
 送信
 戻る
@@ -49,6 +49,8 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
+    ├── 📂host_local1
+    │    └── 📄<いろいろ>
     └── 📂host1
         ├── 📂data
         │   └── 📂db
@@ -56,21 +58,46 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
         ├── 📂webapp1                       # アプリケーション フォルダー
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
+        │   ├── 📂static
+        │   │   ├── 📂tic-tac-toe1
+        │   │   │   └── 📄<いろいろ>
+        │   │   ├── 📂tic-tac-toe2
+        │   │   │    ├── 📄connection.js
+        │   │   │    ├── 📄engine.js
+        │   │   │    ├── 📄game.js
+        │   │   │    ├── 📄judge.js
+        │   │   │    ├── 📄protocol_main.js
+        │   │   │    └── 📄protocol_messages.js
+        │   │   ├── 📂vuetify-practice
+        │   │   │   └── 📄desserts.json
+        │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   └── 📂members
+        │   │   ├── 📂rooms
+        │   │   │   └── 📄<いろいろ>.html
+        │   │   └── 📂<いろいろ>-practice
         │   │       └── 📄<いろいろ>.html
+        │   ├── 📂tic_tac_toe1
+        │   │   └── 📄consumer1.py
+        │   ├── 📂tic-tac-toe2
+        │   │   ├── consumer1.py
+        │   │   └── protocol.py
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
+        │   ├── 📂websock1
+        │   │   ├── 📄consumer1.py
+        │   │   └── 📄consumer2.py
         │   ├── 📄admin.py
+        │   ├── 📄asgi.py
+        │   ├── 📄routing1.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
-        │   └── <いろいろ>
+        │   └── 📄<いろいろ>
         ├── 📄.env
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
         ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄<いろいろ>
 ```
 
 # Step 1. HTMLファイルの作成
@@ -81,7 +108,7 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂members
+                └── 📂rooms
 👉                  └── 📄upsert.html
 ```
 
@@ -93,7 +120,7 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>会員の作成/更新</title>
+        <title>部屋の作成/更新</title>
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
     </head>
@@ -101,11 +128,11 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
         <div class="container">
 
             {% if id %}
-            <h3 class="page-header">会員の更新</h3>
-            <form action="{% url 'updateMember' id=id %}" method="post" class="form-horizontal" role="form">
+            <h3 class="page-header">部屋の更新</h3>
+            <form action="{% url 'updateRoom' id=id %}" method="post" class="form-horizontal" role="form">
             {% else %}
-            <h3 class="page-header">会員の作成</h3>
-            <form action="{% url 'createMember' %}" method="post" class="form-horizontal" role="form">
+            <h3 class="page-header">部屋の作成</h3>
+            <form action="{% url 'createRoom' %}" method="post" class="form-horizontal" role="form">
             {% endif %}
 
                 {% csrf_token %}
@@ -118,7 +145,7 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
                 </div>
 
             </form>
-            <a href="{% url 'listMember' %}" class="btn btn-default btn-sm">戻る</a>
+            <a href="{% url 'listRoom' %}" class="btn btn-default btn-sm">戻る</a>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -128,98 +155,97 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
 </html>
 ```
 
-# Step 2. フォーム作成 - f_member.py ファイル
+# Step 2. フォーム作成 - f_room.py ファイル
 
 HTMLタグの `<form>～</form>` の子要素を自動生成させよう。  
 
 以下のファイルを作成してほしい。  
 
-📄`host1/webapp1/forms/f_member.py`:  
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂forms
-👉          │   └── 📄f_member.py
+👉          │   └── 📄f_room.py
             └── 📂templates
-                └── 📂members
+                └── 📂rooms
                     └── 📄upsert.html
 ```
 
 ```py
 from django.forms import ModelForm
 
-from webapp1.models.m_member import Member
-#    ------- ------ --------        ------
-#    1       2      3               4
+from webapp1.models.m_room import Room
+#    ------- ------ ------        ----
+#    1       2      3             4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
 
-class MemberForm(ModelForm):
+class RoomForm(ModelForm):
     class Meta:
-        model = Member  # モデル指定
-        fields = ('name', 'email', 'age',)  # フィールド指定
+        model = Room  # モデル指定
+        fields = ('name', 'board', 'record',)  # フィールド指定
 ```
 
-# Step 3. ビュー編集 - v_member.py ファイル
+# Step 3. ビュー編集 - v_room.py ファイル
 
-以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+📄`v_room.py` は既存だろうから、以下のソースをマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂forms
-            │   └── 📄f_member.py
+            │   └── 📄f_room.py
             ├── 📂templates
-            │   └── 📂members
+            │   └── 📂rooms
             │       └── 📄upsert.html
             └── 📂views
-👉              └── 📄v_member.py
+👉              └── 📄v_room.py
 ```
 
 ```py
 from django.shortcuts import render, get_object_or_404, redirect
 
-from webapp1.models.m_member import Member
-#    ------- ------ --------        ------
-#    1       2      3               4
+from webapp1.models.m_room import Room
+#    ------- ------ ------        ----
+#    1       2      3             4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-from webapp1.forms.f_member import MemberForm
-#    ------- ----- --------        ----------
-#    1       2     3               4
+from webapp1.forms.f_room import RoomForm
+#    ------- ----- ------        --------
+#    1       2     3             4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-def upsertMember(request, id=None):
-    """メンバーの作成または更新"""
+def upsertRoom(request, id=None):
+    """部屋の作成または更新"""
 
     if id:  # idがあるとき（更新の時）
         # idで検索して、結果を戻すか、404エラー
-        member = get_object_or_404(Member, pk=id)
+        room = get_object_or_404(Room, pk=id)
     else:  # idが無いとき（作成の時）
-        member = Member()
+        room = Room()
 
     # POSTの時（作成であれ更新であれ送信ボタンが押されたとき）
     if request.method == 'POST':
         # フォームを生成
-        form = MemberForm(request.POST, instance=member)
+        form = RoomForm(request.POST, instance=room)
         if form.is_valid():  # バリデーションがOKなら保存
-            member = form.save(commit=False)
-            member.save()
-            return redirect('listMember')
+            room = form.save(commit=False)
+            room.save()
+            return redirect('listRoom')
     else:  # GETの時（フォームを生成）
-        form = MemberForm(instance=member)
+        form = RoomForm(instance=room)
 
     # 作成・更新画面を表示
-    return render(request, 'members/upsert.html', dict(form=form, id=id))
+    return render(request, 'rooms/upsert.html', dict(form=form, id=id))
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -230,20 +256,20 @@ def upsertMember(request, id=None):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂forms
-            │   └── 📄f_member.py
+            │   └── 📄f_room.py
             ├── 📂templates
-            │   └── 📂members
+            │   └── 📂rooms
             │       └── 📄upsert.html
             ├── 📂views
-            │   └── 📄v_member.py
+            │   └── 📄v_room.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_member
-#    ------- -----        --------
+from webapp1.views import v_room
+#    ------- -----        ------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -252,24 +278,24 @@ from webapp1.views import v_member
 urlpatterns = [
     # ...中略...
 
-    # メンバー作成
-    path('members/create/', v_member.upsertMember, name='createMember'),
-    #     ---------------   ---------------------        ------------
-    #     1                 2                            3
-    # 1. `members/create/` というURLにマッチする
-    # 2. v_member.py ファイルの upsertMember メソッド
-    # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
+    # 部屋作成
+    path('rooms/create/', v_room.upsertRoom, name='createRoom'),
+    #     -------------   -----------------        ----------
+    #     1               2                        3
+    # 1. URLの `rooms/create/` というパスにマッチする
+    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
 
-    # メンバー更新
-    path('members/update/<int:id>/',
-         # -----------------------
+    # 部屋更新
+    path('rooms/update/<int:id>/',
+         # ---------------------
          # 1
-         # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
-         v_member.upsertMember, name='updateMember'),
-    #    ---------------------        ------------
-    #    2                            3
-    # 2. v_member.py ファイルの upsertMember メソッド
-    # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
+         v_room.upsertRoom, name='updateRoom'),
+    #    -----------------        ----------
+    #    2                        3
+    # 1. URLの `rooms/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -282,15 +308,15 @@ docker-compose up
 
 👇 作成するとき、IDは付けるな。  
 
-📖 [http://localhost:8000/members/create/](http://localhost:8000/members/create/)  
+📖 [http://localhost:8000/rooms/create/](http://localhost:8000/rooms/create/)  
 
 👇 更新するとき、IDを付けろ。 IDは適宜変えてほしい。  
 
-📖 [http://localhost:8000/members/update/5/](http://localhost:8000/members/update/5/)  
+📖 [http://localhost:8000/rooms/update/5/](http://localhost:8000/rooms/update/5/)  
 
 # 次の記事
 
-📖 [DjangoでフロントエンドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
+📖 ...  
 
 # 参考にした記事
 
