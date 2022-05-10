@@ -4,11 +4,8 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 
 # はじめに
 
-前提知識:  
-
-| Key                                                                      | Value                                                                                                                  |
-| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
-| Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込む方法を知っておく | 📖[Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1) |
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 この記事のアーキテクチャ:  
 
@@ -20,10 +17,6 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 | Frontend    | Vuetify                                   |
 | Data format | JSON                                      |
 | Editor      | Visual Studio Code （以下 VSCode と表記） |
-
-この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
-
-この連載の最初のページ: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 

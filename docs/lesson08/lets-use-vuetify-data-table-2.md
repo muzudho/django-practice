@@ -5,11 +5,8 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 
 # はじめに
 
-前提知識:  
-
-| Key                                       | Value                                                                                           |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| VuetifyのData tableを使う方法を知っておく | 📖[DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b) |
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 この記事のアーキテクチャ:  
 
@@ -20,10 +17,6 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 | Auth      | allauth                                   |
 | Frontside | Vuetify                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
-
-この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
-
-この連載の最初のページ: 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 

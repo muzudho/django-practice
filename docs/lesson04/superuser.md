@@ -4,11 +4,8 @@
 
 # はじめに
 
-前提知識:  
-
-| Key                                         | Value                                                                                                |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| Webページにデータを表示する方法を知っておく | 📖[Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1) |
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 この記事のアーキテクチャ:  
 
@@ -17,10 +14,6 @@
 | OS        | Windows10                                 |
 | Container | Docker                                    |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
-
-この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
-
-この連載の最初のページ: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 

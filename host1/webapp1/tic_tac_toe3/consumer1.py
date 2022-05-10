@@ -15,9 +15,11 @@ class TicTacToe3Consumer1(AsyncJsonWebsocketConsumer):
 
     async def connect(self):
         """接続"""
-        print("Connect")
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = f'room_{self.room_name}'
+        self.room_group_name = f'room_{self.room_name}'  # 部屋名で集めるグループ
+        print(f"Connect {self.room_name} {self.room_group_name}")
+
+        # TODO 部屋を立てる？ 部屋数の上限は？ 立っている部屋を一覧できるか？
 
         # Join room group
         await self.channel_layer.group_add(

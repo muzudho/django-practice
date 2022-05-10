@@ -13,11 +13,8 @@ Login user.
 
 # はじめに
 
-前提知識:  
-
-| Key                             | Value                                                                                     |
-| ------------------------------- | ----------------------------------------------------------------------------------------- |
-| Webページの追加方法を知っておく | 📖[DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062) |
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 この記事のアーキテクチャ:  
 
@@ -27,10 +24,6 @@ Login user.
 | Container | Docker                                    |
 | Auth      | allauth                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
-
-この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
-
-この連載の最初のページ: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 

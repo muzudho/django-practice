@@ -15,11 +15,8 @@ ID    氏名	       E-Mail                     年齢
 
 # はじめに
 
-前提知識:  
-
-| Key                    | Value                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------- |
-| モデルを作っておくこと | [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2) |
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 この記事のアーキテクチャ:  
 
@@ -31,10 +28,6 @@ ID    氏名	       E-Mail                     年齢
 
 参考にした元記事は 📖[DjangoでCRUD](https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
-
-この記事は Lesson01 から続いていて、順にやってこないと ソースが足りず実行できないので注意されたい。  
-
-この連載の最初のページ: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
