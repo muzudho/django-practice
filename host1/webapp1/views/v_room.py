@@ -17,3 +17,12 @@ def listRoom(request):
         'rooms': Room.objects.all().order_by('id'),  # id順にメンバーを全部取得
     }
     return HttpResponse(template.render(context, request))
+
+
+def readRoom(request, id=id):
+    """部屋読取"""
+    template = loader.get_template('rooms/read.html')
+    context = {
+        'room': Room.objects.get(pk=id),  # idを指定してメンバーを１人取得
+    }
+    return HttpResponse(template.render(context, request))

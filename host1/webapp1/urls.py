@@ -61,7 +61,7 @@ urlpatterns = [
     # 2. v_login_user.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
-    # メンバー一覧
+    # 会員一覧
     path('members/', v_member.listMember, name='listMember'),
     #     --------   -------------------        ----------
     #     1          2                          3
@@ -69,7 +69,7 @@ urlpatterns = [
     # 2. v_member.py ファイルの listMember メソッド
     # 3. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 
-    # メンバー読取
+    # 会員読取
     path('members/read/<int:id>/', v_member.readMember, name='readMember'),
     #     ----------------------   -------------------        ----------
     #     1                        2                          3
@@ -232,6 +232,14 @@ urlpatterns = [
     # 1. URLの `rooms/` というパスにマッチする
     # 2. v_room.py ファイルの listRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
+
+    # 部屋読取
+    path('rooms/read/<int:id>/', v_room.readRoom, name='readRoom'),
+    #     --------------------   ---------------        ----------
+    #     1                      2                      3
+    # 1. URLの `rooms/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの readRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^

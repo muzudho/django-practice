@@ -98,7 +98,7 @@ XOXOXOXOX
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂members
+                └── 📂rooms
 👉                  └── 📄read.html
 ```
 
@@ -110,28 +110,28 @@ XOXOXOXOX
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>メンバー読取</title>
+        <title>部屋読取</title>
         <!-- Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
     </head>
     <body>
         <div class="container">
-            <h3>会員の詳細情報</h3>
+            <h3>部屋の詳細情報</h3>
             <div class="card" style="width: 18rem">
                 <div class="card-body">
-                    <h5 class="card-title">名前</h5>
-                    <p class="card-text">{{ member.name }}</p>
+                    <h5 class="card-title">部屋名</h5>
+                    <p class="card-text">{{ room.name }}</p>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">E-Mail</h5>
-                    <p class="card-text">{{ member.email }}</p>
+                    <h5 class="card-title">盤面</h5>
+                    <p class="card-text">{{ room.board }}</p>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">年齢</h5>
-                    <p class="card-text">{{ member.age }}</p>
+                    <h5 class="card-title">棋譜</h5>
+                    <p class="card-text">{{ room.record }}</p>
                 </div>
             </div>
-            <a href="{% url 'listMember' %}" class="btn btn-default btn-sm">戻る</a>
+            <a href="{% url 'listRoom' %}" class="btn btn-default btn-sm">戻る</a>
         </div>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -141,43 +141,42 @@ XOXOXOXOX
 </html>
 ```
 
-# Step 2. ビュー編集 - v_member.py ファイル
+# Step 2. ビュー編集 - v_room.py ファイル
 
-以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+以下のファイルを編集してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂members
+            │   └── 📂rooms
             │       └── 📄read.html
             └── 📂views
-👉              └── 📄v_member.py
+👉              └── 📄v_room.py
 ```
-
 
 ```py
 from django.http import HttpResponse
 from django.template import loader
 
-from webapp1.models.m_member import Member
-#    ------- ------ --------        ------
+from webapp1.models.m_room import Room
+#    ------- ------ ------        ----
 #    1       2      3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-def readMember(request, id=id):
-    """メンバー読取"""
-    template = loader.get_template('members/read.html')
+def readRoom(request, id=id):
+    """部屋読取"""
+    template = loader.get_template('rooms/read.html')
     context = {
-        'member': Member.objects.get(pk=id),  # idを指定してメンバーを１人取得
+        'room': Room.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. urls.pyファイルの編集
+# Step 3. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -185,18 +184,18 @@ def readMember(request, id=id):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂members
+            │   └── 📂rooms
             │       └── 📄read.html
             ├── 📂views
-            │   └── 📄v_member.py
+            │   └── 📄v_room.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_member
-#    ------- -----        --------
+from webapp1.views import v_room
+#    ------- -----        ------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -205,13 +204,13 @@ from webapp1.views import v_member
 urlpatterns = [
     # ...中略...
 
-    # メンバー読取
-    path('members/read/<int:id>/', v_member.readMember, name='readMember'),
-    #     ----------------------   -------------------        ----------
-    #     1                        2                          3
-    # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
-    # 2. v_member.py ファイルの readMember メソッド
-    # 3. HTMLテンプレートの中で {% url 'readMember' %} のような形でURLを取得するのに使える
+    # 部屋読取
+    path('rooms/read/<int:id>/', v_room.readRoom, name='readRoom'),
+    #     --------------------   ---------------        ----------
+    #     1                      2                      3
+    # 1. URLの `rooms/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの readRoom メソッド
+    # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -222,8 +221,8 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/members/read/1/](http://localhost:8000/members/read/1/)  
+部屋番号は適宜変えてください  
+
+📖 [http://localhost:8000/rooms/read/1/](http://localhost:8000/rooms/read/1/)  
 
 # 次の記事
-
-📖 [Djangoでモデルのインスタンスの削除ページを作成しよう！](https://qiita.com/muzudho1/items/32694c883331c75ef059)  
