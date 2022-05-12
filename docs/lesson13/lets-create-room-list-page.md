@@ -99,46 +99,78 @@ ID    部屋名        盤面       棋譜       アクション
 ```
 
 ```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
 <!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
 <html lang="ja">
     <head>
         <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>部屋一覧</title>
-        <!-- Bootstrap -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
     </head>
     <body>
-        <div class="container">
-            <h3>部屋一覧</h3>
-
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>部屋名</th>
-                        <th>盤面</th>
-                        <th>棋譜</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for room in rooms %}
-                    <tr>
-                        <td>{{ room.id }}</td>
-                        <td>{{ room.name }}</td>
-                        <td>{{ room.board }}</td>
-                        <td>{{ room.record }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h3>部屋一覧</h3>
+                    </v-container>
+                    <v-container>
+                        <v-simple-table>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>部屋名</th>
+                                        <th>盤面</th>
+                                        <th>棋譜</th>
+                                        <th>アクション</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        <td>{{ room.id }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.board }}</td>
+                                        <td>{{ room.record }}</td>
+                                        <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
+                                        {% endverbatim %}
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-container>
+                </v-main>
+            </v-app>
         </div>
-        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <!-- Include all compiled plugins (below), or include individual files as needed -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            var hotelDoc1 = JSON.parse("{{ dj_hotel|escapejs }}");
+            // var hotelDocStr1 = JSON.stringify(hotelDoc1, null, "    ");
+            // console.log(`hotelDocStr1=${hotelDocStr1}`);
+
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_hotelDoc: hotelDoc1,
+                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+                },
+                methods: {
+                    createRoomsReadPath(id) {
+                        return `${this.vu_readRoomPath}${id}`;
+                    },
+                },
+            });
+        </script>
     </body>
 </html>
 ```
@@ -158,8 +190,7 @@ ID    部屋名        盤面       棋譜       アクション
 ```
 
 ```py
-from django.http import HttpResponse
-from django.template import loader
+from django.shortcuts import render
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -172,11 +203,70 @@ from webapp1.models.m_room import Room
 
 def listRoom(request):
     """部屋一覧"""
-    template = loader.get_template('rooms/list.html')
+    rooms = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
+    dbRoomJsonStr = serializers.serialize('json', rooms)  # JSON に変換
+    # Example:
+    # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
+    # print(f"dbRoomJsonStr={dbRoomJsonStr}")
+
+    dbRoomDoc = json.loads(dbRoomJsonStr)
+    # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
+    """
+    # Example
+    dbRoomDoc=
+    [
+        {
+            "model": "webapp1.room",
+            "pk": 2,
+            "fields": {
+                "name": "Elephant",
+                "board": "XOXOXOXOX",
+                "record": "012345678"
+            }
+        },
+        ...
+    ]
+    """
+
+    # 使いやすい形に変換します
+    resDoc = dict()
+    resDoc["rooms"] = []
+
+    for dbRecord in dbRoomDoc:
+        # Example:
+        # dbRecord= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
+        # print(f"dbRecord= --> {dbRecord} <--")
+
+        resDoc["rooms"].append(
+            {
+                "id": dbRecord["pk"],
+                "name": dbRecord["fields"]["name"],
+                "board": dbRecord["fields"]["board"],
+                "record": dbRecord["fields"]["record"],
+            }
+        )
+
+    # Example:
+    # resDoc={'rooms': [{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]}
+    # print(f'resDoc={resDoc}')
+
     context = {
-        'rooms': Room.objects.all().order_by('id'),  # id順にメンバーを全部取得
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        # 部屋がいっぱいあるので、名前はホテルとします
+        # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
+        "dj_hotel": json.dumps(resDoc),
+        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
+        "dj_readRoomPath": "read/",
     }
-    return HttpResponse(template.render(context, request))
+    # Example:
+    # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
+    print(f"context={context}")
+
+    return render(request, "rooms/list.html", context)
+    #                       ---------------
+    #                       1
+    # 1. webapp1/templates/rooms/list.html
+    #                      ---------------
 ```
 
 # Step 3. ルート編集 - urls.py ファイル
@@ -229,3 +319,5 @@ docker-compose up
 📖 [http://localhost:8000/rooms/](http://localhost:8000/rooms/)  
 
 # 次の記事
+
+📖 [Djangoでゲーム対局部屋を読取しよう！](https://qiita.com/muzudho1/items/a39bea2f098951292916)  

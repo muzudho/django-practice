@@ -1,0 +1,49 @@
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>〇×ゲーム</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h3>〇×ゲーム</h3>
+                        <v-btn :href="createGamePath()">対局開始</v-btn>
+                        <v-btn :href="createSignUpPath()">会員登録</v-btn>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_gamePath: "{{ dj_gamePath }}",
+                    vu_signUpPath: "{{ dj_signUpPath }}",
+                },
+                methods: {
+                    createGamePath() {
+                        return `${this.vu_gamePath}`;
+                    },
+                    createSignUpPath() {
+                        return `${this.vu_signUpPath}`;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
