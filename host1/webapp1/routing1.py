@@ -1,6 +1,13 @@
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
-from webapp1.websock1.consumer1 import Websock1Consumer
+
+from webapp1.websocks.websock_practice1.v1.consumer import Practice1V1Consumer
+#    ------- ----------------------------- --------        -------------------
+#    1       2                             3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 from webapp1.websock1.consumer2 import Consumer2
 #    ------- -------- ---------        ---------
@@ -40,7 +47,18 @@ from webapp1.tic_tac_toe3.consumer1 import TicTacToe3Consumer1  # 追加
 # 4. クラス名
 
 websocket_urlpatterns = [
-    url(r'^websock1/$', Websock1Consumer.as_asgi()),
+
+    # +----
+    # | 練習１
+
+    url(r'^websock_practice1/v1/$', Practice1V1Consumer.as_asgi()),
+    #     -----------------------   -----------------------------
+    #     1                                      2
+    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
+
+    # | 練習１
+    # +----
 
     # （追加）
     url(r'^websock1-2/$', Consumer2.as_asgi()),

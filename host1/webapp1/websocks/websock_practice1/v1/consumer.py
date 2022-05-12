@@ -4,7 +4,8 @@
 #     📖 [Channels - Channel Layers](https://channels.readthedocs.io/en/stable/topics/channel_layers.html)
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class Websock1Consumer(AsyncWebsocketConsumer):
+
+class Practice1V1Consumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connected")
         await self.accept()

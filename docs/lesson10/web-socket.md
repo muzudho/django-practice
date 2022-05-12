@@ -53,7 +53,19 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
         └── <いろいろ>
 ```
 
-# Step 1. プログラミング環境の編集 - requirements.txt ファイル
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. プログラミング環境の編集 - requirements.txt ファイル
 
 以下のファイルに追加してほしい。末尾で構わない。  
 
@@ -67,7 +79,7 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
 channels>=3.0
 ```
 
-# Step 2. 設定の編集 - settings.py ファイル
+# Step 3. 設定の編集 - settings.py ファイル
 
 そしたら、以下の部分を編集してほしい。  
 `WSGI` から `ASGI` に乗り換えることをやっている。 `ASGI` は `WSGI` を兼ねるようだ。  
@@ -122,7 +134,7 @@ CHANNEL_LAYERS = {
 }
 ```
 
-# Step 3. 設定の編集 - asgi.py ファイル＜その１＞
+# Step 4. 設定の編集 - asgi.py ファイル＜その１＞
 
 以下のファイルを編集してほしい。  
 
@@ -156,9 +168,15 @@ application = ProtocolTypeRouter({
 })
 ```
 
-# Step 4. コマンド実行
+# Step 5. コマンド実行
 
-Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
+Dockerコンテナを停止させてほしい  
+
+```shell
+docker-compose down
+```
+
+Dockerコンテナを起動させてほしい  
 
 ```shell
 # requirements.txt を編集したので ビルドし直します
@@ -171,15 +189,17 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 5. consumer1.py ファイルを作成
+# Step 6. consumer.py ファイルを作成
 
 以下のファイルを作成してほしい。  
 
 ```plaintext
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websock1
-👉      │   │   └── 📄consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+👉      │   │           └── 📄consumer.py
         │   ├── 📄asgi.py
         │   └── 📄settings.py
         └── 📄requirements.txt
@@ -192,7 +212,8 @@ docker-compose up
 #     📖 [Channels - Channel Layers](https://channels.readthedocs.io/en/stable/topics/channel_layers.html)
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class Websock1Consumer(AsyncWebsocketConsumer):
+
+class Practice1V1Consumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connected")
         await self.accept()
@@ -215,15 +236,17 @@ class Websock1Consumer(AsyncWebsocketConsumer):
         await self.send(text_data=res)
 ```
 
-# Step 6. routing1.py ファイルを作成
+# Step 7. routing1.py ファイルを作成
 
 以下のファイルを作成してほしい。  
 
 ```plaintext
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websock1
-        │   │   └── 📄consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📄asgi.py
 👉      │   ├── 📄routing1.py
         │   └── 📄settings.py
@@ -233,22 +256,37 @@ class Websock1Consumer(AsyncWebsocketConsumer):
 ```py
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
-from webapp1.websock1.consumer1 import Websock1Consumer
+
+from webapp1.websocks.websock_practice1.v1.consumer import Practice1V1Consumer
+#    ------- ----------------------------- --------        -------------------
+#    1       2                             3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 websocket_urlpatterns = [
-    url(r'^websock1/$', Websock1Consumer.as_asgi()),
+
+    url(r'^websock_practice1/v1/$', Practice1V1Consumer.as_asgi()),
+    #     -----------------------   -----------------------------
+    #     1                                      2
+    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
+
 ]
 ```
 
-# Step 7. 設定の編集 - asgi.py ファイル＜その２＞
+# Step 8. 設定の編集 - asgi.py ファイル＜その２＞
 
 `asgi.py` ファイルは既存なので、以下の部分をマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websock1
-        │   │   └── 📄consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
 👉      │   ├── 📄asgi.py
         │   ├── 📄routing1.py
         │   └── 📄settings.py
@@ -288,16 +326,6 @@ application = ProtocolTypeRouter({
 })
 ```
 
-# Step 8. Dockerコンテナの起動
-
-（していなければ）Dockerコンテナの起動  
-
-```shell
-cd host1
-
-docker-compose up
-```
-
 # Step 9. ローカルPCにPythonのパッケージ websocket-client をインストール
 
 Step 1 ～ 8. は サーバーサイドだった。  
@@ -326,8 +354,10 @@ pip install websocket-client
 👉  │        └── 📄main_finally.py  # ここへペースト
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websock1
-        │   │   └── 📄consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
         │   └── 📄settings.py
@@ -347,8 +377,10 @@ pip install websocket-client
 👉  │        └── 📄websock_client.py
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websock1
-        │   │   └── 📄consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
         │   └── 📄settings.py
@@ -433,7 +465,8 @@ if __name__ == "__main__":
             parser.add_argument('--port', type=int, default=8000, help='サーバーのポート。規定値:8000')
             args = parser.parse_args()
 
-            url = f"ws://{args.host}:{args.port}/websock1/"
+            # FIXME このURLの埋め込みを外に出せないか？
+            url = f"ws://{args.host}:{args.port}/websock_practice1/v1/"
             self._client = Websocket_Client(url)
             self._client.run_forever()
             return 0
