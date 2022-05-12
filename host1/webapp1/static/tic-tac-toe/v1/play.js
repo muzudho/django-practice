@@ -3,8 +3,8 @@
 var roomName = document.getElementById("board").getAttribute("room_name");
 var myPiece = document.getElementById("board").getAttribute("my_piece");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
-//                           ----------------------- -------------------------
+var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/${roomName}/`;
+//                           ----------------------- ---------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部

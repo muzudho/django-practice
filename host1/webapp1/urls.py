@@ -30,11 +30,12 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
-    v_json_practice, v_tic_tac_toe1, v_tic_tac_toe2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
+    v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
     v_room, v_portal
 
 urlpatterns = [
     path('', v_index.index, name='index'),
+
 
     # +----
     # | Allauth
@@ -61,6 +62,9 @@ urlpatterns = [
     # | Allauth
     # +----
 
+
+
+
     # +----
     # | 練習１
     path('practice1/page1', v_page1.page1, name='page1'),
@@ -71,6 +75,9 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
     # | 練習１
     # +----
+
+
+
 
     # +----
     # | ログイン
@@ -93,6 +100,12 @@ urlpatterns = [
 
     # | ログイン
     # +----
+
+
+
+
+    # +----
+    # | 会員
 
     # 会員一覧
     path('members/', v_member.listMember, name='listMember'),
@@ -139,6 +152,14 @@ urlpatterns = [
     # 1. URLの `members/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
+
+    # | 会員
+    # +----
+
+
+
+    # +----
+    # | Vuetify練習
 
     # Vuetify練習
     path('vuetify-practice/hello1',
@@ -206,6 +227,15 @@ urlpatterns = [
     # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
+    # | Vuetify練習
+    # +----
+
+
+
+
+    # +----
+    # | JSONでの応答練習
+
     # JSONでの応答練習
     path('json-practice/textarea2',
          # ----------------------
@@ -228,19 +258,34 @@ urlpatterns = [
     # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
-    # 〇×ゲームの練習１
-    path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
-    #     -------------   --------------------------------
-    #     1               2
-    # 1. URLの `tic-tac-toe1/` というパスにマッチする
-    # 2. v_tic_tac_toe1.py ファイルの indexOfTicTacToe1 メソッド
+    # | JSONでの応答練習
+    # +----
+
+
+
+
+    # +----
+    # | 〇×ゲームの練習１
 
     # 〇×ゲームの練習１
-    path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
-    #     -----------------------------   -----------------------------------
-    #     1                               2
-    # 1. URLの `tic-tac-toe1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe1.py ファイルの playGameOfTicTacToe1 メソッド
+    path('tic-tac-toe/v1/', v_tic_tac_toe_v1.visitEntry),
+    #     ---------------   ---------------------------
+    #     1                 2
+    # 1. URLの `tic-tac-toe/v1/` というパスにマッチする
+    # 2. v_tic_tac_toe_v1.py ファイルの visitEntry メソッド
+
+    # 〇×ゲームの練習１
+    path('tic-tac-toe/v1/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
+    #     -------------------------------   --------------------------
+    #     1                                 2
+    # 1. URLの `tic-tac-toe/v1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v1.py ファイルの visitPlay メソッド
+
+    # | 〇×ゲームの練習１
+    # +----
+
+
+
 
     # 〇×ゲームの練習２
     path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),

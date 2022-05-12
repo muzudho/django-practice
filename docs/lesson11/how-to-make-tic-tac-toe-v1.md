@@ -107,8 +107,9 @@ docker-compose up
     └── 📂host1
         ├── 📂webapp1
         │   └── 📂static
-        │       └── 📂tic-tac-toe1
-👉      │           └── 📄main.css
+        │       └── 📂tic-tac-toe
+        │           └── 📂v1
+👉      │               └── 📄main.css
         └── 📄requirements.txt
 ```
 
@@ -175,7 +176,7 @@ select {
 }
 ```
 
-# Step 4. game.js ファイルの作成
+# Step 4. play.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -183,9 +184,10 @@ select {
     └── 📂host1
         ├── 📂webapp1
         │   └── 📂static
-        │       └── 📂tic-tac-toe1
-👉      │           ├── 📄game.js
-        │           └── 📄main.css
+        │       └── 📂tic-tac-toe
+        │           └── 📂v1
+👉      │               ├── 📄play.js
+        │               └── 📄main.css
         └── 📄requirements.txt
 ```
 
@@ -195,8 +197,8 @@ select {
 var roomName = document.getElementById("board").getAttribute("room_name");
 var myPiece = document.getElementById("board").getAttribute("my_piece");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe1/${roomName}/`;
-//                           ----------------------- -------------------------
+var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/${roomName}/`;
+//                           ----------------------- ---------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部
@@ -460,7 +462,7 @@ function connect() {
 connect();
 ```
 
-# Step 5. index.html ファイルの作成
+# Step 5. entry.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -468,12 +470,14 @@ connect();
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   └── 📂templates
-        │       └── 📂tic-tac-toe1
-👉      │           └── 📄index.html
+        │       └── 📂tic-tac-toe
+        │           └── 📂v1
+👉      │               └── 📄entry.html
         └── 📄requirements.txt
 ```
 
@@ -485,7 +489,7 @@ connect();
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
+        <link rel="stylesheet" href='{% static "/tic-tac-toe/v1/main.css" %}' />
     </head>
     <body>
         <div class="wrapper">
@@ -510,7 +514,7 @@ connect();
 </html>
 ```
 
-# Step 6. game.html ファイルの作成
+# Step 6. play.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -518,13 +522,15 @@ connect();
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   └── 📂templates
-        │       └── 📂tic-tac-toe1
-👉      │           ├── 📄game.html
-        │           └── 📄index.html
+        │       └── 📂tic-tac-toe
+        │           └── 📂v1
+👉      │               ├── 📄play.html
+        │               └── 📄entry.html
         └── 📄requirements.txt
 ```
 
@@ -536,7 +542,7 @@ connect();
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "/tic-tac-toe1/main.css" %}' />
+        <link rel="stylesheet" href='{% static "/tic-tac-toe/v1/main.css" %}' />
     </head>
     <body>
         <div class="wrapper">
@@ -558,13 +564,13 @@ connect();
             <div id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></div>
         </div>
 
-        <script src="{% static 'tic-tac-toe1/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v1/play.js' %}"></script>
         {% block javascript %} {% endblock javascript %}
     </body>
 </html>
 ```
 
-# Step 7. ビュー編集 - v_tic_tac_toe1.py ファイル
+# Step 7. ビュー編集 - v_tic_tac_toe_v1.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -572,15 +578,17 @@ connect();
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.html
-        │   │       └── 📄index.html
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.html
+        │   │           └── 📄entry.html
         │   └── 📂views
-👉      │       └── 📄v_tic_tac_toe1.py
+👉      │       └── 📄v_tic_tac_toe_v1.py
         └── 📄requirements.txt
 ```
 
@@ -589,17 +597,25 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def indexOfTicTacToe1(request):
-    """（追加） For Tic-tac-toe"""
+def visitEntry(request):
+    """エントリー画面"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe1/{room_name}/?&mypiece={myPiece}')
-    return render(request, "tic-tac-toe1/index.html", {})
+        return redirect(f'/tic-tac-toe/v1/{room_name}/?&mypiece={myPiece}')
+        #                 -----------------------------------------------
+        #                 1
+        # 1. http://example.com:8000/tic-tac-toe/v1/Elephant/?&mypiece=X
+        #                           ------------------------------------
+    return render(request, "tic-tac-toe/v1/entry.html", {})
+    #                       -------------------------
+    #                       1
+    # 1. webapp1/templates/tic-tac-toe/v1/entry.html
+    #                      -------------------------
 
 
-def playGameOfTicTacToe1(request, room_name):
-    """（追加） For Tic-tac-toe"""
+def visitPlay(request, room_name):
+    """対局画面"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
         raise Http404(f"My piece '{myPiece}' does not exists")
@@ -607,7 +623,11 @@ def playGameOfTicTacToe1(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "tic-tac-toe1/game.html", context)
+    return render(request, "tic-tac-toe/v1/play.html", context)
+    #                       ------------------------
+    #                       1
+    # 1. webapp1/templates/tic-tac-toe/v1/play.html
+    #                      ------------------------
 ```
 
 # Step 8. ルート編集 - urls.py ファイル
@@ -618,15 +638,17 @@ def playGameOfTicTacToe1(request, room_name):
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.html
-        │   │       └── 📄index.html
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.html
+        │   │           └── 📄entry.html
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe1.py
+        │   │   └── 📄v_tic_tac_toe_v1.py
 👉      │   └── 📄urls.py
         └── 📄requirements.txt
 ```
@@ -634,8 +656,8 @@ def playGameOfTicTacToe1(request, room_name):
 ```py
 from django.urls import path
 
-from webapp1.views import v_tic_tac_toe1
-#    ------- -----        --------------
+from webapp1.views import v_tic_tac_toe_v1
+#    ------- -----        ----------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -645,22 +667,22 @@ urlpatterns = [
     # ...略...
 
     # 〇×ゲームの練習１
-    path('tic-tac-toe1/', v_tic_tac_toe1.indexOfTicTacToe1),
-    #     -------------   --------------------------------
-    #     1               2
-    # 1. URLの `tic-tac-toe1/` というパスにマッチする
-    # 2. v_tic_tac_toe1.py ファイルの indexOfTicTacToe1 メソッド
+    path('tic-tac-toe/v1/', v_tic_tac_toe_v1.visitEntry),
+    #     ---------------   ---------------------------
+    #     1                 2
+    # 1. URLの `tic-tac-toe/v1/` というパスにマッチする
+    # 2. v_tic_tac_toe_v1.py ファイルの visitEntry メソッド
 
     # 〇×ゲームの練習１
-    path('tic-tac-toe1/<str:room_name>/', v_tic_tac_toe1.playGameOfTicTacToe1),
-    #     -----------------------------   -----------------------------------
-    #     1                               2
-    # 1. URLの `tic-tac-toe1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe1.py ファイルの playGameOfTicTacToe1 メソッド
+    path('tic-tac-toe/v1/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
+    #     -------------------------------   --------------------------
+    #     1                                 2
+    # 1. URLの `tic-tac-toe/v1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v1.py ファイルの visitPlay メソッド
 ]
 ```
 
-# Step 9. consumer1.py ファイルの作成
+# Step 9. consumer.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -668,17 +690,21 @@ urlpatterns = [
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.html
-        │   │       └── 📄index.html
-        │   ├── 📂tic_tac_toe1
-👉      │   │   └── 📄consumer1.py
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.html
+        │   │           └── 📄entry.html
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+👉      │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe1.py
+        │   │   └── 📄v_tic_tac_toe_v1.py
         │   └── 📄urls.py
         └── 📄requirements.txt
 ```
@@ -689,7 +715,7 @@ import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 
-class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
+class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'room_%s' % self.room_name
@@ -759,17 +785,21 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.html
-        │   │       └── 📄index.html
-        │   ├── 📂tic_tac_toe1
-        │   │   └── 📄consumer1.py
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.html
+        │   │           └── 📄entry.html
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe1.py
+        │   │   └── 📄v_tic_tac_toe_v1.py
 👉      │   ├── 📄routing1.py
         │   └── 📄urls.py
         └── 📄requirements.txt
@@ -779,9 +809,9 @@ class TicTacToeConsumer1(AsyncJsonWebsocketConsumer):
 from django.conf.urls import url
 
 # 〇×ゲームの練習１
-from webapp1.tic_tac_toe1.consumer1 import TicTacToeConsumer1  # 追加
-#    ------- ------------ ---------        ------------------
-#    1       2            3                4
+from webapp1.websocks.tic_tac_toe.v1.consumer import TicTacToeV1Consumer
+#    ------- ----------------------- --------        -------------------
+#    1       2                       3                4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -791,11 +821,11 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習１
-    url(r'^tic-tac-toe1/(?P<room_name>\w+)/$', TicTacToeConsumer1.as_asgi()),
-    #     ----------------------------------   ----------------------------
-    #     1                                    2
-    # 1. URLの一部（正規表現）の Django での書き方
-    # 2. ASGI形式での書き方
+    url(r'^tic-tac-toe/v1/(?P<room_name>\w+)/$', TicTacToeV1Consumer.as_asgi()),
+    #     ------------------------------------   -----------------------------
+    #     1                                      2
+    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```
 
@@ -807,17 +837,21 @@ websocket_urlpatterns = [
     └── 📂host1
         ├── 📂webapp1
         │   ├── 📂static
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.js
-        │   │       └── 📄main.css
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.js
+        │   │           └── 📄main.css
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe1
-        │   │       ├── 📄game.html
-        │   │       └── 📄index.html
-        │   ├── 📂tic_tac_toe1
-        │   │   └── 📄consumer1.py
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           ├── 📄play.html
+        │   │           └── 📄entry.html
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe1.py
+        │   │   └── 📄v_tic_tac_toe_v1.py
 👉      │   ├── 📄asgi.py
         │   ├── 📄routing1.py
         │   └── 📄urls.py
@@ -868,7 +902,7 @@ docker-compose up
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe1/](http://localhost:8000/tic-tac-toe1/)  
+📖 [http://localhost:8000/tic-tac-toe/v1/](http://localhost:8000/tic-tac-toe/v1/)  
 
 # 次の記事
 
