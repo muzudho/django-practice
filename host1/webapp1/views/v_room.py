@@ -1,6 +1,8 @@
+import json
 from django.http import HttpResponse
 from django.template import loader
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core import serializers
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -21,11 +23,66 @@ from webapp1.forms.f_room import RoomForm
 
 def listRoom(request):
     """部屋一覧"""
-    template = loader.get_template('rooms/list.html')
+    rooms = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
+    dbRoomJsonStr = serializers.serialize('json', rooms)  # JSON に変換
+    print(f"dbRoomJsonStr={dbRoomJsonStr}")
+
+    dbRoomDoc = json.loads(dbRoomJsonStr)
+    print(f"dbRoomDoc={json.dumps(dbRoomDoc)}")
+
+    """
+    # Example
+    dbRoomDoc=[
+        {
+            "model": "webapp1.room",
+            "pk": 2,
+            "fields": {
+                "name": "Elephant",
+                "board": "XOXOXOXOX",
+                "record": "012345678"
+            }
+        },
+        ...
+    ]
+    """
+
+    # 使いやすい形に変換します
+    resDoc = dict()
+    resDoc["rooms"] = []
+
+    print(f'resDoc={resDoc}')
+
+    for dbRecord in dbRoomDoc:
+        # Example:
+        # dbRecord= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
+        print(f"dbRecord= --> {dbRecord} <--")
+
+        resDoc["rooms"].append(
+            {
+                "id": dbRecord["pk"],
+                "name": dbRecord["fields"]["name"],
+                "board": dbRecord["fields"]["board"],
+                "record": dbRecord["fields"]["record"],
+            }
+        )
+
+    # Example: resDoc.rooms=[{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]
+    # print(f'resDoc["rooms"]={resDoc["rooms"]}')
+    print(f'resDoc={resDoc}')
+
+    
     context = {
-        'rooms': Room.objects.all().order_by('id'),  # id順にメンバーを全部取得
+        # 部屋がいっぱいあるので、名前はホテルとします
+        # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
+        "hotel": json.dumps(resDoc)
     }
-    return HttpResponse(template.render(context, request))
+    print(f"context={context}")
+
+    return render(request, "rooms/list.html", context)
+    #                       ---------------
+    #                       1
+    # 1. webapp1/templates/rooms/list.html
+    #                      ---------------
 
 
 def readRoom(request, id=id):
