@@ -32,36 +32,42 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   └── 📄<いろいろ>
-        │   │   ├── 📂tic-tac-toe2
-        │   │   │    ├── 📄connection.js
-        │   │   │    ├── 📄engine.js
-        │   │   │    ├── 📄game.js
-        │   │   │    ├── 📄judge.js
-        │   │   │    ├── 📄protocol_main.js
-        │   │   │    └── 📄protocol_messages.js
+        │   │   ├── 📂tic-tac-toe
+        │   │   │   ├── 📂v1
+        │   │   │   │   └── 📄<いろいろ>
+        │   │   │   └── 📂v2
+        │   │   │       ├── 📄connection.js
+        │   │   │       ├── 📄engine.js
+        │   │   │       ├── 📄game.js
+        │   │   │       ├── 📄judge.js
+        │   │   │       ├── 📄protocol_main.js
+        │   │   │       └── 📄protocol_messages.js
         │   │   ├── 📂vuetify-practice
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   └── 📄<いろいろ>
-        │   │   ├── 📂tic-tac-toe2
-        │   │   │   ├── 📄index.html
-        │   │   │   └── 📄game.html
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
-        │   ├── 📂tic_tac_toe1
-        │   │   └── 📄consumer1.py
-        │   ├── 📂tic-tac-toe2
-        │   │   ├── consumer1.py
-        │   │   └── protocol.py
+        │   │   └── 📂tic-tac-toe
+        │   │       ├── 📂v1
+        │   │       │   └── 📄<いろいろ>
+        │   │       ├── 📂v2
+        │   │       │   ├── 📄entry.html
+        │   │       │   └── 📄play.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
+        │   │   ├── 📄v_tic_tac_toe_v1.py
+        │   │   ├── 📄v_tic_tac_toe_v2.py
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂websock1
         │   │   ├── 📄consumer1.py
         │   │   └── 📄consumer2.py
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       ├── 📂v1
+        │   │       │   └── 📄consumer.py
+        │   │       └── 📂v2
+        │   │           ├── 📄consumer.py
+        │   │           └── 📄protocol.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
@@ -96,8 +102,9 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂portal
-👉                  └── 📄tic-tac-toe2.html
+                └── 📂tic-tac-toe
+                    └── 📂v2
+👉                      └── 📄portal.html
 ```
 
 ```html
@@ -179,7 +186,7 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー編集 - v_portal.py ファイル
+# Step 3. ビュー編集 - v_tic_tac_toe_v2o1.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -187,66 +194,49 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂portal
-            │       └── 📄tic-tac-toe2.html
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           └── 📄portal.html
             └── 📂views
-👉              └── 📄v_portal.py
-```
-
-```py
-from django.http import HttpResponse
-from django.template import loader
-
-
-def visitTicTacToe2Portal(request):
-    """ポータル１"""
-    template = loader.get_template('portal/tic-tac-toe2.html')
-    #                               ------------------------
-    #                               1
-    # 1. host1/webapp1/templates/portal/tic-tac-toe2.html を取得
-    #                            ------------------------
-
-    context = {
-        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        'dj_user': request.user,
-        'dj_gamePath': 'tic-tac-toe2/',
-        #               -------------
-        #               1
-        # 1. http://example.com/tic-tac-toe2/
-        #                       -------------
-        'dj_loginPath': 'login/tic-tac-toe2',
-        #                ------------------
-        #                1
-        # 1. http://example.com/login/tic-tac-toe2
-        #                       ------------------
-        'dj_logoutPath': 'logout/tic-tac-toe2',
-        #                 -------------------
-        #                 1
-        # 1. http://example.com/logout/tic-tac-toe2
-        #                       -------------------
-    }
-    return HttpResponse(template.render(context, request))
-```
-
-# Step 4. ビュー編集 - v_tic_tac_toe2o1.py ファイル
-
-以下のファイルを新規作成してほしい。  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂templates
-            │   └── 📂portal
-            │       └── 📄tic-tac-toe2.html
-            └── 📂views
-                ├── 📄v_portal.py
-👉              └── 📄v_tic_tac_toe2o1.py
+👉              └── 📄v_tic_tac_toe_v2o1.py
 ```
 
 ```py
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.template import loader
+
+
+def visitPortal(request):
+    """ポータル"""
+    template = loader.get_template('tic-tac-toe/v2/portal.html')
+    #                               --------------------------
+    #                               1
+    # 1. host1/webapp1/templates/tic-tac-toe/v2/portal.html を取得
+    #                            --------------------------
+
+    context = {
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        'dj_user': request.user,
+        'dj_gamePath': 'tic-tac-toe/v2/',
+        #               ---------------
+        #               1
+        # 1. http://example.com/tic-tac-toe/v2/
+        #                       ---------------
+        'dj_loginPath': 'login/tic-tac-toe/v2/',
+        #                ---------------------
+        #                1
+        # 1. http://example.com/login/tic-tac-toe/v2/
+        #                       ---------------------
+        'dj_logoutPath': 'logout/tic-tac-toe/v2/',
+        #                 ----------------------
+        #                 1
+        # 1. http://example.com/logout/tic-tac-toe/v2/
+        #                       ----------------------
+    }
+    return HttpResponse(template.render(context, request))
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
@@ -255,16 +245,24 @@ def loginUser(request):
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe2/{room_name}/?&mypiece={myPiece}')
-        #                             ^
-    return render(request, "tic-tac-toe2/index.html", {})
-    #                                  ^
+        return redirect(f'/tic-tac-toe/v2/{room_name}/?&mypiece={myPiece}')
+        #                               ^
+        #               -----------------
+        #               1
+        # 1. http://example.com/tic-tac-toe/v2/Elephant/?&mypiece=X
+        #                       -----------------------------------
+    return render(request, "tic-tac-toe/v2/entry.html", {})
+    #                                    ^
+    #                       -------------------------
+    #                       1
+    # 1. host1/webapp1/templates/tic-tac-toe/v2/entry.html を取得
+    #                            -------------------------
 
 
 def logoutUser(request):
     """ログアウト"""
     logout(request)
-    return redirect('visitTicTacToe2Portal')
+    return redirect('visitTicTacToeV2Portal')
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -275,25 +273,19 @@ def logoutUser(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂portal
-            │       └── 📄tic-tac-toe2.html
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           └── 📄portal.html
             ├── 📂views
-            │   └── 📄v_portal.py
+            │   └── 📄v_tic_tac_toe_v2o1.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_portal
-#    ------- -----        --------
-#    1       2            3
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-
-from webapp1.views import v_tic_tac_toe2o1
-#    ------- -----        ----------------
+from webapp1.views import v_tic_tac_toe_v2o1
+#    ------- -----        ------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -302,41 +294,52 @@ from webapp1.views import v_tic_tac_toe2o1
 urlpatterns = [
     # ...中略...
 
-    # ポータル１
-    path('portal/tic-tac-toe2', v_portal.visitTicTacToe2Portal,
-         # ------------------   ------------------------------
-         # 1                    2
-         name='visitTicTacToe2Portal'),
-    #          ---------------------
-    #          3
-    # 1. URLの `portal/tic-tac-toe2` というパスにマッチする
-    # 2. v_portal.py ファイルの visitTicTacToe2Portal メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitTicTacToe2Portal' %} のような形でURLを取得するのに使える
-
-    # ログイン
-    path('login/tic-tac-toe2', v_tic_tac_toe2o1.loginUser,
-         # -----------------   --------------------------
-         # 1                   2
-         name='ticTacToe2o1_loginUser'),
+    # 旧ポータル
+    path('tic-tac-toe2', v_tic_tac_toe_v2o1.visitPortal,
+         # -----------   ------------------------------
+         # 1             2
+         name='visitTicTacToeV2Portal'),
     #          ----------------------
     #          3
-    # 1. URLの `login/tic-tac-toe2` というパスにマッチする
-    # 2. v_tic_tac_toe2o1.py ファイルの loginUser メソッド
-    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_loginUser' %} のような形でURLを取得するのに使える
+    # 1. URLの `tic-tac-toe2` というパスにマッチする
+    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
+    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+
+    # ポータル
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.visitPortal,
+         # --------------   ------------------------------
+         # 1                2
+         name='visitTicTacToeV2Portal'),
+    #          ----------------------
+    #          3
+    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
+    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+
+    # ログイン
+    path('login/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.loginUser,
+         # --------------------   ----------------------------
+         # 1                      2
+         name='ticTacToeV2o1_loginUser'),
+    #          ----------------------
+    #          3
+    # 1. URLの `login/tic-tac-toe/v2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
-         # ------------------   ---------------------------
-         # 1                    2
-         name='ticTacToe2o1_logout'),
+    path('logout/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.logoutUser,
+         # ---------------------   -----------------------------
+         # 1                       2
+         name='ticTacToeV2o1_logout'),
     #          -------------------
     #          3
-    # 1. URLの `logout/tic-tac-toe2` というパスにマッチする
-    # 2. v_tic_tac_toe2o1.py ファイルの logoutUser メソッド
-    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_logout' %} のような形でURLを取得するのに使える
+    # 1. URLの `logout/tic-tac-toe/v2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 ]
 ```
 
 # Step 6. Web画面へアクセス
 
-📖 [http://localhost:8000/portal/tic-tac-toe2](http://localhost:8000/portal/tic-tac-toe2)  
+📖 [http://localhost:8000/portal/tic-tac-toe/v2/](http://localhost:8000/portal/tic-tac-toe/v2/)  
