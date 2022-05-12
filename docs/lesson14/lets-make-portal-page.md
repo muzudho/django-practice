@@ -140,9 +140,11 @@ docker-compose up
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    // "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_gamePath: "{{ dj_gamePath }}",
                     vu_signUpPath: "{{ dj_signUpPath }}",
+                    vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
                     createGamePath() {
@@ -150,6 +152,9 @@ docker-compose up
                     },
                     createSignUpPath() {
                         return `${this.vu_signUpPath}`;
+                    },
+                    createLogoutPath() {
+                        return `${this.vu_logoutPath}`;
                     },
                 },
             });
@@ -182,8 +187,8 @@ def visitPortal1(request):
     template = loader.get_template('portal/portal1.html')
     #                               -------------------
     #                               1
-    # 1. webapp1/templates/portal/portal1.html
-    #                      -------------------
+    # 1. host1/webapp1/templates/portal/portal1.html を取得
+    #                            -------------------
     context = {
         'dj_gamePath': 'tic-tac-toe2/',
         #               -------------
@@ -195,11 +200,42 @@ def visitPortal1(request):
         #                 1
         # 1. http://example.com/accounts/login/
         #                       ---------------
+        'dj_logoutPath': 'logout',
+        #                 ------
+        #                 1
+        # 1. http://example.com/logout
+        #                       ------
     }
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 4. ルート編集 - urls.py ファイル
+# Step 4. ビュー編集 - v_tic_tac_toe2o1.py ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂portal
+            │       └── 📄portal1.html
+            └── 📂views
+                ├── 📄v_portal.py
+👉              └── 📄v_tic_tac_toe2o1.py
+```
+
+```py
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+
+def logoutUser(request):
+    """ログアウト"""
+    logout(request)
+    return redirect('visitPortal1')
+```
+
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -224,6 +260,13 @@ from webapp1.views import v_portal
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
+from webapp1.views import v_tic_tac_toe2o1
+#    ------- -----        ----------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
 urlpatterns = [
     # ...中略...
 
@@ -234,9 +277,20 @@ urlpatterns = [
     # 1. URLの `portal1` というパスにマッチする
     # 2. v_portal.py ファイルの visitPortal1 メソッド
     # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
+
+    # ログアウト
+    path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
+         # ------------------   ---------------------------
+         # 1                    2
+         name='ticTacToe2o1_logoutUser'),
+    #          -----------------------
+    #          3
+    # 1. URLの `logout/tic-tac-toe2` というパスにマッチする
+    # 2. v_tic_tac_toe2o1.py ファイルの logoutUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_logoutUser' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 5. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/portal1](http://localhost:8000/portal1)  

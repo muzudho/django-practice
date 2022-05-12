@@ -30,8 +30,8 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
-    v_json_practice, v_tic_tac_toe1, v_tic_tac_toe2, v_tic_tac_toe3, v_room, \
-    v_portal
+    v_json_practice, v_tic_tac_toe1, v_tic_tac_toe2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
+    v_room, v_portal
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -304,6 +304,9 @@ urlpatterns = [
     # 2. v_room.py ファイルの upsertRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 
+    # +----
+    # | ポータル作成
+
     # ポータル１
     path('portal1', v_portal.visitPortal1, name='visitPortal1'),
     #     -------   ---------------------        ------------
@@ -311,6 +314,20 @@ urlpatterns = [
     # 1. URLの `portal1` というパスにマッチする
     # 2. v_portal.py ファイルの visitPortal1 メソッド
     # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
+
+    # ログアウト
+    path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
+         # ------------------   ---------------------------
+         # 1                    2
+         name='ticTacToe2o1_logoutUser'),
+    #          -----------------------
+    #          3
+    # 1. URLの `logout/tic-tac-toe2` というパスにマッチする
+    # 2. v_tic_tac_toe2o1.py ファイルの logoutUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_logoutUser' %} のような形でURLを取得するのに使える
+
+    # | ポータル作成
+    # +----
 
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^
