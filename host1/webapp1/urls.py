@@ -315,6 +315,17 @@ urlpatterns = [
     # 2. v_portal.py ファイルの visitPortal1 メソッド
     # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
 
+    # ログイン
+    path('login/tic-tac-toe2', v_tic_tac_toe2o1.loginUser,
+         # -----------------   --------------------------
+         # 1                    2
+         name='ticTacToe2o1_loginUser'),
+    #          ----------------------
+    #          3
+    # 1. URLの `login/tic-tac-toe2` というパスにマッチする
+    # 2. v_tic_tac_toe2o1.py ファイルの loginUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_loginUser' %} のような形でURLを取得するのに使える
+
     # ログアウト
     path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
          # ------------------   ---------------------------

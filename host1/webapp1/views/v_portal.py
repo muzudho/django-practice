@@ -18,11 +18,11 @@ def visitPortal1(request):
         #               1
         # 1. http://example.com/tic-tac-toe2/
         #                       -------------
-        'dj_signUpPath': 'accounts/login/',
-        #                 ---------------
-        #                 1
-        # 1. http://example.com/accounts/login/
-        #                       ---------------
+        'dj_loginPath': 'login/tic-tac-toe2',
+        #                ------------------
+        #                1
+        # 1. http://example.com/login/tic-tac-toe2
+        #                       ------------------
         'dj_logoutPath': 'logout/tic-tac-toe2',
         #                 -------------------
         #                 1

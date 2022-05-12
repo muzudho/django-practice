@@ -28,7 +28,7 @@
                         </v-row>
                         {% else %}
                         <v-row class="my-2">
-                            <v-btn :href="createSignUpPath()">会員登録</v-btn>
+                            <v-btn :href="createLoginPath()">ログイン／会員登録</v-btn>
                         </v-row>
                         {% endif %}
                     </v-container>
@@ -45,15 +45,15 @@
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_gamePath: "{{ dj_gamePath }}",
-                    vu_signUpPath: "{{ dj_signUpPath }}",
+                    vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
                     createGamePath() {
                         return `${this.vu_gamePath}`;
                     },
-                    createSignUpPath() {
-                        return `${this.vu_signUpPath}`;
+                    createLoginPath() {
+                        return `${this.vu_loginPath}`;
                     },
                     createLogoutPath() {
                         return `${this.vu_logoutPath}`;

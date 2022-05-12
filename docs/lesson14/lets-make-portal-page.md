@@ -126,7 +126,7 @@ docker-compose up
                             <v-btn :href="createGamePath()">すぐやる</v-btn>
                         </v-row>
                         <v-row class="my-2">
-                            <v-btn :href="createSignUpPath()">会員登録</v-btn>
+                            <v-btn :href="createLoginPath()">ログイン／会員登録</v-btn>
                         </v-row>
                     </v-container>
                 </v-main>
@@ -143,15 +143,15 @@ docker-compose up
                     // "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_gamePath: "{{ dj_gamePath }}",
-                    vu_signUpPath: "{{ dj_signUpPath }}",
+                    vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
                     createGamePath() {
                         return `${this.vu_gamePath}`;
                     },
-                    createSignUpPath() {
-                        return `${this.vu_signUpPath}`;
+                    createLoginPath() {
+                        return `${this.vu_loginPath}`;
                     },
                     createLogoutPath() {
                         return `${this.vu_logoutPath}`;
@@ -195,16 +195,16 @@ def visitPortal1(request):
         #               1
         # 1. http://example.com/tic-tac-toe2/
         #                       -------------
-        'dj_signUpPath': 'accounts/login/',
-        #                 ---------------
+        'dj_loginPath': 'login/tic-tac-toe2',
+        #                ------------------
+        #                1
+        # 1. http://example.com/login/tic-tac-toe2
+        #                       ------------------
+        'dj_logoutPath': 'logout/tic-tac-toe2',
+        #                 -------------------
         #                 1
-        # 1. http://example.com/accounts/login/
-        #                       ---------------
-        'dj_logoutPath': 'logout',
-        #                 ------
-        #                 1
-        # 1. http://example.com/logout
-        #                       ------
+        # 1. http://example.com/logout/tic-tac-toe2
+        #                       -------------------
     }
     return HttpResponse(template.render(context, request))
 ```
@@ -226,7 +226,20 @@ def visitPortal1(request):
 
 ```py
 from django.contrib.auth import logout
-from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+
+
+@login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+def loginUser(request):
+    """〇×ゲームの練習２"""
+    if request.method == "POST":
+        room_name = request.POST.get("room_name")
+        myPiece = request.POST.get("my_piece")
+        return redirect(f'/tic-tac-toe2/{room_name}/?&mypiece={myPiece}')
+        #                             ^
+    return render(request, "tic-tac-toe2/index.html", {})
+    #                                  ^
 
 
 def logoutUser(request):
@@ -277,6 +290,17 @@ urlpatterns = [
     # 1. URLの `portal1` というパスにマッチする
     # 2. v_portal.py ファイルの visitPortal1 メソッド
     # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
+
+    # ログイン
+    path('login/tic-tac-toe2', v_tic_tac_toe2o1.loginUser,
+         # -----------------   --------------------------
+         # 1                    2
+         name='ticTacToe2o1_loginUser'),
+    #          ----------------------
+    #          3
+    # 1. URLの `login/tic-tac-toe2` というパスにマッチする
+    # 2. v_tic_tac_toe2o1.py ファイルの loginUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
     path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
