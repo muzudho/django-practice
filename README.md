@@ -26,9 +26,15 @@ URL
 
 Product
 
-* http://tic.warabenture.com:8000/portal/tic-tac-toe2
-* http://tic.warabenture.com:8000/tic-tac-toe/v2/
 * (Old) http://tic.warabenture.com:8000/tic-tac-toe2/
+* http://tic.warabenture.com:8000/tic-tac-toe/v2/
+
+```shell
+# さくらVPSの本番環境で
+cd home/ubuntu/app/host1
+
+docker-compose up
+```
 
 # Others
 
