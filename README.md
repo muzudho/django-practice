@@ -21,6 +21,7 @@ docker-compose up
 URL
 
 * http://localhost:8000/tic-tac-toe/v1/
+* (Old) http://localhost:8000/tic-tac-toe2/
 * http://localhost:8000/tic-tac-toe/v2/
 * http://localhost:8000/tic-tac-toe3/
 
