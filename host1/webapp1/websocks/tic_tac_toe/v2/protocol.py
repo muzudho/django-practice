@@ -1,4 +1,4 @@
-class Protocol():
+class TicTacToeV2Protocol():
     """サーバープロトコル"""
 
     def execute(self, response):

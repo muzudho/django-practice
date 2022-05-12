@@ -3,7 +3,14 @@
 # 📖[Django Channels and WebSockets](https: // blog.logrocket.com/django-channels-and-websockets/)
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from webapp1.tic_tac_toe2.protocol import Protocol
+
+from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
+#    ------- ----------------------- --------        -------------------
+#    1       2                       3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 
 class TicTacToe3Consumer1(AsyncJsonWebsocketConsumer):
@@ -11,7 +18,7 @@ class TicTacToe3Consumer1(AsyncJsonWebsocketConsumer):
 
     def __init__(self):
         super().__init__()
-        self.protocol = Protocol()
+        self.protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""

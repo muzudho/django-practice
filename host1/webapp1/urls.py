@@ -30,7 +30,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
-    v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
+    v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
     v_room, v_portal, v_redirect
 
 urlpatterns = [
@@ -292,21 +292,21 @@ urlpatterns = [
     # +----
     # | 〇×ゲームの練習２
 
-    # 〇×ゲームの練習２
-    path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
-    #                ^                                   ^
-    #     -------------   --------------------------------
-    #     1               2
-    # 1. URLの `tic-tac-toe2/` というパスにマッチする
-    # 2. v_tic_tac_toe2.py ファイルの indexOfTicTacToe2 メソッド
+    # エントリー画面
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2.visitEntry),
+    #                  ^                   ^
+    #     ---------------   ---------------------------
+    #     1                 2
+    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
 
-    # 〇×ゲームの練習２
-    path('tic-tac-toe2/<str:room_name>/', v_tic_tac_toe2.playGameOfTicTacToe2),
-    #                ^                                                      ^
-    #     -----------------------------   -----------------------------------
-    #     1                               2
-    # 1. URLの `tic-tac-toe2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe2.py ファイルの playGameOfTicTacToe2 メソッド
+    # 対局画面
+    path('tic-tac-toe/v2/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
+    #                  ^                                   ^
+    #     -------------------------------   --------------------------
+    #     1                                 2
+    # 1. URLの `tic-tac-toe/v2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
 
     # | 〇×ゲームの練習２
     # +----

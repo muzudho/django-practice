@@ -35,24 +35,28 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   ├── game.js
-        │   │   │   └── main.css
+        │   │   ├── 📂tic-tac-toe
+        │   │   │   └── 📂v1
+        │   │   │       ├── 📄game.js
+        │   │   │       └── 📄main.css
         │   │   └── 📂vuetify-practice
         │   │       └── 📄desserts.json
         │   ├── 📂templates
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   ├── 📄game.html
-        │   │   │   └── 📄index.html
+        │   │   ├── 📂tic-tac-toe
+        │   │   │   └── 📂v1
+        │   │   │       └── 📄<いろいろ>.html
         │   │   └── 📂<いろいろ>-practice
         │   │       └── 📄<いろいろ>.html
-        │   ├── 📂tic_tac_toe1
-        │   │   └── 📄consumer1.py
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           └── 📄<いろいろ>.py
         │   ├── 📂websock1
-        │   │   ├── consumer1.py
-        │   │   └── consumer2.py
+        │   │   └── <いろいろ>.py
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
@@ -70,7 +74,19 @@
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
-# Step 1. favicon.ico ファイルの設置
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. favicon.ico ファイルの設置
 
 favicon.ico は、例えば 以下のサイトで作れる。作ってきてほしい。  
 
@@ -100,7 +116,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 以下略
 ```
 
-# Step 2. protocol_messages.js ファイルの作成
+# Step 3. protocol_messages.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -108,8 +124,9 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-👉              │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+👉              │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -170,7 +187,7 @@ class ProtocolMessages {
 }
 ```
 
-# Step 3. connection.js ファイルの作成
+# Step 4. connection.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -178,9 +195,10 @@ class ProtocolMessages {
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-👉              │    ├── connection.js
-                │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+👉              │       ├── connection.js
+                │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -203,9 +221,9 @@ class Connection {
         this.myPiece = document.forms["form1"]["my_piece"].value;
 
         // 接続文字列
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe2/${this.roomName}/`;
-        //                                                               ^
-        //                      ---------------------------- -------------------------------
+        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/${this.roomName}/`;
+        //                                                                 ^
+        //                      ---------------------------- ---------------------------------
         //                      1                            2
         // 1. ホスト アドレス
         // 2. URLの一部
@@ -271,7 +289,7 @@ class Connection {
 }
 ```
 
-# Step 4. game.js ファイルの作成
+# Step 5. game.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -279,10 +297,11 @@ class Connection {
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-                │    ├── connection.js
-👉              │    ├── game.js
-                │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+                │       ├── connection.js
+👉              │       ├── game.js
+                │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -421,7 +440,7 @@ class Game {
 }
 ```
 
-# Step 5. judge.js ファイルの作成
+# Step 6. judge.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -429,11 +448,12 @@ class Game {
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-                │    ├── connection.js
-                │    ├── game.js
-👉              │    ├── judge.js
-                │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+                │       ├── connection.js
+                │       ├── game.js
+👉              │       ├── judge.js
+                │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -562,7 +582,7 @@ class Judge {
 }
 ```
 
-# Step 6. engine.js ファイルの作成
+# Step 7. engine.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -570,12 +590,13 @@ class Judge {
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-                │    ├── connection.js
-👉              │    ├── engine.js
-                │    ├── game.js
-                │    ├── judge.js
-                │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+                │       ├── connection.js
+👉              │       ├── engine.js
+                │       ├── game.js
+                │       ├── judge.js
+                │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -684,7 +705,7 @@ class Engine {
 }
 ```
 
-# Step 7. protocol_main.js ファイルの作成
+# Step 8. protocol_main.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -692,13 +713,14 @@ class Engine {
     └── 📂host1
         └── 📂webapp1
             └── 📂static
-                ├── 📂tic-tac-toe2
-                │    ├── connection.js
-                │    ├── engine.js
-                │    ├── game.js
-                │    ├── judge.js
-👉              │    ├── protocol_main.js
-                │    └── protocol_messages.js
+                ├── 📂tic-tac-toe
+                │   └── 📂v2
+                │       ├── connection.js
+                │       ├── engine.js
+                │       ├── game.js
+                │       ├── judge.js
+👉              │       ├── protocol_main.js
+                │       └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -761,7 +783,7 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 8. index.html ファイルの作成
+# Step 9. entry.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -769,17 +791,19 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
-                └── 📂tic-tac-toe2
-👉                  └── index.html
+                └── 📂tic-tac-toe
+                    └── 📂v2
+👉                      └── entry.html
 ```
 
 ```html
@@ -835,7 +859,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 9. game.html ファイルの作成
+# Step 10. play.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -843,18 +867,20 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
-                └── 📂tic-tac-toe2
-                    ├── index.html
-👉                  └── game.html
+                └── 📂tic-tac-toe
+                    └── 📂v2
+                        ├── entry.html
+👉                      └── play.html
 ```
 
 ```html
@@ -927,12 +953,12 @@ function createSetMessageFromServer() {
             </v-app>
         </div>
 
-        <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/judge.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/connection.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/engine.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/game.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/judge.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/protocol_main.js' %}"></script>
+        <script src="{% static 'tic-tac-toe/v2/protocol_messages.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -1143,7 +1169,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 10. protocol.py ファイルの作成
+# Step 11. protocol.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1151,20 +1177,24 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe2
-            │       ├── index.html
-            │       └── game.html
-            └── 📂tic-tac-toe2
-👉              └── protocol.py
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── entry.html
+            │           └── play.html
+            └── 📂websocks
+                └── 📂tic-tac-toe
+                    └── 📂v2
+👉                      └── protocol.py
 ```
 
 ```py
@@ -1203,7 +1233,7 @@ class Protocol():
         raise ValueError(f"Unknown event: {event}")
 ```
 
-# Step 11. consumer1.py ファイルの作成
+# Step 12. consumer.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1211,21 +1241,25 @@ class Protocol():
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe2
-            │       ├── index.html
-            │       └── game.html
-            └── 📂tic-tac-toe2
-👉              ├── consumer1.py
-                └── protocol.py
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── entry.html
+            │           └── play.html
+            └── 📂websocks
+                └── 📂tic-tac-toe
+                    └── 📂v2
+👉                      ├── consumer1.py
+                        └── protocol.py
 ```
 
 ```py
@@ -1234,15 +1268,22 @@ class Protocol():
 # 📖[Django Channels and WebSockets](https: // blog.logrocket.com/django-channels-and-websockets/)
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from webapp1.tic_tac_toe2.protocol import Protocol
+
+from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
+#    ------- ----------------------- --------        -------------------
+#    1       2                       3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 
-class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
-    #          ^
+class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
+    #           ^
 
     def __init__(self):
         super().__init__()
-        self.protocol = Protocol()
+        self.protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""
@@ -1285,7 +1326,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 12. ビュー編集 - v_tic_tac_toe2.py ファイル
+# Step 13. ビュー編集 - v_tic_tac_toe_v2.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -1293,23 +1334,27 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe2
-            │       ├── index.html
-            │       └── game.html
-            ├── 📂tic-tac-toe2
-            │   ├── consumer1.py
-            │   └── protocol.py
-            └── 📂views
-👉              └── v_tic_tac_toe2.py
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── entry.html
+            │           └── play.html
+            ├── 📂views
+👉          │   └── v_tic_tac_toe_v2.py
+            └── 📂websocks
+                └── 📂tic-tac-toe
+                    └── 📂v2
+                        ├── consumer1.py
+                        └── protocol.py
 ```
 
 ```py
@@ -1317,21 +1362,27 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-#                   v
-def indexOfTicTacToe2(request):
-    """〇×ゲームの練習２"""
+def visitEntry(request):
+    """エントリー画面"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe2/{room_name}/?&mypiece={myPiece}')
-        #                             ^
-    return render(request, "tic-tac-toe2/index.html", {})
-    #                                  ^
+        return redirect(f'/tic-tac-toe/v2/{room_name}/?&mypiece={myPiece}')
+        #                               ^
+        #                 -----------------------------------------------
+        #                 1
+        # 1. http://example.com:8000/tic-tac-toe/v2/Elephant/?&mypiece=X
+        #                           ------------------------------------
+    return render(request, "tic-tac-toe/v2/entry.html", {})
+    #                                    ^
+    #                       -------------------------
+    #                       1
+    # 1. webapp1/templates/tic-tac-toe/v2/entry.html
+    #                      -------------------------
 
 
-#                      v
-def playGameOfTicTacToe2(request, room_name):
-    """〇×ゲームの練習２"""
+def visitPlay(request, room_name):
+    """対局画面"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
         raise Http404(f"My piece '{myPiece}' does not exists")
@@ -1339,11 +1390,13 @@ def playGameOfTicTacToe2(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "tic-tac-toe2/game.html", context)
-    #                                  ^
+    return render(request, "tic-tac-toe/v2/play.html", context)
+    #                                    ^
+    # 1. webapp1/templates/tic-tac-toe/v2/play.html
+    #                      ------------------------
 ```
 
-# Step 13. ルート編集 - urls.py ファイル
+# Step 14. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -1351,23 +1404,27 @@ def playGameOfTicTacToe2(request, room_name):
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe2
-            │       ├── index.html
-            │       └── game.html
-            ├── 📂tic-tac-toe2
-            │   ├── consumer1.py
-            │   └── protocol.py
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── entry.html
+            │           └── play.html
             ├── 📂views
-            │   └── v_tic_tac_toe2.py
+            │   └── v_tic_tac_toe_v2.py
+            ├── 📂websocks
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── consumer1.py
+            │           └── protocol.py
 👉          └── urls.py
 ```
 
@@ -1376,8 +1433,8 @@ def playGameOfTicTacToe2(request, room_name):
 ```py
 from django.urls import path
 
-from webapp1.views import v_tic_tac_toe2
-#    ------- -----        --------------
+from webapp1.views import v_tic_tac_toe_v2
+#    ------- -----        ----------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -1386,25 +1443,25 @@ from webapp1.views import v_tic_tac_toe2
 urlpatterns = [
     # ...略...
 
-    # 〇×ゲームの練習２
-    path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
-    #                ^                                   ^
-    #     -------------   --------------------------------
-    #     1               2
-    # 1. URLの `tic-tac-toe2/` というパスにマッチする
-    # 2. v_tic_tac_toe2.py ファイルの indexOfTicTacToe2 メソッド
+    # エントリー画面
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2.visitEntry),
+    #                  ^                   ^
+    #     ---------------   ---------------------------
+    #     1                 2
+    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
 
-    # 〇×ゲームの練習２
-    path('tic-tac-toe2/<str:room_name>/', v_tic_tac_toe2.playGameOfTicTacToe2),
-    #                ^                                                      ^
-    #     -----------------------------   -----------------------------------
-    #     1                               2
-    # 1. URLの `tic-tac-toe2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe2.py ファイルの playGameOfTicTacToe2 メソッド
+    # 対局画面
+    path('tic-tac-toe/v2/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
+    #                  ^                                   ^
+    #     -------------------------------   --------------------------
+    #     1                                 2
+    # 1. URLの `tic-tac-toe/v2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
 ]
 ```
 
-# Step 14. ルート編集 - routing1.py ファイル
+# Step 15. ルート編集 - routing1.py ファイル
 
 以下のファイルを無ければ作成、あればマージしてほしい。  
 
@@ -1412,23 +1469,27 @@ urlpatterns = [
     └── 📂host1
         └── 📂webapp1
             ├── 📂static
-            │   ├── 📂tic-tac-toe2
-            │   │    ├── connection.js
-            │   │    ├── engine.js
-            │   │    ├── game.js
-            │   │    ├── judge.js
-            │   │    ├── protocol_main.js
-            │   │    └── protocol_messages.js
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe2
-            │       ├── index.html
-            │       └── game.html
-            ├── 📂tic-tac-toe2
-            │   ├── consumer1.py
-            │   └── protocol.py
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── entry.html
+            │           └── play.html
             ├── 📂views
-            │   └── v_tic_tac_toe2.py
+            │   └── v_tic_tac_toe_v2.py
+            ├── 📂websocks
+            │   └── 📂tic-tac-toe
+            │       └── 📂v2
+            │           ├── consumer1.py
+            │           └── protocol.py
 👉          ├── routing1.py
             └── urls.py
 ```
@@ -1437,10 +1498,10 @@ urlpatterns = [
 
 ```py
 # 〇×ゲームの練習２
-from webapp1.tic_tac_toe2.consumer1 import TicTacToe2Consumer1  # 追加
-#                       ^                           ^
-#    ------- ------------ ---------        -------------------
-#    1       2            3                4
+from webapp1.websocks.tic_tac_toe.v2.consumer import TicTacToeV2Consumer
+#                                  ^                           ^
+#    ------- ----------------------- --------        -------------------
+#    1       2                       3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -1453,28 +1514,20 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe2/(?P<room_name>\w+)/$', TicTacToe2Consumer1.as_asgi()),
+    url(r'^tic-tac-toe/v2/(?P<room_name>\w+)/$', TicTacToeV2Consumer.as_asgi()),
     #                 ^                                 ^
-    #     ----------------------------------   -----------------------------
-    #     1                                    2
-    # 1. URLの一部（正規表現）の Django での書き方
-    # 2. ASGI形式での書き方
+    #     ------------------------------------   -----------------------------
+    #     1                                      2
+    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```
 
-# Step 15. Web画面へアクセス
-
-（していなければ）Dockerコンテナの起動  
-
-```shell
-cd host1
-
-docker-compose up
-```
+# Step 16. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe2/](http://localhost:8000/tic-tac-toe2/)  
+📖 [http://localhost:8000/tic-tac-toe/v2/](http://localhost:8000/tic-tac-toe/v2/)  
 
 # 次の記事
 
