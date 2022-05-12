@@ -1,4 +1,4 @@
-# tic-tac-toe2
+# tic-tac-toe v2
 
 ```plaintext
                    📄protocol_main.js

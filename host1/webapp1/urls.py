@@ -373,13 +373,13 @@ urlpatterns = [
     # | ポータル作成
 
     # 旧ポータル
-    path('tic-tac-toe2', v_tic_tac_toe_v2o1.visitPortal,
-         # -----------   ------------------------------
+    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.visitPortal,
+         # ------------   ------------------------------
          # 1             2
          name='visitTicTacToeV2Portal'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe2` というパスにマッチする
+    # 1. URLの `tic-tac-toe2/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
     # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
 

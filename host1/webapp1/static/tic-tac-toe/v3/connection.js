@@ -16,7 +16,7 @@ class Connection {
         this.myPiece = document.forms["form1"]["my_piece"].value;
 
         // 接続文字列
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe2/${this.roomName}/`;
+        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/${this.roomName}/`;
         //                                                               ^
         //                      ---------------------------- -------------------------------
         //                      1                            2
