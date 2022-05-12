@@ -33,7 +33,7 @@ Lesson 2. Auth
 Lesson 3. Page  
 
 * 📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)
-    * 📖 [Djangoでログインユーザー情報を表示しよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
+* 📖 [Djangoでログイン／ログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 
 Lesson 4. Super-user  
 
