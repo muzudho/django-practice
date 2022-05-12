@@ -25,14 +25,16 @@ def listRoom(request):
     """部屋一覧"""
     rooms = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
     dbRoomJsonStr = serializers.serialize('json', rooms)  # JSON に変換
-    print(f"dbRoomJsonStr={dbRoomJsonStr}")
+    # Example:
+    # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
+    # print(f"dbRoomJsonStr={dbRoomJsonStr}")
 
     dbRoomDoc = json.loads(dbRoomJsonStr)
-    print(f"dbRoomDoc={json.dumps(dbRoomDoc)}")
-
+    # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
     """
     # Example
-    dbRoomDoc=[
+    dbRoomDoc=
+    [
         {
             "model": "webapp1.room",
             "pk": 2,
@@ -50,12 +52,10 @@ def listRoom(request):
     resDoc = dict()
     resDoc["rooms"] = []
 
-    print(f'resDoc={resDoc}')
-
     for dbRecord in dbRoomDoc:
         # Example:
         # dbRecord= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
-        print(f"dbRecord= --> {dbRecord} <--")
+        # print(f"dbRecord= --> {dbRecord} <--")
 
         resDoc["rooms"].append(
             {
@@ -66,16 +66,20 @@ def listRoom(request):
             }
         )
 
-    # Example: resDoc.rooms=[{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]
-    # print(f'resDoc["rooms"]={resDoc["rooms"]}')
-    print(f'resDoc={resDoc}')
+    # Example:
+    # resDoc={'rooms': [{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]}
+    # print(f'resDoc={resDoc}')
 
-    
     context = {
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         # 部屋がいっぱいあるので、名前はホテルとします
         # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
-        "hotel": json.dumps(resDoc)
+        "dj_hotel": json.dumps(resDoc),
+        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
+        "dj_readRoomPath": "read/",
     }
+    # Example:
+    # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
     print(f"context={context}")
 
     return render(request, "rooms/list.html", context)

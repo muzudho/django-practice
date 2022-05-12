@@ -27,17 +27,17 @@
                                         <th>部屋名</th>
                                         <th>盤面</th>
                                         <th>棋譜</th>
-                                        <th>機能</th>
+                                        <th>アクション</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in hotelDoc.rooms" :key="room.id">
+                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
                                         <td>{{ room.id }}</td>
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
-                                        <!--<td><v-btn href="{% url 'readRoom' id=room.id %}">部屋を見る</v-btn></td>-->
+                                        <td><v-btn :href="createRoomsReadPath(room.id)">部屋を見る</v-btn></td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -51,15 +51,22 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            var hotelDoc1 = JSON.parse("{{ hotel|escapejs }}");
-            var hotelDocStr1 = JSON.stringify(hotelDoc1, null, "    ");
-            console.log(`hotelDocStr1=${hotelDocStr1}`);
+            var hotelDoc1 = JSON.parse("{{ dj_hotel|escapejs }}");
+            // var hotelDocStr1 = JSON.stringify(hotelDoc1, null, "    ");
+            // console.log(`hotelDocStr1=${hotelDocStr1}`);
 
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    hotelDoc: hotelDoc1,
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_hotelDoc: hotelDoc1,
+                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+                },
+                methods: {
+                    createRoomsReadPath(id) {
+                        return `${this.vu_readRoomPath}${id}`;
+                    },
                 },
             });
         </script>
