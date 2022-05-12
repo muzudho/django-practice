@@ -36,36 +36,63 @@ from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
 urlpatterns = [
     path('', v_index.index, name='index'),
 
-    # 管理画面に入りたい
-    path('admin/', admin.site.urls),
-
     # +----
     # | Allauth
+    # 管理画面に入りたい
+    path('admin/', admin.site.urls),
+    #     ------   ---------------
+    #     1        2
+    # 1. URLの `admin/` というパスにマッチする
+    # 2. 最初から用意されている URL？
+
     # https://sinyblog.com/django/django-allauth/
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     #    --  -----------------------------------------------        ----
     #    1   2                                                      3
-    # 1.
-    # 2.
-    # 3. ログオン後のTOP画面の定義
+    # 1. URL に パスを付けなかったときにマッチする
+    # 2. 最初から用意されているページ？
+    # 3. ログイン後に飛んでくるページの URL のパスを 'home' という名前で覚えておく
 
     path('accounts/', include('allauth.urls')),
+    #     ---------   -----------------------
+    #     1           2
+    # 1. URLの `accounts/` というパスにマッチする
+    # 2. 最初から用意されているURL？
     # | Allauth
     # +----
 
+    # +----
+    # | 練習１
     path('practice1/page1', v_page1.page1, name='page1'),
     #     ---------------   -------------        -----
     #     1                 2                    3
     # 1. URLの `practice1/page1` というパスにマッチする
     # 2. v_page1.py ファイルの page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
+    # | 練習１
+    # +----
 
+    # +----
+    # | ログイン
+
+    # ログイン
     path('login-user', v_login_user.loginUser, name='loginUser'),
     #     ----------   ----------------------        ---------
     #     1            2                             3
     # 1. URLの `login-user` というパスにマッチする
     # 2. v_login_user.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
+
+    # ログアウト
+    path('logout', v_login_user.logoutUser, name='logoutUser'),
+    #     ------   -----------------------        ----------
+    #     1        2                              3
+    # 1. URLの `logout` というパスにマッチする
+    # 2. v_login_user.py ファイルの logoutUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
+
+    # | ログイン
+    # +----
 
     # 会員一覧
     path('members/', v_member.listMember, name='listMember'),

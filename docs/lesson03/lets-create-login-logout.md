@@ -90,8 +90,10 @@ Login user.
 
 ```py
 from django.http import HttpResponse
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.template import loader
+from django.shortcuts import redirect
 
 
 @login_required
@@ -111,6 +113,12 @@ def loginUser(request):
         "email": user.email,
     }
     return HttpResponse(template.render(context, request))
+
+
+def logoutUser(request):
+    """ログアウト"""
+    logout(request)
+    redirect('home')
 ```
 
 # Step 3. ルート編集 - urls.py ファイル
@@ -142,19 +150,38 @@ from webapp1.views import v_login_user
 urlpatterns = [
     # ...中略...
 
+    # ログイン
     path('login-user', v_login_user.loginUser, name='loginUser'),
     #     ----------   ----------------------        ---------
     #     1            2                             3
     # 1. URLの `login-user` というパスにマッチする
     # 2. v_login_user.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
+
+    # ログアウト
+    path('logout', v_login_user.logoutUser, name='logoutUser'),
+    #     ------   -----------------------        ----------
+    #     1        2                              3
+    # 1. URLの `logout` というパスにマッチする
+    # 2. v_login_user.py ファイルの logoutUser メソッド
+    # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 ]
 ```
 
 # Step 4. Webページへアクセス
 
+ログインする、ログイン情報を見る:  
+
 📖 [http://localhost:8000/login-user](http://localhost:8000/login-user)  
+
+ログアウトする:  
+
+📖 [http://localhost:8000/logout](http://localhost:8000/logout)  
 
 # 次の記事
 
-📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)
+📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)  
+
+# 関連する記事
+
+📖 [Using the Django authentication system](https://docs.djangoproject.com/en/3.1/topics/auth/default/)  

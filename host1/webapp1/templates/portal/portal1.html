@@ -22,9 +22,15 @@
                         <v-row class="my-2">
                             <v-btn :href="createGamePath()">すぐやる</v-btn>
                         </v-row>
+                        {% if user.is_authenticated %}
+                        <v-row class="my-2">
+                            <v-btn :href="createLogoutPath()">ログアウト</v-btn>
+                        </v-row>
+                        {% else %}
                         <v-row class="my-2">
                             <v-btn :href="createSignUpPath()">会員登録</v-btn>
                         </v-row>
+                        {% endif %}
                     </v-container>
                 </v-main>
             </v-app>
@@ -47,6 +53,9 @@
                     },
                     createSignUpPath() {
                         return `${this.vu_signUpPath}`;
+                    },
+                    createLogoutPath() {
+                        return `${this.vu_logoutPath}`;
                     },
                 },
             });
