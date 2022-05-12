@@ -46,8 +46,10 @@ Webサーバーとクライアント間でテキストを双方向の非同期�
         │   │       └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
-        │   ├── 📂websock1
-        │   │   └── consumer1.py
+        │   ├── 📂websocks
+        │   │   └── 📂websock_practice1
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
@@ -62,7 +64,19 @@ Webサーバーとクライアント間でテキストを双方向の非同期�
         └── <いろいろ>
 ```
 
-# Step 1. 設定の編集 - asgi.py ファイル
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. 設定の編集 - asgi.py ファイル
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
@@ -101,9 +115,15 @@ application = ProtocolTypeRouter({
 })
 ```
 
-# Step 2. コマンド実行
+# Step 3. コマンド実行
 
-Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
+Dockerコンテナを停止させてほしい  
+
+```shell
+docker-compose down
+```
+
+Dockerコンテナを起動してほしい  
 
 ```shell
 # requirements.txt を編集したので ビルドし直します
@@ -116,15 +136,18 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 3. consumer2.py ファイルを作成
+# Step 4. consumer2.py ファイルを作成
 
 以下のファイルを作成してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1
-            ├── 📂websock1
-👉          │   └── 📄consumer2.py
+            ├── 📂websocks
+            │   ├── 📂websock_practice1     # 1
+            │   └── 📂websock_practice2     # 2
+            │       └── 📂v1
+👉          │           └── 📄consumer.py
             └── 📄asgi.py
 ```
 
@@ -139,18 +162,20 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 # 1. Json を使うものに変更
 
 
-class Consumer2(AsyncJsonWebsocketConsumer):
+class WebsockPractice2V1Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        """Called when the websocket is handshaking as part of initial connection."""
         print("Connected")
         await self.accept()
 
     async def disconnect(self, close_code):
+        """Called when the WebSocket closes for any reason."""
         print("Disconnected")
 
     async def receive_json(self, doc):
         """
-        Receive JSON from WebSocket.
-        And format check automatically.
+        Called when we get a text frame. Channels will JSON-decode the payload
+        for us and pass it as the first argument.
         """
         print("Received JSON")
         # Send message to WebSocket
@@ -163,15 +188,18 @@ class Consumer2(AsyncJsonWebsocketConsumer):
         await self.send(text_data=res)
 ```
 
-# Step 4. routing1.py ファイルを作成
+# Step 5. routing1.py ファイルを作成
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1
-            ├── 📂websock1
-            │   └── 📄consumer2.py
+            ├── 📂websocks
+            │   ├── 📂websock_practice1     # 1
+            │   └── 📂websock_practice2     # 2
+            │       └── 📂v1
+            │           └── 📄consumer.py
             ├── 📄asgi.py
 👉          └── 📄routing1.py
 ```
@@ -179,30 +207,28 @@ class Consumer2(AsyncJsonWebsocketConsumer):
 ```py
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
-from webapp1.websock1.consumer2 import Consumer2 # 追加
-#    ------- -------- ---------
-#    1       2        3
+
+# Websock練習２
+from webapp1.websocks.websock_practice2.v1.consumer import WebsockPractice2V1Consumer
+#                                     ^                                   ^
+#    ------- ----------------------------- --------        --------------------------
+#    1       2                             3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. クラス名
 
 websocket_urlpatterns = [
-    # （追加）
-    url(r'^websock1-2/$', Consumer2.as_asgi()),
-    #     -------------
-    #     1
-    # 1. URLの一部
+
+    # Websock練習２
+    url(r'^websock-practice2/v1/$', WebsockPractice2V1Consumer.as_asgi()),
+    #                      ^                       ^
+    #     -----------------------   ------------------------------------
+    #     1                                      2
+    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
+
 ]
-```
-
-# Step 5. Dockerコンテナの起動
-
-（していなければ）Dockerコンテナの起動  
-
-```shell
-cd host1
-
-docker-compose up
 ```
 
 # Step 6. ローカルPCにPythonのパッケージ websocket-client をインストール
@@ -227,8 +253,11 @@ pip install websocket-client
     │        └── 📄<いろいろ>
     └── 📂host1
         └── 📂webapp1
-            ├── 📂websock1
-            │   └── 📄consumer2.py
+            ├── 📂websocks
+            │   ├── 📂websock_practice1     # 1
+            │   └── 📂websock_practice2     # 2
+            │       └── 📂v1
+            │           └── 📄consumer.py
             ├── 📄asgi.py
             └── 📄routing1.py
 ```
@@ -319,8 +348,9 @@ if __name__ == "__main__":
                                 default=8000, help='サーバーのポート。規定値:8000')
             args = parser.parse_args()
 
-            url = f"ws://{args.host}:{args.port}/websock1-2/"
-            #                                    ----------
+            # FIXME このURLの埋め込みを外に出せないか？
+            url = f"ws://{args.host}:{args.port}/websock-practice2/v1/"
+            #                                    ---------------------
             #                                    1
             # 1. URLを合わせるように注意
             self._client = Client2(url)

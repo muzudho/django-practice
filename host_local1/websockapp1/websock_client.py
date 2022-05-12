@@ -82,7 +82,7 @@ if __name__ == "__main__":
             args = parser.parse_args()
 
             # FIXME このURLの埋め込みを外に出せないか？
-            url = f"ws://{args.host}:{args.port}/websock_practice1/v1/"
+            url = f"ws://{args.host}:{args.port}/websock-practice1/v1/"
             self._client = Websocket_Client(url)
             self._client.run_forever()
             return 0

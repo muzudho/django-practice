@@ -5,7 +5,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class Practice1V1Consumer(AsyncWebsocketConsumer):
+class WebsockPractice1V1Consumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connected")
         await self.accept()

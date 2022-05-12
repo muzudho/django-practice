@@ -83,8 +83,9 @@ if __name__ == "__main__":
                                 default=8000, help='サーバーのポート。規定値:8000')
             args = parser.parse_args()
 
-            url = f"ws://{args.host}:{args.port}/websock1-2/"
-            #                                    ----------
+            # FIXME このURLの埋め込みを外に出せないか？
+            url = f"ws://{args.host}:{args.port}/websock-practice2/v1/"
+            #                                    ---------------------
             #                                    1
             # 1. URLを合わせるように注意
             self._client = Client2(url)

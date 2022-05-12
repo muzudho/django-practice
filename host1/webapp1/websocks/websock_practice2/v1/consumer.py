@@ -8,7 +8,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 # 1. Json を使うものに変更
 
 
-class Consumer2(AsyncJsonWebsocketConsumer):
+class WebsockPractice2V1Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         """Called when the websocket is handshaking as part of initial connection."""
         print("Connected")

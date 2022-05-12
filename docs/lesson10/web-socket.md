@@ -213,7 +213,7 @@ docker-compose up
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
-class Practice1V1Consumer(AsyncWebsocketConsumer):
+class WebsockPractice1V1Consumer(AsyncWebsocketConsumer):
     async def connect(self):
         print("Connected")
         await self.accept()
@@ -257,8 +257,9 @@ class Practice1V1Consumer(AsyncWebsocketConsumer):
 # See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
 
-from webapp1.websocks.websock_practice1.v1.consumer import Practice1V1Consumer
-#    ------- ----------------------------- --------        -------------------
+# Websock練習１
+from webapp1.websocks.websock_practice1.v1.consumer import WebsockPractice1V1Consumer
+#    ------- ----------------------------- --------        --------------------------
 #    1       2                             3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -267,8 +268,9 @@ from webapp1.websocks.websock_practice1.v1.consumer import Practice1V1Consumer
 
 websocket_urlpatterns = [
 
-    url(r'^websock_practice1/v1/$', Practice1V1Consumer.as_asgi()),
-    #     -----------------------   -----------------------------
+    # Websock練習１
+    url(r'^websock-practice1/v1/$', WebsockPractice1V1Consumer.as_asgi()),
+    #     -----------------------   ------------------------------------
     #     1                                      2
     # 1. URLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
@@ -466,7 +468,7 @@ if __name__ == "__main__":
             args = parser.parse_args()
 
             # FIXME このURLの埋め込みを外に出せないか？
-            url = f"ws://{args.host}:{args.port}/websock_practice1/v1/"
+            url = f"ws://{args.host}:{args.port}/websock-practice1/v1/"
             self._client = Websocket_Client(url)
             self._client.run_forever()
             return 0
