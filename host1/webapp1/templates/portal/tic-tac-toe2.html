@@ -50,13 +50,24 @@
                 },
                 methods: {
                     createGamePath() {
-                        return `${this.vu_gamePath}`;
+                        let path = `${location.protocol}//${location.host}/${this.vu_gamePath}`;
+                        //          --------------------  ---------------- ------------------
+                        //          1                     2                3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`game path=[${path}]`);
+                        return path;
                     },
                     createLoginPath() {
-                        return `${this.vu_loginPath}`;
+                        let path = `${location.protocol}//${location.host}/${this.vu_loginPath}`;
+                        console.log(`login path=[${path}]`);
+                        return path;
                     },
                     createLogoutPath() {
-                        return `${this.vu_logoutPath}`;
+                        let path = `${location.protocol}//${location.host}/${this.vu_logoutPath}`;
+                        console.log(`logout path=[${path}]`);
+                        return path;
                     },
                 },
             });

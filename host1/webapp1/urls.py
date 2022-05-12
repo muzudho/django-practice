@@ -308,12 +308,13 @@ urlpatterns = [
     # | ポータル作成
 
     # ポータル１
-    path('portal1', v_portal.visitPortal1, name='visitPortal1'),
-    #     -------   ---------------------        ------------
-    #     1         2                            3
-    # 1. URLの `portal1` というパスにマッチする
-    # 2. v_portal.py ファイルの visitPortal1 メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
+    path('portal/tic-tac-toe2', v_portal.visitTicTacToe2Portal,
+         name='visitTicTacToe2Portal'),
+    #     -------------------   ------------------------------        ---------------------
+    #     1                     2                                     3
+    # 1. URLの `portal/tic-tac-toe2` というパスにマッチする
+    # 2. v_portal.py ファイルの visitTicTacToe2Portal メソッド
+    # 3. HTMLテンプレートの中で {% url 'visitTicTacToe2Portal' %} のような形でURLを取得するのに使える
 
     # ログイン
     path('login/tic-tac-toe2', v_tic_tac_toe2o1.loginUser,
@@ -330,12 +331,12 @@ urlpatterns = [
     path('logout/tic-tac-toe2', v_tic_tac_toe2o1.logoutUser,
          # ------------------   ---------------------------
          # 1                    2
-         name='ticTacToe2o1_logoutUser'),
-    #          -----------------------
+         name='ticTacToe2o1_logout'),
+    #          -------------------
     #          3
     # 1. URLの `logout/tic-tac-toe2` というパスにマッチする
     # 2. v_tic_tac_toe2o1.py ファイルの logoutUser メソッド
-    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_logoutUser' %} のような形でURLを取得するのに使える
+    # 3. HTMLテンプレートの中で {% url 'ticTacToe2o1_logout' %} のような形でURLを取得するのに使える
 
     # | ポータル作成
     # +----

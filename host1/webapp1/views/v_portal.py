@@ -2,13 +2,13 @@ from django.http import HttpResponse
 from django.template import loader
 
 
-def visitPortal1(request):
+def visitTicTacToe2Portal(request):
     """ポータル１"""
-    template = loader.get_template('portal/portal1.html')
-    #                               -------------------
+    template = loader.get_template('portal/tic-tac-toe2.html')
+    #                               ------------------------
     #                               1
-    # 1. host1/webapp1/templates/portal/portal1.html を取得
-    #                            -------------------
+    # 1. host1/webapp1/templates/portal/tic-tac-toe2.html を取得
+    #                            ------------------------
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印

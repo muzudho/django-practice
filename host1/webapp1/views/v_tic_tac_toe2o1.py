@@ -18,4 +18,4 @@ def loginUser(request):
 def logoutUser(request):
     """ログアウト"""
     logout(request)
-    return redirect('visitPortal1')
+    return redirect('visitTicTacToe2Portal')
