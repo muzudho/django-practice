@@ -95,10 +95,14 @@ websocket_urlpatterns = [
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe/v2/(?P<room_name>\w+)/$', TicTacToeV2Consumer.as_asgi()),
-    #                 ^                                 ^
-    #     ------------------------------------   -----------------------------
-    #     1                                      2
+    url(r'^tic-tac-toe/v2/play/(?P<room_name>\w+)/$',
+        #               ^
+        # -----------------------------------------
+        # 1
+        TicTacToeV2Consumer.as_asgi()),
+    #             ^
+    #   -----------------------------
+    #   2
     # 1. URLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 

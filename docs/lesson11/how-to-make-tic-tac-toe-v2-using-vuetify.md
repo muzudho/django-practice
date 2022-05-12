@@ -219,9 +219,9 @@ class Connection {
         this.myPiece = document.forms["form1"]["my_piece"].value;
 
         // 接続文字列
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/${this.roomName}/`;
+        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${this.roomName}/`;
         //                                                                 ^
-        //                      ---------------------------- ---------------------------------
+        //                      ---------------------------- --------------------------------------
         //                      1                            2
         // 1. ホスト アドレス
         // 2. URLの一部
@@ -1365,12 +1365,12 @@ def visitEntry(request):
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v2/{room_name}/?&mypiece={myPiece}')
+        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={myPiece}')
         #                               ^
-        #                 -----------------------------------------------
+        #                 ----------------------------------------------------
         #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v2/Elephant/?&mypiece=X
-        #                           ------------------------------------
+        # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
+        #                           -----------------------------------------
     return render(request, "tic-tac-toe/v2/entry.html", {})
     #                                    ^
     #                       -------------------------
@@ -1450,11 +1450,11 @@ urlpatterns = [
     # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
 
     # 対局画面
-    path('tic-tac-toe/v2/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
-    #                  ^                                   ^
-    #     -------------------------------   --------------------------
-    #     1                                 2
-    # 1. URLの `tic-tac-toe/v2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
+    #                  ^                                        ^
+    #     ------------------------------------   --------------------------
+    #     1                                      2
+    # 1. URLの `tic-tac-toe/v2/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
 ]
 ```
@@ -1512,9 +1512,9 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe/v2/(?P<room_name>\w+)/$', TicTacToeV2Consumer.as_asgi()),
-    #                 ^                                 ^
-    #     ------------------------------------   -----------------------------
+    url(r'^tic-tac-toe/v2/play/(?P<room_name>\w+)/$', TicTacToeV2Consumer.as_asgi()),
+    #                 ^                                         ^
+    #     -----------------------------------------   -----------------------------
     #     1                                      2
     # 1. URLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする

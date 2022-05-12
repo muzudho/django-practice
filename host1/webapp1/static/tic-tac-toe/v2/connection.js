@@ -16,9 +16,9 @@ class Connection {
         this.myPiece = document.forms["form1"]["my_piece"].value;
 
         // 接続文字列
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/${this.roomName}/`;
+        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${this.roomName}/`;
         //                                                                 ^
-        //                      ---------------------------- ---------------------------------
+        //                      ---------------------------- ---------------------00000------------
         //                      1                            2
         // 1. ホスト アドレス
         // 2. URLの一部

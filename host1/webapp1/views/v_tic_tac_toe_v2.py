@@ -7,12 +7,12 @@ def visitEntry(request):
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v2/{room_name}/?&mypiece={myPiece}')
+        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={myPiece}')
         #                               ^
-        #                 -----------------------------------------------
+        #                 ----------------------------------------------------
         #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v2/Elephant/?&mypiece=X
-        #                           ------------------------------------
+        # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
+        #                           -----------------------------------------
     return render(request, "tic-tac-toe/v2/entry.html", {})
     #                                    ^
     #                       -------------------------

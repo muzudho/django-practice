@@ -301,11 +301,11 @@ urlpatterns = [
     # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
 
     # 対局画面
-    path('tic-tac-toe/v2/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
-    #                  ^                                   ^
-    #     -------------------------------   --------------------------
-    #     1                                 2
-    # 1. URLの `tic-tac-toe/v2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
+    #                  ^                                        ^
+    #     ------------------------------------   --------------------------
+    #     1                                      2
+    # 1. URLの `tic-tac-toe/v2/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
 
     # | 〇×ゲームの練習２
