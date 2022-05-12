@@ -269,14 +269,14 @@ urlpatterns = [
     # +----
     # | 〇×ゲームの練習１
 
-    # 〇×ゲームの練習１
-    path('tic-tac-toe/v1/', v_tic_tac_toe_v1.visitEntry),
-    #     ---------------   ---------------------------
-    #     1                 2
-    # 1. URLの `tic-tac-toe/v1/` というパスにマッチする
-    # 2. v_tic_tac_toe_v1.py ファイルの visitEntry メソッド
+    # 対局要求
+    path('tic-tac-toe/v1/match-request/', v_tic_tac_toe_v1.visitMatchRequest),
+    #     -----------------------------   ----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe/v1/match-request/` というパスにマッチする
+    # 2. v_tic_tac_toe_v1.py ファイルの visitMatchRequest メソッド
 
-    # 〇×ゲームの練習１
+    # 対局中
     path('tic-tac-toe/v1/play/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
     #     ------------------------------------   --------------------------
     #     1                                      2
@@ -292,15 +292,15 @@ urlpatterns = [
     # +----
     # | 〇×ゲームの練習２
 
-    # エントリー画面
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2.visitEntry),
-    #                  ^                   ^
-    #     ---------------   ---------------------------
-    #     1                 2
-    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
+    # 対局要求
+    path('tic-tac-toe/v2/match-request/', v_tic_tac_toe_v2.visitMatchRequest),
+    #                  ^                                 ^
+    #     -----------------------------   ----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe/v2/match-request/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2.py ファイルの visitMatchRequest メソッド
 
-    # 対局画面
+    # 対局中
     path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
     #                  ^                                        ^
     #     ------------------------------------   --------------------------
@@ -395,7 +395,7 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('login/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.loginUser,
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,
          # --------------------   ----------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
@@ -406,13 +406,13 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.logoutUser,
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.logoutUser,
          # ---------------------   -----------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
     #          -------------------
     #          3
-    # 1. URLの `logout/tic-tac-toe/v2/` というパスにマッチする
+    # 1. URLの `tic-tac-toe/v2/logout/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 

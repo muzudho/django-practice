@@ -20,7 +20,7 @@ docker-compose up
 
 URL
 
-* http://localhost:8000/tic-tac-toe/v1/
+* http://localhost:8000/tic-tac-toe/v1/match-request/
 * (Old) http://localhost:8000/tic-tac-toe2/
 * http://localhost:8000/tic-tac-toe/v2/
 

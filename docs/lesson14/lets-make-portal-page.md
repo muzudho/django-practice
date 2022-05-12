@@ -50,7 +50,7 @@
         │   │       ├── 📂v1
         │   │       │   └── 📄<いろいろ>
         │   │       ├── 📂v2
-        │   │       │   ├── 📄entry.html
+        │   │       │   ├── 📄match_request.html
         │   │       │   └── 📄play.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
@@ -151,14 +151,14 @@ docker-compose up
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_gamePath: "{{ dj_gamePath }}",
+                    vu_matchRequestPath: "{{ dj_matchRequestPath }}",
                     vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
                     createGamePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_gamePath}`;
-                        //          --------------------  ---------------- ------------------
+                        let path = `${location.protocol}//${location.host}/${this.vu_matchRequestPath}`;
+                        //          --------------------  ---------------- ---------------------------
                         //          1                     2                3
                         // 1. protocol
                         // 2. host
@@ -217,20 +217,20 @@ def visitPortal(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
-        'dj_gamePath': 'tic-tac-toe/v2/',
-        #               ---------------
-        #               1
-        # 1. http://example.com/tic-tac-toe/v2/
-        #                       ---------------
-        'dj_loginPath': 'login/tic-tac-toe/v2/',
+        'dj_matchRequestPath': 'tic-tac-toe/v2/match-request/',
+        #                       -----------------------------
+        #                       1
+        # 1. http://example.com/tic-tac-toe/v2/match-request/
+        #                       -----------------------------
+        'dj_loginPath': 'tic-tac-toe/v2/login/',
         #                ---------------------
         #                1
-        # 1. http://example.com/login/tic-tac-toe/v2/
+        # 1. http://example.com/tic-tac-toe/v2/login/
         #                       ---------------------
-        'dj_logoutPath': 'logout/tic-tac-toe/v2/',
+        'dj_logoutPath': 'tic-tac-toe/v2/logout/',
         #                 ----------------------
         #                 1
-        # 1. http://example.com/logout/tic-tac-toe/v2/
+        # 1. http://example.com/tic-tac-toe/v2/logout/
         #                       ----------------------
     }
     return HttpResponse(template.render(context, request))
@@ -248,12 +248,12 @@ def loginUser(request):
         #               1
         # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                       ----------------------------------------
-    return render(request, "tic-tac-toe/v2/entry.html", {})
+    return render(request, "tic-tac-toe/v2/match_request.html", {})
     #                                    ^
-    #                       -------------------------
+    #                       ---------------------------------
     #                       1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/entry.html を取得
-    #                            -------------------------
+    # 1. host1/webapp1/templates/tic-tac-toe/v2/match_request.html を取得
+    #                            ---------------------------------
 
 
 def logoutUser(request):
@@ -314,24 +314,24 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('login/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.loginUser,
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,
          # --------------------   ----------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
     #          ----------------------
     #          3
-    # 1. URLの `login/tic-tac-toe/v2/` というパスにマッチする
+    # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout/tic-tac-toe/v2/', v_tic_tac_toe_v2o1.logoutUser,
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.logoutUser,
          # ---------------------   -----------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
     #          -------------------
     #          3
-    # 1. URLの `logout/tic-tac-toe/v2/` というパスにマッチする
+    # 1. URLの `tic-tac-toe/v2/logout/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 ]

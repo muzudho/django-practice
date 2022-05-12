@@ -44,14 +44,14 @@
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_gamePath: "{{ dj_gamePath }}",
+                    vu_matchRequestPath: "{{ dj_matchRequestPath }}",
                     vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
                     createGamePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_gamePath}`;
-                        //          --------------------  ---------------- ------------------
+                        let path = `${location.protocol}//${location.host}/${this.vu_matchRequestPath}`;
+                        //          --------------------  ---------------- ---------------------------
                         //          1                     2                3
                         // 1. protocol
                         // 2. host

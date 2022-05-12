@@ -781,7 +781,7 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 9. entry.html ファイルの作成
+# Step 9. match_request.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -801,7 +801,7 @@ function createSetMessageFromServer() {
             └── 📂templates
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      └── entry.html
+👉                      └── match_request.html
 ```
 
 ```html
@@ -877,7 +877,7 @@ function createSetMessageFromServer() {
             └── 📂templates
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── entry.html
+                        ├── match_request.html
 👉                      └── play.html
 ```
 
@@ -1187,7 +1187,7 @@ function createSetMessageFromServer() {
             ├── 📂templates
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── entry.html
+            │           ├── match_request.html
             │           └── play.html
             └── 📂websocks
                 └── 📂tic-tac-toe
@@ -1251,7 +1251,7 @@ class Protocol():
             ├── 📂templates
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── entry.html
+            │           ├── match_request.html
             │           └── play.html
             └── 📂websocks
                 └── 📂tic-tac-toe
@@ -1344,7 +1344,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             ├── 📂templates
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── entry.html
+            │           ├── match_request.html
             │           └── play.html
             ├── 📂views
 👉          │   └── v_tic_tac_toe_v2.py
@@ -1360,8 +1360,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def visitEntry(request):
-    """エントリー画面"""
+def visitMatchRequest(request):
+    """エントリー対局要求"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
@@ -1371,12 +1371,12 @@ def visitEntry(request):
         #                 1
         # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                           -----------------------------------------
-    return render(request, "tic-tac-toe/v2/entry.html", {})
+    return render(request, "tic-tac-toe/v2/match_request.html", {})
     #                                    ^
-    #                       -------------------------
+    #                       ---------------------------------
     #                       1
-    # 1. webapp1/templates/tic-tac-toe/v2/entry.html
-    #                      -------------------------
+    # 1. webapp1/templates/tic-tac-toe/v2/match_request.html
+    #                      ---------------------------------
 
 
 def visitPlay(request, room_name):
@@ -1414,7 +1414,7 @@ def visitPlay(request, room_name):
             ├── 📂templates
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── entry.html
+            │           ├── match_request.html
             │           └── play.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
@@ -1441,15 +1441,15 @@ from webapp1.views import v_tic_tac_toe_v2
 urlpatterns = [
     # ...略...
 
-    # エントリー画面
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2.visitEntry),
-    #                  ^                   ^
-    #     ---------------   ---------------------------
-    #     1                 2
-    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2.py ファイルの visitEntry メソッド
+    # 対局要求
+    path('tic-tac-toe/v2/match-request/', v_tic_tac_toe_v2.visitMatchRequest),
+    #                  ^                                 ^
+    #     -----------------------------   ----------------------------------
+    #     1                               2
+    # 1. URLの `tic-tac-toe/v2/match-request/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2.py ファイルの visitMatchRequest メソッド
 
-    # 対局画面
+    # 対局中
     path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
     #                  ^                                        ^
     #     ------------------------------------   --------------------------
@@ -1479,7 +1479,7 @@ urlpatterns = [
             ├── 📂templates
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── entry.html
+            │           ├── match_request.html
             │           └── play.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
@@ -1525,7 +1525,7 @@ websocket_urlpatterns = [
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe/v2/](http://localhost:8000/tic-tac-toe/v2/)  
+📖 [http://localhost:8000/tic-tac-toe/v2/match-request/](http://localhost:8000/tic-tac-toe/v2/match-request/)  
 
 # 次の記事
 

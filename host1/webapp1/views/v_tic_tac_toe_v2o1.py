@@ -16,20 +16,20 @@ def visitPortal(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
-        'dj_gamePath': 'tic-tac-toe/v2/',
-        #               ---------------
-        #               1
-        # 1. http://example.com/tic-tac-toe/v2/
-        #                       ---------------
-        'dj_loginPath': 'login/tic-tac-toe/v2/',
+        'dj_matchRequestPath': 'tic-tac-toe/v2/match-request/',
+        #                       -----------------------------
+        #                       1
+        # 1. http://example.com/tic-tac-toe/v2/match-request/
+        #                       -----------------------------
+        'dj_loginPath': 'tic-tac-toe/v2/login/',
         #                ---------------------
         #                1
-        # 1. http://example.com/login/tic-tac-toe/v2/
+        # 1. http://example.com/tic-tac-toe/v2/login/
         #                       ---------------------
-        'dj_logoutPath': 'logout/tic-tac-toe/v2/',
+        'dj_logoutPath': 'tic-tac-toe/v2/logout/',
         #                 ----------------------
         #                 1
-        # 1. http://example.com/logout/tic-tac-toe/v2/
+        # 1. http://example.com/tic-tac-toe/v2/logout/
         #                       ----------------------
     }
     return HttpResponse(template.render(context, request))
@@ -47,12 +47,12 @@ def loginUser(request):
         #               1
         # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                       ----------------------------------------
-    return render(request, "tic-tac-toe/v2/entry.html", {})
+    return render(request, "tic-tac-toe/v2/match_request.html", {})
     #                                    ^
-    #                       -------------------------
+    #                       ---------------------------------
     #                       1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/entry.html を取得
-    #                            -------------------------
+    # 1. host1/webapp1/templates/tic-tac-toe/v2/match_request.html を取得
+    #                            ---------------------------------
 
 
 def logoutUser(request):
