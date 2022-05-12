@@ -54,9 +54,20 @@
                                     </v-row>
                                 </v-container>
                             </div>
+                            <!-- 棋譜 -->
                             <div class="card-body">
-                                <h5 class="card-title">棋譜</h5>
-                                <p class="card-text">{{ room.record }}</p>
+                                <v-card class="mx-auto" max-width="300" tile>
+                                    <v-subheader>棋譜</v-subheader>
+                                    <v-list dense class="overflow-y-auto" max-height="200">
+                                        <v-list-item-group color="primary">
+                                            <v-list-item v-for="(item, i) in record" :key="i">
+                                                <v-list-item-content>
+                                                    <v-list-item-title v-text="item"></v-list-item-title>
+                                                </v-list-item-content>
+                                            </v-list-item>
+                                        </v-list-item-group>
+                                    </v-list>
+                                </v-card>
                             </div>
                         </div>
                         <a href="{% url 'listRoom' %}" class="btn btn-default btn-sm">戻る</a>
@@ -69,6 +80,7 @@
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
             var board = "{{ room.board|escapejs }}";
+            var record = "{{ room.record|escapejs }}";
 
             let vue1 = new Vue({
                 el: "#app",
@@ -83,6 +95,7 @@
                     label6: board[6],
                     label7: board[7],
                     label8: board[8],
+                    record: [parseInt(record[0]) + 1, parseInt(record[1]) + 1, parseInt(record[2]) + 1, parseInt(record[3]) + 1, parseInt(record[4]) + 1, parseInt(record[5]) + 1, parseInt(record[6]) + 1, parseInt(record[7]) + 1, parseInt(record[8]) + 1],
                 },
             });
         </script>
