@@ -198,8 +198,8 @@ select {
 var roomName = document.getElementById("board").getAttribute("room_name");
 var myPiece = document.getElementById("board").getAttribute("my_piece");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/${roomName}/`;
-//                           ----------------------- ---------------------------
+var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/play/${roomName}/`;
+//                           ----------------------- -------------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部
@@ -603,10 +603,10 @@ def visitEntry(request):
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v1/{room_name}/?&mypiece={myPiece}')
+        return redirect(f'/tic-tac-toe/v1/play/{room_name}/?&mypiece={myPiece}')
         #                 -----------------------------------------------
         #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v1/Elephant/?&mypiece=X
+        # 1. http://example.com:8000/tic-tac-toe/v1/play/Elephant/?&mypiece=X
         #                           ------------------------------------
     return render(request, "tic-tac-toe/v1/entry.html", {})
     #                       -------------------------
@@ -675,10 +675,10 @@ urlpatterns = [
     # 2. v_tic_tac_toe_v1.py ファイルの visitEntry メソッド
 
     # 〇×ゲームの練習１
-    path('tic-tac-toe/v1/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
+    path('tic-tac-toe/v1/play/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
     #     -------------------------------   --------------------------
     #     1                                 2
-    # 1. URLの `tic-tac-toe/v1/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 1. URLの `tic-tac-toe/v1/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe_v1.py ファイルの visitPlay メソッド
 ]
 ```
@@ -822,7 +822,7 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習１
-    url(r'^tic-tac-toe/v1/(?P<room_name>\w+)/$', TicTacToeV1Consumer.as_asgi()),
+    url(r'^tic-tac-toe/v1/play/(?P<room_name>\w+)/$', TicTacToeV1Consumer.as_asgi()),
     #     ------------------------------------   -----------------------------
     #     1                                      2
     # 1. URLのパスの部分の、Django での正規表現の書き方
