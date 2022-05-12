@@ -220,6 +220,8 @@ urlpatterns = [
 # Step 4. Web画面へアクセス
 
 ```shell
+cd host1
+
 # （していなければ）Dockerコンテナの起動
 docker-compose up
 ```
