@@ -26,7 +26,8 @@ URL
 
 Product
 
-* http://tic.warabenture.com:8000/tic-tac-toe2/
+* http://tic.warabenture.com:8000/portal/tic-tac-toe2
+* (Old) http://tic.warabenture.com:8000/tic-tac-toe2/
 
 # Others
 

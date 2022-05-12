@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-zi^6=@s652)x3roh+^2c+f8mx*oap#em#)l%(#i*b+e5hei$dq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# さくらVPSを借りたりしたときは、ここにホストを設定すると 外からアクセスできる
 ALLOWED_HOSTS = []
 
 
