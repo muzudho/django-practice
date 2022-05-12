@@ -20,6 +20,7 @@
                         <th>部屋名</th>
                         <th>盤面</th>
                         <th>棋譜</th>
+                        <th>機能</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -29,6 +30,7 @@
                         <td>{{ room.name }}</td>
                         <td>{{ room.board }}</td>
                         <td>{{ room.record }}</td>
+                        <td><a href="{% url 'readRoom' id=room.id %}" class="btn btn-default btn-sm">部屋を見る</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
