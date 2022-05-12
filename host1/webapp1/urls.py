@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe2, v_tic_tac_toe2o1, v_tic_tac_toe3, \
-    v_room, v_portal
+    v_room, v_portal, v_redirect
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -39,6 +39,7 @@ urlpatterns = [
 
     # +----
     # | Allauth
+
     # 管理画面に入りたい
     path('admin/', admin.site.urls),
     #     ------   ---------------
@@ -59,6 +60,7 @@ urlpatterns = [
     #     1           2
     # 1. URLの `accounts/` というパスにマッチする
     # 2. 最初から用意されているURL？
+
     # | Allauth
     # +----
 
@@ -287,6 +289,9 @@ urlpatterns = [
 
 
 
+    # +----
+    # | 〇×ゲームの練習２
+
     # 〇×ゲームの練習２
     path('tic-tac-toe2/', v_tic_tac_toe2.indexOfTicTacToe2),
     #                ^                                   ^
@@ -302,6 +307,15 @@ urlpatterns = [
     #     1                               2
     # 1. URLの `tic-tac-toe2/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. v_tic_tac_toe2.py ファイルの playGameOfTicTacToe2 メソッド
+
+    # | 〇×ゲームの練習２
+    # +----
+
+
+
+
+    # +----
+    # | 部屋
 
     # 部屋一覧
     path('rooms/', v_room.listRoom, name='listRoom'),
@@ -349,6 +363,12 @@ urlpatterns = [
     # 2. v_room.py ファイルの upsertRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 
+    # | 部屋
+    # +----
+
+
+
+
     # +----
     # | ポータル作成
 
@@ -388,6 +408,12 @@ urlpatterns = [
     # | ポータル作成
     # +----
 
+
+
+
+    # +----
+    # | WIP
+
     path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
     #                ^                    ^
     #     -------------
@@ -401,6 +427,9 @@ urlpatterns = [
          # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
          v_tic_tac_toe3.playGameOfTicTacToe3),
     #                                          ^
+
+    # | WIP
+    # +----
 ]
 
 
