@@ -76,7 +76,17 @@
         └── 📄<いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 1. Dockerコンテナの起動
+
+（していなければ）Dockerコンテナを起動しておいてほしい  
+
+```shell
+cd host1
+
+docker-compose up
+```
+
+# Step 2. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -108,7 +118,7 @@
                 <v-main>
                     <v-container>
                         <h3>〇×ゲーム</h3>
-                        <v-btn :href="createGamePath()">対局開始</v-btn>
+                        <v-btn :href="createGamePath()">すぐやる</v-btn>
                         <v-btn :href="createSignUpPath()">会員登録</v-btn>
                     </v-container>
                 </v-main>
@@ -139,3 +149,86 @@
     </body>
 </html>
 ```
+
+# Step 3. ビュー編集 - v_portal.py ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂portal
+            │       └── 📄portal1.html
+            └── 📂views
+👉              └── 📄v_portal.py
+```
+
+```py
+from django.http import HttpResponse
+from django.template import loader
+
+
+def visitPortal1(request):
+    """ポータル１"""
+    template = loader.get_template('portal/portal1.html')
+    #                               -------------------
+    #                               1
+    # 1. webapp1/templates/portal/portal1.html
+    #                      -------------------
+    context = {
+        'dj_gamePath': 'tic-tac-toe2/',
+        #               -------------
+        #               1
+        # 1. http://example.com/tic-tac-toe2/
+        #                       -------------
+        'dj_signUpPath': 'accounts/login/',
+        #                 ---------------
+        #                 1
+        # 1. http://example.com/accounts/login/
+        #                       ---------------
+    }
+    return HttpResponse(template.render(context, request))
+```
+
+# Step 4. ルート編集 - urls.py ファイル
+
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂portal
+            │       └── 📄portal1.html
+            ├── 📂views
+            │   └── 📄v_portal.py
+👉          └── 📄urls.py
+```
+
+```py
+from django.urls import path
+
+from webapp1.views import v_portal
+#    ------- -----        --------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
+urlpatterns = [
+    # ...中略...
+
+    # ポータル１
+    path('portal1', v_portal.visitPortal1, name='visitPortal1'),
+    #     -------   ---------------------        ------------
+    #     1         2                            3
+    # 1. URLの `portal1` というパスにマッチする
+    # 2. v_portal.py ファイルの visitPortal1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'visitPortal1' %} のような形でURLを取得するのに使える
+]
+```
+
+# Step 5. Web画面へアクセス
+
+📖 [http://localhost:8000/portal1](http://localhost:8000/portal1)  
