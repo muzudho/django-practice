@@ -78,11 +78,13 @@
 
 # Step 1. Dockerコンテナの起動
 
-（していなければ）Dockerコンテナを起動しておいてほしい  
+（していなければ） Docker コンテナを起動しておいてほしい  
 
 ```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
 cd host1
 
+# Docker コンテナ起動
 docker-compose up
 ```
 
@@ -117,9 +119,15 @@ docker-compose up
             <v-app>
                 <v-main>
                     <v-container>
-                        <h3>〇×ゲーム</h3>
-                        <v-btn :href="createGamePath()">すぐやる</v-btn>
-                        <v-btn :href="createSignUpPath()">会員登録</v-btn>
+                        <v-row class="my-2">
+                            <h3>〇×ゲーム</h3>
+                        </v-row>
+                        <v-row class="my-2">
+                            <v-btn :href="createGamePath()">すぐやる</v-btn>
+                        </v-row>
+                        <v-row class="my-2">
+                            <v-btn :href="createSignUpPath()">会員登録</v-btn>
+                        </v-row>
                     </v-container>
                 </v-main>
             </v-app>

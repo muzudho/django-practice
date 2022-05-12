@@ -39,12 +39,19 @@ urlpatterns = [
     # 管理画面に入りたい
     path('admin/', admin.site.urls),
 
-    # Allauth
+    # +----
+    # | Allauth
     # https://sinyblog.com/django/django-allauth/
-    path('', TemplateView.as_view(template_name='home.html'),
-         name='home'),  # ログオン後のTOP画面の定義
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    #    --  -----------------------------------------------        ----
+    #    1   2                                                      3
+    # 1.
+    # 2.
+    # 3. ログオン後のTOP画面の定義
+
     path('accounts/', include('allauth.urls')),
-    #
+    # | Allauth
+    # +----
 
     path('practice1/page1', v_page1.page1, name='page1'),
     #     ---------------   -------------        -----

@@ -87,3 +87,7 @@ Lesson 13. Make room
 * 📖 [Djangoでゲーム対局部屋を読取しよう！](https://qiita.com/muzudho1/items/a39bea2f098951292916)
 * 📖 [Djangoでゲーム対局部屋を削除しよう！](https://qiita.com/muzudho1/items/172485842e7adfb749aa)
 * 📖 [Djangoでゲーム対局部屋を作成または更新しよう！](https://qiita.com/muzudho1/items/6eaf6cf90fe5a6519184)
+
+Lesson 14. Portal
+
+* 📖 [Djangoでゲームポータルページを作ろう！](https://qiita.com/muzudho1/items/0c59f3ce7aa6bef2a91f)
