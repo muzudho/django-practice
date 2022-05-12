@@ -6,11 +6,11 @@
 
 ```plaintext
 一覧表示
-ID    部屋名        盤面       棋譜
-----  -----------  ---------  ---------
-1     Elephant     XOXOXOXOX  012345678
-2     Giraffe      XOXOXOXOX  012345678
-3     Lion         XOXOXOXOX  012345678
+ID    部屋名        盤面       棋譜       アクション
+----  -----------  ---------  ---------  ---------
+1     Elephant     XOXOXOXOX  012345678  [観る]
+2     Giraffe      XOXOXOXOX  012345678  [観る]
+3     Lion         XOXOXOXOX  012345678  [観る]
 ```
 
 # はじめに
