@@ -205,7 +205,10 @@ def visitTicTacToe2Portal(request):
     #                               1
     # 1. host1/webapp1/templates/portal/tic-tac-toe2.html を取得
     #                            ------------------------
+
     context = {
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        'dj_user': request.user,
         'dj_gamePath': 'tic-tac-toe2/',
         #               -------------
         #               1
@@ -300,9 +303,12 @@ urlpatterns = [
     # ...中略...
 
     # ポータル１
-    path('portal/tic-tac-toe2', v_portal.visitTicTacToe2Portal, name='visitTicTacToe2Portal'),
-    #     -------------------   ------------------------------        ---------------------
-    #     1                     2                                     3
+    path('portal/tic-tac-toe2', v_portal.visitTicTacToe2Portal,
+         # ------------------   ------------------------------
+         # 1                    2
+         name='visitTicTacToe2Portal'),
+    #          ---------------------
+    #          3
     # 1. URLの `portal/tic-tac-toe2` というパスにマッチする
     # 2. v_portal.py ファイルの visitTicTacToe2Portal メソッド
     # 3. HTMLテンプレートの中で {% url 'visitTicTacToe2Portal' %} のような形でURLを取得するのに使える
@@ -310,7 +316,7 @@ urlpatterns = [
     # ログイン
     path('login/tic-tac-toe2', v_tic_tac_toe2o1.loginUser,
          # -----------------   --------------------------
-         # 1                    2
+         # 1                   2
          name='ticTacToe2o1_loginUser'),
     #          ----------------------
     #          3
