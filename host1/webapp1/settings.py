@@ -178,7 +178,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://sinyblog.com/django/django-allauth/
 
 SITE_ID = 1  # 動かしているサイトを識別するID
-LOGIN_REDIRECT_URL = 'home'  # ログオン後に遷移するURLの指定
+
+# (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'homeV2VisitHome'  # ログイン後に遷移するURLの指定
+
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # ログアウト後に遷移するURLの指定
 
 EMAIL_HOST = 'smtp.gmail.com'  # メールサーバの指定

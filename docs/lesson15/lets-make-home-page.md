@@ -262,16 +262,36 @@ urlpatterns = [
     # ...中略...
 
     # ポータル
-    path('home/v2/', v_home_v2.visitHome,
-         # -------   -------------------
-         # 1         2
-         name='homeV2VisitHome'),
-    #          ---------------
-    #          3
+    path('home/v2/', v_home_v2.visitHome, name='homeV2VisitHome'),
+    #     --------   -------------------        ---------------
+    #     1          2                          3
+    #
     # 1. URLの `home/v2/` というパスにマッチする
     # 2. v_home_v2.py ファイルの visitHome メソッド
     # 3. HTMLテンプレートの中で {% url 'homeV2VisitHome' %} のような形でURLを取得するのに使える
 ]
+```
+
+# Step 6. 設定編集 - settings.py ファイル
+
+以下のファイルを編集してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂home
+            │       └── 📂v2
+            │           └── 📄home.html
+            ├── 📂views
+            │   └── 📄v_home_v2.py
+👉          ├── 📄settings.py
+            └── 📄urls.py
+```
+
+```py
+# (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'homeV2VisitHome'  # ログイン後に遷移するURLの指定
 ```
 
 # Step 6. Web画面へアクセス
