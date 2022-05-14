@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room
+    v_room, v_home_v2
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -417,6 +417,25 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 
     # | ポータル作成
+    # +----
+
+
+
+    # +----
+    # | ホーム
+
+    # ポータル
+    path('home/v2/', v_home_v2.visitHome,
+         # -------   -------------------
+         # 1         2
+         name='homeV2VisitHome'),
+    #          ---------------
+    #          3
+    # 1. URLの `home/v2/` というパスにマッチする
+    # 2. v_home_v2.py ファイルの visitHome メソッド
+    # 3. HTMLテンプレートの中で {% url 'homeV2VisitHome' %} のような形でURLを取得するのに使える
+
+    # | ホーム
     # +----
 
 
