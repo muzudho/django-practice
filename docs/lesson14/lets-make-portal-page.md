@@ -340,3 +340,7 @@ urlpatterns = [
 # Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/portal/tic-tac-toe/v2/](http://localhost:8000/portal/tic-tac-toe/v2/)  
+
+# 次の記事
+
+📖 [Djangoでユーザーホームを作ろう！](https://qiita.com/muzudho1/items/37532c83235b7f9e60c9)  
