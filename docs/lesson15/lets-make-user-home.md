@@ -232,7 +232,7 @@ def visitHome(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 5. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -272,7 +272,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. 設定編集 - settings.py ファイル
+# Step 5. 設定編集 - settings.py ファイル
 
 以下のファイルを編集してほしい。  
 
