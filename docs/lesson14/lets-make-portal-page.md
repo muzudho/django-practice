@@ -320,7 +320,7 @@ urlpatterns = [
          name='ticTacToeV2o1_loginUser'),
     #          ----------------------
     #          3
-    # 1. URLの `login/tic-tac-toe/v2/` というパスにマッチする
+    # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
