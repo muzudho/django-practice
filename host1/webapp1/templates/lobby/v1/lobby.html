@@ -1,0 +1,94 @@
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>部屋一覧</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h3>部屋一覧</h3>
+                        <v-simple-table>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>部屋名</th>
+                                        <th>盤面</th>
+                                        <th>棋譜</th>
+                                        <th>アクション</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        <td>{{ room.id }}</td>
+                                        <td>{{ room.name }}</td>
+                                        <td>{{ room.board }}</td>
+                                        <td>{{ room.record }}</td>
+                                        <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
+                                        {% endverbatim %}
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-container>
+                    <v-container>
+                        <h3>参加者一覧</h3>
+                        <v-simple-table>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>参加者名</th>
+                                        <th>状態</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="member in vu_parkDoc.members" :key="member.id">
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        <td>{{ member.id }}</td>
+                                        <td>{{ member.name }}</td>
+                                        <td>{{ member.stateInPark }}</td>
+                                        {% endverbatim %}
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    // 部屋がいっぱいあるからホテル
+                    vu_hotelDoc: JSON.parse("{{ dj_hotel|escapejs }}"),
+                    // 人がいっぱいいるからパーク
+                    vu_parkDoc: JSON.parse("{{ dj_park|escapejs }}"),
+                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+                },
+                methods: {
+                    createRoomsReadPath(id) {
+                        return `${this.vu_readRoomPath}${id}`;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>

@@ -71,7 +71,7 @@ class Member(models.Model):
         return self.name
 ```
 
-# Step 2. コマンド実行
+# Step 2. モデル作成 - コマンド実行
 
 ```shell
 cd host1

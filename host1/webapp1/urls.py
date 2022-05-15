@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2
+    v_room, v_home_v2, v_lobby_v1
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -434,6 +434,24 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'homeV2VisitHome' %} のような形でURLを取得するのに使える
 
     # | ホーム
+    # +----
+
+
+
+
+    # +----
+    # | ロビー（待合室）
+
+    # ロビー（待合室）
+    path('lobby/v1/', v_lobby_v1.visitLobby, name='lobbyV1VisitLobby'),
+    #     ---------   ---------------------        -----------------
+    #     1           2                            3
+    #
+    # 1. URLの `lobby/v1/` というパスにマッチする
+    # 2. v_lobby_v1.py ファイルの visitLobby メソッド
+    # 3. HTMLテンプレートの中で {% url 'lobbyV1VisitLobby' %} のような形でURLを取得するのに使える
+
+    # | ロビー（待合室）
     # +----
 
 
