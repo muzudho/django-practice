@@ -425,13 +425,13 @@ urlpatterns = [
     # | ホーム
 
     # ポータル
-    path('home/v2/', v_home_v2.visitHome, name='homeV2VisitHome'),
-    #     --------   -------------------        ---------------
-    #     1          2                          3
+    path('home/v2/', v_home_v2.render_home, name='homeV2_home'),
+    #     --------   ---------------------        -----------
+    #     1          2                            3
     #
     # 1. URLの `home/v2/` というパスにマッチする
-    # 2. v_home_v2.py ファイルの visitHome メソッド
-    # 3. HTMLテンプレートの中で {% url 'homeV2VisitHome' %} のような形でURLを取得するのに使える
+    # 2. v_home_v2.py ファイルの render_home メソッド
+    # 3. HTMLテンプレートの中で {% url 'homeV2_home' %} のような形でURLを取得するのに使える
 
     # | ホーム
     # +----

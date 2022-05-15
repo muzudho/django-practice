@@ -2,6 +2,8 @@
 
 ログイン後に飛ばされるページを作りたい。  
 
+ただし、そのページには、まだ作っていないページへのリンクも先々貼っている。  
+
 # はじめに
 
 この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
@@ -14,9 +16,6 @@
 | OS        | Windows10                                 |
 | Container | Docker                                    |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
-
-参考にした元記事は 📖[DjangoでCRUD](https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92) だ。  
-わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
@@ -115,7 +114,7 @@ docker-compose up
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>ワラベンチャー</title>
+        <title>あなたのホーム</title>
     </head>
     <body>
         <div id="app">
@@ -123,7 +122,10 @@ docker-compose up
                 <v-main>
                     <v-container>
                         <v-row class="my-2">
-                            <h3>ホーム</h3>
+                            <h3>あなたのホーム</h3>
+                        </v-row>
+                        <v-row class="my-2">
+                            <v-btn :href="createLobbyPath()">ロビー（待合室）へ移動する</v-btn>
                         </v-row>
                         <v-row class="my-2">
                             <v-btn :href="createTicTacToePath()">〇×ゲーム</v-btn>
@@ -150,18 +152,24 @@ docker-compose up
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_lobbyPath: "{{ dj_lobbyPath }}",
                     vu_ticTacToePath: "{{ dj_ticTacToePath }}",
                     vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
-                    createTicTacToePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
-                        //          --------------------  ---------------- -----------------------
+                    createLobbyPath() {
+                        let path = `${location.protocol}//${location.host}/${this.vu_lobbyPath}`;
+                        //          --------------------  ---------------- --------------------
                         //          1                     2                3
                         // 1. protocol
                         // 2. host
                         // 3. path
+                        console.log(`game path=[${path}]`);
+                        return path;
+                    },
+                    createTicTacToePath() {
+                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
                         console.log(`game path=[${path}]`);
                         return path;
                     },
@@ -213,6 +221,11 @@ def visitHome(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
+        'dj_lobbyPath': 'lobby/v1/',
+        #                ---------
+        #                1
+        # 1. http://example.com/lobby/v1/
+        #                       ---------
         'dj_ticTacToePath': 'tic-tac-toe/v2/',
         #                    ---------------
         #                    1
@@ -262,13 +275,13 @@ urlpatterns = [
     # ...中略...
 
     # ポータル
-    path('home/v2/', v_home_v2.visitHome, name='homeV2VisitHome'),
-    #     --------   -------------------        ---------------
-    #     1          2                          3
+    path('home/v2/', v_home_v2.render_home, name='homeV2_home'),
+    #     --------   ---------------------        -----------
+    #     1          2                            3
     #
     # 1. URLの `home/v2/` というパスにマッチする
-    # 2. v_home_v2.py ファイルの visitHome メソッド
-    # 3. HTMLテンプレートの中で {% url 'homeV2VisitHome' %} のような形でURLを取得するのに使える
+    # 2. v_home_v2.py ファイルの render_home メソッド
+    # 3. HTMLテンプレートの中で {% url 'homeV2_home' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -291,7 +304,7 @@ urlpatterns = [
 
 ```py
 # (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
-LOGIN_REDIRECT_URL = 'homeV2VisitHome'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
 ```
 
 # Step 6. Web画面へアクセス

@@ -180,7 +180,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1  # 動かしているサイトを識別するID
 
 # (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
-LOGIN_REDIRECT_URL = 'homeV2VisitHome'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # ログアウト後に遷移するURLの指定
 

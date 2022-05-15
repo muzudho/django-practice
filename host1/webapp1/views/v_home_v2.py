@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.template import loader
 
 
-def visitHome(request):
+def render_home(request):
     """ホーム"""
     template = loader.get_template('home/v2/home.html')
     #                               -----------------
@@ -13,6 +13,11 @@ def visitHome(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
+        'dj_lobbyPath': 'lobby/v1/',
+        #                ---------
+        #                1
+        # 1. http://example.com/lobby/v1/
+        #                       ---------
         'dj_ticTacToePath': 'tic-tac-toe/v2/',
         #                    ---------------
         #                    1

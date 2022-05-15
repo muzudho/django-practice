@@ -9,7 +9,7 @@
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>ワラベンチャー</title>
+        <title>あなたのホーム</title>
     </head>
     <body>
         <div id="app">
@@ -17,7 +17,10 @@
                 <v-main>
                     <v-container>
                         <v-row class="my-2">
-                            <h3>ホーム</h3>
+                            <h3>あなたのホーム</h3>
+                        </v-row>
+                        <v-row class="my-2">
+                            <v-btn :href="createLobbyPath()">ロビー（待合室）へ移動する</v-btn>
                         </v-row>
                         <v-row class="my-2">
                             <v-btn :href="createTicTacToePath()">〇×ゲーム</v-btn>
@@ -44,18 +47,24 @@
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_lobbyPath: "{{ dj_lobbyPath }}",
                     vu_ticTacToePath: "{{ dj_ticTacToePath }}",
                     vu_loginPath: "{{ dj_loginPath }}",
                     vu_logoutPath: "{{ dj_logoutPath }}",
                 },
                 methods: {
-                    createTicTacToePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
-                        //          --------------------  ---------------- -----------------------
+                    createLobbyPath() {
+                        let path = `${location.protocol}//${location.host}/${this.vu_lobbyPath}`;
+                        //          --------------------  ---------------- --------------------
                         //          1                     2                3
                         // 1. protocol
                         // 2. host
                         // 3. path
+                        console.log(`game path=[${path}]`);
+                        return path;
+                    },
+                    createTicTacToePath() {
+                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
                         console.log(`game path=[${path}]`);
                         return path;
                     },
