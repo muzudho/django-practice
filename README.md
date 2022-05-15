@@ -29,6 +29,7 @@ Product
 
 * (Old) http://tic.warabenture.com:8000/tic-tac-toe2/
 * http://tic.warabenture.com:8000/tic-tac-toe/v2/
+* http://tic.warabenture.com:8000/lobby/v1/
 
 ```shell
 # さくらVPSの本番環境で
