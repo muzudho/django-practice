@@ -1,7 +1,7 @@
 # 目的
 
 ロビー（待合室）を作りたい。  
-そこには　対局を待っている出場者の一覧と、対局中の部屋の一覧がある。  
+そこには　対局を待っている アクティブ ユーザー の一覧と、対局中の部屋の一覧がある。  
 
 # はじめに
 
@@ -392,3 +392,4 @@ urlpatterns = [
 # 関連する記事
 
 📖 [djangoでログイン状態を判定する機能](https://techpr.info/python/django-login-judge/)  
+📖 [DjangoのUserモデルを拡張する方法](https://hodalog.com/how-to-extend-django-user-model/)  

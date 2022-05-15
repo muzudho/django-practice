@@ -95,3 +95,7 @@ Lesson 14. Portal
 Lesson 15. User home
 
 * 📖 [Djangoでユーザーホームを作ろう！](https://qiita.com/muzudho1/items/37532c83235b7f9e60c9)
+
+Lesson 16. Active user
+
+* 📖 [Djangoでアクティブユーザーの一覧を作ろう！](https://qiita.com/muzudho1/items/bea77e8a69c5c805e1d7)

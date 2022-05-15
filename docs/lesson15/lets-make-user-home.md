@@ -297,3 +297,7 @@ LOGIN_REDIRECT_URL = 'homeV2VisitHome'  # ログイン後に遷移するURLの�
 # Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/home/v2/](http://localhost:8000/home/v2/)  
+
+# 次の記事
+
+📖 [Djangoでアクティブユーザーの一覧を作ろう！](https://qiita.com/muzudho1/items/bea77e8a69c5c805e1d7)  

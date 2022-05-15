@@ -1,7 +1,7 @@
 # 目的
 
 現在、サーバーに接続しているソケット（≒アクティブ・ユーザー）を一覧したい。  
-ログアウトせず放置されているソケットを数えても構わないものとする。  
+ログアウトせず、まだセッション期限切れではなく　放置されているソケットを数えても構わないものとする。  
 
 # はじめに
 
@@ -104,24 +104,70 @@ docker-compose up
 
 ```py
 # See also: 📖[How to get the list of the authenticated users?](https://stackoverflow.com/questions/2723052/how-to-get-the-list-of-the-authenticated-users)
+import json
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
+from django.core import serializers
 from django.utils import timezone
 
 
 def get_all_logged_in_users():
-    # Query all non-expired sessions
-    # use timezone.now() instead of datetime.now() in latest versions of Django
+    # 接続が切れていないセッションを絞りこみます。
+    # ログアウトせず２週間放置しているセッションが含まれる場合があります
     sessions = Session.objects.filter(expire_date__gte=timezone.now())
     uid_list = []
 
-    # Build a list of user ids from that query
+    # セッション一覧を、ユーザーID一覧に変換します
     for session in sessions:
         data = session.get_decoded()
         uid_list.append(data.get('_auth_user_id', None))
 
-    # Query all logged in users based on id list
-    return User.objects.filter(id__in=uid_list)
+    # ユーザーID一覧を使って、ユーザーを絞りこみます
+    dbUsersQuerySet = User.objects.filter(id__in=uid_list)
+    # users=<QuerySet [<User: kifuwarabe>]>
+    # print(f"dbUsersQuerySet={dbUsersQuerySet}")
+
+    # JSON 文字列に変換
+    dbUsersJsonStr = serializers.serialize('json', dbUsersQuerySet)
+    # print(f"dbUsersJsonStr={dbUsersJsonStr}")
+
+    # オブジェクトに変換
+    dbUserDoc = json.loads(dbUsersJsonStr)
+    """
+web_1  | dbUserDoc=[
+web_1  |     {
+web_1  |         "model": "auth.user",
+web_1  |         "pk": 1,
+web_1  |         "fields": {
+web_1  |             "password": "pbkdf2_sha256$260000$tOSdFO6BqvafBgtFgE1qYS$+rv007MKnAy8j+krixlQuogvi46Xl8fZf87xn4lAU+0=",
+web_1  |             "last_login": "2022-05-14T03:09:21.968Z",
+web_1  |             "is_superuser": false,
+web_1  |             "username": "kifuwarabe",
+web_1  |             "first_name": "",
+web_1  |             "last_name": "",
+web_1  |             "email": "muzudho1@gmail.com",
+web_1  |             "is_staff": false,
+web_1  |             "is_active": true,
+web_1  |             "date_joined": "2022-03-13T05:45:26.368Z",
+web_1  |             "groups": [],
+web_1  |             "user_permissions": []
+web_1  |         }
+web_1  |     }
+web_1  | ]
+    """
+    # print(f"dbUserDoc={json.dumps(dbUserDoc, indent=4)}")
+
+    # 使いやすい形に変換します
+    usersDic = dict()
+    for dbUser in dbUserDoc:
+        usersDic[dbUser["pk"]] = {
+            "pk": dbUser["pk"],
+            "last_login": dbUser["fields"]["last_login"],
+            "username": dbUser["fields"]["username"],
+            "is_active": dbUser["fields"]["is_active"],
+        }
+
+    return usersDic
 ```
 
 # Step 3. ビュー編集 - v_session_practice_v1.py ファイル
@@ -132,12 +178,13 @@ def get_all_logged_in_users():
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂models_helper
-            │   └── 📄m_helper_of_session.py
+            │   └── 📄mh_session.py
             └── 📂views
 👉              └── 📄v_session_practice_v1.py
 ```
 
 ```py
+import json
 from django.shortcuts import render
 
 from webapp1.models_helper.mh_session import get_all_logged_in_users
@@ -153,7 +200,9 @@ def renderActiveUserList(request):
     """アクティブ ユーザー一覧"""
 
     context = {
-        'users': get_all_logged_in_users()
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
+        'dj_users': json.dumps(get_all_logged_in_users())
     }
     return render(request, "session-practice/active-user-list.html", context)
     #                       --------------------------------------
@@ -169,25 +218,84 @@ def renderActiveUserList(request):
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂models
-            │   ├── 📄m_state_in_park.py
-            │   └── 📄m_member.py
+            ├── 📂models_helper
+            │   └── 📄mh_session.py
             ├── 📂templates
             │   └── 📂lobby
             │       └── 📂v1
 👉          │           └── active-user-list.html
             └── 📂views
-                └── 📄v_lobby_v1.py
+                └── 📄v_session_practice_v1.py
 ```
 
 ```html
-{% if users %}
-<ul class="user-list">
-    {% for user in users %}
-    <li>{{ user }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>部屋一覧</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h3>部屋一覧</h3>
+                    </v-container>
+                    <v-container>
+                        <v-simple-table>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ユーザー名</th>
+                                        <th>アクティブか</th>
+                                        <th>最終ログイン</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="user in vu_users" :key="user.pk">
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        <td>{{ user.pk }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.is_active }}</td>
+                                        <td>{{ user.last_login }}</td>
+                                        {% endverbatim %}
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_users: JSON.parse("{{ dj_users|escapejs }}"),
+                },
+                methods: {
+                    createRoomsReadPath(id) {
+                        return `${this.vu_readRoomPath}${id}`;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -197,15 +305,14 @@ def renderActiveUserList(request):
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂models
-            │   ├── 📄m_state_in_park.py
-            │   └── 📄m_member.py
+            ├── 📂models_helper
+            │   └── 📄mh_session.py
             ├── 📂templates
             │   └── 📂lobby
             │       └── 📂v1
             │           └── active-user-list.html
             ├── 📂views
-            │   └── 📄v_lobby_v1.py
+            │   └── 📄v_session_practice_v1.py
 👉          └── 📄urls.py
 ```
 

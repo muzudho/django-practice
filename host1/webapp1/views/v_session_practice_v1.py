@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 
 from webapp1.models_helper.mh_session import get_all_logged_in_users
@@ -13,7 +14,9 @@ def renderActiveUserList(request):
     """アクティブ ユーザー一覧"""
 
     context = {
-        'users': get_all_logged_in_users()
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
+        'dj_users': json.dumps(get_all_logged_in_users())
     }
     return render(request, "session-practice/active-user-list.html", context)
     #                       --------------------------------------
