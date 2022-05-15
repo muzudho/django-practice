@@ -29,9 +29,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                    <tr v-for="room in vu_hotelDoc" :key="room.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ room.id }}</td>
+                                        <td>{{ room.pk }}</td>
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
@@ -54,9 +54,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="member in vu_parkDoc.members" :key="member.id">
+                                    <tr v-for="member in vu_parkDoc" :key="member.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ member.id }}</td>
+                                        <td>{{ member.pk }}</td>
                                         <td>{{ member.name }}</td>
                                         <td>{{ member.stateInPark }}</td>
                                         {% endverbatim %}

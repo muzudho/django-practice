@@ -1,8 +1,8 @@
 import json
-from django.http import HttpResponse
-from django.template import loader
-from django.shortcuts import render, get_object_or_404, redirect
 from django.core import serializers
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.template import loader
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -23,13 +23,13 @@ from webapp1.forms.f_room import RoomForm
 
 def listRoom(request):
     """部屋一覧"""
-    rooms = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
-    dbRoomJsonStr = serializers.serialize('json', rooms)  # JSON に変換
+    roomQuerySet = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
+    dbRoomJsonStr = serializers.serialize('json', roomQuerySet)  # JSON 文字列に変換
     # Example:
     # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
     # print(f"dbRoomJsonStr={dbRoomJsonStr}")
 
-    dbRoomDoc = json.loads(dbRoomJsonStr)
+    dbRoomDoc = json.loads(dbRoomJsonStr)  # オブジェクトに変換
     # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
     """
     # Example
