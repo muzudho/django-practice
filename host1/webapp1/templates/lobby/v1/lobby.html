@@ -35,7 +35,7 @@
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
-                                        <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
+                                        <td><v-btn :href="createRoomsReadPath(room.pk)">観る</v-btn></td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -86,8 +86,15 @@
                     vu_readRoomPath: "{{ dj_readRoomPath }}",
                 },
                 methods: {
-                    createRoomsReadPath(id) {
-                        return `${this.vu_readRoomPath}${id}`;
+                    createRoomsReadPath(roomId) {
+                        let path = `${location.protocol}//${location.host}/${this.vu_readRoomPath}${roomId}`;
+                        //          --------------------  ---------------- --------------------------------
+                        //          1                     2                3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`room path=[${path}]`);
+                        return path;
                     },
                 },
             });
