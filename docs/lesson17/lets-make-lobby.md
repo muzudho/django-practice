@@ -204,7 +204,8 @@ def render_lobby(request):
         # 人がいっぱいいるからパーク
         'dj_park': json.dumps(usersDic),
         # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_readRoomPath": "rooms/read/",
+        "dj_pathOfHome": "home/v2/",
+        "dj_pathOfRoomsRead": "rooms/read/",
     }
 
     return HttpResponse(template.render(context, request))
@@ -245,8 +246,16 @@ def render_lobby(request):
     <body>
         <div id="app">
             <v-app>
+                <!-- v-app-bar に app プロパティを指定しないなら、背景画像を付けてほしい -->
+                <v-app-bar app dense elevation="4">
+                    <v-app-bar-nav-icon></v-app-bar-nav-icon>
+                    <v-toolbar-title>ゲーム対局サーバー</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn class="my-4" color="primary" :href="createPathOfHome()">自分のホームへ帰る</v-btn>
+                </v-app-bar>
                 <v-main>
                     <v-container>
+                        <h2>ロビー（待合室）</h2>
                         <h3>部屋一覧</h3>
                         <v-simple-table>
                             <template v-slot:default>
@@ -266,7 +275,7 @@ def render_lobby(request):
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
-                                        <td><v-btn :href="createRoomsReadPath(room.pk)">観る</v-btn></td>
+                                        <td><v-btn :href="createPathOfRoomsRead(room.pk)">観る</v-btn></td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -314,12 +323,24 @@ def render_lobby(request):
                     vu_hotelDoc: JSON.parse("{{ dj_hotel|escapejs }}"),
                     // 人がいっぱいいるからパーク
                     vu_parkDoc: JSON.parse("{{ dj_park|escapejs }}"),
-                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+
+                    vu_pathOfHome: "{{ dj_pathOfHome }}",
+                    vu_pathOfRoomsRead: "{{ dj_pathOfRoomsRead }}",
                 },
                 methods: {
-                    createRoomsReadPath(roomId) {
-                        let path = `${location.protocol}//${location.host}/${this.vu_readRoomPath}${roomId}`;
-                        //          --------------------  ---------------- --------------------------------
+                    createPathOfHome() {
+                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfHome}`;
+                        //          --------------------  ---------------- ---------------------
+                        //          1                     2                3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`room path=[${path}]`);
+                        return path;
+                    },
+                    createPathOfRoomsRead(roomId) {
+                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfRoomsRead}${roomId}`;
+                        //          --------------------  ---------------- -----------------------------------
                         //          1                     2                3
                         // 1. protocol
                         // 2. host

@@ -41,7 +41,8 @@ def render_lobby(request):
         # 人がいっぱいいるからパーク
         'dj_park': json.dumps(usersDic),
         # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_readRoomPath": "rooms/read/",
+        "dj_pathOfHome": "home/v2/",
+        "dj_pathOfRoomsRead": "rooms/read/",
     }
 
     return HttpResponse(template.render(context, request))
