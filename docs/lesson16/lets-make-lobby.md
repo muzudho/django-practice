@@ -158,7 +158,7 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂migrations
             │   ├── 📄<いろいろ>.py
-👉          │   └── 📄0005_member_stateinpark.py
+👉          │   └── 📄0004_member_stateinpark.py    # 差分。ファイル名は違うかもしれない
             └── 📂models
                 ├── 📄m_state_in_park.py
                 └── 📄m_member.py
@@ -166,7 +166,15 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
 
 👆 これらのファイルは マイグレーション ファイル と呼ぶらしい。  
 
-# Step 3. ビュー編集 - v_lobby_v1.py ファイル
+# Step 4. モデル作成 - コマンド実行＜その２＞
+
+```shell
+docker-compose run --rm web python manage.py migrate
+```
+
+👆 ここまでやって マイグレーション という作業が終わるらしい。  
+
+# Step 5. ビュー編集 - v_lobby_v1.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -219,7 +227,7 @@ def visitLobby(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 4. テンプレート編集 - lobby.html ファイル
+# Step 6. テンプレート編集 - lobby.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -334,7 +342,7 @@ def visitLobby(request):
 </html>
 ```
 
-# Step 5. ルート編集 - urls.py ファイル
+# Step 7. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -377,6 +385,6 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. Web画面へアクセス
+# Step 8. Web画面へアクセス
 
-📖 [http://localhost:8000/home/v2/](http://localhost:8000/home/v2/)  
+📖 [http://localhost:8000/lobby/v1/](http://localhost:8000/lobby/v1/)  

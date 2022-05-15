@@ -13,8 +13,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Room',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('room', models.CharField(max_length=25, verbose_name='部屋名')),
+                ('id', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=25, verbose_name='部屋名')),
                 ('board', models.CharField(max_length=9, verbose_name='盤面')),
                 ('record', models.CharField(max_length=9, verbose_name='棋譜')),
             ],
