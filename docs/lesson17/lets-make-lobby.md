@@ -1,7 +1,11 @@
 # 目的
 
 ロビー（待合室）を作りたい。  
-そこには　対局を待っている アクティブ ユーザー の一覧と、対局中の部屋の一覧がある。  
+そこには　部屋の一覧と、　アクティブ ユーザー の一覧がある。  
+
+ただし、まだ用意していないため、  
+部屋のデータは 現在対局中のものを反映しておらず 仮のものとし、  
+アクティブ ユーザーも 現在 対局中かどうかの状態を保持していない。  
 
 # はじめに
 
@@ -15,9 +19,6 @@
 | OS        | Windows10                                 |
 | Container | Docker                                    |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
-
-参考にした元記事は 📖[DjangoでCRUD](https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92) だ。  
-わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
@@ -202,12 +203,14 @@ def render_lobby(request):
         'dj_hotel': json.dumps(hotelDic),
         # 人がいっぱいいるからパーク
         'dj_park': json.dumps(usersDic),
+        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
+        "dj_readRoomPath": "rooms/read/",
     }
 
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 6. テンプレート編集 - lobby.html ファイル
+# Step 3. テンプレート編集 - lobby.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -237,7 +240,7 @@ def render_lobby(request):
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>部屋一覧</title>
+        <title>ロビー（待合室）</title>
     </head>
     <body>
         <div id="app">
@@ -257,13 +260,13 @@ def render_lobby(request):
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                    <tr v-for="room in vu_hotelDoc" :key="room.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ room.id }}</td>
+                                        <td>{{ room.pk }}</td>
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
-                                        <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
+                                        <td><v-btn :href="createRoomsReadPath(room.pk)">観る</v-btn></td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -271,22 +274,24 @@ def render_lobby(request):
                         </v-simple-table>
                     </v-container>
                     <v-container>
-                        <h3>参加者一覧</h3>
+                        <h3>アクティブ ユーザー一覧</h3>
                         <v-simple-table>
                             <template v-slot:default>
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>参加者名</th>
-                                        <th>状態</th>
+                                        <th>アクティブか</th>
+                                        <th>最終ログイン</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="member in vu_parkDoc.members" :key="member.id">
+                                    <tr v-for="user in vu_parkDoc" :key="user.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ member.id }}</td>
-                                        <td>{{ member.name }}</td>
-                                        <td>{{ member.stateInPark }}</td>
+                                        <td>{{ user.pk }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.is_active }}</td>
+                                        <td>{{ user.last_login }}</td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -312,8 +317,15 @@ def render_lobby(request):
                     vu_readRoomPath: "{{ dj_readRoomPath }}",
                 },
                 methods: {
-                    createRoomsReadPath(id) {
-                        return `${this.vu_readRoomPath}${id}`;
+                    createRoomsReadPath(roomId) {
+                        let path = `${location.protocol}//${location.host}/${this.vu_readRoomPath}${roomId}`;
+                        //          --------------------  ---------------- --------------------------------
+                        //          1                     2                3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`room path=[${path}]`);
+                        return path;
                     },
                 },
             });
@@ -322,7 +334,7 @@ def render_lobby(request):
 </html>
 ```
 
-# Step 7. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -355,17 +367,17 @@ urlpatterns = [
     # ...中略...
 
     # ロビー（待合室）
-    path('lobby/v1/', v_lobby_v1.visitLobby, name='lobbyV1VisitLobby'),
-    #     ---------   ---------------------        -----------------
-    #     1           2                            3
+    path('lobby/v1/', v_lobby_v1.render_lobby, name='lobbyV1_lobby'),
+    #     ---------   -----------------------        -------------
+    #     1           2                              3
     #
     # 1. URLの `lobby/v1/` というパスにマッチする
-    # 2. v_lobby_v1.py ファイルの visitLobby メソッド
-    # 3. HTMLテンプレートの中で {% url 'lobbyV1VisitLobby' %} のような形でURLを取得するのに使える
+    # 2. v_lobby_v1.py ファイルの render_lobby メソッド
+    # 3. HTMLテンプレートの中で {% url 'lobbyV1_lobby' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 8. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 📖 [http://localhost:8000/lobby/v1/](http://localhost:8000/lobby/v1/)  
 

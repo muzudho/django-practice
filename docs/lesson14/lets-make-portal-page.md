@@ -206,7 +206,7 @@ from django.shortcuts import render, redirect
 from django.template import loader
 
 
-def visitPortal(request):
+def render_portal(request):
     """ポータル"""
     template = loader.get_template('tic-tac-toe/v2/portal.html')
     #                               --------------------------
@@ -259,7 +259,7 @@ def loginUser(request):
 def logoutUser(request):
     """ログアウト"""
     logout(request)
-    return redirect('visitTicTacToeV2Portal')
+    return redirect('ticTacToeV2_portal')
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -292,26 +292,26 @@ urlpatterns = [
     # ...中略...
 
     # 旧ポータル
-    path('tic-tac-toe2', v_tic_tac_toe_v2o1.visitPortal,
-         # -----------   ------------------------------
+    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.render_portal,
+         # ------------   --------------------------------
          # 1             2
-         name='visitTicTacToeV2Portal'),
+         name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe2` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+    # 1. URLの `tic-tac-toe2/` というパスにマッチする
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ポータル
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.visitPortal,
-         # --------------   ------------------------------
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.render_portal,
+         # --------------   --------------------------------
          # 1                2
-         name='visitTicTacToeV2Portal'),
+         name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
     # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
     path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,
@@ -320,7 +320,7 @@ urlpatterns = [
          name='ticTacToeV2o1_loginUser'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
+    # 1. URLの `login/tic-tac-toe/v2/` というパスにマッチする
     # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
@@ -339,7 +339,7 @@ urlpatterns = [
 
 # Step 6. Web画面へアクセス
 
-📖 [http://localhost:8000/portal/tic-tac-toe/v2/](http://localhost:8000/portal/tic-tac-toe/v2/)  
+📖 [http://localhost:8000/tic-tac-toe/v2/](http://localhost:8000/tic-tac-toe/v2/)  
 
 # 次の記事
 

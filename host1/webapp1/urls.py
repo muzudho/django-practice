@@ -373,26 +373,26 @@ urlpatterns = [
     # | ポータル作成
 
     # 旧ポータル
-    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.visitPortal,
-         # ------------   ------------------------------
+    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.render_portal,
+         # ------------   --------------------------------
          # 1             2
-         name='visitTicTacToeV2Portal'),
+         name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
     # 1. URLの `tic-tac-toe2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ポータル
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.visitPortal,
-         # --------------   ------------------------------
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.render_portal,
+         # --------------   --------------------------------
          # 1                2
-         name='visitTicTacToeV2Portal'),
+         name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
     # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの visitPortal メソッド
-    # 3. HTMLテンプレートの中で {% url 'visitTicTacToeV2Portal' %} のような形でURLを取得するのに使える
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
     path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,

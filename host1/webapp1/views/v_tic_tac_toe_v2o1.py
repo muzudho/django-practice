@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.template import loader
 
 
-def visitPortal(request):
+def render_portal(request):
     """ポータル"""
     template = loader.get_template('tic-tac-toe/v2/portal.html')
     #                               --------------------------
@@ -58,4 +58,4 @@ def loginUser(request):
 def logoutUser(request):
     """ログアウト"""
     logout(request)
-    return redirect('visitTicTacToeV2Portal')
+    return redirect('ticTacToeV2_portal')
