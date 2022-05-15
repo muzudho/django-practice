@@ -93,6 +93,61 @@ cd host1
 docker-compose up
 ```
 
+# Step 2. モデル関連作成 - mh_room.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂models_helper
+👉              └── 📄mh_room.py
+```
+
+```py
+import json
+from django.core import serializers
+
+
+from webapp1.models.m_room import Room
+#    ------- ------ ------        ----
+#    1       2      3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+
+def get_all_rooms():
+    # id順に要素を全部取得
+    dbRoomQuerySet = Room.objects.all().order_by('id')
+    # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
+    print(f"dbRoomQuerySet={dbRoomQuerySet}")
+
+    # JSON 文字列に変換
+    dbRoomJsonStr = serializers.serialize('json', dbRoomQuerySet)
+
+    # オブジェクトに変換
+    dbRoomDoc = json.loads(dbRoomJsonStr)
+
+    # 使いやすい形に変換します
+    hotelDic = dict()
+    for dbRoom in dbRoomDoc:
+
+        # Example:
+        # dbRoom= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
+        print(f"dbRoom= --> {dbRoom} <--")
+
+        hotelDic[dbRoom["pk"]] = {
+            "pk": dbRoom["pk"],
+            "name": dbRoom["fields"]["name"],
+            "board": dbRoom["fields"]["board"],
+            "record": dbRoom["fields"]["record"],
+        }
+
+    return hotelDic
+```
+
 # Step 2. ビュー編集 - v_lobby_v1.py ファイル
 
 以下のファイルを新規作成してほしい。  
@@ -105,27 +160,29 @@ docker-compose up
 ```
 
 ```py
+import json
 from django.http import HttpResponse
 from django.template import loader
 
-from webapp1.models.m_member import Member
-#    ------- ------ --------        ------
-#    1       2      3               4
+from webapp1.models_helper.mh_room import get_all_rooms
+#    ------- ------------- -------        -------------
+#    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. クラス名
+# 4. 関数名
 
-from webapp1.models.m_room import Room
-#    ------- ------ ------        ----
-#    1       2      3             4
+
+from webapp1.models_helper.mh_session import get_all_logged_in_users
+#    ------- ------------- ----------        -----------------------
+#    1       2             3                 4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. クラス名
+# 4. 関数名
 
 
-def visitLobby(request):
+def render_lobby(request):
     """ロビー（待合室）"""
     template = loader.get_template('lobby/v1/lobby.html')
     #                               -------------------
@@ -133,13 +190,20 @@ def visitLobby(request):
     # 1. webapp1/templates/lobby/v1/lobby.html
     #                      -------------------
 
+    # 部屋の一覧
+    hotelDic = get_all_rooms()
+
+    # ユーザーの一覧
+    usersDic = get_all_logged_in_users()
+
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 人がいっぱいいるからパーク
-        'dj_park': Member.objects.all().order_by('id'),  # id順にメンバーを全部取得
         # 部屋がいっぱいあるからホテル
-        'dj_hotel': Room.objects.all().order_by('id'),  # id順にメンバーを全部取得
+        'dj_hotel': json.dumps(hotelDic),
+        # 人がいっぱいいるからパーク
+        'dj_park': json.dumps(usersDic),
     }
+
     return HttpResponse(template.render(context, request))
 ```
 

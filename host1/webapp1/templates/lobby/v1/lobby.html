@@ -43,22 +43,24 @@
                         </v-simple-table>
                     </v-container>
                     <v-container>
-                        <h3>参加者一覧</h3>
+                        <h3>アクティブ ユーザー一覧</h3>
                         <v-simple-table>
                             <template v-slot:default>
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>参加者名</th>
-                                        <th>状態</th>
+                                        <th>アクティブか</th>
+                                        <th>最終ログイン</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="member in vu_parkDoc" :key="member.pk">
+                                    <tr v-for="user in vu_parkDoc" :key="user.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ member.pk }}</td>
-                                        <td>{{ member.name }}</td>
-                                        <td>{{ member.stateInPark }}</td>
+                                        <td>{{ user.pk }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.is_active }}</td>
+                                        <td>{{ user.last_login }}</td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>

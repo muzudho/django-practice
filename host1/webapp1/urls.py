@@ -461,16 +461,16 @@ urlpatterns = [
 
 
     # +----
-    # | WIP ロビー（待合室）
+    # | ロビー（待合室）
 
     # ロビー（待合室）
-    path('lobby/v1/', v_lobby_v1.visitLobby, name='lobbyV1VisitLobby'),
-    #     ---------   ---------------------        -----------------
-    #     1           2                            3
+    path('lobby/v1/', v_lobby_v1.render_lobby, name='lobbyV1_lobby'),
+    #     ---------   -----------------------        -------------
+    #     1           2                              3
     #
     # 1. URLの `lobby/v1/` というパスにマッチする
-    # 2. v_lobby_v1.py ファイルの visitLobby メソッド
-    # 3. HTMLテンプレートの中で {% url 'lobbyV1VisitLobby' %} のような形でURLを取得するのに使える
+    # 2. v_lobby_v1.py ファイルの render_lobby メソッド
+    # 3. HTMLテンプレートの中で {% url 'lobbyV1_lobby' %} のような形でURLを取得するのに使える
 
     # | ロビー（待合室）
     # +----
