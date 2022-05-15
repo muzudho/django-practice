@@ -91,7 +91,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. モデル関連作成 - v_state_in_park.py ファイル
+# Step 2. モデル関連作成 - m_state_in_park.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -116,7 +116,7 @@ class StateInPark(Enum):
     DURING_GAME = 1
 ```
 
-# Step 2. モデル編集 - v_member.py ファイル
+# Step 2. モデル編集 - m_member.py ファイル
 
 以下のファイルに、フィールドを追加してほしい  
 
@@ -237,10 +237,10 @@ def visitLobby(request):
             ├── 📂models
             │   ├── 📄m_state_in_park.py
             │   └── 📄m_member.py
-👉          ├── 📂templates
+            ├── 📂templates
             │   └── 📂lobby
             │       └── 📂v1
-            │           └── 📄lobby.html
+👉          │           └── 📄lobby.html
             └── 📂views
                 └── 📄v_lobby_v1.py
 ```
@@ -388,3 +388,7 @@ urlpatterns = [
 # Step 8. Web画面へアクセス
 
 📖 [http://localhost:8000/lobby/v1/](http://localhost:8000/lobby/v1/)  
+
+# 関連する記事
+
+📖 [djangoでログイン状態を判定する機能](https://techpr.info/python/django-login-judge/)  

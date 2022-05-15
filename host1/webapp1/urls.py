@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2, v_lobby_v1
+    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -440,7 +440,28 @@ urlpatterns = [
 
 
     # +----
-    # | ロビー（待合室）
+    # | セッション練習
+
+    # アクティブ ユーザー一覧
+    path('session-practice/v1/active-user-list/',
+         # ------------------------------------
+         # 1
+         v_session_practice_v1.renderActiveUserList, name='sessionPracticeV1_activeUserList'),
+    #    --------------------- --------------------        --------------------------------
+    #     1                    2                           3
+    #
+    # 1. URLの `session-practice/v1/active-user-list/` というパスにマッチする
+    # 2. v_session_practice_v1.py ファイルの renderActiveUserList メソッド
+    # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
+
+    # | セッション練習
+    # +----
+
+
+
+
+    # +----
+    # | WIP ロビー（待合室）
 
     # ロビー（待合室）
     path('lobby/v1/', v_lobby_v1.visitLobby, name='lobbyV1VisitLobby'),
