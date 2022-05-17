@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1
+    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_account_v1
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -62,6 +62,22 @@ urlpatterns = [
     # 2. 最初から用意されているURL？
 
     # | Allauth
+    # +----
+    # +----
+    # | アカウント改１
+
+    # override the SignupView of django-allauth
+    # アカウント改１
+    path("accounts/signup/", view=v_account_v1.account_v1_signup_view),
+    #     ----------------        -----------------------------------
+    #     1                       2
+    # 1. URLの `accounts/signup/` というパスにマッチする
+    # 2. 既に用意されているビューのオブジェクト？
+
+    # this is the default config for django-allauth
+    # path("accounts/", include("allauth.urls")),
+
+    # | アカウント改１
     # +----
 
 
