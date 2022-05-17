@@ -103,3 +103,7 @@ Lesson 16. Active user
 Lesson 17. Lobby
 
 * 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
+
+Lesson 18. Sign up
+
+* 📖 [Djangoでサインアップのページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)

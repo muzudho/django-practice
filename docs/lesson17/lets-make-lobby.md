@@ -402,6 +402,10 @@ urlpatterns = [
 
 📖 [http://localhost:8000/lobby/v1/](http://localhost:8000/lobby/v1/)  
 
+# 次の記事
+
+📖 [Djangoでサインアップのページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)  
+
 # 関連する記事
 
 📖 [djangoでログイン状態を判定する機能](https://techpr.info/python/django-login-judge/)  

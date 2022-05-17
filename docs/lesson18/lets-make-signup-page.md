@@ -1,6 +1,6 @@
 # 目的
 
-サインイン／サインアップのページを作りたい。  
+見た目がマシな　サインアップ（会員登録）のページがほしい。  
 
 # はじめに
 
@@ -91,7 +91,7 @@ docker-compose up
 
 # Step 2. ビュー編集 - v_account_v1.py ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを 無ければ新規作成、有れば編集してほしい  
 
 ```plaintext
     └── 📂host1
@@ -128,7 +128,7 @@ class AccountV1SignupView(SignupView):
 account_v1_signup_view = AccountV1SignupView.as_view()
 ```
 
-# Step 3. テンプレート編集 - lobby.html ファイル
+# Step 3. テンプレート編集 - signup.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -147,40 +147,96 @@ account_v1_signup_view = AccountV1SignupView.as_view()
 <!--
     # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
 -->
-{% extends "users/base.html" %}
-
-<!-- -->
 {% load i18n %}
-
 <!-- -->
-{% block head_title %}{% trans "Signup" %}{% endblock %}
-
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!-- -->
-{% block inner %}
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>サインアップ</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <!-- v-app-bar に app プロパティを指定しないなら、背景画像を付けてほしい -->
+                <v-app-bar app dense elevation="4">
+                    <v-app-bar-nav-icon></v-app-bar-nav-icon>
+                    <v-toolbar-title>サインアップ</v-toolbar-title>
+                </v-app-bar>
+                <v-main>
+                    <v-container>
+                        <h3>既にアカウントを持っているなら</h3>
+                        <v-btn class="my-4" color="primary" :href="createPathOfSignin()">サインイン</v-btn>
+                    </v-container>
+                    <v-container>
+                        <h3>会員登録するなら</h3>
+                        <form class="signup" id="signup_form" method="post" :action="createPathOfSignup()">
+                            <!-- -->
+                            {% csrf_token %}
+                            <!-- -->
+                            <table>
+                                <!-- 👇 ここのフォームが自動生成なの、どうしたものか（＾～＾） -->
+                                {{ form }}
+                                <!-- -->
+                            </table>
+                            <!-- -->
+                            {% if redirect_field_value %}
+                            <!-- -->
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                            <!-- -->
+                            {% endif %}
+                            <!-- -->
+                            <v-btn class="my-4" color="primary" type="submit">サインアップ &raquo;</v-btn>
+                        </form>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
 
-<!-- -->
-<h1>{% trans "Sign Up" %}</h1>
-
-<!-- -->
-<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
-
-<form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
-    <!-- -->
-    {% csrf_token %}
-    <!-- -->
-    {{ form }}
-    <!-- -->
-    {% if redirect_field_value %}
-    <!-- -->
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-    <!-- -->
-    {% endif %}
-    <!-- -->
-    <button class="btn btn-primary" type="submit">{% trans "Sign Up" %} &raquo;</button>
-</form>
-
-<!-- -->
-{% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_pathOfSignin: "{{ login_url }}",
+                    vu_pathOfSignup: "{% url 'account_signup' %}",
+                },
+                methods: {
+                    createPathOfSignin() {
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignin}`;
+                        //          --------------------  ---------------]-----------------------
+                        //          1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`SignIn path=[${path}]`);
+                        return path;
+                    },
+                    createPathOfSignup() {
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignup}`;
+                        //          --------------------  ---------------]-----------------------
+                        //          1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`SignUp path=[${path}]`);
+                        return path;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -212,20 +268,22 @@ from webapp1.views import v_account_v1
 urlpatterns = [
     # ...中略...
 
-    # アカウント改１
-    path("accounts/signup/", view=v_account_v1.account_v1_signup_view),
-    #     ----------------        -----------------------------------
-    #     1                       2
-    # 1. URLの `accounts/signup/` というパスにマッチする
+    # django-allauth 改１
+    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view),
+    #     ------------------        -----------------------------------
+    #     1                         2
+    # 1. URLの `account/v1/signup/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
 ]
 ```
 
 # Step 5. Web画面へアクセス
 
-📖 [http://localhost:8000/accounts/signup/](http://localhost:8000/accounts/signup/)  
+📖 [http://localhost:8000/account/v1/signup/](http://localhost:8000/account/v1/signup/)  
 
 # 関連する記事
 
+📖 [pennersr / django-allauth](https://github.com/pennersr/django-allauth/blob/master/allauth/templates/account/signup.html) - テンプレートの原型   
 📖 [django-allauth Templates](https://django-allauth.readthedocs.io/en/latest/templates.html)  
 📖 [Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)  
+📖 [【Django】django-allauthのformやhtmlを上書きする方法](https://qiita.com/NOIZE/items/0522825a1de1d6aa4a2b)  

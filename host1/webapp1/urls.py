@@ -64,20 +64,23 @@ urlpatterns = [
     # | Allauth
     # +----
     # +----
-    # | アカウント改１
+    # | django-allauth 改１
 
-    # override the SignupView of django-allauth
-    # アカウント改１
-    path("accounts/signup/", view=v_account_v1.account_v1_signup_view),
-    #     ----------------        -----------------------------------
-    #     1                       2
-    # 1. URLの `accounts/signup/` というパスにマッチする
+    # サインアップ
+    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view),
+    #     ------------------        -----------------------------------
+    #     1                         2
+    # 1. URLの `account/v1/signup/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
 
-    # this is the default config for django-allauth
-    # path("accounts/", include("allauth.urls")),
+    # サインイン
+    path("account/v1/login/", view=v_account_v1.account_v1_login_view),
+    #     -----------------        ----------------------------------
+    #     1                         2
+    # 1. URLの `account/v1/login/` というパスにマッチする
+    # 2. 既に用意されているビューのオブジェクト？
 
-    # | アカウント改１
+    # | django-allauth 改１
     # +----
 
 
