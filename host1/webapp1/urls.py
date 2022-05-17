@@ -67,18 +67,26 @@ urlpatterns = [
     # | django-allauth 改１
 
     # サインアップ
-    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view),
-    #     ------------------        -----------------------------------
-    #     1                         2
+    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view,
+         # -----------------        -----------------------------------
+         # 1                        2
+         name="account_v1_signup"),
+    #          ------------------
+    #          3
     # 1. URLの `account/v1/signup/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
+    # 3. HTMLテンプレートの中で {% url 'account_v1_signup' %} のような形でURLを取得するのに使える
 
     # サインイン
-    path("account/v1/login/", view=v_account_v1.account_v1_login_view),
-    #     -----------------        ----------------------------------
-    #     1                         2
+    path("account/v1/login/", view=v_account_v1.account_v1_login_view,
+         # ----------------        ----------------------------------
+         # 1                       2
+         name="account_v1_login"),
+    #          ----------------
+    #          3
     # 1. URLの `account/v1/login/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
+    # 3. HTMLテンプレートの中で {% url 'account_v1_login' %} のような形でURLを取得するのに使える
 
     # | django-allauth 改１
     # +----

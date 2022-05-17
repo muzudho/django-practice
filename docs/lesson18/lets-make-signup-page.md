@@ -143,6 +143,8 @@ account_v1_signup_view = AccountV1SignupView.as_view()
                 └── 📄v_account_v1.py
 ```
 
+👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
+
 ```html
 <!--
     # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
@@ -208,8 +210,13 @@ account_v1_signup_view = AccountV1SignupView.as_view()
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_pathOfSignin: "{{ login_url }}",
-                    vu_pathOfSignup: "{% url 'account_signup' %}",
+
+                    // URL は、レッスンの進み具合によって適宜、貼り替えてください
+                    // vu_pathOfSignin: "{{ login_url }}", // django-allauth のデフォルト
+                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+
+                    // vu_pathOfSignup: "{% url 'account_signup' %}", // django-allauth のデフォルト
+                    vu_pathOfSignup: "{% url 'account_v1_signup' %}",
                 },
                 methods: {
                     createPathOfSignin() {
@@ -268,18 +275,26 @@ from webapp1.views import v_account_v1
 urlpatterns = [
     # ...中略...
 
-    # django-allauth 改１
-    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view),
-    #     ------------------        -----------------------------------
-    #     1                         2
+    # サインアップ
+    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view,
+         # -----------------        -----------------------------------
+         # 1                        2
+         name="account_v1_signup"),
+    #          ------------------
+    #          3
     # 1. URLの `account/v1/signup/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
+    # 3. HTMLテンプレートの中で {% url 'account_v1_signup' %} のような形でURLを取得するのに使える
 ]
 ```
 
 # Step 5. Web画面へアクセス
 
 📖 [http://localhost:8000/account/v1/signup/](http://localhost:8000/account/v1/signup/)  
+
+# 次の記事
+
+📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)  
 
 # 関連する記事
 

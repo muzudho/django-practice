@@ -106,4 +106,5 @@ Lesson 17. Lobby
 
 Lesson 18. Sign up
 
-* 📖 [Djangoでサインアップのページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)
+* 📖 [Djangoでサインアップ（会員登録）のページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)
+* 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)

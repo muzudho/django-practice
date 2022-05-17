@@ -138,74 +138,138 @@ account_v1_login_view = AccountV1LoginView.as_view()
                 └── 📄v_account_v1.py
 ```
 
+👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
+
 ```html
 <!--
     📖[login.html](https://github.com/pennersr/django-allauth/blob/master/allauth/templates/account/login.html)
 -->
-<!-- extends "account/base.html" -->
+
+<!--
+    # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
+-->
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!-- -->
 {% load i18n %}
-
 <!-- -->
 {% load account socialaccount %}
-
-<!-- -->
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
-
-<!-- -->
-{% block content %}
-
-<!-- -->
-<h1>{% trans "Sign In" %}</h1>
-
 <!-- -->
 {% get_providers as socialaccount_providers %}
+<!-- -->
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>サインイン</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <!-- v-app-bar に app プロパティを指定しないなら、背景画像を付けてほしい -->
+                <v-app-bar app dense elevation="4">
+                    <v-app-bar-nav-icon></v-app-bar-nav-icon>
+                    <v-toolbar-title>サインイン</v-toolbar-title>
+                </v-app-bar>
+                <v-main>
+                    <v-container>
+                        <h3>サインイン</h3>
+                        {% if socialaccount_providers %}
 
-<!-- -->
-{% if socialaccount_providers %}
-<p>{% blocktrans with site.name as site_name %}Please sign in with one of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a> for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+                        <!-- 👇ここらへん分からない -->
+                        <p>{% blocktrans with site.name as site_name %}Please sign in with one of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a> for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+                        <div class="socialaccount_ballot">
+                            <ul class="socialaccount_providers">
+                                <!-- -->
+                                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                                <!-- -->
+                            </ul>
 
-<div class="socialaccount_ballot">
-    <ul class="socialaccount_providers">
-        <!-- -->
-        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-        <!-- -->
-    </ul>
+                            <div class="login-or">{% trans 'or' %}</div>
+                        </div>
+                        <!-- -->
+                        {% include "socialaccount/snippets/login_extra.html" %}
+                        <!-- 👆ここらへん分からない -->
 
-    <div class="login-or">{% trans 'or' %}</div>
-</div>
+                        <!-- -->
+                        {% else %}
+                        <!-- 👇こっちが出てくる -->
+                        <p>もしあなたがアカウントをまだ作っていないなら、まず <v-btn class="my-4" color="primary" :href="createPathOfSignup()">サインアップ</v-btn> してください</p>
+                        <!-- 👆こっちが出てくる -->
+                        {% endif %}
+                        <!-- -->
+                    </v-container>
+                    <v-container>
+                        <form class="login" method="POST" :action="createPathOfSignin()">
+                            <!-- -->
+                            {% csrf_token %}
+                            <!-- -->
+                            <table>
+                                <!-- 👇 ここのフォームが自動生成なの、どうしたものか（＾～＾） -->
+                                {{ form.as_p }}
+                                <!-- -->
+                            </table>
+                            <!-- -->
+                            {% if redirect_field_value %}
+                            <!-- -->
+                            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                            <!-- -->
+                            {% endif %}
+                            <!-- -->
+                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                            <v-btn class="my-4" color="primary" type="submit">サインイン</v-btn>
+                        </form>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
 
-<!-- -->
-{% include "socialaccount/snippets/login_extra.html" %}
-<!-- -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
 
-<!-- -->
-{% else %}
-<!-- -->
-<p>{% blocktrans %}If you have not created an account yet, then please <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
-<!-- -->
-{% endif %}
-<!-- -->
+                    // URL は、レッスンの進み具合によって適宜、貼り替えてください
+                    // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
+                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
 
-<form class="login" method="POST" action="{% url 'account_login' %}">
-    <!-- -->
-    {% csrf_token %}
-    <!-- -->
-    {{ form.as_p }}
-    <!-- -->
-    {% if redirect_field_value %}
-    <!-- -->
-    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
-    <!-- -->
-    {% endif %}
-    <!-- -->
-    <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-    <button class="primaryAction" type="submit">{% trans "Sign In" %}</button>
-</form>
-
-<!-- -->
-{% endblock %}
-<!-- -->
+                    // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
+                    vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+                },
+                methods: {
+                    createPathOfSignin() {
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignin}`;
+                        //          --------------------  ---------------]-----------------------
+                        //          1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`SignIn path=[${path}]`);
+                        return path;
+                    },
+                    createPathOfSignup() {
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignup}`;
+                        //          --------------------  ---------------]-----------------------
+                        //          1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`SignUp path=[${path}]`);
+                        return path;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -238,14 +302,22 @@ urlpatterns = [
     # ...中略...
 
     # サインイン
-    path("account/v1/login/", view=v_account_v1.account_v1_login_view),
-    #     -----------------        ----------------------------------
-    #     1                         2
+    path("account/v1/login/", view=v_account_v1.account_v1_login_view,
+         # ----------------        ----------------------------------
+         # 1                       2
+         name="account_v1_login"),
+    #          ----------------
+    #          3
     # 1. URLの `account/v1/login/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
+    # 3. HTMLテンプレートの中で {% url 'account_v1_login' %} のような形でURLを取得するのに使える
 ]
 ```
 
 # Step 5. Web画面へアクセス
 
 📖 [http://localhost:8000/account/v1/login/](http://localhost:8000/account/v1/login/)  
+
+# 関連する記事
+
+📖 [login.html](https://github.com/pennersr/django-allauth/blob/master/allauth/templates/account/login.html) - テンプレートの原型  
