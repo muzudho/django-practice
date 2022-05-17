@@ -16,21 +16,21 @@ def render_portal(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
-        'dj_matchRequestPath': 'tic-tac-toe/v2/match-request/',
-        #                       -----------------------------
-        #                       1
+        'dj_pathOfMatchRequest': '/tic-tac-toe/v2/match-request/',
+        #                         ------------------------------
+        #                         1
         # 1. http://example.com/tic-tac-toe/v2/match-request/
-        #                       -----------------------------
-        'dj_loginPath': 'tic-tac-toe/v2/login/',
-        #                ---------------------
-        #                1
+        #                      ------------------------------
+        'dj_pathOfSignin': '/tic-tac-toe/v2/login/',
+        #                  ----------------------
+        #                  1
         # 1. http://example.com/tic-tac-toe/v2/login/
-        #                       ---------------------
-        'dj_logoutPath': 'tic-tac-toe/v2/logout/',
-        #                 ----------------------
-        #                 1
+        #                      ----------------------
+        'dj_pathOfLogout': '/tic-tac-toe/v2/logout/',
+        #                   -----------------------
+        #                   1
         # 1. http://example.com/tic-tac-toe/v2/logout/
-        #                       ----------------------
+        #                      -----------------------
     }
     return HttpResponse(template.render(context, request))
 

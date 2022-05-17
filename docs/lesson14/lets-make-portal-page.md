@@ -104,6 +104,8 @@ docker-compose up
 👉                      └── 📄portal.html
 ```
 
+👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
+
 ```html
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
 <!DOCTYPE html>
@@ -151,15 +153,20 @@ docker-compose up
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_matchRequestPath: "{{ dj_matchRequestPath }}",
-                    vu_loginPath: "{{ dj_loginPath }}",
-                    vu_logoutPath: "{{ dj_logoutPath }}",
+
+                    // URL は、レッスンの進み具合によって適宜、貼り替えてください
+                    vu_pathOfMatchRequest: "{{ dj_pathOfMatchRequest }}",
+
+                    // vu_pathOfSignin: "{{ dj_pathOfSignin }}",
+                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+
+                    vu_pathOfLogout: "{{ dj_pathOfLogout }}",
                 },
                 methods: {
                     createGamePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_matchRequestPath}`;
-                        //          --------------------  ---------------- ---------------------------
-                        //          1                     2                3
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfMatchRequest}`;
+                        //          --------------------  ---------------]-----------------------------
+                        //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
@@ -167,12 +174,12 @@ docker-compose up
                         return path;
                     },
                     createLoginPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_loginPath}`;
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignin}`;
                         console.log(`login path=[${path}]`);
                         return path;
                     },
                     createLogoutPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_logoutPath}`;
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfLogout}`;
                         console.log(`logout path=[${path}]`);
                         return path;
                     },
@@ -217,21 +224,21 @@ def render_portal(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
-        'dj_matchRequestPath': 'tic-tac-toe/v2/match-request/',
-        #                       -----------------------------
-        #                       1
+        'dj_pathOfMatchRequest': '/tic-tac-toe/v2/match-request/',
+        #                         ------------------------------
+        #                         1
         # 1. http://example.com/tic-tac-toe/v2/match-request/
-        #                       -----------------------------
-        'dj_loginPath': 'tic-tac-toe/v2/login/',
-        #                ---------------------
-        #                1
+        #                      ------------------------------
+        'dj_pathOfSignin': '/tic-tac-toe/v2/login/',
+        #                  ----------------------
+        #                  1
         # 1. http://example.com/tic-tac-toe/v2/login/
-        #                       ---------------------
-        'dj_logoutPath': 'tic-tac-toe/v2/logout/',
-        #                 ----------------------
-        #                 1
+        #                      ----------------------
+        'dj_pathOfLogout': '/tic-tac-toe/v2/logout/',
+        #                   -----------------------
+        #                   1
         # 1. http://example.com/tic-tac-toe/v2/logout/
-        #                       ----------------------
+        #                      -----------------------
     }
     return HttpResponse(template.render(context, request))
 
