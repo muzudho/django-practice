@@ -123,13 +123,104 @@ class AccountV1LoginView(LoginView):
 account_v1_login_view = AccountV1LoginView.as_view()
 ```
 
-# Step 3. テンプレート編集 - login.html ファイル
+# Step 3. 機能強化 - django-form-parser.js ファイル
 
 以下のファイルを新規作成してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂account
+            │       └── 📂v1
+👉          │           └── django-form-parser.js
+            └── 📂views
+                └── v_account_v1.py
+```
+
+👇以下のファイルは、 django-allauth パッケージの仕様が変わったら作り直しになるかも  
+
+```js
+class DjangoFormParser {
+    constructor() {
+
+    }
+
+    get htmlString() {
+        return this._htmlString;
+    }
+
+    parseHtmlString(name, htmlString) { 
+        this._htmlString = htmlString;
+        console.log(`${name} htmlString=${this.htmlString}`);
+        // Examples:
+        // <input type="text" name="login" placeholder="Username" autocomplete="username" maxlength="150" required id="id_login">
+        // <input type="password" name="password" placeholder="Password" autocomplete="current-password" required id="id_password">
+        // <input type="checkbox" name="remember" id="id_remember">
+        //
+        // 両端の < > を外せば、 string か、 string="string" のパターンになっているが、エスケープシーケンスが入っていると難しい
+        // 決め打ちをしてしまうのが簡単
+        const reLogin = /<input type="text" name="login" placeholder="(.*)" autocomplete="(.*)" maxlength="(\d+)" required id="(\w+)">/;
+        const rePassword = /<input type="password" name="password" placeholder="(.*)" autocomplete="(.*)" required id="(\w+)">/;
+        const reRemember = /<input type="checkbox" name="remember" id="(\w+)">/;
+
+        let groupsLogin = reLogin.exec(htmlString);
+        if (groupsLogin) {
+            console.log(`groupsLogin placeholder=[${groupsLogin[1]}] autocomplete=[${groupsLogin[2]}] maxlength=[${groupsLogin[3]}] id=[${groupsLogin[4]}]`)
+
+            return {
+                type: "text",
+                name: "login",
+                placeholder: groupsLogin[1],
+                autocomplete: groupsLogin[2],
+                maxlength: parseInt(groupsLogin[3]),
+                id: groupsLogin[4],
+            };
+        }
+
+        let groupsPassword = rePassword.exec(htmlString);
+        if (groupsPassword) {
+            console.log(`groupsPassword placeholder=[${groupsPassword[1]}] autocomplete=[${groupsPassword[2]}] id=[${groupsPassword[3]}]`)
+
+            return {
+                type: "password",
+                name: "password",
+                placeholder: groupsPassword[1],
+                autocomplete: groupsPassword[2],
+                id: groupsPassword[3],
+            }
+        }
+
+        let groupsRemember = reRemember.exec(htmlString);
+        if (groupsRemember) {
+            console.log(`groupsRemember id=[${groupsRemember[1]}]`)
+
+            return {
+                type: "checkbox",
+                name: "remember",
+                id: groupsRemember[1],
+            }
+        }
+
+        return {
+            type: "undefined",
+            name: "unknown",
+        }
+    }
+}
+```
+
+# Step 4. テンプレート編集 - login.html ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂account
+            │       └── 📂v1
+            │           └── django-form-parser.js
             ├── 📂templates
             │   └── 📂account
             │       └── 📂v1
@@ -177,7 +268,7 @@ account_v1_login_view = AccountV1LoginView.as_view()
                 </v-app-bar>
                 <v-main>
                     <v-container>
-                        <h3>サインイン</h3>
+                        <h3>もし会員登録をしてないなら</h3>
                         {% if socialaccount_providers %}
 
                         <!-- 👇ここらへん分からない -->
@@ -189,7 +280,7 @@ account_v1_login_view = AccountV1LoginView.as_view()
                                 <!-- -->
                             </ul>
 
-                            <div class="login-or">{% trans 'or' %}</div>
+                            <div class="login-or">or</div>
                         </div>
                         <!-- -->
                         {% include "socialaccount/snippets/login_extra.html" %}
@@ -204,15 +295,25 @@ account_v1_login_view = AccountV1LoginView.as_view()
                         <!-- -->
                     </v-container>
                     <v-container>
+                        <h3>サインイン（利用開始）</h3>
                         <form class="login" method="POST" :action="createPathOfSignin()">
                             <!-- -->
                             {% csrf_token %}
-                            <!-- -->
-                            <table>
-                                <!-- 👇 ここのフォームが自動生成なの、どうしたものか（＾～＾） -->
-                                {{ form.as_p }}
-                                <!-- -->
-                            </table>
+                            <!-- 手動フォーム作成 ここから -->
+                            {{ form.non_field_errors }}
+                            <div class="fieldWrapper">
+                                {{ form.login.errors }}
+                                <v-text-field name="login" v-model="vu_userName" :maxlength="vu_loginFormDoc.maxlength" counter label="アカウント名：" required></v-text-field>
+                            </div>
+                            <div class="fieldWrapper">
+                                {{ form.password.errors }}
+                                <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード：" required></v-text-field>
+                            </div>
+                            <div class="fieldWrapper">
+                                {{ form.remember.errors }}
+                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする："></v-checkbox>
+                            </div>
+                            <!-- 手動フォーム作成 ここまで -->
                             <!-- -->
                             {% if redirect_field_value %}
                             <!-- -->
@@ -220,8 +321,8 @@ account_v1_login_view = AccountV1LoginView.as_view()
                             <!-- -->
                             {% endif %}
                             <!-- -->
-                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
                             <v-btn class="my-4" color="primary" type="submit">サインイン</v-btn>
+                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">パスワードを忘れたら</a>
                         </form>
                     </v-container>
                 </v-main>
@@ -230,6 +331,14 @@ account_v1_login_view = AccountV1LoginView.as_view()
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+        <script src="{% static 'account/v1/django-form-parser.js' %}"></script>
+        <!--                    ================================
+                                1
+            1. host1/webapp1/static/account/v1/django-form-parser.js
+                                    ================================
+        -->
+
         <script>
             let vue1 = new Vue({
                 el: "#app",
@@ -239,10 +348,21 @@ account_v1_login_view = AccountV1LoginView.as_view()
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
-                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    // vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+
+                    // HTMLタグ文字列が渡されるので、解析します
+                    vu_loginFormDoc: new DjangoFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
+                    vu_userName: "",
+
+                    vu_passwordFormDoc: new DjangoFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
+                    vu_password: "",
+
+                    vu_rememberFormDoc: new DjangoFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
+                    vu_rememberFlag: false,
                 },
                 methods: {
                     createPathOfSignin() {
@@ -272,13 +392,17 @@ account_v1_login_view = AccountV1LoginView.as_view()
 </html>
 ```
 
-# Step 4. ルート編集 - urls.py ファイル
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂account
+            │       └── 📂v1
+            │           └── django-form-parser.js
             ├── 📂templates
             │   └── 📂account
             │       └── 📂v1
@@ -314,10 +438,20 @@ urlpatterns = [
 ]
 ```
 
-# Step 5. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/account/v1/login/](http://localhost:8000/account/v1/login/)  
 
 # 関連する記事
 
 📖 [login.html](https://github.com/pennersr/django-allauth/blob/master/allauth/templates/account/login.html) - テンプレートの原型  
+
+## form関連
+
+📖 [Working with forms](https://docs.djangoproject.com/en/4.0/topics/forms/) - 一番詳しい  
+📖 [forms.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/forms.py) - 原型  
+📖 [How can I render Django Form with vuetify?](https://stackoverflow.com/questions/63993890/how-can-i-render-django-form-with-vuetify)  
+📖 [vue.js - Vuetifyの入力値でDjangoのテンプレートタグを使用する方法は？](https://tutorialmore.com/questions-2757963.htm)  
+📖 [Anyone know how to use vuetify with django form?](https://forum.djangoproject.com/t/anyone-know-how-to-use-vuetify-with-django-form/4807)  
+📖 [Source code for django.forms.boundfield](https://docs.djangoproject.com/en/2.2/_modules/django/forms/boundfield/)  
+📖 [DjangoのFormクラスを使う](https://qiita.com/taumu/items/4587a91c4d7d2db165b3)  

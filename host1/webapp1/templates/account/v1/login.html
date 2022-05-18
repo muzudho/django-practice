@@ -46,7 +46,7 @@
                                 <!-- -->
                             </ul>
 
-                            <div class="login-or">{% trans 'or' %}</div>
+                            <div class="login-or">or</div>
                         </div>
                         <!-- -->
                         {% include "socialaccount/snippets/login_extra.html" %}
@@ -87,8 +87,8 @@
                             <!-- -->
                             {% endif %}
                             <!-- -->
-                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
                             <v-btn class="my-4" color="primary" type="submit">サインイン</v-btn>
+                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">パスワードを忘れたら</a>
                         </form>
                     </v-container>
                 </v-main>
