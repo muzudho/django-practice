@@ -112,11 +112,11 @@
             let loginP = new DjangoFormParser();
             loginP.parseHtmlString("login", "{{ form.login|escapejs }}");
 
-            var passwordHtmlString = "{{ form.password|escapejs }}";
-            console.log(`passwordHtmlString=${passwordHtmlString}`);
+            let passwordP = new DjangoFormParser();
+            passwordP.parseHtmlString("password", "{{ form.password|escapejs }}");
 
-            var rememberHtmlString = "{{ form.remember|escapejs }}";
-            console.log(`rememberHtmlString=${rememberHtmlString}`);
+            let rememberP = new DjangoFormParser();
+            rememberP.parseHtmlString("form", "{{ form.remember|escapejs }}");
 
             let vue1 = new Vue({
                 el: "#app",
@@ -132,8 +132,8 @@
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
 
                     vu_loginHtmlString: loginP.htmlString,
-                    vu_passwordHtmlString: passwordHtmlString,
-                    vu_rememberHtmlString: rememberHtmlString,
+                    vu_passwordHtmlString: passwordP.htmlString,
+                    vu_rememberHtmlString: rememberP.htmlString,
                 },
                 methods: {
                     createPathOfSignin() {
