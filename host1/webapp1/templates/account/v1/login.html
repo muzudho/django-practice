@@ -98,11 +98,11 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
-        <script src="{% static 'account/v1/django-form-parser.js' %}"></script>
-        <!--                    ================================
+        <script src="{% static 'account/v1/django-allauth-form-parser.js' %}"></script>
+        <!--                    ========================================
                                 1
-            1. host1/webapp1/static/account/v1/django-form-parser.js
-                                    ================================
+            1. host1/webapp1/static/account/v1/django-allauth-form-parser.js
+                                    ========================================
         -->
 
         <script>
@@ -121,13 +121,13 @@
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
 
                     // HTMLタグ文字列が渡されるので、解析します
-                    vu_loginFormDoc: new DjangoFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
+                    vu_loginFormDoc: new DjangoAllauthFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
                     vu_userName: "",
 
-                    vu_passwordFormDoc: new DjangoFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
+                    vu_passwordFormDoc: new DjangoAllauthFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
                     vu_password: "",
 
-                    vu_rememberFormDoc: new DjangoFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
+                    vu_rememberFormDoc: new DjangoAllauthFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
                     vu_rememberFlag: false,
                 },
                 methods: {

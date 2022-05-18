@@ -123,104 +123,13 @@ class AccountV1LoginView(LoginView):
 account_v1_login_view = AccountV1LoginView.as_view()
 ```
 
-# Step 3. 機能強化 - django-form-parser.js ファイル
+# Step 3. テンプレート編集 - login.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂static
-            │   └── 📂account
-            │       └── 📂v1
-👉          │           └── django-form-parser.js
-            └── 📂views
-                └── v_account_v1.py
-```
-
-👇以下のファイルは、 django-allauth パッケージの仕様が変わったら作り直しになるかも  
-
-```js
-class DjangoFormParser {
-    constructor() {
-
-    }
-
-    get htmlString() {
-        return this._htmlString;
-    }
-
-    parseHtmlString(name, htmlString) { 
-        this._htmlString = htmlString;
-        console.log(`${name} htmlString=${this.htmlString}`);
-        // Examples:
-        // <input type="text" name="login" placeholder="Username" autocomplete="username" maxlength="150" required id="id_login">
-        // <input type="password" name="password" placeholder="Password" autocomplete="current-password" required id="id_password">
-        // <input type="checkbox" name="remember" id="id_remember">
-        //
-        // 両端の < > を外せば、 string か、 string="string" のパターンになっているが、エスケープシーケンスが入っていると難しい
-        // 決め打ちをしてしまうのが簡単
-        const reLogin = /<input type="text" name="login" placeholder="(.*)" autocomplete="(.*)" maxlength="(\d+)" required id="(\w+)">/;
-        const rePassword = /<input type="password" name="password" placeholder="(.*)" autocomplete="(.*)" required id="(\w+)">/;
-        const reRemember = /<input type="checkbox" name="remember" id="(\w+)">/;
-
-        let groupsLogin = reLogin.exec(htmlString);
-        if (groupsLogin) {
-            console.log(`groupsLogin placeholder=[${groupsLogin[1]}] autocomplete=[${groupsLogin[2]}] maxlength=[${groupsLogin[3]}] id=[${groupsLogin[4]}]`)
-
-            return {
-                type: "text",
-                name: "login",
-                placeholder: groupsLogin[1],
-                autocomplete: groupsLogin[2],
-                maxlength: parseInt(groupsLogin[3]),
-                id: groupsLogin[4],
-            };
-        }
-
-        let groupsPassword = rePassword.exec(htmlString);
-        if (groupsPassword) {
-            console.log(`groupsPassword placeholder=[${groupsPassword[1]}] autocomplete=[${groupsPassword[2]}] id=[${groupsPassword[3]}]`)
-
-            return {
-                type: "password",
-                name: "password",
-                placeholder: groupsPassword[1],
-                autocomplete: groupsPassword[2],
-                id: groupsPassword[3],
-            }
-        }
-
-        let groupsRemember = reRemember.exec(htmlString);
-        if (groupsRemember) {
-            console.log(`groupsRemember id=[${groupsRemember[1]}]`)
-
-            return {
-                type: "checkbox",
-                name: "remember",
-                id: groupsRemember[1],
-            }
-        }
-
-        return {
-            type: "undefined",
-            name: "unknown",
-        }
-    }
-}
-```
-
-# Step 4. テンプレート編集 - login.html ファイル
-
-以下のファイルを新規作成してほしい。  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂static
-            │   └── 📂account
-            │       └── 📂v1
-            │           └── django-form-parser.js
             ├── 📂templates
             │   └── 📂account
             │       └── 📂v1
@@ -332,11 +241,11 @@ class DjangoFormParser {
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
-        <script src="{% static 'account/v1/django-form-parser.js' %}"></script>
-        <!--                    ================================
+        <script src="{% static 'account/v1/django-allauth-form-parser.js' %}"></script>
+        <!--                    ========================================
                                 1
-            1. host1/webapp1/static/account/v1/django-form-parser.js
-                                    ================================
+            1. host1/webapp1/static/account/v1/django-allauth-form-parser.js
+                                    ========================================
         -->
 
         <script>
@@ -355,13 +264,13 @@ class DjangoFormParser {
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
 
                     // HTMLタグ文字列が渡されるので、解析します
-                    vu_loginFormDoc: new DjangoFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
+                    vu_loginFormDoc: new DjangoAllauthFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
                     vu_userName: "",
 
-                    vu_passwordFormDoc: new DjangoFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
+                    vu_passwordFormDoc: new DjangoAllauthFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
                     vu_password: "",
 
-                    vu_rememberFormDoc: new DjangoFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
+                    vu_rememberFormDoc: new DjangoAllauthFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
                     vu_rememberFlag: false,
                 },
                 methods: {
@@ -392,17 +301,13 @@ class DjangoFormParser {
 </html>
 ```
 
-# Step 5. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂static
-            │   └── 📂account
-            │       └── 📂v1
-            │           └── django-form-parser.js
             ├── 📂templates
             │   └── 📂account
             │       └── 📂v1
@@ -438,7 +343,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 📖 [http://localhost:8000/account/v1/login/](http://localhost:8000/account/v1/login/)  
 
