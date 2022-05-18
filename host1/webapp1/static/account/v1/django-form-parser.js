@@ -30,7 +30,7 @@ class DjangoFormParser {
                 name: "login",
                 placeholder: groupsLogin[1],
                 autocomplete: groupsLogin[2],
-                maxlength: groupsLogin[3],
+                maxlength: parseInt(groupsLogin[3]),
                 id: groupsLogin[4],
             };
         }

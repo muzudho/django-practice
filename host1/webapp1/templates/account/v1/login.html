@@ -68,7 +68,12 @@
                             {{ form.non_field_errors }}
                             <div class="fieldWrapper">
                                 {{ form.login.errors }}
-                                <v-text-field name="login" autocomplete="username" v-model="vu_userName" maxlength="150" label="アカウント名：" required></v-text-field>
+                                <!-- -->
+                                {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                                <!-- -->
+                                {% verbatim %}
+                                <v-text-field name="login" v-model="vu_userName" :maxlength="vu_loginFormDoc.maxlength" counter label="アカウント名：" required></v-text-field>
+                                {% endverbatim %}
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
