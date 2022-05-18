@@ -24,16 +24,41 @@ class DjangoFormParser {
         let groupsLogin = reLogin.exec(htmlString);
         if (groupsLogin) {
             console.log(`groupsLogin placeholder=[${groupsLogin[1]}] autocomplete=[${groupsLogin[2]}] maxlength=[${groupsLogin[3]}] id=[${groupsLogin[4]}]`)
+
+            return {
+                type: "text",
+                name: "login",
+                placeholder: groupsLogin[1],
+                autocomplete: groupsLogin[2],
+                maxlength: groupsLogin[3],
+                id: groupsLogin[4],
+            };
         }
 
         let groupsPassword = rePassword.exec(htmlString);
         if (groupsPassword) {
             console.log(`groupsPassword placeholder=[${groupsPassword[1]}] autocomplete=[${groupsPassword[2]}] id=[${groupsPassword[3]}]`)
+
+            return {
+                type: "password",
+                name: "password",
+                placeholder: groupsPassword[1],
+                autocomplete: groupsPassword[2],
+                id: groupsPassword[3],
+            }
         }
 
         let groupsRemember = reRemember.exec(htmlString);
         if (groupsRemember) {
             console.log(`groupsRemember id=[${groupsRemember[1]}]`)
+
+            return {
+                type: "checkbox",
+                name: "remember",
+                id: groupsRemember[1],
+            }
         }
+
+        return null
     }
 }

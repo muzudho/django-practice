@@ -108,16 +108,6 @@
         -->
 
         <script>
-            // HTMLタグ文字列が渡されるので、解析します
-            let loginP = new DjangoFormParser();
-            loginP.parseHtmlString("login", "{{ form.login|escapejs }}");
-
-            let passwordP = new DjangoFormParser();
-            passwordP.parseHtmlString("password", "{{ form.password|escapejs }}");
-
-            let rememberP = new DjangoFormParser();
-            rememberP.parseHtmlString("form", "{{ form.remember|escapejs }}");
-
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
@@ -131,9 +121,10 @@
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
 
-                    vu_loginHtmlString: loginP.htmlString,
-                    vu_passwordHtmlString: passwordP.htmlString,
-                    vu_rememberHtmlString: rememberP.htmlString,
+                    // HTMLタグ文字列が渡されるので、解析します
+                    vu_loginFormDoc: new DjangoFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
+                    vu_passwordFormDoc: new DjangoFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
+                    vu_rememberFormDoc: new DjangoFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
                 },
                 methods: {
                     createPathOfSignin() {
