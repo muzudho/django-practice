@@ -59,6 +59,9 @@ class DjangoFormParser {
             }
         }
 
-        return null
+        return {
+            type: "undefined",
+            name: "unknown",
+        }
     }
 }

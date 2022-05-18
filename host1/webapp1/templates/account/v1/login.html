@@ -34,7 +34,7 @@
                 </v-app-bar>
                 <v-main>
                     <v-container>
-                        <h3>サインイン</h3>
+                        <h3>もし会員登録をしてないなら</h3>
                         {% if socialaccount_providers %}
 
                         <!-- 👇ここらへん分からない -->
@@ -61,6 +61,7 @@
                         <!-- -->
                     </v-container>
                     <v-container>
+                        <h3>サインイン（利用開始）</h3>
                         <form class="login" method="POST" :action="createPathOfSignin()">
                             <!-- -->
                             {% csrf_token %}
@@ -72,11 +73,11 @@
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
-                                <v-text-field type="password" name="password" v-model="vu_password" :maxlength="vu_passwordFormDoc.maxlength" counter label="パスワード：" required></v-text-field>
+                                <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード：" required></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.remember.errors }}
-                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする：" required></v-checkbox>
+                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする："></v-checkbox>
                             </div>
                             <!-- 手動フォーム作成 ここまで -->
                             <!-- -->
@@ -113,7 +114,8 @@
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
-                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    // vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
