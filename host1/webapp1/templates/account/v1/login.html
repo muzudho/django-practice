@@ -68,8 +68,7 @@
                             {{ form.non_field_errors }}
                             <div class="fieldWrapper">
                                 {{ form.login.errors }}
-                                <label for="{{ form.login.id_for_label }}">アカウント名：</label>
-                                {{ form.login }}
+                                <v-text-field name="login" autocomplete="username" v-model="vu_userName" maxlength="150" label="アカウント名：" required></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
@@ -123,8 +122,13 @@
 
                     // HTMLタグ文字列が渡されるので、解析します
                     vu_loginFormDoc: new DjangoFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
+                    vu_userName: "",
+
                     vu_passwordFormDoc: new DjangoFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
+                    vu_password: "",
+
                     vu_rememberFormDoc: new DjangoFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
+                    vu_rememberFlag: false,
                 },
                 methods: {
                     createPathOfSignin() {
