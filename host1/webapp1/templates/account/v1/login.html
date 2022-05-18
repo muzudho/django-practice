@@ -99,7 +99,25 @@
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+        <script src="{% static 'account/v1/django-form-parser.js' %}"></script>
+        <!--                    ================================
+                                1
+            1. host1/webapp1/static/account/v1/django-form-parser.js
+                                    ================================
+        -->
+
         <script>
+            // HTMLタグ文字列が渡されるので、解析します
+            let loginP = new DjangoFormParser();
+            loginP.parseHtmlString("login", "{{ form.login|escapejs }}");
+
+            var passwordHtmlString = "{{ form.password|escapejs }}";
+            console.log(`passwordHtmlString=${passwordHtmlString}`);
+
+            var rememberHtmlString = "{{ form.remember|escapejs }}";
+            console.log(`rememberHtmlString=${rememberHtmlString}`);
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
@@ -112,6 +130,10 @@
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+
+                    vu_loginHtmlString: loginP.htmlString,
+                    vu_passwordHtmlString: passwordHtmlString,
+                    vu_rememberHtmlString: rememberHtmlString,
                 },
                 methods: {
                     createPathOfSignin() {
