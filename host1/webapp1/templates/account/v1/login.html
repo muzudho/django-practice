@@ -68,22 +68,15 @@
                             {{ form.non_field_errors }}
                             <div class="fieldWrapper">
                                 {{ form.login.errors }}
-                                <!-- -->
-                                {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
-                                <!-- -->
-                                {% verbatim %}
                                 <v-text-field name="login" v-model="vu_userName" :maxlength="vu_loginFormDoc.maxlength" counter label="アカウント名：" required></v-text-field>
-                                {% endverbatim %}
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
-                                <label for="{{ form.password.id_for_label }}">パスワード：</label>
-                                {{ form.password }}
+                                <v-text-field type="password" name="password" v-model="vu_password" :maxlength="vu_passwordFormDoc.maxlength" counter label="パスワード：" required></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.remember.errors }}
-                                <label for="{{ form.remember.id_for_label }}">パスワードを入力したままにする：</label>
-                                {{ form.remember }}
+                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする：" required></v-checkbox>
                             </div>
                             <!-- 手動フォーム作成 ここまで -->
                             <!-- -->
