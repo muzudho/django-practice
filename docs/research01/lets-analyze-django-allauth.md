@@ -76,3 +76,44 @@ DjangoでWebサイトを作ったとき、会員登録めんどくさいから S
 📖 [django-allauth/allauth/templates/account](https://github.com/pennersr/django-allauth/tree/master/allauth/templates/account)  
 
 👆 テンプレートが置いてあることを確認してほしい。こんな記事を読む人間は、この HTML がダサいから Vuetify に置き換えたい、といったところだろう  
+
+## テンプレートをコピーしろ
+
+`allauth` というのは 今あなたが作ろうとしている Webサイト と同じように存在する別の Webサイト ぐらいに思ってほしい  
+
+👇ここで、今あなたが作ろうとしている Webサイト のソースが入っているディレクトリーの名前を仮に `webapp1` だとしよう  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+```
+
+👇すると、あなたの Webサイト のテンプレートは例えば 以下のように置いているはずだ  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
+                    └── 📄page1.html
+```
+
+👇自分の Webサイトに、 他の Webサイト のテンプレートを合体させたければ、以下のように置けばよい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
+                │   ├── 📄login.html
+                │   ├── 📄logout.html
+                │   └── 📄<いろいろ>.html
+                └── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
+                    └── 📄page1.html
+```
+
+ただ、 allauth のテンプレートはいっぱいある。 オーバーライド したいものだけをコピーすればよい  
+
+# 関連する記事
+
+📖 [django-allauthのテンプレートファイルをカスタマイズする手順](https://qiita.com/s-katsumata/items/b667c81a127223d2e868)  
