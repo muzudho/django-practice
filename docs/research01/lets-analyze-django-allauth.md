@@ -115,7 +115,54 @@ DjangoでWebサイトを作ったとき、会員登録めんどくさいから S
 ただ、 allauth のテンプレートはいっぱいある。 base.html を下敷きにして login.html があるとか、結合もいっぱいある。  
 しかし気にせず、見た目を替えたいファイルだけをコピーすればよい  
 
-このとき、  
+ただ、 `allauth` というディレクトリーが 別のWebサイトのテンプレートを置いている場所であることを 自動で認識はしてくれないので、設定がまだいる  
+
+## 設定しろ
+
+👇 `settings.py` を編集してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
+                │   ├── 📄login.html
+                │   ├── 📄logout.html
+                │   └── 📄<いろいろ>.html
+                ├── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
+                │   └── 📄page1.html
+👉              └── 📄settings.py
+```
+
+👇 1行追加するだけ  
+
+```py
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates', 'allauth') # この行を追加してほしい
+            #                      ----------------------
+            #                      1
+            # 1. host1/webapp1/templates/allauth
+            #                  -----------------
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+```
+
+# HTMLを編集しろ
+
+このとき、 `host1/webapp1/templates/allauth/login.html` ファイルの  
 
 ```html
 <h1>{% trans "Sign In" %}</h1>
@@ -143,6 +190,7 @@ DjangoでWebサイトを作ったとき、会員登録めんどくさいから S
                 │   └── 📄<いろいろ>.html
                 ├── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
                 │   └── 📄page1.html
+                ├── 📄settings.py
 👉              └── 📄urls.py
 ```
 
