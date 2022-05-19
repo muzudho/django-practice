@@ -29,6 +29,8 @@ Lesson 1. Install
 Lesson 2. Auth  
 
 * 📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)
+* もっと勉強したい人向けの関連記事
+  * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
 Lesson 3. Page  
 

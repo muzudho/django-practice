@@ -217,6 +217,8 @@ docker-compose up
 # 次の記事
 
 📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
+* もっと勉強したい人向けの関連記事
+  * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
 # 参考にした記事
 

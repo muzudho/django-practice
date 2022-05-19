@@ -1,11 +1,118 @@
-# django-allauthを解析しよう！
+# 目的
 
-DjangoでWebサイトを作ったとき、会員登録めんどくさいから SNSのアカウントでログインしたい、  
-というときの選択肢として django-allauth は重要なわりに、記事が少ない。無いなら自分でまとめよう。  
+Djangoで会員制のWebサイトを作ったとき、会員登録めんどくさいから SNSのアカウントでログインしたい、  
+といったときの選択肢として django-allauth は重要。  
 
-作者がソースを大幅にいじったら わたしの記事は全部無駄になるが、現時点の django-allauth のソースを解析していこう。  
+しかし デフォルトのテンプレートは 見た目がイケてない。  
+そこでテンプレートを差し替える方法まとめ。  
 
-## まず urls.py を見ろ
+## allauth も Django で作られた Webサイト
+
+`allauth` というのは 認証のためのパッケージのような何かと思うのではなく、  
+Django で Web サイト作ろうとしている あなた と同じように、 Raymond Penners が Django で作った Webサイト だと思ってほしい  
+
+## テンプレートを見ろ
+
+📖 [django-allauth/allauth/templates/account](https://github.com/pennersr/django-allauth/tree/master/allauth/templates/account)  
+
+👆 テンプレートが置いてあることを確認してほしい。 allauth では `templates/account` ディレクトリーに テンプレートを置いているようだ  
+
+こんな記事を読む人間は、この HTML がダサいから Vuetify に置き換えたい、といったところだろう  
+
+## テンプレートをコピーしろ
+
+👇ここで、今あなたが作ろうとしている Webサイト のソースが入っているディレクトリーの名前を仮に `webapp1` だとしよう  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+```
+
+👇すると、あなたの Webサイト のテンプレートは例えば 以下のように置いているはずだ  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📄page1.html
+```
+
+👇自分の Webサイトに、 allauth のテンプレートを合体させたければ、以下のように置けばよい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                ├── 📂account               # この名前のフォルダーは django-allauth が使ってる
+                │   ├── 📄login.html
+                │   ├── 📄logout.html
+                │   ├── ...中略...
+                │   └── 📄<いろいろ>.html
+                └── 📄page1.html
+```
+
+allauth のテンプレートはいっぱいある。 base.html を下敷きにして login.html があるとか、結合もいっぱいある。  
+しかし気にせず、見た目を替えたいファイルだけをコピーしてもってきて、それを改造すればよい  
+
+# HTMLを編集しろ
+
+このとき、 `host1/webapp1/templates/allauth/login.html` ファイルの  
+
+```html
+<h1>{% trans "Sign In" %}</h1>
+```
+
+のような部分を、  
+
+```html
+<h1>{% trans "Sign In" %}（＾ｑ＾）</h1>
+```
+
+のように変えておくことで、 allauth の login.html ではなく、 コピーした方の login.html が使われていることを目視確認できるようにしておく  
+
+## URLを引っ張ってこい
+
+👇 `urls.py` に何を書けばいいのかだが  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   ├── 📂account
+            │   │   ├── 📄login.html
+            │   │   ├── 📄logout.html
+            │   │   ├── ...中略...
+            │   │   └── 📄<いろいろ>.html
+            │   └── 📄page1.html
+👉          └── 📄urls.py
+```
+
+👇 抜粋すると、以下のように書く  
+
+```py
+from django.urls import include, path
+
+urlpatterns = [
+    # ...中略...
+
+    path('accounts/', include('allauth.urls')),
+    #     ---------   -----------------------
+    #     1           2
+    # 1. URLの `http://example.com/accounts/` というパスにマッチする
+    #                              ---------
+    # 2. allauth に既に用意されているビューを割り当てる
+]
+```
+
+# アクセスしろ
+
+ローカルホストに Webサイト が起ちあがっているなら、以下の URL で allauth のログイン画面にアクセスできるはずだ  
+
+* [http://localhost:8000/accounts/login/](http://localhost:8000/accounts/login/)  
+
+# allauth にはどんな URL、どんなテンプレート があるか？
+
+## まず urls.py を見ろ  
 
 📖 [django-allauth/allauth/account/urls.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/urls.py)  
 
@@ -71,153 +178,7 @@ DjangoでWebサイトを作ったとき、会員登録めんどくさいから S
 
 👆template_name プロパティを見れば、HTML（のようなもの）のファイルがどこに格納されているか当たりが付く  
 
-## テンプレートを見ろ
-
-📖 [django-allauth/allauth/templates/account](https://github.com/pennersr/django-allauth/tree/master/allauth/templates/account)  
-
-👆 テンプレートが置いてあることを確認してほしい。こんな記事を読む人間は、この HTML がダサいから Vuetify に置き換えたい、といったところだろう  
-
-## テンプレートをコピーしろ
-
-`allauth` というのは 今あなたが作ろうとしている Webサイト と同じように存在する別の Webサイト ぐらいに思ってほしい  
-
-👇ここで、今あなたが作ろうとしている Webサイト のソースが入っているディレクトリーの名前を仮に `webapp1` だとしよう  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-```
-
-👇すると、あなたの Webサイト のテンプレートは例えば 以下のように置いているはずだ  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂templates
-                └── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
-                    └── 📄page1.html
-```
-
-👇自分の Webサイトに、 他の Webサイト のテンプレートを合体させたければ、以下のように置けばよい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂templates
-                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
-                │   ├── 📄login.html
-                │   ├── 📄logout.html
-                │   └── 📄<いろいろ>.html
-                └── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
-                    └── 📄page1.html
-```
-
-ただ、 allauth のテンプレートはいっぱいある。 base.html を下敷きにして login.html があるとか、結合もいっぱいある。  
-しかし気にせず、見た目を替えたいファイルだけをコピーすればよい  
-
-ただ、 `allauth` というディレクトリーが 別のWebサイトのテンプレートを置いている場所であることを 自動で認識はしてくれないので、設定がまだいる  
-
-## 設定しろ
-
-👇 `settings.py` を編集してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂templates
-                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
-                │   ├── 📄login.html
-                │   ├── 📄logout.html
-                │   └── 📄<いろいろ>.html
-                ├── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
-                │   └── 📄page1.html
-👉              └── 📄settings.py
-```
-
-👇 1行追加するだけ  
-
-```py
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(BASE_DIR, 'templates', 'allauth') # この行を追加してほしい
-            #                      ----------------------
-            #                      1
-            # 1. host1/webapp1/templates/allauth
-            #                  -----------------
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-```
-
-# HTMLを編集しろ
-
-このとき、 `host1/webapp1/templates/allauth/login.html` ファイルの  
-
-```html
-<h1>{% trans "Sign In" %}</h1>
-```
-
-のような部分を、  
-
-```html
-<h1>{% trans "Sign In" %}（＾ｑ＾）</h1>
-```
-
-のように変えておくことで、 allauth の login.html ではなく、 コピーした方の login.html が使われていることを目視確認できるようにしておく  
-
-## URLを引っ張ってこい
-
-👇 `urls.py` に何を書けばいいのかだが  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂templates
-                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
-                │   ├── 📄login.html
-                │   ├── 📄logout.html
-                │   └── 📄<いろいろ>.html
-                ├── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
-                │   └── 📄page1.html
-                ├── 📄settings.py
-👉              └── 📄urls.py
-```
-
-👇 抜粋すると、以下のように書く  
-
-```py
-from django.urls import include, path
-
-urlpatterns = [
-    # ...中略...
-
-    path('account/', include('allauth.urls')),
-    #     --------   -----------------------
-    #     1           2
-    # 1. URLの `http://example.com/account/` というパスにマッチする
-    #                              --------
-    # 2. allauth に既に用意されているビューを割り当てる
-]
-```
-
-# アクセスしろ
-
-ローカルホストに Webサイト が起ちあがっているなら、以下の URL で allauth のログイン画面にアクセスできるはずだ  
-
-* [http://localhost:8000/account/login/](http://localhost:8000/account/login/)  
-
-
 # 関連する記事
 
 📖 [django-allauthのテンプレートファイルをカスタマイズする手順](https://qiita.com/s-katsumata/items/b667c81a127223d2e868)  
+📖 [Django-allauthでテンプレートを上書きするには、account配下にテンプレートを作成する](https://qiita.com/jansnap/items/d2bf2af79ffa9ed19fbf)  
