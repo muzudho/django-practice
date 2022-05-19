@@ -521,6 +521,10 @@ urlpatterns = [
 📖 [Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)  
 📖 [【Django】django-allauthのformやhtmlを上書きする方法](https://qiita.com/NOIZE/items/0522825a1de1d6aa4a2b)  
 
+## 認証関連
+
+📖 [【Django】認証のViewをカスタマイズする方法 テンプレート編](https://allneko.club/django/auth-views-customize/)  
+
 ## form関連
 
 📖 [Working with forms](https://docs.djangoproject.com/en/4.0/topics/forms/) - 一番詳しい  
