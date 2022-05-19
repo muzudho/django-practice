@@ -25,6 +25,10 @@ URL
 * http://localhost:8000/tic-tac-toe/v2/
 * http://localhost:8000/lobby/v1/
 
+Allauth
+
+* http://localhost:8000/account/login/
+
 Product
 
 * (Old) http://tic.warabenture.com:8000/tic-tac-toe2/

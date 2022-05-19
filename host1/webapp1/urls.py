@@ -55,11 +55,11 @@ urlpatterns = [
     # 2. 最初から用意されているページ？
     # 3. ログイン後に飛んでくるページの URL のパスを 'home' という名前で覚えておく
 
-    path('accounts/', include('allauth.urls')),
-    #     ---------   -----------------------
+    path('account/', include('allauth.urls')),
+    #     --------   -----------------------
     #     1           2
-    # 1. URLの `accounts/` というパスにマッチする
-    # 2. 最初から用意されているURL？
+    # 1. URLの `account/` というパスにマッチする
+    # 2. allauth というパッケージに既に用意されているURLに紐づくビューを取ってくる
 
     # | Allauth
     # +----

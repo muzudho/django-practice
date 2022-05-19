@@ -112,7 +112,63 @@ DjangoでWebサイトを作ったとき、会員登録めんどくさいから S
                     └── 📄page1.html
 ```
 
-ただ、 allauth のテンプレートはいっぱいある。 オーバーライド したいものだけをコピーすればよい  
+ただ、 allauth のテンプレートはいっぱいある。 base.html を下敷きにして login.html があるとか、結合もいっぱいある。  
+しかし気にせず、見た目を替えたいファイルだけをコピーすればよい  
+
+このとき、  
+
+```html
+<h1>{% trans "Sign In" %}</h1>
+```
+
+のような部分を、  
+
+```html
+<h1>{% trans "Sign In" %}（＾ｑ＾）</h1>
+```
+
+のように変えておくことで、 allauth の login.html ではなく、 コピーした方の login.html が使われていることを目視確認できるようにしておく  
+
+## URLを引っ張ってこい
+
+👇 `urls.py` に何を書けばいいのかだが  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                ├── 📂allauth               # 別のアプリケーションの、アプリケーション フォルダー名
+                │   ├── 📄login.html
+                │   ├── 📄logout.html
+                │   └── 📄<いろいろ>.html
+                ├── 📂webapp1               # なぜか２度繰り返されるアプリケーション フォルダーの名前
+                │   └── 📄page1.html
+👉              └── 📄urls.py
+```
+
+👇 抜粋すると、以下のように書く  
+
+```py
+from django.urls import include, path
+
+urlpatterns = [
+    # ...中略...
+
+    path('account/', include('allauth.urls')),
+    #     --------   -----------------------
+    #     1           2
+    # 1. URLの `http://example.com/account/` というパスにマッチする
+    #                              --------
+    # 2. allauth に既に用意されているビューを割り当てる
+]
+```
+
+# アクセスしろ
+
+ローカルホストに Webサイト が起ちあがっているなら、以下の URL で allauth のログイン画面にアクセスできるはずだ  
+
+* [http://localhost:8000/account/login/](http://localhost:8000/account/login/)  
+
 
 # 関連する記事
 
