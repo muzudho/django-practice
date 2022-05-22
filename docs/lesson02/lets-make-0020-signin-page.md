@@ -23,14 +23,24 @@
         │   └── 📂db
         │       └── （たくさんのもの）
         ├── 📂webapp1                       # アプリケーション フォルダー
-        │   ├── 📄settings.py
-        │   ├── 📄urls.py
-        │   └── 📄<いろいろ>
+        │   ├── 📂static
+        │   │   └── 📂allauth-customized
+        │   │       └── 📂v1
+        │   │           └── 📄form-html-parser.js
+        │   ├── 📂templates
+        │   │   └── 📂allauth-customized
+        │   │       └── 📂v1
+        │   │           └── 📄signup.html
+        │   ├── 📂views
+        │   │   └── v_accounts_v1.py
+        │　　├── 📄settings.py
+        │　　├── 📄urls.py
+        │　　└── <いろいろ>
         ├── 📄.env
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄requirements.txt
-        └── 📄<いろいろ>
+        └── <いろいろ>
 ```
 
 # Step 1. Dockerコンテナの起動
@@ -222,9 +232,9 @@ docker-compose up
 </html>
 ```
 
-# Step 2. ビュー編集 - v_accounts_v1.py ファイル
+# Step 3. ビュー編集 - v_accounts_v1.py ファイル
 
-以下のファイルを 無ければ新規作成、有れば編集してほしい  
+以下のファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
@@ -240,12 +250,12 @@ docker-compose up
 
 ```py
 # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
-from allauth.account.views import LoginView, SignupView
+from allauth.account.views import LoginView
 
 # ...中略...
 
 class AccountsV1LoginView(LoginView):
-    """django-allauth のログイン ビューを継承します
+    """django-allauth のログイン ビューをカスタマイズします
     📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/views.py)
     """
 
@@ -269,9 +279,10 @@ accounts_v1_login_view = AccountsV1LoginView.as_view()
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂account
+            │   └── 📂allauth-customized
             │       └── 📂v1
-            │           └── 📄login.html
+            │           └── 📂account           # allauth のディレクトリー構成を真似ます
+            │               └── 📄login.html
             ├── 📂views
             │   └── 📄v_account_v1.py
 👉          └── 📄urls.py
@@ -305,7 +316,11 @@ urlpatterns = [
 
 # Step 5. Web画面へアクセス
 
-📖 [http://localhost:8000/account/v1/login/](http://localhost:8000/account/v1/login/)  
+📖 [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
+
+# 次の記事
+
+📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
 
 # 関連する記事
 

@@ -1,9 +1,3 @@
----
-title: Djangoでユーザー認証を付けよう！
-tags: Django Docker Allauth ユーザー認証
-author: muzudho1
-slide: false
----
 # 目的
 
 会員制サイトを作りたい。  
@@ -618,7 +612,7 @@ from allauth.account.views import SignupView
 
 
 class AccountsV1SignupView(SignupView):
-    """django-allauth のサインアップ ビューを継承します
+    """django-allauth のサインアップ ビューをカスタマイズします
     📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/socialaccount/views.py)
     """
 
@@ -726,7 +720,6 @@ urlpatterns = [
     # +----
 ]
 ```
-
 
 # Step 12. Webページへアクセス
 

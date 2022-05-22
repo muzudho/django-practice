@@ -28,9 +28,11 @@ Lesson 1. Install
 
 Lesson 2. Auth  
 
+
 * 📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)
-* もっと勉強したい人向けの関連記事
-  * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
+  * もっと勉強したい人向けの関連記事
+    * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
+* 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
 
 Lesson 3. Page  
 
@@ -105,8 +107,3 @@ Lesson 16. Active user
 Lesson 17. Lobby
 
 * 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
-
-Lesson 18. Sign up
-
-* 📖 [Djangoでサインアップ（会員登録）のページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)
-* 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
