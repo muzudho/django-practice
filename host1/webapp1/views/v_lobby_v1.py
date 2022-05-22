@@ -22,11 +22,11 @@ from webapp1.models_helper.mh_session import get_all_logged_in_users
 
 def render_lobby(request):
     """ロビー（待合室）"""
-    template = loader.get_template('lobby/v1/lobby.html')
-    #                               -------------------
+    template = loader.get_template('webapp1/lobby/v1/lobby.html')
+    #                               ---------------------------
     #                               1
-    # 1. webapp1/templates/lobby/v1/lobby.html
-    #                      -------------------
+    # 1. webapp1/templates/webapp1/lobby/v1/lobby.html
+    #                      ---------------------------
 
     # 部屋の一覧
     hotelDic = get_all_rooms()

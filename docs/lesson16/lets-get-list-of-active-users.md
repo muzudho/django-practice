@@ -351,6 +351,10 @@ urlpatterns = [
 
 📖 [http://localhost:8000/session-practice/v1/active-user-list/](http://localhost:8000/session-practice/v1/active-user-list/)  
 
+# 次の記事
+
+📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)  
+
 # 関連する記事
 
 📖 [djangoでログイン状態を判定する機能](https://techpr.info/python/django-login-judge/)  

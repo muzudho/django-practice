@@ -49,12 +49,12 @@
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe
-        │   │       ├── 📂v1
-        │   │       │   └── 📄<いろいろ>
-        │   │       ├── 📂v2
-        │   │       │   ├── 📄match_request.html
-        │   │       │   └── 📄play.html
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   ├── 📂v1
+        │   │       │   └── 📂v2
+        │   │       │       ├── 📄match_request.html
+        │   │       │       └── 📄play.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
@@ -94,139 +94,18 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. モデル関連作成 - mh_room.py ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂models_helper
-👉              └── 📄mh_room.py
-```
-
-```py
-import json
-from django.core import serializers
-
-
-from webapp1.models.m_room import Room
-#    ------- ------ ------        ----
-#    1       2      3               4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. クラス名
-
-
-def get_all_rooms():
-    # id順に要素を全部取得
-    dbRoomQuerySet = Room.objects.all().order_by('id')
-    # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
-    print(f"dbRoomQuerySet={dbRoomQuerySet}")
-
-    # JSON 文字列に変換
-    dbRoomJsonStr = serializers.serialize('json', dbRoomQuerySet)
-
-    # オブジェクトに変換
-    dbRoomDoc = json.loads(dbRoomJsonStr)
-
-    # 使いやすい形に変換します
-    hotelDic = dict()
-    for dbRoom in dbRoomDoc:
-
-        # Example:
-        # dbRoom= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
-        print(f"dbRoom= --> {dbRoom} <--")
-
-        hotelDic[dbRoom["pk"]] = {
-            "pk": dbRoom["pk"],
-            "name": dbRoom["fields"]["name"],
-            "board": dbRoom["fields"]["board"],
-            "record": dbRoom["fields"]["record"],
-        }
-
-    return hotelDic
-```
-
-# Step 2. ビュー編集 - v_lobby_v1.py ファイル
+# Step 2. テンプレート編集 - lobby.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂views
-👉              └── 📄v_lobby_v1.py
-```
-
-```py
-import json
-from django.http import HttpResponse
-from django.template import loader
-
-from webapp1.models_helper.mh_room import get_all_rooms
-#    ------- ------------- -------        -------------
-#    1       2             3              4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. 関数名
-
-
-from webapp1.models_helper.mh_session import get_all_logged_in_users
-#    ------- ------------- ----------        -----------------------
-#    1       2             3                 4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. 関数名
-
-
-def render_lobby(request):
-    """ロビー（待合室）"""
-    template = loader.get_template('lobby/v1/lobby.html')
-    #                               -------------------
-    #                               1
-    # 1. webapp1/templates/lobby/v1/lobby.html
-    #                      -------------------
-
-    # 部屋の一覧
-    hotelDic = get_all_rooms()
-
-    # ユーザーの一覧
-    usersDic = get_all_logged_in_users()
-
-    context = {
-        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 部屋がいっぱいあるからホテル
-        'dj_hotel': json.dumps(hotelDic),
-        # 人がいっぱいいるからパーク
-        'dj_park': json.dumps(usersDic),
-        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_pathOfHome": "home/v2/",
-        "dj_pathOfRoomsRead": "rooms/read/",
-    }
-
-    return HttpResponse(template.render(context, request))
-```
-
-# Step 3. テンプレート編集 - lobby.html ファイル
-
-以下のファイルを新規作成してほしい。  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂models
-            │   ├── 📄m_state_in_park.py
-            │   └── 📄m_member.py
-            ├── 📂templates
-            │   └── 📂lobby
-            │       └── 📂v1
-👉          │           └── 📄lobby.html
-            └── 📂views
-                └── 📄v_lobby_v1.py
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂lobby
+                        └── 📂v1
+👉                          └── 📄lobby.html
 ```
 
 ```html
@@ -355,20 +234,149 @@ def render_lobby(request):
 </html>
 ```
 
-# Step 4. ルート編集 - urls.py ファイル
+# Step 3. モデル関連作成 - mh_room.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models_helper
+👉          │   └── 📄mh_room.py
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂lobby
+                        └── 📂v1
+                            └── 📄lobby.html
+```
+
+```py
+import json
+from django.core import serializers
+
+
+from webapp1.models.m_room import Room
+#    ------- ------ ------        ----
+#    1       2      3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+
+def get_all_rooms():
+    # id順に要素を全部取得
+    dbRoomQuerySet = Room.objects.all().order_by('id')
+    # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
+    print(f"dbRoomQuerySet={dbRoomQuerySet}")
+
+    # JSON 文字列に変換
+    dbRoomJsonStr = serializers.serialize('json', dbRoomQuerySet)
+
+    # オブジェクトに変換
+    dbRoomDoc = json.loads(dbRoomJsonStr)
+
+    # 使いやすい形に変換します
+    hotelDic = dict()
+    for dbRoom in dbRoomDoc:
+
+        # Example:
+        # dbRoom= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
+        print(f"dbRoom= --> {dbRoom} <--")
+
+        hotelDic[dbRoom["pk"]] = {
+            "pk": dbRoom["pk"],
+            "name": dbRoom["fields"]["name"],
+            "board": dbRoom["fields"]["board"],
+            "record": dbRoom["fields"]["record"],
+        }
+
+    return hotelDic
+```
+
+# Step 4. ビュー編集 - v_lobby_v1.py ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models_helper
+            │   └── 📄mh_room.py
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂lobby
+            │           └── 📂v1
+            │               └── 📄lobby.html
+            └── 📂views
+👉              └── 📄v_lobby_v1.py
+```
+
+```py
+import json
+from django.http import HttpResponse
+from django.template import loader
+
+from webapp1.models_helper.mh_room import get_all_rooms
+#    ------- ------------- -------        -------------
+#    1       2             3              4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. 関数名
+
+
+from webapp1.models_helper.mh_session import get_all_logged_in_users
+#    ------- ------------- ----------        -----------------------
+#    1       2             3                 4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. 関数名
+
+
+def render_lobby(request):
+    """ロビー（待合室）"""
+    template = loader.get_template('webapp1/lobby/v1/lobby.html')
+    #                               ---------------------------
+    #                               1
+    # 1. webapp1/templates/webapp1/lobby/v1/lobby.html
+    #                      ---------------------------
+
+    # 部屋の一覧
+    hotelDic = get_all_rooms()
+
+    # ユーザーの一覧
+    usersDic = get_all_logged_in_users()
+
+    context = {
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        # 部屋がいっぱいあるからホテル
+        'dj_hotel': json.dumps(hotelDic),
+        # 人がいっぱいいるからパーク
+        'dj_park': json.dumps(usersDic),
+        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
+        "dj_pathOfHome": "home/v2/",
+        "dj_pathOfRoomsRead": "rooms/read/",
+    }
+
+    return HttpResponse(template.render(context, request))
+```
+
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂models
-            │   ├── 📄m_state_in_park.py
-            │   └── 📄m_member.py
+            ├── 📂models_helper
+            │   └── 📄mh_room.py
             ├── 📂templates
-            │   └── 📂lobby
-            │       └── 📂v1
-            │           └── 📄lobby.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂lobby
+            │           └── 📂v1
+            │               └── 📄lobby.html
             ├── 📂views
             │   └── 📄v_lobby_v1.py
 👉          └── 📄urls.py
@@ -404,7 +412,7 @@ urlpatterns = [
 
 # 次の記事
 
-📖 [Djangoでサインアップのページを作ろう！](https://qiita.com/muzudho1/items/e7eb6cca5d1e3345d676)  
+📖 ...  
 
 # 関連する記事
 
