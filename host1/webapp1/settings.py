@@ -66,10 +66,54 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'webapp1.urls'
 
+# Example: `/code/templates`
+print(
+    f"os.path.join(BASE_DIR, 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            # +----
+            # | My project templates
+
+            # 'DIRS' 配列には全く指定しないか、１つでも指定するなら デフォルトのテンプレート フォルダーを含めるようにしてください
+            os.path.join(BASE_DIR, 'webapp1', 'templates', 'webapp1'),
+            #            --------   -------    ---------    -------
+            #            1          2          3            4
+            # 1. 開発環境によってパスが変わることに注意してください。 2. 3. も適宜 設定してください
+            # 2. 自アプリケーション フォルダー
+            # 3. テンプレート フォルダー
+            # 4. 自アプリケーション フォルダーと同名のフォルダー。 他のアプリケーションのテンプレートと共存したい場合に置いてください
+            #
+            # Example: /code/webapp1/templates/webapp1
+            #          ----- ------- --------- -------
+            #          1     2       3         4
+
+            # | My project templates
+            # +----
+
+            # +----
+            # | allauth
+
+            os.path.join(BASE_DIR, 'webapp1', 'templates',
+                         # ------   -------    ---------
+                         # 1        2          3
+                         'allauth-customized', 'v1'),
+            #             -------------------------
+            #             4
+            # 1. 開発環境によってパスが変わることに注意してください。 2. 3. も適宜 設定してください
+            # 2. 自アプリケーション フォルダー
+            # 3. テンプレート フォルダー
+            # 4. 別アプリケーションのフォルダー名、また任意でバージョン番号フォルダー
+            #
+            # Example: /code/webapp1/templates/allauth-customized/v1
+            #          ----- ------- --------- ---------------------
+            #          1     2       3         4
+
+            # | allauth
+            # +----
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -179,10 +223,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1  # 動かしているサイトを識別するID
 
-# (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
-LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
+# LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
 
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'  # ログアウト後に遷移するURLの指定
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'  # ログアウト後に遷移するURLの指定
+#                              -------------------
+#                              1
+# 1. 例えば `http://example.com/accounts/v1/login/` というパスにマッチする
+#                             -------------------
 
 EMAIL_HOST = 'smtp.gmail.com'  # メールサーバの指定
 EMAIL_PORT = 587  # ポート番号の指定

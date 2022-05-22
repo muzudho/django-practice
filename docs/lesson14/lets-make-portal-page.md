@@ -158,7 +158,7 @@ docker-compose up
                     vu_pathOfMatchRequest: "{{ dj_pathOfMatchRequest }}",
 
                     // vu_pathOfSignin: "{{ dj_pathOfSignin }}",
-                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
 
                     vu_pathOfLogout: "{{ dj_pathOfLogout }}",
                 },

@@ -18,61 +18,17 @@
 ディレクトリ構成を抜粋すると 以下のようになっている。  
 
 ```plaintext
-    ├── 📂host_local1
-    │    └── 📄<いろいろ>
     └── 📂host1
         ├── 📂data
         │   └── 📂db
         │       └── （たくさんのもの）
         ├── 📂webapp1                       # アプリケーション フォルダー
-        │   ├── 📂models
-        │   │   └── 📄<いろいろ>.py
-        │   ├── 📂models_helper
-        │   │   └── 📄mh_session.py
-        │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   ├── 📂v1
-        │   │   │   │   └── 📄<いろいろ>
-        │   │   │   └── 📂v2
-        │   │   │       ├── 📄connection.js
-        │   │   │       ├── 📄engine.js
-        │   │   │       ├── 📄game.js
-        │   │   │       ├── 📄judge.js
-        │   │   │       ├── 📄protocol_main.js
-        │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
-        │   │   └── 🚀favicon.ico
-        │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe
-        │   │       ├── 📂v1
-        │   │       │   └── 📄<いろいろ>
-        │   │       ├── 📂v2
-        │   │       │   ├── 📄match_request.html
-        │   │       │   └── 📄play.html
-        │   │       └── 📂<いろいろ>-practice
-        │   │           └── 📄<いろいろ>.html
-        │   ├── 📂views
-        │   │   ├── 📄v_tic_tac_toe_v1.py
-        │   │   ├── 📄v_tic_tac_toe_v2.py
-        │   │   └── 📄<いろいろ>.py
-        │   ├── 📂websocks
-        │   │   └── 📂tic_tac_toe
-        │   │       ├── 📂v1
-        │   │       │   └── 📄consumer.py
-        │   │       └── 📂v2
-        │   │           ├── 📄consumer.py
-        │   │           └── 📄protocol.py
-        │   ├── 📄admin.py
-        │   ├── 📄asgi.py
-        │   ├── 📄routing1.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
         │   └── 📄<いろいろ>
         ├── 📄.env
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
-        ├── 📄manage.py
         ├── 📄requirements.txt
         └── 📄<いろいろ>
 ```
@@ -89,53 +45,18 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. ビュー編集 - v_account_v1.py ファイル
+# Step 2. テンプレート作成 - login.html ファイル
 
-以下のファイルを 無ければ新規作成、有れば編集してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂views
-👉              └── v_account_v1.py
-```
-
-```py
-# See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
-from allauth.account.views import SignupView, LoginView
-
-# ...中略...
-
-class AccountV1LoginView(LoginView):
-    """django-allauth のログイン ビューを継承します
-    📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/views.py)
-    """
-
-    # ファイルパス
-    template_name = "account/v1/login.html"
-    #                ------------------------
-    #                1
-    # 1. host1/webapp1/templates/account/v1/login.html を取得
-    #                            ---------------------
-
-
-# グローバル変数
-account_v1_login_view = AccountV1LoginView.as_view()
-```
-
-# Step 3. テンプレート編集 - login.html ファイル
-
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂templates
-            │   └── 📂account
-            │       └── 📂v1
-👉          │           └── 📄login.html
-            └── 📂views
-                └── 📄v_account_v1.py
+            └── 📂templates
+                └── 📂allauth-customized
+                    └── 📂v1
+                        └── 📂account           # allauth のディレクトリー構成を真似ます
+👉                          └── 📄login.html
 ```
 
 👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
@@ -198,7 +119,7 @@ account_v1_login_view = AccountV1LoginView.as_view()
                         <!-- -->
                         {% else %}
                         <!-- 👇こっちが出てくる -->
-                        <p>もしあなたがアカウントをまだ作っていないなら、まず <v-btn class="my-4" color="primary" :href="createPathOfSignup()">サインアップ</v-btn> してください</p>
+                        <p>もし　あなたがアカウントを　まだ作っていないなら、まず <v-btn class="my-4" color="primary" :href="createPathOfSignup()">サインアップ</v-btn> してください</p>
                         <!-- 👆こっちが出てくる -->
                         {% endif %}
                         <!-- -->
@@ -220,7 +141,7 @@ account_v1_login_view = AccountV1LoginView.as_view()
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.remember.errors }}
-                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする："></v-checkbox>
+                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする"></v-checkbox>
                             </div>
                             <!-- 手動フォーム作成 ここまで -->
                             <!-- -->
@@ -257,11 +178,11 @@ account_v1_login_view = AccountV1LoginView.as_view()
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
-                    // vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    // vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
                     vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
-                    vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+                    vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
 
                     // HTMLタグ文字列が渡されるので、解析します
                     vu_loginFormDoc: new DjangoAllauthFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
@@ -301,9 +222,48 @@ account_v1_login_view = AccountV1LoginView.as_view()
 </html>
 ```
 
+# Step 2. ビュー編集 - v_accounts_v1.py ファイル
+
+以下のファイルを 無ければ新規作成、有れば編集してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂allauth-customized
+            │       └── 📂v1
+            │           └── 📂account           # allauth のディレクトリー構成を真似ます
+            │               └── 📄login.html
+            └── 📂views
+👉              └── v_accounts_v1.py
+```
+
+```py
+# See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
+from allauth.account.views import LoginView, SignupView
+
+# ...中略...
+
+class AccountV1LoginView(LoginView):
+    """django-allauth のログイン ビューを継承します
+    📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/views.py)
+    """
+
+    # ファイルパス
+    template_name = "allauth-customized/v1/account/login.html"
+    #                ----------------------------------------
+    #                1
+    # 1. host1/webapp1/templates/allauth-customized/v1/account/login.html を取得
+    #                            ----------------------------------------
+
+
+# グローバル変数
+accounts_v1_login_view = AccountV1LoginView.as_view()
+```
+
 # Step 4. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -320,8 +280,8 @@ account_v1_login_view = AccountV1LoginView.as_view()
 ```py
 from django.urls import include, path
 
-from webapp1.views import v_account_v1
-#    ------- -----        ------------
+from webapp1.views import v_accounts_v1
+#    ------- -----        -------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -331,15 +291,15 @@ urlpatterns = [
     # ...中略...
 
     # サインイン
-    path("account/v1/login/", view=v_account_v1.account_v1_login_view,
-         # ----------------        ----------------------------------
+    path("account/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
+         # ----------------        ------------------------------------
          # 1                       2
-         name="account_v1_login"),
-    #          ----------------
+         name="accounts_v1_login"),
+    #          -----------------
     #          3
     # 1. URLの `account/v1/login/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
-    # 3. HTMLテンプレートの中で {% url 'account_v1_login' %} のような形でURLを取得するのに使える
+    # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 ]
 ```
 

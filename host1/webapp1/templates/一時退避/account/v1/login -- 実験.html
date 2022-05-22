@@ -34,7 +34,7 @@
                 </v-app-bar>
                 <v-main>
                     <v-container>
-                        <h3>もし会員登録をしてないなら</h3>
+                        <h3>サインイン</h3>
                         {% if socialaccount_providers %}
 
                         <!-- 👇ここらへん分からない -->
@@ -46,7 +46,7 @@
                                 <!-- -->
                             </ul>
 
-                            <div class="login-or">or</div>
+                            <div class="login-or">{% trans 'or' %}</div>
                         </div>
                         <!-- -->
                         {% include "socialaccount/snippets/login_extra.html" %}
@@ -61,25 +61,59 @@
                         <!-- -->
                     </v-container>
                     <v-container>
-                        <h3>サインイン（利用開始）</h3>
                         <form class="login" method="POST" :action="createPathOfSignin()">
                             <!-- -->
                             {% csrf_token %}
-                            <!-- 手動フォーム作成 ここから -->
-                            {{ form.non_field_errors }}
-                            <div class="fieldWrapper">
-                                {{ form.login.errors }}
-                                <v-text-field name="login" v-model="vu_userName" :maxlength="vu_loginFormDoc.maxlength" counter label="アカウント名：" required></v-text-field>
-                            </div>
-                            <div class="fieldWrapper">
-                                {{ form.password.errors }}
-                                <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード：" required></v-text-field>
-                            </div>
-                            <div class="fieldWrapper">
-                                {{ form.remember.errors }}
-                                <v-checkbox v-model="vu_rememberFlag" label="パスワードを入力したままにする："></v-checkbox>
-                            </div>
-                            <!-- 手動フォーム作成 ここまで -->
+                            <!-- -->
+                            <table>
+                                <!-- 👇 ここのフォームが自動生成なの、どうしたものか（＾～＾） -->
+                                <!--
+                                    ｛｛ form.as_p ｝｝
+                                -->
+                                <!--
+                                👇 フォームはHTMLが直接出力される（＾～＾）
+                                form.as_p は pタグで挟まれる（＾～＾）
+                                form.as_table は trタグで挟まれる（＾～＾）
+                                form.as_ul は liタグで挟まれる（＾～＾）
+                            -->
+                                {{ form.as_p }}
+                                <table>
+                                    {{ form.as_table }}
+                                </table>
+                                <ul>
+                                    {{ form.as_ul }}
+                                </ul>
+                                <!-- 名前一覧 -->
+                                {% for field in form %}
+                                <!-- note: field.value, not form -->
+                                {{ field.name }}
+                                <!-- -->
+                                {% endfor %}
+                                <!--
+                                    form は MultiValueDict型？で、 django.forms.boundfield.BoundField を複数返すイテラブルなオブジェクト。
+                                    field は以下のような <input>タグの出力になる
+                                    <input type="text" name="login" placeholder="Username" autocomplete="username" maxlength="150" required id="id_login">
+                                -->
+                                {% for field in form %}
+                                <!-- note: field.value, not form -->
+                                {{ field }}
+                                <!-- -->
+                                {% autoescape on %} {{ field }} {% endautoescape %}
+                                <!-- -->
+                                <v-text-field value="{{ field }}" disabled></v-text-field>
+                                <v-text-field value="{{ field|pprint }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.tag }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.name }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.id_for_label }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.template_name }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.choice_label }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.required }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.id }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.value }}" disabled></v-text-field>
+                                <v-text-field value="{{ field.data }}" disabled></v-text-field>
+                                {% endfor %}
+                                <!-- -->
+                            </table>
                             <!-- -->
                             {% if redirect_field_value %}
                             <!-- -->
@@ -87,8 +121,8 @@
                             <!-- -->
                             {% endif %}
                             <!-- -->
+                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
                             <v-btn class="my-4" color="primary" type="submit">サインイン</v-btn>
-                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">パスワードを忘れたら</a>
                         </form>
                     </v-container>
                 </v-main>
@@ -97,14 +131,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-
-        <script src="{% static 'account/v1/django-allauth-form-parser.js' %}"></script>
-        <!--                    ========================================
-                                1
-            1. host1/webapp1/static/account/v1/django-allauth-form-parser.js
-                                    ========================================
-        -->
-
         <script>
             let vue1 = new Vue({
                 el: "#app",
@@ -114,21 +140,10 @@
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
-                    // vu_pathOfSignin: "{% url 'account_v1_login' %}",
-                    vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
+                    vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
-                    vu_pathOfSignup: "{% url 'account_v1_signup' %}",
-
-                    // HTMLタグ文字列が渡されるので、解析します
-                    vu_loginFormDoc: new DjangoAllauthFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
-                    vu_userName: "",
-
-                    vu_passwordFormDoc: new DjangoAllauthFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
-                    vu_password: "",
-
-                    vu_rememberFormDoc: new DjangoAllauthFormParser().parseHtmlString("form", "{{ form.remember|escapejs }}"),
-                    vu_rememberFlag: false,
+                    vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
                 },
                 methods: {
                     createPathOfSignin() {

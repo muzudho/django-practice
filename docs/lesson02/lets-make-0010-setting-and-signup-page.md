@@ -148,8 +148,13 @@ INSTALLED_APPS = [
 
 SITE_ID = 1 # 動かしているサイトを識別するID
 LOGIN_REDIRECT_URL = 'home' # ログオン後に遷移するURLの指定
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/' # ログアウト後に遷移するURLの指定
- 
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'  # ログアウト後に遷移するURLの指定
+#                              -------------------
+#                              1
+# 1. 例えば `http://example.com/accounts/v1/login/` というパスにマッチする
+#                             -------------------
+
 EMAIL_HOST = 'smtp.gmail.com' # メールサーバの指定
 EMAIL_PORT = 587 # ポート番号の指定
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER') # メールサーバのGmailのアドレス
@@ -157,38 +162,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # メールサーバのGm
 EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)
 ```
 
-# Step 7. urls.py の設定
-
-以下のように該当箇所を追加してほしい。  
-
-```plaintext
-    └── 📂host1
-        ├── 📂webapp1
-        │　　├── 📄settings.py
-👉      │　　├── 📄urls.py
-        │　　└── <いろいろ>
-        ├── 📄.env
-        ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
-```
-
-```py
-from django.contrib import admin
-from django.urls import include, path #includeを追加
-from django.views.generic import TemplateView #追加
- 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    # Allauth
-    # See also: https://sinyblog.com/django/django-allauth/
-    path('', TemplateView.as_view(template_name='home.html'), name='home'), #追加。ログオン後のTOP画面の定義
-    path('accounts/', include('allauth.urls')), #追加
-]
-```
-
-# Step 8. Docker コンテナの再起動 - コマンド実行
+# Step 7. Docker コンテナの再起動 - コマンド実行
 
 Dockerコンテナは起動しているものとし、以下のコマンドを打鍵してほしい。  
 
@@ -208,9 +182,73 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
+# Step 8. urls.py の設定
+
+以下のように該当箇所を追加してほしい。  
+
+```plaintext
+    └── 📂host1
+        ├── 📂webapp1
+        │　　├── 📄settings.py
+👉      │　　├── 📄urls.py
+        │　　└── <いろいろ>
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 📄requirements.txt
+        └── <いろいろ>
+```
+
+```py
+from django.contrib import admin
+from django.urls import include, path
+from django.views.generic import TemplateView
+
+from webapp1.views import v_accounts_v1
+#    ------- -----        -------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+
+urlpatterns = [
+    # 管理画面
+    path('admin/', admin.site.urls),
+    #     ------   ---------------
+    #     1        2
+    # 1. 例えば `http://example.com/admin/` のような URLのパスの部分
+    # 2. django に用意されている管理画面のパスを 1. のパスにぶら下げる形で全てコピーします
+
+
+
+
+    # +----
+    # | Allauth
+    # | See also: https://sinyblog.com/django/django-allauth/
+
+    # ログイン後に戻ってくるWebページの指定
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    #    --  -----------------------------------------------        ----
+    #    1   2                                                      3
+    # 1. URL に パスを付けなかったときにマッチする
+    # 2. 最初から用意されているページ？
+    # 3. ログイン後に飛んでくるページの URL のパスを 'home' という名前で覚えておく
+
+    # allauth の URLのパスのコピー
+    path('accounts/v1/', include('allauth.urls')),
+    #     ------------   -----------------------
+    #     1
+    # 1. 例えば `http://example.com/accounts/v1/` のような URLのパスの部分
+    # 2. allauth の例えば `login/` のようなパスを 1. のパスにぶら下げる形で全てコピーします
+
+    # | Allauth
+    # +----
+]
+```
+
+
 # Step 9. Webページへアクセス
 
-📖 [http://localhost:8000/accounts/login/](http://localhost:8000/accounts/login/)  
+📖 [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
 
 あとは アカウントを作成したり、パスワードを忘れたときの手続きを試してほしい。  
 

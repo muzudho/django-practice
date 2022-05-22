@@ -1,5 +1,5 @@
 # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
-from allauth.account.views import SignupView, LoginView
+from allauth.account.views import LoginView, SignupView
 
 
 class AccountV1SignupView(SignupView):
@@ -8,11 +8,11 @@ class AccountV1SignupView(SignupView):
     """
 
     # ファイルパス
-    template_name = "account/v1/signup.html"
-    #                ------------------------
+    template_name = "allauth-customized/v1/account/signup.html"
+    #                -----------------------------------------
     #                1
-    # 1. host1/webapp1/templates/account/v1/signup.html を取得
-    #                            ----------------------
+    # 1. host1/webapp1/templates/allauth-customized/v1/account/signup.html を取得
+    #                            -----------------------------------------
 
     # You can also override some other methods of SignupView
     # Like below:
@@ -24,7 +24,7 @@ class AccountV1SignupView(SignupView):
 
 
 # グローバル変数
-account_v1_signup_view = AccountV1SignupView.as_view()
+accounts_v1_signup_view = AccountV1SignupView.as_view()
 
 
 class AccountV1LoginView(LoginView):
@@ -33,12 +33,12 @@ class AccountV1LoginView(LoginView):
     """
 
     # ファイルパス
-    template_name = "account/v1/login.html"
-    #                ------------------------
+    template_name = "allauth-customized/v1/account/login.html"
+    #                ----------------------------------------
     #                1
-    # 1. host1/webapp1/templates/account/v1/login.html を取得
-    #                            ---------------------
+    # 1. host1/webapp1/templates/allauth-customized/v1/account/login.html を取得
+    #                            ----------------------------------------
 
 
 # グローバル変数
-account_v1_login_view = AccountV1LoginView.as_view()
+accounts_v1_login_view = AccountV1LoginView.as_view()

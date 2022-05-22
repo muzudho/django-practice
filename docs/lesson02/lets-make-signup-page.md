@@ -89,7 +89,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. ビュー編集 - v_account_v1.py ファイル
+# Step 2. ビュー編集 - v_accounts_v1.py ファイル
 
 以下のファイルを 無ければ新規作成、有れば編集してほしい  
 
@@ -97,7 +97,7 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂views
-👉              └── v_account_v1.py
+👉              └── v_accounts_v1.py
 ```
 
 ```py
@@ -125,7 +125,7 @@ class AccountV1SignupView(SignupView):
 
 
 # グローバル変数
-account_v1_signup_view = AccountV1SignupView.as_view()
+accounts_v1_signup_view = AccountV1SignupView.as_view()
 ```
 
 # Step 3. 機能強化 - django-allauth-form-parser.js ファイル
@@ -140,7 +140,7 @@ account_v1_signup_view = AccountV1SignupView.as_view()
             │       └── 📂v1
 👉          │           └── django-allauth-form-parser.js
             └── 📂views
-                └── v_account_v1.py
+                └── v_accounts_v1.py
 ```
 
 👇以下のファイルは、 django-allauth パッケージの仕様が変わったら作り直しになるかも  
@@ -414,9 +414,9 @@ class DjangoAllauthFormParser {
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{{ login_url }}", // django-allauth のデフォルト
-                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
 
-                    // vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+                    // vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
                     vu_pathOfSignup: "{% url 'account_signup' %}", // django-allauth のサインアップ用パス
 
                     // HTMLタグ文字列が渡されるので、解析します
@@ -483,8 +483,8 @@ class DjangoAllauthFormParser {
 ```py
 from django.urls import include, path
 
-from webapp1.views import v_account_v1
-#    ------- -----        ------------
+from webapp1.views import v_accounts_v1
+#    ------- -----        -------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -494,15 +494,15 @@ urlpatterns = [
     # ...中略...
 
     # サインアップ
-    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view,
-         # -----------------        -----------------------------------
+    path("account/v1/signup/", view=v_accounts_v1.accounts_v1_signup_view,
+         # -----------------        -------------------------------------
          # 1                        2
-         name="account_v1_signup"),
+         name="accounts_v1_signup"),
     #          ------------------
     #          3
     # 1. URLの `account/v1/signup/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
-    # 3. HTMLテンプレートの中で {% url 'account_v1_signup' %} のような形でURLを取得するのに使える
+    # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
 ]
 ```
 

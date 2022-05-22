@@ -1,17 +1,7 @@
 <!--
-    📖[login.html](https://github.com/pennersr/django-allauth/blob/master/allauth/templates/account/login.html)
--->
-
-<!--
     # See also: 📖[Custom Signup View in django-allauth](https://tech.serhatteker.com/post/2020-06/custom-signup-view-in-django-allauth/)
 -->
 {% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
-<!-- -->
-{% load i18n %}
-<!-- -->
-{% load account socialaccount %}
-<!-- -->
-{% get_providers as socialaccount_providers %}
 <!-- -->
 <!DOCTYPE html>
 <html lang="ja">
@@ -22,7 +12,7 @@
         <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>サインイン</title>
+        <title>サインアップ</title>
     </head>
     <body>
         <div id="app">
@@ -30,55 +20,45 @@
                 <!-- v-app-bar に app プロパティを指定しないなら、背景画像を付けてほしい -->
                 <v-app-bar app dense elevation="4">
                     <v-app-bar-nav-icon></v-app-bar-nav-icon>
-                    <v-toolbar-title>サインイン</v-toolbar-title>
+                    <v-toolbar-title>サインアップ</v-toolbar-title>
                 </v-app-bar>
                 <v-main>
                     <v-container>
-                        <h3>サインイン</h3>
-                        {% if socialaccount_providers %}
-
-                        <!-- 👇ここらへん分からない -->
-                        <p>{% blocktrans with site.name as site_name %}Please sign in with one of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a> for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
-                        <div class="socialaccount_ballot">
-                            <ul class="socialaccount_providers">
-                                <!-- -->
-                                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-                                <!-- -->
-                            </ul>
-
-                            <div class="login-or">{% trans 'or' %}</div>
-                        </div>
-                        <!-- -->
-                        {% include "socialaccount/snippets/login_extra.html" %}
-                        <!-- 👆ここらへん分からない -->
-
-                        <!-- -->
-                        {% else %}
-                        <!-- 👇こっちが出てくる -->
-                        <p>もしあなたがアカウントをまだ作っていないなら、まず <v-btn class="my-4" color="primary" :href="createPathOfSignup()">サインアップ</v-btn> してください</p>
-                        <!-- 👆こっちが出てくる -->
-                        {% endif %}
-                        <!-- -->
+                        <h3>既にアカウントを持っているなら</h3>
+                        <v-btn class="my-4" color="primary" :href="createPathOfSignin()">サインイン</v-btn>
                     </v-container>
                     <v-container>
-                        <form class="login" method="POST" :action="createPathOfSignin()">
+                        <h3>会員登録するなら</h3>
+                        <form class="signup" id="signup_form" method="post" :action="createPathOfSignup()">
                             <!-- -->
                             {% csrf_token %}
                             <!-- -->
-                            <table>
-                                <!-- 👇 ここのフォームが自動生成なの、どうしたものか（＾～＾） -->
-                                {{ form.as_p }}
-                                <!-- -->
-                            </table>
-                            <!-- -->
+                            <!-- 手動フォーム作成 ここから -->
+                            {{ form.non_field_errors }}
+                            <div class="fieldWrapper">
+                                {{ form.username.errors }}
+                                <v-text-field name="username" v-model="vu_userName" :minlength="vu_usernameFormDoc.minlength" :maxlength="vu_usernameFormDoc.maxlength" counter label="ユーザー名：" required></v-text-field>
+                            </div>
+                            <div class="fieldWrapper">
+                                {{ form.email.errors }}
+                                <v-text-field name="email" v-model="vu_email" counter label="E-mali："></v-text-field>
+                            </div>
+                            <div class="fieldWrapper">
+                                {{ form.password1.errors }}
+                                <v-text-field type="password" name="password1" v-model="vu_password1" counter label="パスワード：" required></v-text-field>
+                            </div>
+                            <div class="fieldWrapper">
+                                {{ form.password2.errors }}
+                                <v-text-field type="password" name="password2" v-model="vu_password2" counter label="パスワード（再入力）：" required></v-text-field>
+                            </div>
+                            <!-- 手動フォーム作成 ここまで -->
                             {% if redirect_field_value %}
                             <!-- -->
                             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
                             <!-- -->
                             {% endif %}
                             <!-- -->
-                            <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
-                            <v-btn class="my-4" color="primary" type="submit">サインイン</v-btn>
+                            <v-btn class="my-4" color="primary" type="submit">サインアップ &raquo;</v-btn>
                         </form>
                     </v-container>
                 </v-main>
@@ -87,6 +67,14 @@
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+
+        <script src="{% static 'account/v1/django-allauth-form-parser.js' %}"></script>
+        <!--                    ========================================
+                                1
+            1. host1/webapp1/static/account/v1/django-allauth-form-parser.js
+                                    ========================================
+        -->
+
         <script>
             let vue1 = new Vue({
                 el: "#app",
@@ -95,11 +83,24 @@
                     // "vu_" は 「vue1.dataのメンバー」 の目印
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
-                    // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
-                    vu_pathOfSignin: "{% url 'account_v1_login' %}",
+                    // vu_pathOfSignin: "{{ login_url }}", // django-allauth のデフォルト
+                    vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
 
-                    // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
-                    vu_pathOfSignup: "{% url 'account_v1_signup' %}",
+                    // vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
+                    vu_pathOfSignup: "{% url 'account_signup' %}", // django-allauth のサインアップ用パス
+
+                    // HTMLタグ文字列が渡されるので、解析します
+                    vu_usernameFormDoc: new DjangoAllauthFormParser().parseHtmlString("username", "{{ form.username|escapejs }}"),
+                    vu_userName: "",
+
+                    vu_emailFormDoc: new DjangoAllauthFormParser().parseHtmlString("email", "{{ form.email|escapejs }}"),
+                    vu_email: "",
+
+                    vu_password1FormDoc: new DjangoAllauthFormParser().parseHtmlString("password1", "{{ form.password1|escapejs }}"),
+                    vu_password1: "",
+
+                    vu_password2FormDoc: new DjangoAllauthFormParser().parseHtmlString("password2", "{{ form.password2|escapejs }}"),
+                    vu_password2: "",
                 },
                 methods: {
                     createPathOfSignin() {

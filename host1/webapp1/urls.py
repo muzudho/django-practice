@@ -31,21 +31,23 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_account_v1
+    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_accounts_v1
 
 urlpatterns = [
     path('', v_index.index, name='index'),
 
-
-    # +----
-    # | Allauth
-
-    # 管理画面に入りたい
+    # 管理画面
     path('admin/', admin.site.urls),
     #     ------   ---------------
     #     1        2
-    # 1. URLの `admin/` というパスにマッチする
-    # 2. 最初から用意されている URL？
+    # 1. 例えば `http://example.com/admin/` のような URLのパスの部分
+    # 2. django に用意されている管理画面のパスを 1. のパスにぶら下げる形で全てコピーします
+
+
+
+
+    # +----
+    # | Allauth
 
     # https://sinyblog.com/django/django-allauth/
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -55,38 +57,44 @@ urlpatterns = [
     # 2. 最初から用意されているページ？
     # 3. ログイン後に飛んでくるページの URL のパスを 'home' という名前で覚えておく
 
-    path('accounts/', include('allauth.urls')),
-    #     ---------   -----------------------
-    #     1           2
-    # 1. URLの `accounts/` というパスにマッチする
-    # 2. allauth というパッケージに既に用意されているURLに紐づくビューを取ってくる
+    # allauth の URLのパスのコピー
+    path('accounts/v1/', include('allauth.urls')),
+    #     ------------   -----------------------
+    #     1
+    # 1. 例えば `http://example.com/accounts/v1/` のような URLのパスの部分
+    # 2. allauth の例えば `login/` のようなパスを 1. のパスにぶら下げる形で全てコピーします
+
+    # サインアップ（会員登録）
+    path("accounts/v1/signup/", view=v_accounts_v1.accounts_v1_signup_view,
+         # ------------------        -------------------------------------
+         # 1                        2
+         name="accounts_v1_signup"),
+    #          ------------------
+    #          3
+    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分にマッチする
+    #                              -------------------
+    # 2. 既に用意されているビューのオブジェクト？
+    # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
 
     # | Allauth
     # +----
+
+
+
+
     # +----
     # | django-allauth 改１
 
-    # サインアップ
-    path("account/v1/signup/", view=v_account_v1.account_v1_signup_view,
-         # -----------------        -----------------------------------
-         # 1                        2
-         name="account_v1_signup"),
-    #          ------------------
-    #          3
-    # 1. URLの `account/v1/signup/` というパスにマッチする
-    # 2. 既に用意されているビューのオブジェクト？
-    # 3. HTMLテンプレートの中で {% url 'account_v1_signup' %} のような形でURLを取得するのに使える
-
     # サインイン
-    path("account/v1/login/", view=v_account_v1.account_v1_login_view,
-         # ----------------        ----------------------------------
-         # 1                       2
-         name="account_v1_login"),
-    #          ----------------
+    path("accounts/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
+         # -----------------        ------------------------------------
+         # 1                        2
+         name="accounts_v1_login"),
+    #          -----------------
     #          3
-    # 1. URLの `account/v1/login/` というパスにマッチする
+    # 1. URLの `accounts/login/` というパスにマッチする
     # 2. 既に用意されているビューのオブジェクト？
-    # 3. HTMLテンプレートの中で {% url 'account_v1_login' %} のような形でURLを取得するのに使える
+    # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 
     # | django-allauth 改１
     # +----
