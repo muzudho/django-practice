@@ -46,12 +46,13 @@
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe
-        │   │       ├── 📂v1
-        │   │       │   └── 📄<いろいろ>
-        │   │       ├── 📂v2
-        │   │       │   ├── 📄match_request.html
-        │   │       │   └── 📄play.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   ├── 📂v1
+        │   │       │   └── 📂v2
+        │   │       │       ├── 📄match_request.html
+        │   │       │       └── 📄play.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
@@ -99,9 +100,10 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂tic-tac-toe
-                    └── 📂v2
-👉                      └── 📄portal.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂tic-tac-toe
+                        └── 📂v2
+👉                          └── 📄portal.html
 ```
 
 👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
@@ -198,9 +200,10 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           └── 📄portal.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               └── 📄portal.html
             └── 📂views
 👉              └── 📄v_tic_tac_toe_v2o1.py
 ```
@@ -215,11 +218,11 @@ from django.template import loader
 
 def render_portal(request):
     """ポータル"""
-    template = loader.get_template('tic-tac-toe/v2/portal.html')
-    #                               --------------------------
+    template = loader.get_template('webapp1/tic-tac-toe/v2/portal.html')
+    #                               ----------------------------------
     #                               1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/portal.html を取得
-    #                            --------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/portal.html を取得
+    #                            ----------------------------------
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
@@ -244,7 +247,7 @@ def render_portal(request):
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def loginUser(request):
+def render_login_user(request):
     """〇×ゲームの練習２"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
@@ -255,15 +258,15 @@ def loginUser(request):
         #               1
         # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                       ----------------------------------------
-    return render(request, "tic-tac-toe/v2/match_request.html", {})
-    #                                    ^
-    #                       ---------------------------------
+    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+    #                                            ^
+    #                       -----------------------------------------
     #                       1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/match_request.html を取得
-    #                            ---------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html を取得
+    #                            -----------------------------------------
 
 
-def logoutUser(request):
+def render_logout_user(request):
     """ログアウト"""
     logout(request)
     return redirect('ticTacToeV2_portal')
@@ -277,9 +280,10 @@ def logoutUser(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           └── 📄portal.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               └── 📄portal.html
             ├── 📂views
             │   └── 📄v_tic_tac_toe_v2o1.py
 👉          └── 📄urls.py
@@ -321,25 +325,25 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,
-         # --------------------   ----------------------------
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.render_login_user,
+         # --------------------   ------------------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
-    #          ----------------------
+    #          -----------------------
     #          3
     # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_login_user メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.logoutUser,
-         # ---------------------   -----------------------------
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.render_logout_user,
+         # ---------------------   -------------------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
-    #          -------------------
+    #          --------------------
     #          3
     # 1. URLの `tic-tac-toe/v2/logout/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_logout_user メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 ]
 ```

@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def loginUser(request):
+def render_login_user(request):
 
     template = loader.get_template('webapp1/login-user.html')
     #                               -----------------------
@@ -24,7 +24,7 @@ def loginUser(request):
     return HttpResponse(template.render(context, request))
 
 
-def logoutUser(request):
+def render_logout_user(request):
     """ログアウト"""
     logout(request)
     return redirect('home')

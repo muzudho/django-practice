@@ -122,21 +122,21 @@ urlpatterns = [
     # | ログイン
 
     # ログイン
-    path('login-user', v_login_user.loginUser, name='loginUser'),
-    #     ----------   ----------------------        ---------
-    #     1            2                             3
+    path('login-user', v_login_user.render_login_user, name='loginUser'),
+    #     ----------   ------------------------------        ---------
+    #     1            2                                     3
     # 1. 例えば `http://example.com/login-user` のような URL のパスの部分
     #                              -----------
-    # 2. v_login_user.py ファイルの loginUser メソッド
+    # 2. v_login_user.py ファイルの render_login_user メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout', v_login_user.logoutUser, name='logoutUser'),
-    #     ------   -----------------------        ----------
-    #     1        2                              3
+    path('logout', v_login_user.render_logout_user, name='logoutUser'),
+    #     ------   -------------------------------        ----------
+    #     1        2                                      3
     # 1. 例えば `http://example.com/logout` のような URL のパスの部分
     #                              -------
-    # 2. v_login_user.py ファイルの logoutUser メソッド
+    # 2. v_login_user.py ファイルの render_logout_user メソッド
     # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 
     # | ログイン
@@ -468,27 +468,27 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.loginUser,
-         # --------------------   ----------------------------
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.render_login_user,
+         # --------------------   ------------------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
-    #          ----------------------
+    #          -----------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/login/` のような URL のパスの部分
     #                              ----------------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_login_user メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.logoutUser,
-         # ---------------------   -----------------------------
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.render_logout_user,
+         # ---------------------   -------------------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
-    #          -------------------
+    #          --------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/logout/` のような URL のパスの部分
     #                              -----------------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの render_logout_user メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 
     # | ポータル作成

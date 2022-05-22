@@ -97,7 +97,7 @@ from django.shortcuts import redirect
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def loginUser(request):
+def render_login_user(request):
 
     template = loader.get_template('webapp1/login-user.html')
     #                               -----------------------
@@ -115,7 +115,7 @@ def loginUser(request):
     return HttpResponse(template.render(context, request))
 
 
-def logoutUser(request):
+def render_logout_user(request):
     """ログアウト"""
     logout(request)
     redirect('home')
@@ -151,19 +151,19 @@ urlpatterns = [
     # ...中略...
 
     # ログイン
-    path('login-user', v_login_user.loginUser, name='loginUser'),
-    #     ----------   ----------------------        ---------
-    #     1            2                             3
+    path('login-user', v_login_user.render_login_user, name='loginUser'),
+    #     ----------   ------------------------------        ---------
+    #     1            2                                     3
     # 1. URLの `login-user` というパスにマッチする
-    # 2. v_login_user.py ファイルの loginUser メソッド
+    # 2. v_login_user.py ファイルの render_login_user メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout', v_login_user.logoutUser, name='logoutUser'),
-    #     ------   -----------------------        ----------
-    #     1        2                              3
+    path('logout', v_login_user.render_logout_user, name='logoutUser'),
+    #     ------   -------------------------------        ----------
+    #     1        2                                      3
     # 1. URLの `logout` というパスにマッチする
-    # 2. v_login_user.py ファイルの logoutUser メソッド
+    # 2. v_login_user.py ファイルの render_logout_user メソッド
     # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 ]
 ```

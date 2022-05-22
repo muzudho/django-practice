@@ -7,11 +7,11 @@ from django.template import loader
 
 def render_portal(request):
     """ポータル"""
-    template = loader.get_template('tic-tac-toe/v2/portal.html')
-    #                               --------------------------
+    template = loader.get_template('webapp1/tic-tac-toe/v2/portal.html')
+    #                               ----------------------------------
     #                               1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/portal.html を取得
-    #                            --------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/portal.html を取得
+    #                            ----------------------------------
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
@@ -36,7 +36,7 @@ def render_portal(request):
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def loginUser(request):
+def render_login_user(request):
     """〇×ゲームの練習２"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
@@ -47,15 +47,15 @@ def loginUser(request):
         #               1
         # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                       ----------------------------------------
-    return render(request, "tic-tac-toe/v2/match_request.html", {})
-    #                                    ^
-    #                       ---------------------------------
+    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+    #                                            ^
+    #                       -----------------------------------------
     #                       1
-    # 1. host1/webapp1/templates/tic-tac-toe/v2/match_request.html を取得
-    #                            ---------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html を取得
+    #                            -----------------------------------------
 
 
-def logoutUser(request):
+def render_logout_user(request):
     """ログアウト"""
     logout(request)
     return redirect('ticTacToeV2_portal')
