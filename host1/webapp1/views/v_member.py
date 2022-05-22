@@ -21,7 +21,12 @@ from webapp1.forms.f_member import MemberForm
 
 def listMember(request):
     """メンバー一覧"""
-    template = loader.get_template('members/list.html')
+    template = loader.get_template('webapp1/members/list.html')
+    #                               -------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/members/list.html を取得
+    #                            -------------------------
+
     context = {
         'members': Member.objects.all().order_by('id'),  # id順にメンバーを全部取得
     }
@@ -30,7 +35,12 @@ def listMember(request):
 
 def readMember(request, id=id):
     """メンバー読取"""
-    template = loader.get_template('members/read.html')
+    template = loader.get_template('webapp1/members/read.html')
+    #                               -------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/members/read.html を取得
+    #                            -------------------------
+
     context = {
         'member': Member.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
@@ -39,7 +49,11 @@ def readMember(request, id=id):
 
 def deleteMember(request, id=id):
     """メンバー削除"""
-    template = loader.get_template('members/delete.html')
+    template = loader.get_template('webapp1/members/delete.html')
+    #                               ---------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/members/delete.html を取得
+    #                            ---------------------------
 
     member = Member.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = member.name  # 名前だけまだ使う
@@ -73,4 +87,8 @@ def upsertMember(request, id=None):
         form = MemberForm(instance=member)
 
     # 作成・更新画面を表示
-    return render(request, 'members/upsert.html', dict(form=form, id=id))
+    return render(request, 'webapp1/members/upsert.html', dict(form=form, id=id))
+    #                       ---------------------------
+    #                       1
+    # 1. host1/webapp1/templates/webapp1/members/upsert.html を取得
+    #                            ---------------------------

@@ -71,7 +71,7 @@ urlpatterns = [
          name="accounts_v1_signup"),
     #          ------------------
     #          3
-    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分にマッチする
+    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分
     #                              -------------------
     # 2. allauth の SignupView をカスタマイズしたオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
@@ -92,7 +92,8 @@ urlpatterns = [
          name="accounts_v1_login"),
     #          -----------------
     #          3
-    # 1. URLの `accounts/login/` というパスにマッチする
+    # 1. 例えば `http://example.com/accounts/v1/login/` のような URL のパスの部分
+    #                              -------------------
     # 2. 既に用意されているビューのオブジェクト？
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 
@@ -107,7 +108,8 @@ urlpatterns = [
     path('practice1/page1', v_page1.page1, name='page1'),
     #     ---------------   -------------        -----
     #     1                 2                    3
-    # 1. URLの `practice1/page1` というパスにマッチする
+    # 1. 例えば `http://example.com/practice1/page1` のような URL のパスの部分
+    #                              ----------------
     # 2. v_page1.py ファイルの page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
     # | 練習１
@@ -123,7 +125,8 @@ urlpatterns = [
     path('login-user', v_login_user.loginUser, name='loginUser'),
     #     ----------   ----------------------        ---------
     #     1            2                             3
-    # 1. URLの `login-user` というパスにマッチする
+    # 1. 例えば `http://example.com/login-user` のような URL のパスの部分
+    #                              -----------
     # 2. v_login_user.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
@@ -131,7 +134,8 @@ urlpatterns = [
     path('logout', v_login_user.logoutUser, name='logoutUser'),
     #     ------   -----------------------        ----------
     #     1        2                              3
-    # 1. URLの `logout` というパスにマッチする
+    # 1. 例えば `http://example.com/logout` のような URL のパスの部分
+    #                              -------
     # 2. v_login_user.py ファイルの logoutUser メソッド
     # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 
@@ -148,15 +152,20 @@ urlpatterns = [
     path('members/', v_member.listMember, name='listMember'),
     #     --------   -------------------        ----------
     #     1          2                          3
-    # 1. URLの `members/` というパスにマッチする
+    # 1. 例えば `http://example.com/members/` のような URL のパスの部分
+    #                              ---------
     # 2. v_member.py ファイルの listMember メソッド
     # 3. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 
     # 会員読取
-    path('members/read/<int:id>/', v_member.readMember, name='readMember'),
-    #     ----------------------   -------------------        ----------
-    #     1                        2                          3
-    # 1. URLの `members/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    path('members/read/<int:id>/',
+         # ---------------------
+         # 1
+         v_member.readMember, name='readMember'),
+    #    -------------------        ----------
+    #    2                          3
+    # 1. 例えば `http://example.com/members/read/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ----------------------
     # 2. v_member.py ファイルの readMember メソッド
     # 3. HTMLテンプレートの中で {% url 'readMember' %} のような形でURLを取得するのに使える
 
@@ -167,7 +176,8 @@ urlpatterns = [
          v_member.deleteMember, name='deleteMember'),
     #   ---------------------        ------------
     #   2                            3
-    # 1. URLの `members/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. 例えば `http://example.com/members/delete/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ------------------------
     # 2. v_member.py ファイルの deleteMember メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteMember' %} のような形でURLを取得するのに使える
 
@@ -175,7 +185,8 @@ urlpatterns = [
     path('members/create/', v_member.upsertMember, name='createMember'),
     #     ---------------   ---------------------        ------------
     #     1                 2                            3
-    # 1. URLの `members/create/` というパスにマッチする
+    # 1. 例えば `http://example.com/members/create/` のような URL のパスの部分
+    #                              ----------------
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
 
@@ -186,7 +197,8 @@ urlpatterns = [
          v_member.upsertMember, name='updateMember'),
     #    ---------------------        ------------
     #    2                            3
-    # 1. URLの `members/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. 例えば `http://example.com/members/update/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ------------------------
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
 
@@ -205,7 +217,8 @@ urlpatterns = [
          v_vuetify_practice.readHello, name='readHello'),
     #     ---------------------------        ---------
     #     2                                  3
-    # 1. URLの `vuetify-practice/hello1` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/hello1` のような URL のパスの部分
+    #                              ------------------------
     # 2. v_vuetify_practice.py ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 
@@ -216,7 +229,8 @@ urlpatterns = [
          name='readDataTable1'),
     #          --------------
     #          3
-    # 1. URLの `vuetify-practice/data-table1` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/data-table1` のような URL のパスの部分
+    #                              -----------------------------
     # 2. v_vuetify_practice.py ファイルの readDataTable1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 
@@ -227,7 +241,8 @@ urlpatterns = [
          name='readDataTable2'),
     #          --------------
     #          3
-    # 1. URLの `vuetify-practice/data-table2` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/data-table2` のような URL のパスの部分
+    #                              -----------------------------
     # 2. v_vuetify_practice.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 
@@ -238,7 +253,8 @@ urlpatterns = [
          name='readJsonTextarea1'),
     #          -----------------
     #          3
-    # 1. URLの `vuetify-practice/json-textarea1` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/json-textarea1` のような URL のパスの部分
+    #                              -------------------------------
     # 2. v_vuetify_practice.py ファイルの readJsonTextarea1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
@@ -249,7 +265,8 @@ urlpatterns = [
          name='readDataTable2o2'),
     #          ----------------
     #          3
-    # 1. URLの `vuetify-practice/data-table2o2` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/data-table2o2` のような URL のパスの部分
+    #                              -------------------------------
     # 2. v_vuetify_practice.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 
@@ -260,7 +277,8 @@ urlpatterns = [
          v_json_practice.readJsonResponse1, name='readJsonResponse1'),
     #    ---------------------------------        -----------------
     #    2                                        3
-    # 1. URLの `practice1/json-response1` というパスにマッチする
+    # 1. 例えば `http://example.com/practice1/json-response1` のような URL のパスの部分
+    #                              -------------------------
     # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
@@ -280,7 +298,8 @@ urlpatterns = [
          v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
     #    ---------------------------------        -----------------
     #    2                                        3
-    # 1. URLの `json-practice/textarea2` というパスにマッチする
+    # 1. 例えば `http://example.com/json-practice/textarea2` のような URL のパスの部分
+    #                              ------------------------
     # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
@@ -291,7 +310,8 @@ urlpatterns = [
          v_json_practice.readDataTable2o3, name='readDataTable2o3'),
     #    --------------------------------        ----------------
     #    2                                       3
-    # 1. URLの `json-practice/data-table2o3` というパスにマッチする
+    # 1. 例えば `http://example.com/json-practice/data-table2o3` のような URL のパスの部分
+    #                              ---------------------------
     # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
@@ -308,14 +328,16 @@ urlpatterns = [
     path('tic-tac-toe/v1/match-request/', v_tic_tac_toe_v1.visitMatchRequest),
     #     -----------------------------   ----------------------------------
     #     1                               2
-    # 1. URLの `tic-tac-toe/v1/match-request/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-request/` のような URL のパスの部分
+    #                              -----------------------------
     # 2. v_tic_tac_toe_v1.py ファイルの visitMatchRequest メソッド
 
     # 対局中
     path('tic-tac-toe/v1/play/<str:room_name>/', v_tic_tac_toe_v1.visitPlay),
     #     ------------------------------------   --------------------------
     #     1                                      2
-    # 1. URLの `tic-tac-toe/v1/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/play/<部屋名>/` のような URL のパスの部分。 <部屋名> に入った文字列は room_name 変数に渡されます
+    #                              -----------------------------
     # 2. v_tic_tac_toe_v1.py ファイルの visitPlay メソッド
 
     # | 〇×ゲームの練習１
@@ -332,7 +354,8 @@ urlpatterns = [
     #                  ^                                 ^
     #     -----------------------------   ----------------------------------
     #     1                               2
-    # 1. URLの `tic-tac-toe/v2/match-request/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/match-request/` のような URL のパスの部分
+    #                              ------------------------------
     # 2. v_tic_tac_toe_v2.py ファイルの visitMatchRequest メソッド
 
     # 対局中
@@ -340,7 +363,8 @@ urlpatterns = [
     #                  ^                                        ^
     #     ------------------------------------   --------------------------
     #     1                                      2
-    # 1. URLの `tic-tac-toe/v2/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/<部屋名>/` のような URL のパスの部分。 <部屋名> に入った文字列は room_name 変数に渡されます
+    #                              -----------------------------
     # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
 
     # | 〇×ゲームの練習２
@@ -356,7 +380,8 @@ urlpatterns = [
     path('rooms/', v_room.listRoom, name='listRoom'),
     #     ------   ---------------        ----------
     #     1        2                      3
-    # 1. URLの `rooms/` というパスにマッチする
+    # 1. 例えば `http://example.com/rooms/` のような URL のパスの部分
+    #                              -------
     # 2. v_room.py ファイルの listRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
 
@@ -364,7 +389,8 @@ urlpatterns = [
     path('rooms/read/<int:id>/', v_room.readRoom, name='readRoom'),
     #     --------------------   ---------------        ----------
     #     1                      2                      3
-    # 1. URLの `rooms/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. 例えば `http://example.com/rooms/read/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
+    #                              --------------------
     # 2. v_room.py ファイルの readRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
 
@@ -375,7 +401,8 @@ urlpatterns = [
          v_room.deleteRoom, name='deleteRoom'),
     #   ---------------------        ------------
     #   2                            3
-    # 1. URLの `rooms/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. 例えば `http://example.com/rooms/delete/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
+    #                              ----------------------
     # 2. v_room.py ファイルの deleteRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
 
@@ -383,7 +410,8 @@ urlpatterns = [
     path('rooms/create/', v_room.upsertRoom, name='createRoom'),
     #     -------------   -----------------        ----------
     #     1               2                        3
-    # 1. URLの `rooms/create/` というパスにマッチする
+    # 1. 例えば `http://example.com/rooms/create/` のような URL のパスの部分
+    #                              --------------
     # 2. v_room.py ファイルの upsertRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
 
@@ -394,7 +422,8 @@ urlpatterns = [
          v_room.upsertRoom, name='updateRoom'),
     #    -----------------        ----------
     #    2                        3
-    # 1. URLの `rooms/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 1. 例えば `http://example.com/rooms/update/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
+    #                              ----------------------
     # 2. v_room.py ファイルの upsertRoom メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 
@@ -414,7 +443,8 @@ urlpatterns = [
          name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe2/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe2/` のような URL のパスの部分
+    #                              --------------
     # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
@@ -425,7 +455,8 @@ urlpatterns = [
          name='ticTacToeV2_portal'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/` のような URL のパスの部分
+    #                              ----------------
     # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
@@ -436,7 +467,8 @@ urlpatterns = [
          name='ticTacToeV2o1_loginUser'),
     #          ----------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/login/` のような URL のパスの部分
+    #                              ----------------------
     # 2. v_tic_tac_toe_v2o1.py ファイルの loginUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
@@ -447,7 +479,8 @@ urlpatterns = [
          name='ticTacToeV2o1_logout'),
     #          -------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/logout/` というパスにマッチする
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/logout/` のような URL のパスの部分
+    #                              -----------------------
     # 2. v_tic_tac_toe_v2o1.py ファイルの logoutUser メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 
@@ -464,7 +497,8 @@ urlpatterns = [
     #     --------   ---------------------        -----------
     #     1          2                            3
     #
-    # 1. URLの `home/v2/` というパスにマッチする
+    # 1. 例えば `http://example.com/home/v2/` のような URL のパスの部分
+    #                              ---------
     # 2. v_home_v2.py ファイルの render_home メソッド
     # 3. HTMLテンプレートの中で {% url 'homeV2_home' %} のような形でURLを取得するのに使える
 
@@ -485,7 +519,8 @@ urlpatterns = [
     #    --------------------- --------------------        --------------------------------
     #     1                    2                           3
     #
-    # 1. URLの `session-practice/v1/active-user-list/` というパスにマッチする
+    # 1. 例えば `http://example.com/session-practice/v1/active-user-list/` のような URL のパスの部分
+    #                              --------------------------------------
     # 2. v_session_practice_v1.py ファイルの renderActiveUserList メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 
@@ -503,7 +538,8 @@ urlpatterns = [
     #     ---------   -----------------------        -------------
     #     1           2                              3
     #
-    # 1. URLの `lobby/v1/` というパスにマッチする
+    # 1. 例えば `http://example.com/lobby/v1/` のような URL のパスの部分
+    #                              ----------
     # 2. v_lobby_v1.py ファイルの render_lobby メソッド
     # 3. HTMLテンプレートの中で {% url 'lobbyV1_lobby' %} のような形でURLを取得するのに使える
 
@@ -520,13 +556,17 @@ urlpatterns = [
     #                ^                    ^
     #     -------------
     #     1
-    # 1. URLの一部
+    #
+    # 1. 例えば `http://example.com/tic-tac-toe3/` のような URL のパスの部分
+    #                              --------------
 
     path('tic-tac-toe3/<str:room_name>/',
          #           ^
          # ----------------------------
          # 1
-         # 1. URLの一部。<room_name> に入った文字列は room_name 変数に渡されます
+         #
+         # 1. 例えば `http://example.com/tic-tac-toe3/<str:room_name>/` のような URL のパスの部分。<room_name> に入った文字列は room_name 変数に渡されます
+         #                              ------------------------------
          v_tic_tac_toe3.playGameOfTicTacToe3),
     #                                          ^
 

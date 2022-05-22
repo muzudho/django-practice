@@ -57,8 +57,10 @@ id が 4 のメンバーが既に存在するなら更新をしたい。
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂templates
-        │   │   └── 📂members
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       └── 📂members
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -219,7 +221,7 @@ def upsertMember(request, id=None):
         form = MemberForm(instance=member)
 
     # 作成・更新画面を表示
-    return render(request, 'members/upsert.html', dict(form=form, id=id))
+    return render(request, 'webapp1/members/upsert.html', dict(form=form, id=id))
 ```
 
 # Step 4. ルート編集 - urls.py ファイル

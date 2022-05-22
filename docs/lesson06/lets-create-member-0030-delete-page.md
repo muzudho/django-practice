@@ -42,8 +42,10 @@ id が 4 のメンバーを削除したい。
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂templates
-        │   │   └── 📂members
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       └── 📂members
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -124,7 +126,7 @@ from webapp1.models.m_member import Member
 
 def deleteMember(request, id=id):
     """メンバー削除"""
-    template = loader.get_template('members/delete.html')
+    template = loader.get_template('webapp1/members/delete.html')
 
     member = Member.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = member.name  # 名前だけまだ使う

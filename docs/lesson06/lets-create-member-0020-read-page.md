@@ -47,8 +47,10 @@ kifuwarane@example.com
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂templates
-        │   │   └── 📂members
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       └── 📂members
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -143,7 +145,7 @@ from webapp1.models.m_member import Member
 
 def readMember(request, id=id):
     """メンバー読取"""
-    template = loader.get_template('members/read.html')
+    template = loader.get_template('webapp1/members/read.html')
     context = {
         'member': Member.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
