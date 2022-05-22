@@ -42,11 +42,12 @@
         │   │   └── 📂vuetify-practice
         │   │       └── 📄desserts.json
         │   ├── 📂templates
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   └── 📂v1
-        │   │   │       └── 📄<いろいろ>.html
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   └── 📂v1
+        │   │       │       └── 📄<いろいろ>.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📂tic-tac-toe
         │   │       └── 📂v1
@@ -94,7 +95,7 @@ favicon.ico は、例えば 以下のサイトで作れる。作ってきてほ�
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
 👉              └── 🚀favicon.ico
 ```
@@ -120,7 +121,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -191,7 +192,7 @@ class ProtocolMessages {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -293,7 +294,7 @@ class Connection {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -444,7 +445,7 @@ class Game {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -586,7 +587,7 @@ class Judge {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -709,7 +710,7 @@ class Engine {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
                 ├── 📂tic-tac-toe
                 │   └── 📂v2
@@ -787,7 +788,7 @@ function createSetMessageFromServer() {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -799,9 +800,10 @@ function createSetMessageFromServer() {
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
-                └── 📂tic-tac-toe
-                    └── 📂v2
-👉                      └── match_request.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂tic-tac-toe
+                        └── 📂v2
+👉                          └── match_request.html
 ```
 
 ```html
@@ -863,7 +865,7 @@ function createSetMessageFromServer() {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -875,10 +877,11 @@ function createSetMessageFromServer() {
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
-                └── 📂tic-tac-toe
-                    └── 📂v2
-                        ├── match_request.html
-👉                      └── play.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂tic-tac-toe
+                        └── 📂v2
+                            ├── match_request.html
+👉                          └── play.html
 ```
 
 ```html
@@ -1173,7 +1176,7 @@ function createSetMessageFromServer() {
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -1185,10 +1188,11 @@ function createSetMessageFromServer() {
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           ├── match_request.html
-            │           └── play.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_request.html
+            │               └── play.html
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
@@ -1237,7 +1241,7 @@ class Protocol():
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -1249,10 +1253,11 @@ class Protocol():
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           ├── match_request.html
-            │           └── play.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_request.html
+            │               └── play.html
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
@@ -1330,7 +1335,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -1342,10 +1347,11 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           ├── match_request.html
-            │           └── play.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_request.html
+            │               └── play.html
             ├── 📂views
 👉          │   └── v_tic_tac_toe_v2.py
             └── 📂websocks
@@ -1360,8 +1366,8 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def visitMatchRequest(request):
-    """エントリー対局要求"""
+def render_match_request(request):
+    """対局要求"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
@@ -1371,15 +1377,15 @@ def visitMatchRequest(request):
         #                 1
         # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                           -----------------------------------------
-    return render(request, "tic-tac-toe/v2/match_request.html", {})
-    #                                    ^
-    #                       ---------------------------------
+    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+    #                                            ^
+    #                       -----------------------------------------
     #                       1
-    # 1. webapp1/templates/tic-tac-toe/v2/match_request.html
-    #                      ---------------------------------
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
+    #                      -----------------------------------------
 
 
-def visitPlay(request, room_name):
+def render_play(request, room_name):
     """対局画面"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
@@ -1388,10 +1394,10 @@ def visitPlay(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "tic-tac-toe/v2/play.html", context)
-    #                                    ^
-    # 1. webapp1/templates/tic-tac-toe/v2/play.html
-    #                      ------------------------
+    return render(request, "webapp1/tic-tac-toe/v2/play.html", context)
+    #                                            ^
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html
+    #                      --------------------------------
 ```
 
 # Step 14. ルート編集 - urls.py ファイル
@@ -1400,7 +1406,7 @@ def visitPlay(request, room_name):
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -1412,10 +1418,11 @@ def visitPlay(request, room_name):
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           ├── match_request.html
-            │           └── play.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_request.html
+            │               └── play.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
             ├── 📂websocks
@@ -1442,20 +1449,20 @@ urlpatterns = [
     # ...略...
 
     # 対局要求
-    path('tic-tac-toe/v2/match-request/', v_tic_tac_toe_v2.visitMatchRequest),
+    path('tic-tac-toe/v2/match-request/', v_tic_tac_toe_v2.render_match_request),
     #                  ^                                 ^
-    #     -----------------------------   ----------------------------------
+    #     -----------------------------   -------------------------------------
     #     1                               2
     # 1. URLの `tic-tac-toe/v2/match-request/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2.py ファイルの visitMatchRequest メソッド
+    # 2. v_tic_tac_toe_v2.py ファイルの render_match_request メソッド
 
     # 対局中
-    path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.visitPlay),
+    path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.render_play),
     #                  ^                                        ^
-    #     ------------------------------------   --------------------------
+    #     ------------------------------------   ----------------------------
     #     1                                      2
     # 1. URLの `tic-tac-toe/v2/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v2.py ファイルの visitPlay メソッド
+    # 2. v_tic_tac_toe_v2.py ファイルの render_play メソッド
 ]
 ```
 
@@ -1465,7 +1472,7 @@ urlpatterns = [
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
+        └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
             │   ├── 📂tic-tac-toe
             │   │   └── 📂v2
@@ -1477,10 +1484,11 @@ urlpatterns = [
             │   │       └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
-            │   └── 📂tic-tac-toe
-            │       └── 📂v2
-            │           ├── match_request.html
-            │           └── play.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_request.html
+            │               └── play.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
             ├── 📂websocks
@@ -1512,11 +1520,15 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe/v2/play/(?P<room_name>\w+)/$', TicTacToeV2Consumer.as_asgi()),
-    #                 ^                                         ^
-    #     -----------------------------------------   -----------------------------
-    #     1                                      2
-    # 1. URLのパスの部分の、Django での正規表現の書き方
+    url(r'^tic-tac-toe/v2/play/(?P<room_name>\w+)/$',
+        #               ^
+        # -----------------------------------------
+        # 1
+        TicTacToeV2Consumer.as_asgi()),
+    #             ^
+    #   -----------------------------
+    #   2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```

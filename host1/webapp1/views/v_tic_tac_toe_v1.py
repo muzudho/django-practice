@@ -2,7 +2,7 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def visitMatchRequest(request):
+def render_match_request(request):
     """対局要求"""
     if request.method == "POST":
         room_name = request.POST.get("room_name")
@@ -12,14 +12,14 @@ def visitMatchRequest(request):
         #                 1
         # 1. http://example.com:8000/tic-tac-toe/v1/play/Elephant/?&mypiece=X
         #                           -----------------------------------------
-    return render(request, "tic-tac-toe/v1/match_request.html", {})
-    #                       ---------------------------------
+    return render(request, "webapp1/tic-tac-toe/v1/match_request.html", {})
+    #                       -----------------------------------------
     #                       1
-    # 1. webapp1/templates/tic-tac-toe/v1/match_request.html
-    #                      ---------------------------------
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
+    #                      -----------------------------------------
 
 
-def visitPlay(request, room_name):
+def render_play(request, room_name):
     """対局画面"""
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
@@ -28,8 +28,8 @@ def visitPlay(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "tic-tac-toe/v1/play.html", context)
-    #                       ------------------------
+    return render(request, "webapp1/tic-tac-toe/v1/play.html", context)
+    #                       --------------------------------
     #                       1
-    # 1. webapp1/templates/tic-tac-toe/v1/play.html
-    #                      ------------------------
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v1/play.html
+    #                      --------------------------------

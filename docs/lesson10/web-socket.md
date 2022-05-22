@@ -37,8 +37,9 @@ Webサーバーとクライアント間で双方向の非同期通信をした�
         │   │   └── 📂vuetify-practice
         │   │       └── 📄desserts.json
         │   ├── 📂templates
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py

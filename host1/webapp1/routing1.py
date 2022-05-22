@@ -91,7 +91,7 @@ websocket_urlpatterns = [
         TicTacToeV1Consumer.as_asgi()),
     #   -----------------------------
     #   2
-    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 
     # 〇×ゲームの練習２
@@ -103,14 +103,14 @@ websocket_urlpatterns = [
     #             ^
     #   -----------------------------
     #   2
-    # 1. URLのパスの部分の、Django での正規表現の書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 
     # 〇×ゲームの練習３
-    url(r'^tic-tac-toe3/(?P<room_name>\w+)/$', TicTacToe3Consumer1.as_asgi()),
+    # url(r'^tic-tac-toe3/play/(?P<room_name>\w+)/$', TicTacToe3Consumer1.as_asgi()),
     #                 ^                                 ^
     #     ----------------------------------   -----------------------------
     #     1                                    2
-    # 1. URLの一部（正規表現）の Django での書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
     # 2. ASGI形式での書き方
 ]
