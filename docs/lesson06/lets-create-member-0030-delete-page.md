@@ -127,6 +127,10 @@ from webapp1.models.m_member import Member
 def deleteMember(request, id=id):
     """メンバー削除"""
     template = loader.get_template('webapp1/members/delete.html')
+    #                               ---------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/members/delete.html を取得
+    #                            ---------------------------
 
     member = Member.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = member.name  # 名前だけまだ使う
@@ -167,14 +171,15 @@ from webapp1.views import v_member
 urlpatterns = [
     # ...中略...
 
-    # メンバー削除
+    # 会員削除
     path('members/delete/<int:id>/',
-         # -----------------------
+         # ------------------------
          # 1
-         # 1. `members/delete/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
          v_member.deleteMember, name='deleteMember'),
-    #    ---------------------        ------------
-    #    2                            3
+    #   ---------------------        ------------
+    #   2                            3
+    # 1. 例えば `http://example.com/members/delete/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ------------------------
     # 2. v_member.py ファイルの deleteMember メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteMember' %} のような形でURLを取得するのに使える
 ]

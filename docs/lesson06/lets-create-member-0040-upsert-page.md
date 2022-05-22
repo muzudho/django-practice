@@ -222,6 +222,10 @@ def upsertMember(request, id=None):
 
     # 作成・更新画面を表示
     return render(request, 'webapp1/members/upsert.html', dict(form=form, id=id))
+    #                       ---------------------------
+    #                       1
+    # 1. host1/webapp1/templates/webapp1/members/upsert.html を取得
+    #                            ---------------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -254,22 +258,24 @@ from webapp1.views import v_member
 urlpatterns = [
     # ...中略...
 
-    # メンバー作成
+    # 会員作成
     path('members/create/', v_member.upsertMember, name='createMember'),
     #     ---------------   ---------------------        ------------
     #     1                 2                            3
-    # 1. `members/create/` というURLにマッチする
+    # 1. 例えば `http://example.com/members/create/` のような URL のパスの部分
+    #                              ----------------
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'createMember' %} のような形でURLを取得するのに使える
 
-    # メンバー更新
+    # 会員更新
     path('members/update/<int:id>/',
          # -----------------------
          # 1
-         # 1. `members/update/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
          v_member.upsertMember, name='updateMember'),
     #    ---------------------        ------------
     #    2                            3
+    # 1. 例えば `http://example.com/members/update/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ------------------------
     # 2. v_member.py ファイルの upsertMember メソッド
     # 3. HTMLテンプレートの中で {% url 'updateMember' %} のような形でURLを取得するのに使える
 ]

@@ -146,6 +146,11 @@ from webapp1.models.m_member import Member
 def readMember(request, id=id):
     """メンバー読取"""
     template = loader.get_template('webapp1/members/read.html')
+    #                               -------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/members/read.html を取得
+    #                            -------------------------
+
     context = {
         'member': Member.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
@@ -180,11 +185,15 @@ from webapp1.views import v_member
 urlpatterns = [
     # ...中略...
 
-    # メンバー読取
-    path('members/read/<int:id>/', v_member.readMember, name='readMember'),
-    #     ----------------------   -------------------        ----------
-    #     1                        2                          3
-    # 1. `members/read/<数字列>/` というURLにマッチする。数字列は views.py の中で id という名前で取得できる
+    # 会員読取
+    path('members/read/<int:id>/',
+         # ---------------------
+         # 1
+         v_member.readMember, name='readMember'),
+    #    -------------------        ----------
+    #    2                          3
+    # 1. 例えば `http://example.com/members/read/<数字列>/` のような URL のパスの部分。数字列は v_member.py の中で id という名前で取得できる
+    #                              ----------------------
     # 2. v_member.py ファイルの readMember メソッド
     # 3. HTMLテンプレートの中で {% url 'readMember' %} のような形でURLを取得するのに使える
 ]

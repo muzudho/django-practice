@@ -189,7 +189,8 @@ urlpatterns = [
     path('members/', v_member.listMember, name='listMember'),
     #     --------   -------------------        ----------
     #     1          2                          3
-    # 1. URLの `members/` というパスにマッチする
+    # 1. 例えば `http://example.com/members/` のような URL のパスの部分
+    #                              ---------
     # 2. v_member.py ファイルの listMember メソッド
     # 3. HTMLテンプレートの中で {% url 'listMember' %} のような形でURLを取得するのに使える
 ]
