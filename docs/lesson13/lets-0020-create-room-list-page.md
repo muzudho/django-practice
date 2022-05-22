@@ -56,13 +56,15 @@ ID    部屋名        盤面       棋譜       アクション
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   └── 📄<いろいろ>
-        │   │   ├── 📂tic-tac-toe2
-        │   │   │   ├── 📄index.html
-        │   │   │   └── 📄game.html
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   ├── 📂v1
+        │   │       │   └── 📂v2
+        │   │       │       ├── 📄portal.html
+        │   │       │       └── 📄play.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂tic_tac_toe1
         │   │   └── 📄consumer1.py
         │   ├── 📂tic-tac-toe2
@@ -96,8 +98,9 @@ ID    部屋名        盤面       棋譜       アクション
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂rooms
-👉                  └── 📄list.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂rooms
+👉                      └── 📄list.html
 ```
 
 ```html
@@ -185,8 +188,9 @@ ID    部屋名        盤面       棋譜       アクション
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂rooms
-            │       └── 📄list.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂rooms
+            │           └── 📄list.html
             └── 📂views
 👉              └── 📄v_room.py
 ```
@@ -203,15 +207,15 @@ from webapp1.models.m_room import Room
 # 4. クラス名
 
 
-def listRoom(request):
+def render_list_room(request):
     """部屋一覧"""
-    rooms = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
-    dbRoomJsonStr = serializers.serialize('json', rooms)  # JSON に変換
+    roomQuerySet = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
+    dbRoomJsonStr = serializers.serialize('json', roomQuerySet)  # JSON 文字列に変換
     # Example:
     # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
     # print(f"dbRoomJsonStr={dbRoomJsonStr}")
 
-    dbRoomDoc = json.loads(dbRoomJsonStr)
+    dbRoomDoc = json.loads(dbRoomJsonStr)  # オブジェクトに変換
     # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
     """
     # Example
@@ -264,11 +268,11 @@ def listRoom(request):
     # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
     print(f"context={context}")
 
-    return render(request, "rooms/list.html", context)
-    #                       ---------------
+    return render(request, "webapp1/rooms/list.html", context)
+    #                       -----------------------
     #                       1
-    # 1. webapp1/templates/rooms/list.html
-    #                      ---------------
+    # 1. webapp1/templates/webapp1/rooms/list.html
+    #                      -----------------------
 ```
 
 # Step 3. ルート編集 - urls.py ファイル
@@ -279,8 +283,9 @@ def listRoom(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   └── 📂rooms
-            │       └── 📄list.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂rooms
+            │           └── 📄list.html
             ├── 📂views
             │   └── 📄v_room.py
 👉          └── 📄urls.py
@@ -300,11 +305,11 @@ urlpatterns = [
     # ...中略...
 
     # 部屋一覧
-    path('rooms/', v_room.listRoom, name='listRoom'),
-    #     ------   ---------------        ----------
-    #     1        2                      3
+    path('rooms/', v_room.render_list_room, name='listRoom'),
+    #     ------   -----------------------        ----------
+    #     1        2                              3
     # 1. URLの `rooms/` というパスにマッチする
-    # 2. v_room.py ファイルの listRoom メソッド
+    # 2. v_room.py ファイルの render_list_room メソッド
     # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
 ]
 ```

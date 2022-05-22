@@ -73,10 +73,12 @@ id が 4 の部屋が既に存在するなら更新をしたい。
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   ├── 📂rooms
-        │   │   │   └── 📄<いろいろ>.html
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂rooms
+        │   │       │   └── 📄<いろいろ>.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂tic_tac_toe1
         │   │   └── 📄consumer1.py
         │   ├── 📂tic-tac-toe2
@@ -110,8 +112,9 @@ id が 4 の部屋が既に存在するなら更新をしたい。
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📂rooms
-👉                  └── 📄upsert.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂rooms
+👉                      └── 📄upsert.html
 ```
 
 ```html
@@ -169,8 +172,9 @@ HTMLタグの `<form>～</form>` の子要素を自動生成させよう。
             ├── 📂forms
 👉          │   └── 📄f_room.py
             └── 📂templates
-                └── 📂rooms
-                    └── 📄upsert.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂rooms
+                        └── 📄upsert.html
 ```
 
 ```py
@@ -201,8 +205,9 @@ class RoomForm(ModelForm):
             ├── 📂forms
             │   └── 📄f_room.py
             ├── 📂templates
-            │   └── 📂rooms
-            │       └── 📄upsert.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂rooms
+            │           └── 📄upsert.html
             └── 📂views
 👉              └── 📄v_room.py
 ```
@@ -226,7 +231,7 @@ from webapp1.forms.f_room import RoomForm
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-def upsertRoom(request, id=None):
+def render_upsert_room(request, id=None):
     """部屋の作成または更新"""
 
     if id:  # idがあるとき（更新の時）
@@ -247,7 +252,11 @@ def upsertRoom(request, id=None):
         form = RoomForm(instance=room)
 
     # 作成・更新画面を表示
-    return render(request, 'rooms/upsert.html', dict(form=form, id=id))
+    return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
+    #                       -------------------------
+    #                       1
+    # 1. webapp1/templates/webapp1/rooms/upsert.html
+    #                      -------------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -260,8 +269,9 @@ def upsertRoom(request, id=None):
             ├── 📂forms
             │   └── 📄f_room.py
             ├── 📂templates
-            │   └── 📂rooms
-            │       └── 📄upsert.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂rooms
+            │           └── 📄upsert.html
             ├── 📂views
             │   └── 📄v_room.py
 👉          └── 📄urls.py
@@ -281,22 +291,22 @@ urlpatterns = [
     # ...中略...
 
     # 部屋作成
-    path('rooms/create/', v_room.upsertRoom, name='createRoom'),
-    #     -------------   -----------------        ----------
-    #     1               2                        3
+    path('rooms/create/', v_room.render_upsert_room, name='createRoom'),
+    #     -------------   -------------------------        ----------
+    #     1               2                                3
     # 1. URLの `rooms/create/` というパスにマッチする
-    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 2. v_room.py ファイルの render_upsert_room メソッド
     # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
 
     # 部屋更新
     path('rooms/update/<int:id>/',
          # ---------------------
          # 1
-         v_room.upsertRoom, name='updateRoom'),
-    #    -----------------        ----------
-    #    2                        3
+         v_room.render_upsert_room, name='updateRoom'),
+    #    -------------------------        ----------
+    #    2                                3
     # 1. URLの `rooms/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
-    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 2. v_room.py ファイルの render_upsert_room メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 ]
 ```
@@ -318,7 +328,7 @@ docker-compose up
 
 # 次の記事
 
-📖 ...  
+📖 [Djangoでゲームポータルページを作ろう！](https://qiita.com/muzudho1/items/0c59f3ce7aa6bef2a91f)  
 
 # 参考にした記事
 

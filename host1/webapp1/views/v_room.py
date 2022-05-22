@@ -21,7 +21,7 @@ from webapp1.forms.f_room import RoomForm
 # 4. クラス名
 
 
-def listRoom(request):
+def render_list_room(request):
     """部屋一覧"""
     roomQuerySet = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
     dbRoomJsonStr = serializers.serialize('json', roomQuerySet)  # JSON 文字列に変換
@@ -82,28 +82,32 @@ def listRoom(request):
     # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
     print(f"context={context}")
 
-    return render(request, "rooms/list.html", context)
-    #                       ---------------
+    return render(request, "webapp1/rooms/list.html", context)
+    #                       -----------------------
     #                       1
-    # 1. webapp1/templates/rooms/list.html
-    #                      ---------------
+    # 1. webapp1/templates/webapp1/rooms/list.html
+    #                      -----------------------
 
 
-def readRoom(request, id=id):
+def render_read_room(request, id=id):
     """部屋読取"""
     context = {
         'room': Room.objects.get(pk=id),  # idを指定してメンバーを１人取得
     }
-    return render(request, "rooms/read.html", context)
-    #                       ---------------
+    return render(request, "webapp1/rooms/read.html", context)
+    #                       -----------------------
     #                       1
-    # 1. webapp1/templates/rooms/read.html
-    #                      ---------------
+    # 1. webapp1/templates/webapp1/rooms/read.html
+    #                      -----------------------
 
 
-def deleteRoom(request, id=id):
+def render_delete_room(request, id=id):
     """部屋削除"""
-    template = loader.get_template('rooms/delete.html')
+    template = loader.get_template('webapp1/rooms/delete.html')
+    #                               -------------------------
+    #                               1
+    # 1. webapp1/templates/webapp1/rooms/delete.html
+    #                      -------------------------
 
     room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = room.name  # 名前だけまだ使う
@@ -116,7 +120,7 @@ def deleteRoom(request, id=id):
     return HttpResponse(template.render(context, request))
 
 
-def upsertRoom(request, id=None):
+def render_upsert_room(request, id=None):
     """部屋の作成または更新"""
 
     if id:  # idがあるとき（更新の時）
@@ -137,4 +141,8 @@ def upsertRoom(request, id=None):
         form = RoomForm(instance=room)
 
     # 作成・更新画面を表示
-    return render(request, 'rooms/upsert.html', dict(form=form, id=id))
+    return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
+    #                       -------------------------
+    #                       1
+    # 1. webapp1/templates/webapp1/rooms/upsert.html
+    #                      -------------------------

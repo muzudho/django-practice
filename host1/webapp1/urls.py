@@ -384,54 +384,54 @@ urlpatterns = [
     # | 部屋
 
     # 部屋一覧
-    path('rooms/', v_room.listRoom, name='listRoom'),
-    #     ------   ---------------        ----------
-    #     1        2                      3
+    path('rooms/', v_room.render_list_room, name='listRoom'),
+    #     ------   -----------------------        ----------
+    #     1        2                              3
     # 1. 例えば `http://example.com/rooms/` のような URL のパスの部分
     #                              -------
-    # 2. v_room.py ファイルの listRoom メソッド
+    # 2. v_room.py ファイルの render_list_room メソッド
     # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
 
     # 部屋読取
-    path('rooms/read/<int:id>/', v_room.readRoom, name='readRoom'),
-    #     --------------------   ---------------        ----------
-    #     1                      2                      3
+    path('rooms/read/<int:id>/', v_room.render_read_room, name='readRoom'),
+    #     --------------------   -----------------------        ----------
+    #     1                      2                              3
     # 1. 例えば `http://example.com/rooms/read/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
     #                              --------------------
-    # 2. v_room.py ファイルの readRoom メソッド
+    # 2. v_room.py ファイルの render_read_room メソッド
     # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
 
     # 部屋削除
     path('rooms/delete/<int:id>/',
          # ------------------------
          # 1
-         v_room.deleteRoom, name='deleteRoom'),
-    #   ---------------------        ------------
-    #   2                            3
+         v_room.render_delete_room, name='deleteRoom'),
+    #    -------------------------        ------------
+    #    2                                3
     # 1. 例えば `http://example.com/rooms/delete/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
     #                              ----------------------
-    # 2. v_room.py ファイルの deleteRoom メソッド
+    # 2. v_room.py ファイルの render_delete_room メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
 
     # 部屋作成
-    path('rooms/create/', v_room.upsertRoom, name='createRoom'),
-    #     -------------   -----------------        ----------
-    #     1               2                        3
+    path('rooms/create/', v_room.render_upsert_room, name='createRoom'),
+    #     -------------   -------------------------        ----------
+    #     1               2                                3
     # 1. 例えば `http://example.com/rooms/create/` のような URL のパスの部分
     #                              --------------
-    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 2. v_room.py ファイルの render_upsert_room メソッド
     # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
 
     # 部屋更新
     path('rooms/update/<int:id>/',
          # ---------------------
          # 1
-         v_room.upsertRoom, name='updateRoom'),
-    #    -----------------        ----------
-    #    2                        3
+         v_room.render_upsert_room, name='updateRoom'),
+    #    -------------------------        ----------
+    #    2                                3
     # 1. 例えば `http://example.com/rooms/update/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
     #                              ----------------------
-    # 2. v_room.py ファイルの upsertRoom メソッド
+    # 2. v_room.py ファイルの render_upsert_room メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
 
     # | 部屋
