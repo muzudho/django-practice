@@ -4,11 +4,11 @@ from django.template import loader
 
 def render_home(request):
     """ホーム"""
-    template = loader.get_template('home/v2/home.html')
-    #                               -----------------
+    template = loader.get_template('webapp1/home/v2/home.html')
+    #                               -------------------------
     #                               1
-    # 1. host1/webapp1/templates/home/v2/home.html を取得
-    #                            -----------------
+    # 1. host1/webapp1/templates/webapp1/home/v2/home.html を取得
+    #                            -------------------------
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
@@ -34,4 +34,5 @@ def render_home(request):
         # 1. http://example.com/tic-tac-toe/v2/logout/
         #                       ----------------------
     }
+
     return HttpResponse(template.render(context, request))
