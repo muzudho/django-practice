@@ -32,8 +32,11 @@
         │   │   └── 📂vuetify-practice
         │   │       └── 📄desserts.json
         │   ├── 📂templates
-        │   │   └── 📂vuetify-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂members
+        │   │       └── 📂vuetify-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -261,8 +264,9 @@ Iron (%):
             │   └── 📂json-practice
             │       └── 📄desserts-placeholder.json
             ├── 📂templates
-            │   └── 📂json-practice
-👉          │       └── 📄json-textarea2.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂json-practice
+👉          │           └── 📄json-textarea2.html
             └── 📄admin.py
 ```
 
@@ -335,8 +339,9 @@ Iron (%):
             │   └── 📂json-practice
             │       └── 📄desserts-placeholder.json
             ├── 📂templates
-            │   └── 📂json-practice
-            │       └── 📄json-textarea2.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂json-practice
+            │           └── 📄json-textarea2.html
             ├── 📂views
 👉          │   └── 📄v_json_practice.py
             └── 📄admin.py
@@ -410,8 +415,9 @@ def readDataTable2o3(request):
             │   └── 📂json-practice
             │       └── 📄desserts-placeholder.json
             ├── 📂templates
-            │   └── 📂json-practice
-            │       └── 📄json-textarea2.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂json-practice
+            │           └── 📄json-textarea2.html
             ├── 📂views
             │   └── 📄v_json_practice.py
             ├── 📄admin.py
@@ -438,7 +444,8 @@ urlpatterns = [
          v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
     #    ---------------------------------        -----------------
     #    2                                        3
-    # 1. URLの `json-practice/textarea2` というパスにマッチする
+    # 1. 例えば `http://example.com/json-practice/textarea2` のような URL のパスの部分
+    #                              ------------------------
     # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
@@ -449,7 +456,8 @@ urlpatterns = [
          v_json_practice.readDataTable2o3, name='readDataTable2o3'),
     #    --------------------------------        ----------------
     #    2                                       3
-    # 1. URLの `json-practice/data-table2o3` というパスにマッチする
+    # 1. 例えば `http://example.com/json-practice/data-table2o3` のような URL のパスの部分
+    #                              ---------------------------
     # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 ]

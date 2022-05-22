@@ -29,8 +29,11 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂templates
-        │   │   └── 📂vuetify-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂members
+        │   │       └── 📂vuetify-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -168,8 +171,9 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
             │   └── 📂vuetify-practice
             │       └── 📄desserts.json
             └── 📂templates
-                └── 📂vuetify-practice
-👉                  └── 📄data-table2.html
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂vuetify-practice
+👉                      └── 📄data-table2.html
 ```
 
 ```html
@@ -219,8 +223,9 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
             │   └── 📂vuetify-practice
             │       └── 📄desserts.json
             ├── 📂templates
-            │   └── 📂vuetify-practice
-            │       └── data-table2.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂vuetify-practice
+            │           └── data-table2.html
             └── 📂views
 👉              └── 📄v_vuetify_practice.py
 ```
@@ -233,11 +238,11 @@ from django.template import loader
 
 def readDataTable2(request):
     """Vuetify練習"""
-    template = loader.get_template('vuetify-practice/data-table2.html')
-    #                               ---------------------------------
+    template = loader.get_template('webapp1/vuetify-practice/data-table2.html')
+    #                               -----------------------------------------
     #                               1
-    # 1. host1/webapp1/templates/vuetify-practice/data-table2.html を取ってきます。
-    #                            ---------------------------------
+    # 1. host1/webapp1/templates/webapp1/vuetify-practice/data-table2.html を取ってきます。
+    #                            -----------------------------------------
 
     with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
@@ -259,8 +264,9 @@ def readDataTable2(request):
             │   └── 📂vuetify-practice
             │       └── 📄desserts.json
             ├── 📂templates
-            │   └── 📂vuetify-practice
-            │       └── 📄data-table2.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂vuetify-practice
+            │           └── 📄data-table2.html
             ├── 📂views
             │   └── 📄v_vuetify_practice.py
 👉          └── 📄urls.py
@@ -280,13 +286,14 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/data-table2.html', v_vuetify_practice.readDataTable2,
-         # --------------------------------   ---------------------------------
-         # 1                                  2
+    path('vuetify-practice/data-table2', v_vuetify_practice.readDataTable2,
+         # ---------------------------   ---------------------------------
+         # 1                             2
          name='readDataTable2'),
     #          --------------
     #          3
-    # 1. URLの `vuetify-practice/data-table2` というパスにマッチする
+    # 1. 例えば `http://example.com/vuetify-practice/data-table2` のような URL のパスの部分
+    #                              -----------------------------
     # 2. v_vuetify_practice.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]

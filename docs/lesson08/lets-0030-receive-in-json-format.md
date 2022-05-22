@@ -32,8 +32,11 @@
         │   │   └── 📂vuetify-practice
         │   │       └── 📄desserts.json
         │   ├── 📂templates
-        │   │   └── 📂vuetify-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂members
+        │   │       └── 📂vuetify-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
         │   ├── 📄admin.py
@@ -127,8 +130,9 @@ urlpatterns = [
          v_json_practice.readJsonResponse1, name='readJsonResponse1'),
     #    ---------------------------------        -----------------
     #    2                                        3
-    # 1. URLの `practice1/json-response1` というパスにマッチする
-    # 2. v_json_practice.py ファイルの readJsonResponse1 メソッド
+    # 1. 例えば `http://example.com/practice1/json-response1` のような URL のパスの部分
+    #                              -------------------------
+    # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 ]
 ```
