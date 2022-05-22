@@ -46,12 +46,13 @@
         │   │   │   └── 📄desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   └── 📂tic-tac-toe
-        │   │       ├── 📂v1
-        │   │       │   └── 📄<いろいろ>
-        │   │       ├── 📂v2
-        │   │       │   ├── 📄match_request.html
-        │   │       │   └── 📄play.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   ├── 📂v1
+        │   │       │   └── 📂v2
+        │   │       │       ├── 📄match_request.html
+        │   │       │       └── 📄play.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
@@ -91,6 +92,89 @@ cd host1
 docker-compose up
 ```
 
+# Step 2. テンプレート編集 - active-user-list.html ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂session-practice
+👉                      └── active-user-list.html
+```
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
+<html lang="ja">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>アクティブ ユーザー一覧</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <h3>アクティブ ユーザー一覧</h3>
+                    </v-container>
+                    <v-container>
+                        <v-simple-table>
+                            <template v-slot:default>
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>ユーザー名</th>
+                                        <th>アクティブか</th>
+                                        <th>最終ログイン</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="user in vu_users" :key="user.pk">
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        <td>{{ user.pk }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.is_active }}</td>
+                                        <td>{{ user.last_login }}</td>
+                                        {% endverbatim %}
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-simple-table>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let vue1 = new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_users: JSON.parse("{{ dj_users|escapejs }}"),
+                },
+                methods: {
+                    createRoomsReadPath(id) {
+                        return `${this.vu_readRoomPath}${id}`;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
+```
+
 # Step 2. モデル関連作成 - mh_session.py ファイル
 
 以下のファイルを新規作成してほしい  
@@ -98,6 +182,10 @@ docker-compose up
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂session-practice
+            │           └── active-user-list.html
             └── 📂models_helper
 👉              └── 📄mh_session.py
 ```
@@ -177,6 +265,10 @@ web_1  | ]
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂session-practice
+            │           └── active-user-list.html
             ├── 📂models_helper
             │   └── 📄mh_session.py
             └── 📂views
@@ -196,7 +288,7 @@ from webapp1.models_helper.mh_session import get_all_logged_in_users
 # 4. 関数名
 
 
-def renderActiveUserList(request):
+def render_active_user_list(request):
     """アクティブ ユーザー一覧"""
 
     context = {
@@ -204,98 +296,11 @@ def renderActiveUserList(request):
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
         'dj_users': json.dumps(get_all_logged_in_users())
     }
-    return render(request, "session-practice/active-user-list.html", context)
-    #                       --------------------------------------
+    return render(request, "webapp1/session-practice/active-user-list.html", context)
+    #                       ----------------------------------------------
     #                       1
-    # 1. webapp1/templates/session-practice/active-user-list.html
-    #                      --------------------------------------
-```
-
-# Step 4. テンプレート編集 - active-user-list.html ファイル
-
-以下のファイルを新規作成してほしい。  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂models_helper
-            │   └── 📄mh_session.py
-            ├── 📂templates
-            │   └── 📂lobby
-            │       └── 📂v1
-👉          │           └── active-user-list.html
-            └── 📂views
-                └── 📄v_session_practice_v1.py
-```
-
-```html
-{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
-<!DOCTYPE html>
-<!-- See also: https://qiita.com/zaburo/items/ab7f0eeeaec0e60d6b92 -->
-<html lang="ja">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>部屋一覧</title>
-    </head>
-    <body>
-        <div id="app">
-            <v-app>
-                <v-main>
-                    <v-container>
-                        <h3>部屋一覧</h3>
-                    </v-container>
-                    <v-container>
-                        <v-simple-table>
-                            <template v-slot:default>
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>ユーザー名</th>
-                                        <th>アクティブか</th>
-                                        <th>最終ログイン</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="user in vu_users" :key="user.pk">
-                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
-                                        <td>{{ user.pk }}</td>
-                                        <td>{{ user.username }}</td>
-                                        <td>{{ user.is_active }}</td>
-                                        <td>{{ user.last_login }}</td>
-                                        {% endverbatim %}
-                                    </tr>
-                                </tbody>
-                            </template>
-                        </v-simple-table>
-                    </v-container>
-                </v-main>
-            </v-app>
-        </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
-        <script>
-            let vue1 = new Vue({
-                el: "#app",
-                vuetify: new Vuetify(),
-                data: {
-                    // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_users: JSON.parse("{{ dj_users|escapejs }}"),
-                },
-                methods: {
-                    createRoomsReadPath(id) {
-                        return `${this.vu_readRoomPath}${id}`;
-                    },
-                },
-            });
-        </script>
-    </body>
-</html>
+    # 1. webapp1/templates/webapp1/session-practice/active-user-list.html
+    #                      ----------------------------------------------
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -308,9 +313,10 @@ def renderActiveUserList(request):
             ├── 📂models_helper
             │   └── 📄mh_session.py
             ├── 📂templates
-            │   └── 📂lobby
-            │       └── 📂v1
-            │           └── active-user-list.html
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂lobby
+            │           └── 📂v1
+            │               └── active-user-list.html
             ├── 📂views
             │   └── 📄v_session_practice_v1.py
 👉          └── 📄urls.py
@@ -331,12 +337,12 @@ urlpatterns = [
     path('session-practice/v1/active-user-list/',
          # ------------------------------------
          # 1
-         v_session_practice_v1.renderActiveUserList, name='sessionPracticeV1_activeUserList'),
-    #    --------------------- --------------------        --------------------------------
-    #     1                    2                           3
+         v_session_practice_v1.render_active_user_list, name='sessionPracticeV1_activeUserList'),
+    #    ---------------------------------------------        --------------------------------
+    #    2                                                    3
     #
     # 1. URLの `session-practice/v1/active-user-list/` というパスにマッチする
-    # 2. v_session_practice_v1.py ファイルの renderActiveUserList メソッド
+    # 2. v_session_practice_v1.py ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 ]
 ```
