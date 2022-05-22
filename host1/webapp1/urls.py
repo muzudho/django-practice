@@ -73,7 +73,7 @@ urlpatterns = [
     #          3
     # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分にマッチする
     #                              -------------------
-    # 2. 既に用意されているビューのオブジェクト？
+    # 2. allauth の SignupView をカスタマイズしたオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
 
     # | Allauth

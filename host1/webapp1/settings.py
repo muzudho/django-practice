@@ -66,9 +66,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'webapp1.urls'
 
-# Example: `/code/templates`
-print(
-    f"os.path.join(BASE_DIR, 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
+# 調べ終わったら消す
+# Example: `/code/webapp1/templates`
+#print(
+#    f"os.path.join(BASE_DIR, 'webapp1', 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
 
 TEMPLATES = [
     {

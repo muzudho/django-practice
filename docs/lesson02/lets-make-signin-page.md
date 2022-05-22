@@ -162,11 +162,11 @@ docker-compose up
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
 
-        <script src="{% static 'account/v1/django-allauth-form-parser.js' %}"></script>
-        <!--                    ========================================
+        <script src="{% static 'allauth-customized/v1/form-html-parser.js' %}"></script>
+        <!--                    =========================================
                                 1
-            1. host1/webapp1/static/account/v1/django-allauth-form-parser.js
-                                    ========================================
+            1. host1/webapp1/static/allauth-customized/v1/form-html-parser.js
+                                    =========================================
         -->
 
         <script>
@@ -244,7 +244,7 @@ from allauth.account.views import LoginView, SignupView
 
 # ...中略...
 
-class AccountV1LoginView(LoginView):
+class AccountsV1LoginView(LoginView):
     """django-allauth のログイン ビューを継承します
     📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/views.py)
     """
@@ -258,7 +258,7 @@ class AccountV1LoginView(LoginView):
 
 
 # グローバル変数
-accounts_v1_login_view = AccountV1LoginView.as_view()
+accounts_v1_login_view = AccountsV1LoginView.as_view()
 ```
 
 # Step 4. ルート編集 - urls.py ファイル

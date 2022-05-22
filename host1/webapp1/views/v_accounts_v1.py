@@ -2,7 +2,7 @@
 from allauth.account.views import LoginView, SignupView
 
 
-class AccountV1SignupView(SignupView):
+class AccountsV1SignupView(SignupView):
     """django-allauth のサインアップ ビューを継承します
     📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/socialaccount/views.py)
     """
@@ -24,10 +24,10 @@ class AccountV1SignupView(SignupView):
 
 
 # グローバル変数
-accounts_v1_signup_view = AccountV1SignupView.as_view()
+accounts_v1_signup_view = AccountsV1SignupView.as_view()
 
 
-class AccountV1LoginView(LoginView):
+class AccountsV1LoginView(LoginView):
     """django-allauth のログイン ビューを継承します
     📖[views.py](https://github.com/pennersr/django-allauth/blob/master/allauth/account/views.py)
     """
@@ -41,4 +41,4 @@ class AccountV1LoginView(LoginView):
 
 
 # グローバル変数
-accounts_v1_login_view = AccountV1LoginView.as_view()
+accounts_v1_login_view = AccountsV1LoginView.as_view()
