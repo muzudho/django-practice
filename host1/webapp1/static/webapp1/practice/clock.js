@@ -8,17 +8,16 @@ function getTimeStamp() {
     // 現在時刻
     const now = new Date();
 
-    const text = String.format(
-        `{0}年 {1}月 {2}日 （{3}） {4}時 {5}分 {6}秒 {7}ミリ秒`,
-        now.getFullYear(), // 年
-        now.getMonth() + 1, // 月
-        now.getDate(), // 日
-        now.getHours(), // 時
-        now.getMinutes(), // 分
-        now.getSeconds(), // 秒
-        now.getMilliseconds(), // ミリ秒
-        weekStr[now.getDay()] // 曜日
-    );
+    const year = now.getFullYear(); // 年
+    const month = now.getMonth() + 1; // 月
+    const day = now.getDate(); // 日
+    const weekday = weekStr[now.getDay()]; // 曜日
+    const hour = now.getHours(); // 時
+    const minite = now.getMinutes(); // 分
+    const second = now.getSeconds(); // 秒
+    const millisecond = now.getMilliseconds(); // ミリ秒
+
+    const text = `${year}年 ${month}月 ${day}日 （${weekday}） ${hour}時 ${minite}分 ${second}秒 ${millisecond}ミリ秒`;
 
     console.log(`time stamp=[${text}]`);
 

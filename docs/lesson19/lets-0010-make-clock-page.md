@@ -79,13 +79,59 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. テンプレート編集 - waiting-for-match-v1.html ファイル
+# Step 2. 機能強化 - clock.js ファイル
 
 以下のファイルを新規作成してほしい。  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂practice
+👉                      └── 📄clock.js
+```
+
+```js
+/**
+ *
+ * @returns 現在時刻の文字列
+ */
+function getTimeStamp() {
+    const weekStr = ["日", "月", "火", "水", "木", "金", "土"];
+
+    // 現在時刻
+    const now = new Date();
+
+    const text = String.format(
+        `{0}年 {1}月 {2}日 （{3}） {4}時 {5}分 {6}秒 {7}ミリ秒`,
+        now.getFullYear(), // 年
+        now.getMonth() + 1, // 月
+        now.getDate(), // 日
+        now.getHours(), // 時
+        now.getMinutes(), // 分
+        now.getSeconds(), // 秒
+        now.getMilliseconds(), // ミリ秒
+        weekStr[now.getDay()] // 曜日
+    );
+
+    console.log(`time stamp=[${text}]`);
+
+    return text;
+}
+```
+
+# Step 3. テンプレート編集 - waiting-for-match-v1.html ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂practice
+            │           └── 📄clock.js
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
@@ -118,11 +164,19 @@ docker-compose up
                     <v-container>
                         <h3>対局待合室</h3>
                         <!-- ここに時計 -->
-                        yyyy年 MM月 dd日 HH時 mm分 ss秒 xxxミリ秒
+                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                        <!-- -->
+                        {% verbatim %} {{vu_timeStamp}} {% endverbatim %}
                     </v-container>
                 </v-main>
             </v-app>
         </div>
+
+        <!--
+            host1/static/webapp1/practice/clock.js
+                        ==========================
+        -->
+        <script src="{% static 'webapp1/practice/clock.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -130,6 +184,10 @@ docker-compose up
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_timeStamp: getTimeStamp(),
+                },
             });
         </script>
     </body>
@@ -143,6 +201,10 @@ docker-compose up
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂practice
+            │           └── 📄clock.js
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -178,6 +240,10 @@ def render_waiting_for_match(request):
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂models_helper
             │   └── 📄mh_users.py
+            ├── 📂static
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂practice
+            │           └── 📄clock.js
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice

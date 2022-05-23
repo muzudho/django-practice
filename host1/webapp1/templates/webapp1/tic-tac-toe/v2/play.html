@@ -23,7 +23,9 @@
                         <v-container>
                             <v-row justify="center" dense>
                                 <v-col>
-                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                                    <!-- -->
+                                    {% verbatim %}
                                     <v-btn id="square0" v-on:click="clickSquare(0)">{{label0}}</v-btn>
                                     <v-btn id="square1" v-on:click="clickSquare(1)">{{label1}}</v-btn>
                                     <v-btn id="square2" v-on:click="clickSquare(2)">{{label2}}</v-btn>

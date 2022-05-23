@@ -23,11 +23,19 @@
                     <v-container>
                         <h3>対局待合室</h3>
                         <!-- ここに時計 -->
-                        yyyy年 MM月 dd日 HH時 mm分 ss秒 xxxミリ秒
+                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                        <!-- -->
+                        {% verbatim %} {{vu_timeStamp}} {% endverbatim %}
                     </v-container>
                 </v-main>
             </v-app>
         </div>
+
+        <!--
+            host1/static/webapp1/practice/clock.js
+                        ==========================
+        -->
+        <script src="{% static 'webapp1/practice/clock.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -35,6 +43,10 @@
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
+                data: {
+                    // "vu_" は 「vue1.dataのメンバー」 の目印
+                    vu_timeStamp: getTimeStamp(),
+                },
             });
         </script>
     </body>
