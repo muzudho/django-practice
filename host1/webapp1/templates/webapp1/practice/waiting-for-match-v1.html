@@ -36,6 +36,7 @@
                         ==========================
         -->
         <script src="{% static 'webapp1/practice/clock.js' %}"></script>
+        <script src="{% static 'webapp1/practice/waiting-for-match.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -43,6 +44,14 @@
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
+                // page loaded
+                mounted: () => {
+                    // ここで Vue の準備完了後の処理ができる。
+                    // ただし、まだ this は初期化されてない
+
+                    // 5秒毎にリロード
+                    startReloadingAutomatically(5000);
+                },
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_timeStamp: getTimeStamp(),

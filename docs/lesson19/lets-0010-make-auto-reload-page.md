@@ -2,7 +2,9 @@
 
 待っていると　対局が付くページがほしい  
 
-いきなり作るのは難しいので、時刻だけ表示しているページを作る  
+いきなり作るのは難しいので、まず 5秒毎に時刻の表示を更新するページ から作る  
+
+# はじめに
 
 この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
 連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
@@ -121,7 +123,32 @@ function getTimeStamp() {
 }
 ```
 
-# Step 3. テンプレート編集 - waiting-for-match-v1.html ファイル
+# Step 3. 機能強化 - waiting-for-match.js ファイル
+
+以下のファイルを新規作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂practice
+                        ├── 📄clock.js
+👉                      └── 📄waiting-for-match.js
+```
+
+```js
+/**
+ * @param {number} intervalMilliseconds
+ */
+function startReloadingAutomatically(intervalMilliseconds) {
+    setInterval(() => {
+        location.reload();
+    }, intervalMilliseconds);
+}
+```
+
+# Step 4. テンプレート編集 - waiting-for-match-v1.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -131,7 +158,8 @@ function getTimeStamp() {
             ├── 📂static
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── 📄clock.js
+            │           ├── 📄clock.js
+            │           └── 📄waiting-for-match.js
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
@@ -177,6 +205,7 @@ function getTimeStamp() {
                         ==========================
         -->
         <script src="{% static 'webapp1/practice/clock.js' %}"></script>
+        <script src="{% static 'webapp1/practice/waiting-for-match.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -184,6 +213,14 @@ function getTimeStamp() {
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
+                // page loaded
+                mounted: () => {
+                    // ここで Vue の準備完了後の処理ができる。
+                    // ただし、まだ this は初期化されてない
+
+                    // 5秒毎にリロード
+                    startReloadingAutomatically(5000);
+                },
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_timeStamp: getTimeStamp(),
@@ -194,7 +231,7 @@ function getTimeStamp() {
 </html>
 ```
 
-# Step 3. ビュー編集 - v_practice.py ファイル
+# Step 5. ビュー編集 - v_practice.py ファイル
 
 以下のファイルを無ければ新規作成、有れば編集してほしい。  
 
@@ -204,7 +241,8 @@ function getTimeStamp() {
             ├── 📂static
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── 📄clock.js
+            │           ├── 📄clock.js
+            │           └── 📄waiting-for-match.js
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -231,7 +269,7 @@ def render_waiting_for_match(request):
     #                      ------------------------------------------
 ```
 
-# Step 5. ルート編集 - urls.py ファイル
+# Step 6. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -243,7 +281,8 @@ def render_waiting_for_match(request):
             ├── 📂static
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── 📄clock.js
+            │           ├── 📄clock.js
+            │           └── 📄waiting-for-match.js
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -279,6 +318,6 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. Web画面へアクセス
+# Step 7. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/waiting-for-match/](http://localhost:8000/practice/waiting-for-match/)  

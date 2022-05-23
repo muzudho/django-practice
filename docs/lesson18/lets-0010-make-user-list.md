@@ -301,3 +301,7 @@ urlpatterns = [
 # Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/user-list/](http://localhost:8000/practice/user-list/)  
+
+# 次の記事
+
+📖 [Djangoで自動リロードするページを作ろう！](https://qiita.com/muzudho1/items/8df599dc0e0acb25f649)  
