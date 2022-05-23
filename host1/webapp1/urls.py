@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_page1, v_member, v_vuetify_practice, \
     v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_accounts_v1
+    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_accounts_v1, v_practice
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -553,6 +553,40 @@ urlpatterns = [
     # | ロビー（待合室）
     # +----
 
+
+
+
+    # +----
+    # | 練習
+
+    # 会員登録ユーザー一覧
+    path('practice/user-list/',
+         # ------------------
+         # 1
+         v_practice.render_user_list, name='practice_userList'),
+    #    ---------------------------        -----------------
+    #    2                                  3
+    #
+    # 1. 例えば `http://example.com/practice/user-list/` のような URL のパスの部分
+    #                              --------------------
+    # 2. v_practice.py ファイルの render_user_list メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
+
+    # 対局待合室
+    path('practice/waiting-for-match/',
+         # --------------------------
+         # 1
+         v_practice.render_waiting_for_match, name='practice_waitingForMatch'),
+    #    -----------------------------------        ------------------------
+    #    2                                          3
+    #
+    # 1. 例えば `http://example.com/waiting-for-match/` のような URL のパスの部分
+    #                              -------------------
+    # 2. v_practice.py ファイルの render_waiting_for_match メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatch' %} のような形でURLを取得するのに使える
+
+    # | 練習
+    # +----
 
 
 
