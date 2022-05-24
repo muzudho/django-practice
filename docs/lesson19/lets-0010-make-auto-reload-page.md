@@ -321,3 +321,7 @@ urlpatterns = [
 # Step 7. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/waiting-for-match/](http://localhost:8000/practice/waiting-for-match/)  
+
+# 次の記事
+
+📖 [Djangoで自動リダイレクトするページを作ろう！](https://qiita.com/muzudho1/items/aea9be36422763f082e9)  

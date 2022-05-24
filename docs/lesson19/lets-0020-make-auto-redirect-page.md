@@ -2,7 +2,9 @@
 
 待っていると　対局が付くページがほしい  
 
-いきなり作るのは難しいので、まず サーバーサイドの適当なタイミングで クライアントのページをリダイレクトする  
+いきなり作るのは難しいので、まず サーバーサイドで時計を見て  
+0分、5分、10分、... のような 分が 5 で割り切れるタイミングで  
+クライアントのページをリダイレクトする  
 
 # はじめに
 
@@ -188,7 +190,7 @@ function startReloadingAutomatically_v2(intervalMilliseconds) {
 
                     // 5秒毎にリロード
                     startReloadingAutomatically_v2(5000);
-                    //                         ---0
+                    //                         ---
                 },
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
@@ -277,7 +279,7 @@ def render_waiting_for_match_v2(request):
     #                      ------------------------------------------
 ```
 
-# Step 6. ルート編集 - urls.py ファイル
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -326,6 +328,6 @@ urlpatterns = [
 ]
 ```
 
-# Step 7. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/waiting-for-match/v2/](http://localhost:8000/practice/waiting-for-match/v2/)  

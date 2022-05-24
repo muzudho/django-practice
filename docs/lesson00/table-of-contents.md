@@ -112,6 +112,7 @@ Lesson 18. Users
 
 * 📖 [Djangoで会員登録ユーザーを一覧しよう！](https://qiita.com/muzudho1/items/13c15be5b9070dab1770)
 
-Lesson 19. Matching automatically
+Lesson 19. Web page reload and redirect automatically
 
 * 📖 [Djangoで自動リロードするページを作ろう！](https://qiita.com/muzudho1/items/8df599dc0e0acb25f649)
+* 📖 [Djangoで自動リダイレクトするページを作ろう！](https://qiita.com/muzudho1/items/aea9be36422763f082e9)
