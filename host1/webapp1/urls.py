@@ -585,6 +585,19 @@ urlpatterns = [
     # 2. v_practice.py ファイルの render_waiting_for_match メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatch' %} のような形でURLを取得するのに使える
 
+    # 対局待合室 v2
+    path('practice/waiting-for-match/v2/',
+         # -----------------------------
+         # 1
+         v_practice.render_waiting_for_match_v2, name='practice_waitingForMatchV2'),
+    #    --------------------------------------        --------------------------
+    #    2                                             3
+    #
+    # 1. 例えば `http://example.com/waiting-for-match/v2/` のような URL のパスの部分
+    #                              ----------------------
+    # 2. v_practice.py ファイルの render_waiting_for_match_v2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatchV2' %} のような形でURLを取得するのに使える
+
     # | 練習
     # +----
 
