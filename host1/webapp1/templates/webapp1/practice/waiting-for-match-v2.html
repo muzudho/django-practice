@@ -61,9 +61,15 @@
                 },
                 methods: {
                     /**
-                     * vue1.createRedirectUrl() のように使う
+                     * vue1.createRedirectUrl() のように使えます
                      */
                     createRedirectUrl() {
+                        if (!this.vu_redirectPath) {
+                            // JavaScript では、空文字列を not すると 真
+                            // リダイレクトしたくないときは空文字列を送る、という取り決めをしておきます
+                            return "";
+                        }
+
                         let url = `${location.protocol}//${location.host}${this.vu_redirectPath}`;
                         //         --------------------  ---------------]-----------------------
                         //         1                     2               3

@@ -23,6 +23,7 @@ function startReloadingAutomatically_v2(intervalMilliseconds) {
             // リダイレクトします
             window.location.href = redirectUrl;
         } else {
+            // JavaScript では、空文字列は 偽
             // リロードします
             location.reload();
         }
