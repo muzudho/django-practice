@@ -13,6 +13,6 @@ class Member(models.Model):
     # 追加
     stateInPark = models.IntegerField('状態1', blank=False, default=0)
 
-    # このオブジェクトを文字列にしたとき返るもの
     def __str__(self):
+        """このオブジェクトを文字列にしたとき返るもの"""
         return self.name

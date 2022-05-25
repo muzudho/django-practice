@@ -84,7 +84,7 @@ docker-compose up
 
 # Step 2. テンプレート編集 - user-list-v2.html ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -138,7 +138,7 @@ docker-compose up
                                         <td>{{ user.username }}</td>
                                         <td>{{ user.is_active }}</td>
                                         <td>{{ user.last_login }}</td>
-                                        <td>{{ user.match_state }}</td>
+                                        <td>{{ user.profile.match_state }}</td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -165,7 +165,123 @@ docker-compose up
 </html>
 ```
 
-# Step 3. モデルヘルパー作成 - mh_users.py ファイル
+# Step 3. User モデル拡張 - m_user_profile.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂models
+👉              └── 📄m_user_profile.py
+```
+
+```py
+from django.db import models
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+class Profile(models.Model):
+
+    # この User オブジェクトの下に Profile オブジェクトをぶら下げると思ってください
+    #
+    # Example
+    # -------
+    #
+    # user = User.objects.get(pk=user_id)
+    # print(user.profile.match_state)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # 対局のマッチング状態
+    #
+    # * `blank` - 未指定でもセーブを受け入れるなら真
+    # * `default` - 初期値
+    match_state = models.IntegerField('対局のマッチング状態', blank=True, default=0)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """新規作成"""
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """保存"""
+    instance.profile.save()
+```
+
+# Step 4. モデル作成 - コマンド実行
+
+```shell
+# cd host1
+
+docker-compose run --rm web python3 manage.py makemigrations webapp1
+#                                                            -------
+#                                                            1
+# 1. アプリケーション ディレクトリー名
+```
+
+以下のディレクトリーとファイルが生成される。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1
+            └── 📂migrations
+                ├── 📄__init__.py
+                └── 📄0001_initial.py   # ファイル名はこの通りとは限らない
+```
+
+👆 これらのファイルは マイグレーション ファイル と呼ぶらしい。  
+
+# Step 3. コマンド実行＜その２＞
+
+```shell
+docker-compose run --rm web python3 manage.py showmigrations
+```
+
+👆 マイグレーションする前に、マイグレーションの対象になっているものを確認  
+
+```shell
+docker-compose run --rm web python3 manage.py migrate
+```
+
+👆 ここまでやって マイグレーション という作業が終わるらしい。  
+
+```shell
+docker-compose run --rm web python3 manage.py showmigrations
+```
+
+👆 マイグレーションした後に、マイグレーションされたものを確認  
+
+# Step 4. 管理画面へ登録 - admin.py ファイル編集
+
+以下のファイルを編集してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+👉          └── 📄admin.py
+```
+
+```py
+from .models.m_user_profile import Profile
+
+# ... 中略 ...
+
+admin.site.register(Profile)
+```
+
+👆 管理画面に Profile オブジェクトが表示されるようにした  
+
+# Step 5. スーパーユーザーでWebの管理画面へアクセス
+
+📖 [http://localhost:8000/admin](http://localhost:8000/admin)  
+
+# Step 4. モデルヘルパー作成 - mh_users.py ファイル
 
 既存の以下のファイルを編集してほしい  
 
@@ -191,7 +307,11 @@ def get_user_dic_v2():
     User = get_user_model()
 
     # 会員登録ユーザー一覧
-    db_users_query_set = User.objects.all()
+    db_users_query_set = User.objects.all().select_related('profile')
+    #                                      --------------------------
+    #                                      1
+    # 1. User クラスを拡張して作った Profile クラスを指しています
+
     print(f"db_users_query_set={db_users_query_set}")
 
     # JSON 文字列に変換
@@ -208,6 +328,9 @@ def get_user_dic_v2():
             "last_login": db_user["fields"]["last_login"],
             "username": db_user["fields"]["username"],
             "is_active": db_user["fields"]["is_active"],
+            "profile" : {
+                "match_state": db_user["fields"]["match_state"],
+            },
         }
 
     return user_dic
@@ -234,8 +357,8 @@ def get_user_dic_v2():
 import json
 from django.shortcuts import render
 
-from webapp1.models_helper.mh_users import get_user_dic
-#    ------- ------------- --------        ------
+from webapp1.models_helper.mh_users import get_user_dic_v2
+#    ------- ------------- --------        ---------------
 #    1       2             3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -249,7 +372,8 @@ def render_user_list_v2(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
-        'dj_user_dic': json.dumps(get_user_dic())
+        'dj_user_dic': json.dumps(get_user_dic_v2()),
+        #                         -----------------
     }
 
     return render(request, "webapp1/practice/user-list-v2.html", context)
@@ -310,3 +434,12 @@ urlpatterns = [
 # 参考にした記事
 
 📖 [How to Extend Django User Model](https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html)  
+📖 [【django】モデルのフィールドについて：フィールドの型・オプション一覧](https://office54.net/python/django/model-field-options)  
+📖 [DjangoでMigrationsのリセット方法（既存のデータベースを残したまま）](https://dot-blog.jp/news/how-to-reset-django-migrations/)  
+📖 [Django : How to use select_related for a OneToOneField?](https://stackoverflow.com/questions/38701919/django-how-to-use-select-related-for-a-onetoonefield)  
+📖 [Django2.0から必須になったon_deleteの使い方](https://djangobrothers.com/blogs/on_delete/)  
+📖 [【django】モデルのリレーションフィールド：ForeignKey、OneToOneField、ManyToManyField](https://office54.net/python/django/model-field-relation)  
+📖 [One-to-one relationships](https://docs.djangoproject.com/en/4.0/topics/db/examples/one_to_one/)  
+📖 [One-To-One Relationship (OneToOneField)](https://medium.com/django-rest/one-to-one-relationships-onetoonefield-917cfd2e4ce3)  
+📖 [Managers](https://docs.djangoproject.com/en/4.0/topics/db/managers/)  
+📖 [Django 'model' object is not iterable](https://stackoverflow.com/questions/56374741/django-model-object-is-not-iterable)  

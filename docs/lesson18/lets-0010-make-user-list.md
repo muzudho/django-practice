@@ -81,7 +81,7 @@ docker-compose up
 
 # Step 2. テンプレート編集 - user-list.html ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -162,7 +162,7 @@ docker-compose up
 
 # Step 3. モデルヘルパー作成 - mh_users.py ファイル
 
-以下のファイルを無ければ新規作成、有れば編集してほしい。  
+以下のファイルを無ければ新規作成、有れば編集してほしい  
 
 ```plaintext
     └── 📂host1
