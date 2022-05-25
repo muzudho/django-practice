@@ -138,7 +138,7 @@ docker-compose up
                                         <td>{{ user.username }}</td>
                                         <td>{{ user.is_active }}</td>
                                         <td>{{ user.last_login }}</td>
-                                        <td>{{ user.profile.match_state }}</td>
+                                        <td>{{ user.match_state }}</td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -172,8 +172,12 @@ docker-compose up
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂models
-👉              └── 📄m_user_profile.py
+            ├── 📂models
+👉          │   └── 📄m_user_profile.py
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂practice
+                        └── 📄user-list-v2.html
 ```
 
 ```py
@@ -192,13 +196,23 @@ class Profile(models.Model):
     #
     # user = User.objects.get(pk=user_id)
     # print(user.profile.match_state)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    #
+    # OneToOneField - 1対1対応のリレーション。 デフォルトで Unique 属性
+    #
+    # * `on_delete` - 必須。 models.CASCADE なら、親テーブルのレコードが消されると、子テーブルのレコードも削除されます
+    user = models.OneToOneField(
+        User, related_name='profile', on_delete=models.CASCADE)
 
     # 対局のマッチング状態
     #
     # * `blank` - 未指定でもセーブを受け入れるなら真
     # * `default` - 初期値
-    match_state = models.IntegerField('対局のマッチング状態', blank=True, default=0)
+    match_state = models.IntegerField(
+        '対局のマッチング状態', null=True, blank=True, default=0)
+
+    def __str__(self):
+        """このオブジェクトを文字列にしたとき返るもの"""
+        return f"{self.user}'s profile"
 
 
 @receiver(post_save, sender=User)
@@ -212,6 +226,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 def save_user_profile(sender, instance, **kwargs):
     """保存"""
     instance.profile.save()
+
+
+# この行が要るのか分からない（＾～＾）
+# 📖 [Extending the User model with custom fields in Django](https://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django)
+# post_save.connect(create_user_profile, sender=User)
 ```
 
 # Step 4. モデル作成 - コマンド実行
@@ -237,7 +256,7 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
 
 👆 これらのファイルは マイグレーション ファイル と呼ぶらしい。  
 
-# Step 3. コマンド実行＜その２＞
+# Step 5. コマンド実行＜その２＞
 
 ```shell
 docker-compose run --rm web python3 manage.py showmigrations
@@ -257,13 +276,19 @@ docker-compose run --rm web python3 manage.py showmigrations
 
 👆 マイグレーションした後に、マイグレーションされたものを確認  
 
-# Step 4. 管理画面へ登録 - admin.py ファイル編集
+# Step 6. 管理画面へ登録 - admin.py ファイル編集
 
 以下のファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models
+            │   └── 📄m_user_profile.py
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂practice
+            │           └── 📄user-list-v2.html
 👉          └── 📄admin.py
 ```
 
@@ -277,23 +302,28 @@ admin.site.register(Profile)
 
 👆 管理画面に Profile オブジェクトが表示されるようにした  
 
-# Step 5. スーパーユーザーでWebの管理画面へアクセス
+# Step 7. スーパーユーザーでWebの管理画面へアクセス
 
 📖 [http://localhost:8000/admin](http://localhost:8000/admin)  
 
-# Step 4. モデルヘルパー作成 - mh_users.py ファイル
+👆 Profile モデルに、 User データに紐づくデータを登録しておいてほしい  
+
+# Step 8. モデルヘルパー作成 - mh_users.py ファイル
 
 既存の以下のファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models
+            │   └── 📄m_user_profile.py
             ├── 📂models_helper
 👉          │   └── 📄mh_users.py
-            └── 📂templates
-                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂practice
-                        └── 📄user-list-v2.html
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂practice
+            │           └── 📄user-list-v2.html
+            └── 📄admin.py
 ```
 
 ```py
@@ -301,56 +331,86 @@ import json
 from django.contrib.auth import get_user_model
 from django.core import serializers
 
+from webapp1.models.m_user_profile import Profile
+#    ------- ------ --------------        -------
+#    1       2      3                     4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
 
 def get_user_dic_v2():
     """会員登録ユーザー一覧 v2"""
     User = get_user_model()
 
     # 会員登録ユーザー一覧
-    db_users_query_set = User.objects.all().select_related('profile')
-    #                                      --------------------------
-    #                                      1
-    # 1. User クラスを拡張して作った Profile クラスを指しています
+    user_table_query_set = User.objects.all().select_related('profile')
+    #                                         -------------------------
+    #                                         1
+    # 1. これを付けて何が起こっているか分からないが、サンプルでよく付けているのを見かけるので真似する。外しても動く。
+    #    User クラスを拡張して作った Profile クラスの OneToOneField フィールドの名前を指しています
+    # print(f"user_table_query_set={user_table_query_set}")
 
-    print(f"db_users_query_set={db_users_query_set}")
-
-    # JSON 文字列に変換
-    db_users_json_str = serializers.serialize('json', db_users_query_set)
-    # オブジェクトに変換
-    db_user_doc = json.loads(db_users_json_str)
-    print(f"db_user_doc={json.dumps(db_user_doc, indent=4)}")
+    # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
+    user_table_json_str = serializers.serialize('json', user_table_query_set)
+    user_table_doc = json.loads(user_table_json_str)
+    # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
     # 使いやすい形に変換します
     user_dic = dict()
-    for db_user in db_user_doc:
-        user_dic[db_user["pk"]] = {
-            "pk": db_user["pk"],
-            "last_login": db_user["fields"]["last_login"],
-            "username": db_user["fields"]["username"],
-            "is_active": db_user["fields"]["is_active"],
-            "profile" : {
-                "match_state": db_user["fields"]["match_state"],
-            },
+    for user_record_doc in user_table_doc:
+        # print(f"user_record_doc={user_record_doc}")
+        username = user_record_doc["fields"]["username"]
+        # print(f"user_record_doc['fields']['username']={username}")
+
+        profile_table_query_set = Profile.objects.filter(
+            user__username=username)
+        #                         ------
+        #                         1
+        # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
+        # QuerySet は中身が見えないので JSON にダンプするのが定番
+        # print(f"Profile={profile_table_query_set}")
+
+        # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
+        profile_table_json_str = serializers.serialize(
+            'json', profile_table_query_set)
+        profile_table_doc = json.loads(profile_table_json_str)
+        # print(f"profile_table_doc={json.dumps(profile_table_doc, indent=4)}")
+
+        user_dic[user_record_doc["pk"]] = {
+            "pk": user_record_doc["pk"],
+            "last_login": user_record_doc["fields"]["last_login"],
+            "username": user_record_doc["fields"]["username"],
+            "is_active": user_record_doc["fields"]["is_active"],
+
+            "match_state": profile_table_doc[0]["fields"]["match_state"],
+            #                               ---
+            #                               1
+            # 1. 先頭の1件を取っている
         }
 
     return user_dic
 ```
 
-# Step 4. ビュー編集 - v_practice.py ファイル
+# Step 9. ビュー編集 - v_practice.py ファイル
 
 以下のファイルを無ければ新規作成、有れば編集してほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models
+            │   └── 📄m_user_profile.py
             ├── 📂models_helper
             │   └── 📄mh_users.py
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── 📄user-list.html
-            └── 📂views
-👉              └── 📄v_practice.py
+            │           └── 📄user-list-v2.html
+            ├── 📂views
+👉          │   └── 📄v_practice.py
+            └── 📄admin.py
 ```
 
 ```py
@@ -383,7 +443,7 @@ def render_user_list_v2(request):
     #                      ----------------------------------
 ```
 
-# Step 5. ルート編集 - urls.py ファイル
+# Step 10. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -427,9 +487,13 @@ urlpatterns = [
 ]
 ```
 
-# Step 6. Web画面へアクセス
+# Step 11. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/user-list/v2/](http://localhost:8000/practice/user-list/v2/)  
+
+# 次の記事
+
+📖 [Djangoで自動リロードするページを作ろう！](https://qiita.com/muzudho1/items/8df599dc0e0acb25f649)  
 
 # 参考にした記事
 

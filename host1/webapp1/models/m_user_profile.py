@@ -45,5 +45,6 @@ def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
 
+# この行が要るのか分からない（＾～＾）
 # 📖 [Extending the User model with custom fields in Django](https://stackoverflow.com/questions/44109/extending-the-user-model-with-custom-fields-in-django)
-post_save.connect(create_user_profile, sender=User)
+# post_save.connect(create_user_profile, sender=User)

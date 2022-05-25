@@ -108,9 +108,10 @@ Lesson 17. Lobby
 
 * 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
 
-Lesson 18. Users
+Lesson 18. Extend user model
 
 * 📖 [Djangoで会員登録ユーザーを一覧しよう！](https://qiita.com/muzudho1/items/13c15be5b9070dab1770)
+* 📖 [DjangoでUserモデルを拡張しよう！](https://qiita.com/muzudho1/items/2d182729f625234f0eff)
 
 Lesson 19. Web page reload and redirect automatically
 
