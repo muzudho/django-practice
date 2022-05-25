@@ -27,6 +27,22 @@ def render_user_list(request):
     #                      -------------------------------
 
 
+def render_user_list_v2(request):
+    """会員登録ユーザー一覧 v2"""
+
+    context = {
+        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+        # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
+        'dj_user_dic': json.dumps(get_user_dic())
+    }
+
+    return render(request, "webapp1/practice/user-list-v2.html", context)
+    #                       ----------------------------------
+    #                       1
+    # 1. webapp1/templates/webapp1/practice/user-list-v2.html
+    #                      ----------------------------------
+
+
 def render_waiting_for_match(request):
     """対局待合室"""
 

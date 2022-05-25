@@ -1,6 +1,9 @@
 # 目的
 
-会員登録しているユーザーの一覧がほしい  
+Django に最初から付いている User モデルを拡張したい  
+
+試しに 対局マッチング状況を表す match_state プロパティを追加するものとし、  
+その値は 整数とし、 0 を休憩中、 1 を対局申込中、 2 を対局案内中、 3 を対局中 とする  
 
 # はじめに
 
@@ -79,7 +82,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. テンプレート編集 - user-list.html ファイル
+# Step 2. テンプレート編集 - user-list-v2.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -89,7 +92,7 @@ docker-compose up
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
-👉                      └── 📄user-list.html
+👉                      └── 📄user-list-v2.html
 ```
 
 ```html
@@ -125,6 +128,7 @@ docker-compose up
                                         <th>ユーザー名</th>
                                         <th>アクティブか</th>
                                         <th>最終ログイン</th>
+                                        <th>マッチング状態</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -134,6 +138,7 @@ docker-compose up
                                         <td>{{ user.username }}</td>
                                         <td>{{ user.is_active }}</td>
                                         <td>{{ user.last_login }}</td>
+                                        <td>{{ user.match_state }}</td>
                                         {% endverbatim %}
                                     </tr>
                                 </tbody>
@@ -162,7 +167,7 @@ docker-compose up
 
 # Step 3. モデルヘルパー作成 - mh_users.py ファイル
 
-以下のファイルを無ければ新規作成、有れば編集してほしい。  
+既存の以下のファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
@@ -172,7 +177,7 @@ docker-compose up
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
-                        └── 📄user-list.html
+                        └── 📄user-list-v2.html
 ```
 
 ```py
@@ -181,8 +186,8 @@ from django.contrib.auth import get_user_model
 from django.core import serializers
 
 
-def get_user_dic():
-    """会員登録ユーザー一覧"""
+def get_user_dic_v2():
+    """会員登録ユーザー一覧 v2"""
     User = get_user_model()
 
     # 会員登録ユーザー一覧
@@ -238,8 +243,8 @@ from webapp1.models_helper.mh_users import get_user_dic
 # 4. クラス名
 
 
-def render_user_list(request):
-    """会員登録ユーザー一覧"""
+def render_user_list_v2(request):
+    """会員登録ユーザー一覧 v2"""
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
@@ -247,11 +252,11 @@ def render_user_list(request):
         'dj_user_dic': json.dumps(get_user_dic())
     }
 
-    return render(request, "webapp1/practice/user-list.html", context)
-    #                       -------------------------------
+    return render(request, "webapp1/practice/user-list-v2.html", context)
+    #                       ----------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/practice/user-list.html
-    #                      -------------------------------
+    # 1. webapp1/templates/webapp1/practice/user-list-v2.html
+    #                      ----------------------------------
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -266,7 +271,7 @@ def render_user_list(request):
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── 📄user-list.html
+            │           └── 📄user-list-v2.html
             ├── 📂views
             │   └── 📄v_practice.py
 👉          └── 📄urls.py
@@ -283,25 +288,25 @@ from webapp1.views import v_practice
 urlpatterns = [
     # ...中略...
 
-    # 会員登録ユーザー一覧
-    path('practice/user-list/',
-         # ------------------
+    # 会員登録ユーザー一覧 v2
+    path('practice/user-list/v2/',
+         # ---------------------
          # 1
-         v_practice.render_user_list, name='practice_userList'),
-    #    ---------------------------        -----------------
-    #    2                                  3
+         v_practice.render_user_list_v2, name='practice_userListV2'),
+    #    ------------------------------        -------------------
+    #    2                                     3
     #
-    # 1. 例えば `http://example.com/practice/user-list/` のような URL のパスの部分
-    #                              --------------------
-    # 2. v_practice.py ファイルの render_user_list メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
+    # 1. 例えば `http://example.com/practice/user-list/v2/` のような URL のパスの部分
+    #                              -----------------------
+    # 2. v_practice.py ファイルの render_user_list_v2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_userListV2' %} のような形でURLを取得するのに使える
 ]
 ```
 
 # Step 6. Web画面へアクセス
 
-📖 [http://localhost:8000/practice/user-list/](http://localhost:8000/practice/user-list/)  
+📖 [http://localhost:8000/practice/user-list/v2/](http://localhost:8000/practice/user-list/v2/)  
 
-# 次の記事
+# 参考にした記事
 
-📖 [Djangoで自動リロードするページを作ろう！](https://qiita.com/muzudho1/items/8df599dc0e0acb25f649)  
+📖 [How to Extend Django User Model](https://simpleisbetterthancomplex.com/tutorial/2016/07/22/how-to-extend-django-user-model.html)  

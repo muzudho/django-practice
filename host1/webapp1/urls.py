@@ -572,6 +572,19 @@ urlpatterns = [
     # 2. v_practice.py ファイルの render_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
 
+    # 会員登録ユーザー一覧 v2
+    path('practice/user-list/v2/',
+         # ---------------------
+         # 1
+         v_practice.render_user_list_v2, name='practice_userListV2'),
+    #    ------------------------------        -------------------
+    #    2                                     3
+    #
+    # 1. 例えば `http://example.com/practice/user-list/v2/` のような URL のパスの部分
+    #                              -----------------------
+    # 2. v_practice.py ファイルの render_user_list_v2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_userListV2' %} のような形でURLを取得するのに使える
+
     # 対局待合室
     path('practice/waiting-for-match/',
          # --------------------------
