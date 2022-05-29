@@ -35,6 +35,7 @@ Lesson 2. Auth
 
 Lesson 3. Page  
 
+* 📖 [Djangoでポータルページを作成しよう！](https://qiita.com/muzudho1/items/ad2299cf94a9a5b1c254)
 * 📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)
 * 📖 [Djangoでログイン／ログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 

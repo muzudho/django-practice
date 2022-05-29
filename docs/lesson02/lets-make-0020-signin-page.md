@@ -343,7 +343,7 @@ urlpatterns = [
 
 # 次の記事
 
-📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
+📖 [Djangoでポータルページを作成しよう！](https://qiita.com/muzudho1/items/ad2299cf94a9a5b1c254)  
 
 # 関連する記事
 

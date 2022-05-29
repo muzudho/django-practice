@@ -34,7 +34,23 @@ from webapp1.views import v_login_user, v_page1, v_member, v_practice_of_vuetify
     v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
 
 urlpatterns = [
-    path('', v_index.index, name='index'),
+
+    # +----
+    # | ポータル
+
+    # ポータル
+    path('', v_index.render_index, name='index'),
+    #    --  --------------------        -----
+    #    1   2                           3
+    # 1. 例えば `http://example.com/` のように、 URLのパスの部分を指定しなかったケースに対応します
+    # 2. v_index.py ファイルの render_index メソッド
+    # 3. HTMLテンプレートの中で {% url 'index' %} のような形でURLを取得するのに使える
+
+    # | ポータル
+    # +----
+
+
+
 
     # +----
     # | 管理者
