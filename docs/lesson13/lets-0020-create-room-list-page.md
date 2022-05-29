@@ -52,8 +52,8 @@ ID    部屋名        先手Id  先手名  後手Id  後手名  盤面       �
         │   │   │       ├── 📄judge.js
         │   │   │       ├── 📄protocol_main.js
         │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
+        │   │   ├── 📂practice
+        │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
