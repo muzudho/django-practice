@@ -29,13 +29,13 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂vuetify-practice
-        │   │       └── 📄desserts.json
+        │   │   └── 📂practice
+        │   │       └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       ├── 📂members
-        │   │       └── 📂vuetify-practice
+        │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
@@ -56,14 +56,14 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 以下の記事で掲載した JSON ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/static/vuetify-practice/desserts.json`
+  * 📄`host1/webapp1/static/practice/vuetify-desserts.json`
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂vuetify-practice
-👉                  └── 📄desserts.json
+                └── 📂practice
+👉                  └── 📄vuetify-desserts.json
 ```
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
@@ -76,12 +76,12 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂vuetify-practice
-👉                      └── 📄json-textarea1.html
+                    └── 📂practice
+👉                      └── 📄vuetify-json-textarea1.html
 ```
 
 ```html
@@ -133,19 +133,19 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 以下の記事で掲載した HTML ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/templates/vuetify-practice/data-table2.html`
+  * 📄`host1/webapp1/templates/practice/vuetify-data-table2.html`
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂vuetify-practice
-                        ├── 📄json-textarea1.html
-👉                      └── 📄data-table2.html
+                    └── 📂practice
+                        ├── 📄vuetify-json-textarea1.html
+👉                      └── 📄vuetify-data-table2.html
 ```
 
 # Step 4. ビュー編集 - v_practice_of_vuetify.py ファイル
@@ -156,13 +156,13 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           ├── 📄json-textarea1.html
-            │           └── data-table2.html
+            │       └── 📂practice
+            │           ├── 📄vuetify-json-textarea1.html
+            │           └── 📄vuetify-data-table2.html
             └── 📂views
 👉              └── 📄v_practice_of_vuetify.py
 ```
@@ -176,13 +176,13 @@ from django.template import loader
 def readJsonTextarea1(request):
     """Vuetify練習"""
     template = loader.get_template(
-        'webapp1/vuetify-practice/json-textarea1.html')
+        'webapp1/practice/vuetify-json-textarea1.html')
     #    --------------------------------------------
     #    1
-    # 1. host1/webapp1/templates/webapp1/vuetify-practice/json-textarea1.html を取ってきます。
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-json-textarea1.html を取ってきます。
     #                            --------------------------------------------
 
-    with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -195,10 +195,10 @@ def readDataTable2o2(request):
     """Vuetify練習"""
     form1Textarea1 = request.POST["textarea1"]
 
-    template = loader.get_template('webapp1/vuetify-practice/data-table2.html')
+    template = loader.get_template('webapp1/practice/vuetify-data-table2.html')
     #                               -----------------------------------------
     #                               1
-    # 1. host1/webapp1/templates/webapp1/vuetify-practice/data-table2.html を取ってきます。
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
     #                            -----------------------------------------
 
     context = {
@@ -215,13 +215,13 @@ def readDataTable2o2(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           ├── 📄json-textarea1.html
-            │           └── 📄data-table2.html
+            │       └── 📂practice
+            │           ├── 📄vuetify-json-textarea1.html
+            │           └── 📄vuetify-data-table2.html
             ├── 📂views
             │   └── 📄v_practice_of_vuetify.py
 👉          └── 📄urls.py
@@ -241,25 +241,25 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/json-textarea1', v_practice_of_vuetify.readJsonTextarea1,
+    path('practice/vuetify-json-textarea1', v_practice_of_vuetify.readJsonTextarea1,
          # ------------------------------   ---------------------------------------
          # 1                                2
          name='readJsonTextarea1'),
     #          -----------------
     #          3
-    # 1. 例えば `http://example.com/vuetify-practice/json-textarea1` のような URL のパスの部分
-    #                              -------------------------------
+    # 1. 例えば `http://example.com/practice/vuetify-json-textarea1` のような URL のパスの部分
+    #                              --------------------------------
     # 2. v_practice_of_vuetify.py ファイルの readJsonTextarea1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('vuetify-practice/data-table2o2', v_practice_of_vuetify.readDataTable2o2,
+    path('practice/vuetify-data-table2o2', v_practice_of_vuetify.readDataTable2o2,
          # -----------------------------   --------------------------------------
          # 1                               2
          name='readDataTable2o2'),
     #          ----------------
     #          3
-    # 1. 例えば `http://example.com/vuetify-practice/data-table2o2` のような URL のパスの部分
+    # 1. 例えば `http://example.com/practice/vuetify-data-table2o2` のような URL のパスの部分
     #                              -------------------------------
     # 2. v_practice_of_vuetify.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
@@ -276,7 +276,7 @@ cd host1
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify-practice/json-textarea1](http://localhost:8000/vuetify-practice/json-textarea1)  
+📖 [http://localhost:8000/practice/vuetify-json-textarea1](http://localhost:8000/practice/vuetify-json-textarea1)  
 
 # 次の記事
 
