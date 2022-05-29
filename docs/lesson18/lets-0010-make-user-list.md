@@ -181,31 +181,34 @@ from django.contrib.auth import get_user_model
 from django.core import serializers
 
 
-def get_user_dic():
-    """会員登録ユーザー一覧"""
-    User = get_user_model()
+class MhUser():
 
-    # 会員登録ユーザー一覧
-    db_users_query_set = User.objects.all()
-    print(f"db_users_query_set={db_users_query_set}")
+    @staticmethod
+    def get_user_dic():
+        """会員登録ユーザー一覧"""
+        User = get_user_model()
 
-    # JSON 文字列に変換
-    db_users_json_str = serializers.serialize('json', db_users_query_set)
-    # オブジェクトに変換
-    db_user_doc = json.loads(db_users_json_str)
-    print(f"db_user_doc={json.dumps(db_user_doc, indent=4)}")
+        # 会員登録ユーザー一覧
+        db_users_query_set = User.objects.all()
+        print(f"db_users_query_set={db_users_query_set}")
 
-    # 使いやすい形に変換します
-    user_dic = dict()
-    for db_user in db_user_doc:
-        user_dic[db_user["pk"]] = {
-            "pk": db_user["pk"],
-            "last_login": db_user["fields"]["last_login"],
-            "username": db_user["fields"]["username"],
-            "is_active": db_user["fields"]["is_active"],
-        }
+        # JSON 文字列に変換
+        db_users_json_str = serializers.serialize('json', db_users_query_set)
+        # オブジェクトに変換
+        db_user_doc = json.loads(db_users_json_str)
+        print(f"db_user_doc={json.dumps(db_user_doc, indent=4)}")
 
-    return user_dic
+        # 使いやすい形に変換します
+        user_dic = dict()
+        for db_user in db_user_doc:
+            user_dic[db_user["pk"]] = {
+                "pk": db_user["pk"],
+                "last_login": db_user["fields"]["last_login"],
+                "username": db_user["fields"]["username"],
+                "is_active": db_user["fields"]["is_active"],
+            }
+
+        return user_dic
 ```
 
 # Step 4. ビュー編集 - v_practice.py ファイル
@@ -229,7 +232,7 @@ def get_user_dic():
 import json
 from django.shortcuts import render
 
-from webapp1.models_helper.mh_user import get_user_dic
+from webapp1.models_helper.mh_user import MhUser
 #    ------- ------------- -------        ------
 #    1       2             3              4
 # 1. アプリケーション フォルダー名
@@ -244,7 +247,7 @@ def render_user_list(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
-        'dj_user_dic': json.dumps(get_user_dic())
+        'dj_user_dic': json.dumps(MhUser.get_user_dic())
     }
 
     return render(request, "webapp1/practice/user-list.html", context)

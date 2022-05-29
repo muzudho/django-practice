@@ -340,57 +340,61 @@ from webapp1.models.m_user_profile import Profile
 # 4. クラス名
 
 
-def get_user_dic_v2():
-    """会員登録ユーザー一覧 v2"""
-    User = get_user_model()
+class MhUser():
 
-    # 会員登録ユーザー一覧
-    user_table_query_set = User.objects.all().select_related('profile')
-    #                                         -------------------------
-    #                                         1
-    # 1. これを付けて何が起こっているか分からないが、サンプルでよく付けているのを見かけるので真似する。外しても動く。
-    #    User クラスを拡張して作った Profile クラスの OneToOneField フィールドの名前を指しています
-    # print(f"user_table_query_set={user_table_query_set}")
+    @staticmethod
+    def get_user_dic_v2():
+        """会員登録ユーザー一覧 v2"""
+        User = get_user_model()
 
-    # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
-    user_table_json_str = serializers.serialize('json', user_table_query_set)
-    user_table_doc = json.loads(user_table_json_str)
-    # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
-
-    # 使いやすい形に変換します
-    user_dic = dict()
-    for user_record_doc in user_table_doc:
-        # print(f"user_record_doc={user_record_doc}")
-        username = user_record_doc["fields"]["username"]
-        # print(f"user_record_doc['fields']['username']={username}")
-
-        profile_table_query_set = Profile.objects.filter(
-            user__username=username)
-        #                         ------
-        #                         1
-        # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
-        # QuerySet は中身が見えないので JSON にダンプするのが定番
-        # print(f"Profile={profile_table_query_set}")
+        # 会員登録ユーザー一覧
+        user_table_query_set = User.objects.all().select_related('profile')
+        #                                         -------------------------
+        #                                         1
+        # 1. これを付けて何が起こっているか分からないが、サンプルでよく付けているのを見かけるので真似する。外しても動く。
+        #    User クラスを拡張して作った Profile クラスの OneToOneField フィールドの名前を指しています
+        # print(f"user_table_query_set={user_table_query_set}")
 
         # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
-        profile_table_json_str = serializers.serialize(
-            'json', profile_table_query_set)
-        profile_table_doc = json.loads(profile_table_json_str)
-        # print(f"profile_table_doc={json.dumps(profile_table_doc, indent=4)}")
+        user_table_json_str = serializers.serialize(
+            'json', user_table_query_set)
+        user_table_doc = json.loads(user_table_json_str)
+        # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
-        user_dic[user_record_doc["pk"]] = {
-            "pk": user_record_doc["pk"],
-            "last_login": user_record_doc["fields"]["last_login"],
-            "username": user_record_doc["fields"]["username"],
-            "is_active": user_record_doc["fields"]["is_active"],
+        # 使いやすい形に変換します
+        user_dic = dict()
+        for user_record_doc in user_table_doc:
+            # print(f"user_record_doc={user_record_doc}")
+            username = user_record_doc["fields"]["username"]
+            # print(f"user_record_doc['fields']['username']={username}")
 
-            "match_state": profile_table_doc[0]["fields"]["match_state"],
-            #                               ---
-            #                               1
-            # 1. 先頭の1件を取っている
-        }
+            profile_table_query_set = Profile.objects.filter(
+                user__username=username)
+            #                         ------
+            #                         1
+            # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
+            # QuerySet は中身が見えないので JSON にダンプするのが定番
+            # print(f"Profile={profile_table_query_set}")
 
-    return user_dic
+            # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
+            profile_table_json_str = serializers.serialize(
+                'json', profile_table_query_set)
+            profile_table_doc = json.loads(profile_table_json_str)
+            # print(f"profile_table_doc={json.dumps(profile_table_doc, indent=4)}")
+
+            user_dic[user_record_doc["pk"]] = {
+                "pk": user_record_doc["pk"],
+                "last_login": user_record_doc["fields"]["last_login"],
+                "username": user_record_doc["fields"]["username"],
+                "is_active": user_record_doc["fields"]["is_active"],
+
+                "match_state": profile_table_doc[0]["fields"]["match_state"],
+                #                               ---
+                #                               1
+                # 1. 先頭の1件を取っている
+            }
+
+        return user_dic
 ```
 
 # Step 9. ビュー編集 - v_practice.py ファイル
@@ -417,8 +421,8 @@ def get_user_dic_v2():
 import json
 from django.shortcuts import render
 
-from webapp1.models_helper.mh_user import get_user_dic_v2
-#    ------- ------------- -------        ---------------
+from webapp1.models_helper.mh_user import MhUser
+#    ------- ------------- -------        ------
 #    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -432,8 +436,8 @@ def render_user_list_v2(request):
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
-        'dj_user_dic': json.dumps(get_user_dic_v2()),
-        #                         -----------------
+        'dj_user_dic': json.dumps(MhUser.get_user_dic_v2()),
+        #                                            ---
     }
 
     return render(request, "webapp1/practice/user-list-v2.html", context)
