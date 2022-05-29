@@ -6,11 +6,11 @@
 
 ```plaintext
 一覧表示
-ID    部屋名        盤面       棋譜       アクション
-----  -----------  ---------  ---------  ---------
-1     Elephant     XOXOXOXOX  012345678  [観る]
-2     Giraffe      XOXOXOXOX  012345678  [観る]
-3     Lion         XOXOXOXOX  012345678  [観る]
+ID    部屋名        対局者_先手Id 対局者_後手Id  盤面       棋譜       アクション
+----  -----------  ------------ ------------  ---------  ---------  ---------
+1     Elephant                1            2  XOXOXOXOX  012345678  [観る]
+2     Giraffe                 3            4  XOXOXOXOX  012345678  [観る]
+3     Lion                    5            6  XOXOXOXOX  012345678  [観る]
 ```
 
 # はじめに
@@ -90,7 +90,19 @@ ID    部屋名        盤面       棋譜       アクション
         └── 📄<いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -131,6 +143,8 @@ ID    部屋名        盤面       棋譜       アクション
                                     <tr>
                                         <th>ID</th>
                                         <th>部屋名</th>
+                                        <th>先手Id</th>
+                                        <th>後手Id</th>
                                         <th>盤面</th>
                                         <th>棋譜</th>
                                         <th>アクション</th>
@@ -138,9 +152,13 @@ ID    部屋名        盤面       棋譜       アクション
                                 </thead>
                                 <tbody>
                                     <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
-                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                                        <!--  -->
+                                        {% verbatim %}
                                         <td>{{ room.id }}</td>
                                         <td>{{ room.name }}</td>
+                                        <td>{{ room.sente_id }}</td>
+                                        <td>{{ room.gote_id }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
                                         <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
@@ -167,11 +185,21 @@ ID    部屋名        盤面       棋譜       アクション
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_hotelDoc: hotelDoc1,
-                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+                    vu_readRoomPath: "{{ dj_read_room_path }}",
                 },
                 methods: {
+                    /**
+                     * vue1.createRoomsReadPath() のように使えます
+                     */
                     createRoomsReadPath(id) {
-                        return `${this.vu_readRoomPath}${id}`;
+                        let url = `${location.protocol}//${location.host}${this.vu_readRoomPath}${id}`;
+                        //         --------------------  ---------------]----------------------------
+                        //         1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`read-page url=[${url}]`);
+                        return url;
                     },
                 },
             });
@@ -180,7 +208,7 @@ ID    部屋名        盤面       棋譜       アクション
 </html>
 ```
 
-# Step 2. ビュー編集 - v_room.py ファイル
+# Step 3. ビュー編集 - v_room.py ファイル
 
 以下のファイルを編集してほしい。  
 
@@ -209,28 +237,30 @@ from webapp1.models.m_room import Room
 
 def render_list_room(request):
     """部屋一覧"""
-    roomQuerySet = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
-    dbRoomJsonStr = serializers.serialize('json', roomQuerySet)  # JSON 文字列に変換
-    # Example:
-    # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
-    # print(f"dbRoomJsonStr={dbRoomJsonStr}")
 
-    dbRoomDoc = json.loads(dbRoomJsonStr)  # オブジェクトに変換
-    # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
+    # ２段階変換: roomテーブルid順 ----> JSON文字列 ----> オブジェクト
+    room_table_qs = Room.objects.all().order_by('id')  # Query Set
+    room_table_json = serializers.serialize('json', room_table_qs)  # JSON 文字列
+    # print(f"room_table_json={room_table_json}")
+
+    room_table_doc = json.loads(room_table_json)  # オブジェクト
+    # print(f"room_table_doc={json.dumps(room_table_doc, indent=4)}")
     """
     # Example
-    dbRoomDoc=
+    room_table_doc=
     [
         {
             "model": "webapp1.room",
             "pk": 2,
             "fields": {
                 "name": "Elephant",
+                "sente_id": 1,
+                "gote_id": 2,
                 "board": "XOXOXOXOX",
                 "record": "012345678"
             }
         },
-        ...
+        ...中略...
     ]
     """
 
@@ -238,22 +268,20 @@ def render_list_room(request):
     resDoc = dict()
     resDoc["rooms"] = []
 
-    for dbRecord in dbRoomDoc:
-        # Example:
-        # dbRecord= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
-        # print(f"dbRecord= --> {dbRecord} <--")
+    for room_rec in room_table_doc:  # Room record
+        # print(f"room_rec= --> {room_rec} <--")
 
         resDoc["rooms"].append(
             {
-                "id": dbRecord["pk"],
-                "name": dbRecord["fields"]["name"],
-                "board": dbRecord["fields"]["board"],
-                "record": dbRecord["fields"]["record"],
+                "id": room_rec["pk"],
+                "name": room_rec["fields"]["name"],
+                "sente_id": room_rec["fields"]["sente_id"],
+                "gote_id": room_rec["fields"]["gote_id"],
+                "board": room_rec["fields"]["board"],
+                "record": room_rec["fields"]["record"],
             }
         )
 
-    # Example:
-    # resDoc={'rooms': [{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]}
     # print(f'resDoc={resDoc}')
 
     context = {
@@ -261,12 +289,10 @@ def render_list_room(request):
         # 部屋がいっぱいあるので、名前はホテルとします
         # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
         "dj_hotel": json.dumps(resDoc),
-        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_readRoomPath": "read/",
+        # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
+        "dj_read_room_path": "/rooms/read/",
     }
-    # Example:
-    # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
-    print(f"context={context}")
+    # print(f"context={context}")
 
     return render(request, "webapp1/rooms/list.html", context)
     #                       -----------------------
@@ -275,7 +301,7 @@ def render_list_room(request):
     #                      -----------------------
 ```
 
-# Step 3. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -314,7 +340,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 ```shell
 cd host1

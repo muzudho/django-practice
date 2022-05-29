@@ -23,28 +23,30 @@ from webapp1.forms.f_room import RoomForm
 
 def render_list_room(request):
     """部屋一覧"""
-    roomQuerySet = Room.objects.all().order_by('id')  # id 順にメンバーを全部取得
-    dbRoomJsonStr = serializers.serialize('json', roomQuerySet)  # JSON 文字列に変換
-    # Example:
-    # dbRoomJsonStr=[{"model": "webapp1.room", "pk": 2, "fields": {"name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 3, "fields": {"name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}}, {"model": "webapp1.room", "pk": 5, "fields": {"name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}}]
-    # print(f"dbRoomJsonStr={dbRoomJsonStr}")
 
-    dbRoomDoc = json.loads(dbRoomJsonStr)  # オブジェクトに変換
-    # print(f"dbRoomDoc={json.dumps(dbRoomDoc, indent=4)}")
+    # ２段階変換: roomテーブルid順 ----> JSON文字列 ----> オブジェクト
+    room_table_qs = Room.objects.all().order_by('id')  # Query Set
+    room_table_json = serializers.serialize('json', room_table_qs)  # JSON 文字列
+    # print(f"room_table_json={room_table_json}")
+
+    room_table_doc = json.loads(room_table_json)  # オブジェクト
+    # print(f"room_table_doc={json.dumps(room_table_doc, indent=4)}")
     """
     # Example
-    dbRoomDoc=
+    room_table_doc=
     [
         {
             "model": "webapp1.room",
             "pk": 2,
             "fields": {
                 "name": "Elephant",
+                "sente_id": 1,
+                "gote_id": 2,
                 "board": "XOXOXOXOX",
                 "record": "012345678"
             }
         },
-        ...
+        ...中略...
     ]
     """
 
@@ -52,22 +54,20 @@ def render_list_room(request):
     resDoc = dict()
     resDoc["rooms"] = []
 
-    for dbRecord in dbRoomDoc:
-        # Example:
-        # dbRecord= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
-        # print(f"dbRecord= --> {dbRecord} <--")
+    for room_rec in room_table_doc:  # Room record
+        # print(f"room_rec= --> {room_rec} <--")
 
         resDoc["rooms"].append(
             {
-                "id": dbRecord["pk"],
-                "name": dbRecord["fields"]["name"],
-                "board": dbRecord["fields"]["board"],
-                "record": dbRecord["fields"]["record"],
+                "id": room_rec["pk"],
+                "name": room_rec["fields"]["name"],
+                "sente_id": room_rec["fields"]["sente_id"],
+                "gote_id": room_rec["fields"]["gote_id"],
+                "board": room_rec["fields"]["board"],
+                "record": room_rec["fields"]["record"],
             }
         )
 
-    # Example:
-    # resDoc={'rooms': [{'id': 2, 'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 3, 'name': 'Giraffe', 'board': 'XOXOXOXOX', 'record': '012345678'}, {'id': 5, 'name': 'Gold', 'board': 'XOXOXOXOX', 'record': '012345678'}]}
     # print(f'resDoc={resDoc}')
 
     context = {
@@ -75,12 +75,10 @@ def render_list_room(request):
         # 部屋がいっぱいあるので、名前はホテルとします
         # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
         "dj_hotel": json.dumps(resDoc),
-        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_readRoomPath": "read/",
+        # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
+        "dj_read_room_path": "/rooms/read/",
     }
-    # Example:
-    # context={'dj_hotel': '{"rooms": [{"id": 2, "name": "Elephant", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 3, "name": "Giraffe", "board": "XOXOXOXOX", "record": "012345678"}, {"id": 5, "name": "Gold", "board": "XOXOXOXOX", "record": "012345678"}]}', 'dj_readRoom': 'rooms/read/'}
-    print(f"context={context}")
+    # print(f"context={context}")
 
     return render(request, "webapp1/rooms/list.html", context)
     #                       -----------------------

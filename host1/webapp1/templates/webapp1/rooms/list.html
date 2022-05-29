@@ -25,6 +25,8 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>部屋名</th>
+                                        <th>先手Id</th>
+                                        <th>後手Id</th>
                                         <th>盤面</th>
                                         <th>棋譜</th>
                                         <th>アクション</th>
@@ -32,9 +34,13 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
-                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                        {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                                        <!--  -->
+                                        {% verbatim %}
                                         <td>{{ room.id }}</td>
                                         <td>{{ room.name }}</td>
+                                        <td>{{ room.sente_id }}</td>
+                                        <td>{{ room.gote_id }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
                                         <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
@@ -61,11 +67,21 @@
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
                     vu_hotelDoc: hotelDoc1,
-                    vu_readRoomPath: "{{ dj_readRoomPath }}",
+                    vu_readRoomPath: "{{ dj_read_room_path }}",
                 },
                 methods: {
+                    /**
+                     * vue1.createRoomsReadPath() のように使えます
+                     */
                     createRoomsReadPath(id) {
-                        return `${this.vu_readRoomPath}${id}`;
+                        let url = `${location.protocol}//${location.host}${this.vu_readRoomPath}${id}`;
+                        //         --------------------  ---------------]----------------------------
+                        //         1                     2               3
+                        // 1. protocol
+                        // 2. host
+                        // 3. path
+                        console.log(`read-page url=[${url}]`);
+                        return url;
                     },
                 },
             });
