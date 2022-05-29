@@ -79,7 +79,19 @@
         └── 📄<いろいろ>
 ```
 
-# Step 1. モデル作成 - m_member.py ファイル
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. モデル作成 - m_member.py ファイル
 
 以下のファイルを作成してほしい  
 
@@ -105,6 +117,16 @@ class Room(models.Model):
     # Example: Elephant
     name = models.CharField('部屋名', max_length=25)
 
+    # 対局者_先手Id
+    # ------------
+    # Example: 1
+    sente_id = models.IntegerField('対局者_先手Id', null=True, blank=True)
+
+    # 対局者_後手Id
+    # ------------
+    # Example: 2
+    gote_id = models.IntegerField('対局者_後手Id', null=True, blank=True)
+
     # 盤面
     # ----
     # Example: ..O.X.X..
@@ -122,14 +144,15 @@ class Room(models.Model):
     # Example: 426
     record = models.CharField('棋譜', max_length=9)
 
-    # このオブジェクトを文字列にしたとき返るもの
     def __str__(self):
+        """このオブジェクトを文字列にしたとき返るもの"""
         return self.name
 ```
 
-# Step 2. コマンド実行
+# Step 3. コマンド実行
 
 ```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
 cd host1
 
 docker-compose run --rm web python3 manage.py makemigrations webapp1
@@ -145,14 +168,14 @@ docker-compose run --rm web python3 manage.py makemigrations webapp1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂migrations
             │   ├── 📄<いろいろ>.py
-👉          │   └── 📄0003_room.py
+👉          │   └── 📄0003_room.py          # このファイル名は変わります
             └── 📂models
                 └── 📄m_room.py
 ```
 
 👆 これらのファイルは マイグレーション ファイル と呼ぶらしい  
 
-# Step 3. コマンド実行＜その２＞
+# Step 4. コマンド実行＜その２＞
 
 ```shell
 docker-compose run --rm web python manage.py migrate
@@ -160,7 +183,7 @@ docker-compose run --rm web python manage.py migrate
 
 👆 ここまでやって マイグレーション という作業が終わるらしい  
 
-# Step 4. admin.py を編集
+# Step 5. admin.py を編集
 
 以下のファイルを編集してほしい  
 
@@ -189,7 +212,7 @@ admin.site.register(Room)
 
 👆 管理画面に Room オブジェクトが表示されるようにしている。  
 
-# Step 5. スーパーユーザーでWebの管理画面へアクセス
+# Step 6. スーパーユーザーでWebの管理画面へアクセス
 
 ```shell
 # Dockerコンテナの起動
@@ -210,13 +233,19 @@ Rooms    +Add ✏Change
 のように表示されていればOK。  
 されていなければ、スーパーユーザーでログインし直してほしい。  
 
-# Step 6. Room を３つほど追加してほしい
+# Step 7. Room を３つほど追加してほしい
 
 `Rooms    +Add` の右側の `+Add` リンクをクリックしてほしい。  
 
 ```plaintext
 部屋名:
       ----------------
+
+対局者_先手Id:
+             ----------------
+
+対局者_後手Id:
+             ----------------
 
 盤面:
     ----------------
@@ -232,16 +261,16 @@ Rooms    +Add ✏Change
 入力例:  
 
 ```plaintext
-部屋名        盤面       棋譜
------------  ---------  ---------
-Elephant     XOXOXOXOX  012345678
-Giraffe      XOXOXOXOX  012345678
-Lion         XOXOXOXOX  012345678
+部屋名        対局者_先手Id  対局者_後手Id  盤面       棋譜
+-----------  ------------  ------------  ---------  ---------
+Elephant                1             2  XOXOXOXOX  012345678
+Giraffe                 3             4  XOXOXOXOX  012345678
+Lion                    5             6  XOXOXOXOX  012345678
 ```
 
 `[SAVE]` が追加ボタンのようだ。  
 
-# Step 7. 登録した Room を確認してほしい
+# Step 8. 登録した Room を確認してほしい
 
 `Rooms    +Add` の `Rooms` リンクをクリックすると、一覧画面が出てくる。  
 
