@@ -10,8 +10,8 @@ Webサイトのページを追加したい。
 以下のようなURLで表示させる。  
 
 ```plain
-http://<省略>.com/practice1/page1
-------]---------]----------------
+http://<省略>.com/practice/page1
+------]---------]---------------
 1      2         3
 
 1. プロトコル
@@ -133,10 +133,10 @@ from webapp1.views import v_page1
 urlpatterns = [
     # ...中略...
 
-    path('practice1/page1', v_page1.page1, name='page1'),
-    #     ---------------   -------------        -----
+    path('practice/page1', v_page1.page1, name='page1'),
+    #     --------------   -------------        -----
     #     1                 2                    3
-    # 1. URLの `practice1/page1` というパスにマッチする
+    # 1. URLの `practice/page1` というパスにマッチする
     # 2. v_page1.py ファイルの page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 ]
@@ -144,7 +144,7 @@ urlpatterns = [
 
 # Step 4. Webページにアクセスする
 
-📖 [http://localhost:8000/practice1/page1](http://localhost:8000/practice1/page1)  
+📖 [http://localhost:8000/practice/page1](http://localhost:8000/practice/page1)  
 
 # 次の記事
 

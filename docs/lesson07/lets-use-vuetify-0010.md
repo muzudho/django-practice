@@ -106,8 +106,8 @@ Django に最初から入っている HTMLレンダラー に満足できない�
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           └── 📄hello1.html
+            │       └── 📂practice
+            │           └── 📄vuetify-hello1.html
             └── 📂views
 👉              └── 📄v_practice_of_vuetify.py
 ```
@@ -120,10 +120,10 @@ from django.template import loader
 def readHello(request, id=id):
     """Vuetify練習"""
 
-    template = loader.get_template('webapp1/vuetify-practice/hello1.html')
+    template = loader.get_template('webapp1/practice/vuetify-hello1.html')
     #                               ------------------------------------
     #                               1
-    # 1. host1/webapp1/templates/webapp1/vuetify-practice/hello1.html を取ってきます。
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-hello1.html を取ってきます。
     #                            ------------------------------------
 
     context = {
@@ -162,13 +162,13 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/hello1',
+    path('practice/vuetify-hello1',
          # ----------------------
          # 1
          v_practice_of_vuetify.readHello, name='readHello'),
     #     ------------------------------        ---------
     #     2                                     3
-    # 1. URLの `vuetify-practice/hello1` というパスにマッチする
+    # 1. URLの `practice/vuetify-hello1` というパスにマッチする
     # 2. v_practice_of_vuetify.py ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 ]
@@ -181,7 +181,7 @@ urlpatterns = [
 docker-compose up
 ```
 
-📖 [http://localhost:8000/vuetify-practice/hello1](http://localhost:8000/vuetify-practice/hello1)  
+📖 [http://localhost:8000/practice/vuetify-hello1](http://localhost:8000/practice/vuetify-hello1)  
 
 # 次の記事
 

@@ -1,7 +1,6 @@
 # 目的
 
-Vuetify を自由自在に使えるよう、使用スキルを上げたい。  
-Data table を作れば上がる。だから説明する。  
+Vuetify の テキストフィールド の バリデーション を練習したい  
 
 # はじめに
 
@@ -14,7 +13,6 @@ Data table を作れば上がる。だから説明する。
 | --------- | ----------------------------------------- |
 | OS        | Windows10                                 |
 | Container | Docker                                    |
-| Auth      | allauth                                   |
 | Frontside | Vuetify                                   |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
@@ -47,7 +45,7 @@ Data table を作れば上がる。だから説明する。
         └── <いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 1. 画面作成 - HTMLファイル
 
 以下のファイルを作成してほしい。  
 
