@@ -213,19 +213,14 @@ class MhSession():
             data = session.get_decoded()
             uid_list.append(data.get('_auth_user_id', None))
 
-        # ユーザーID一覧を使って、ユーザーを絞りこみます
-        dbUsersQuerySet = User.objects.filter(id__in=uid_list)
+        # ２段階変換: 問合せ結果（QuerySet）id絞りこみ ----> JSON文字列 ----> オブジェクト
+        user_table_qs = User.objects.filter(id__in=uid_list)  # QuerySet
         # users=<QuerySet [<User: kifuwarabe>]>
-        # print(f"dbUsersQuerySet={dbUsersQuerySet}")
-
-        # JSON 文字列に変換
-        dbUsersJsonStr = serializers.serialize('json', dbUsersQuerySet)
-        # print(f"dbUsersJsonStr={dbUsersJsonStr}")
-
-        # オブジェクトに変換
-        dbUserDoc = json.loads(dbUsersJsonStr)
+        # print(f"user_table_qs={user_table_qs}")
+        user_table_json = serializers.serialize('json', user_table_qs)
+        user_table_doc = json.loads(user_table_json)  # オブジェクト
         """
-web_1  | dbUserDoc=[
+web_1  | user_table_doc=[
 web_1  |     {
 web_1  |         "model": "auth.user",
 web_1  |         "pk": 1,
@@ -246,19 +241,19 @@ web_1  |         }
 web_1  |     }
 web_1  | ]
 """
-        # print(f"dbUserDoc={json.dumps(dbUserDoc, indent=4)}")
+        # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
         # 使いやすい形に変換します
-        usersDic = dict()
-        for dbUser in dbUserDoc:
-            usersDic[dbUser["pk"]] = {
-                "pk": dbUser["pk"],
-                "last_login": dbUser["fields"]["last_login"],
-                "username": dbUser["fields"]["username"],
-                "is_active": dbUser["fields"]["is_active"],
+        user_dic = dict()
+        for user_rec in user_table_doc:  # User Record
+            user_dic[user_rec["pk"]] = {
+                "pk": user_rec["pk"],
+                "last_login": user_rec["fields"]["last_login"],
+                "username": user_rec["fields"]["username"],
+                "is_active": user_rec["fields"]["is_active"],
             }
 
-        return usersDic
+        return user_dic
 ```
 
 # Step 3. ビュー編集 - v_session_practice_v1.py ファイル

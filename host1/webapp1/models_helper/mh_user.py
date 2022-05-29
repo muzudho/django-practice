@@ -47,8 +47,8 @@ class MhUser():
         # 会員登録ユーザー一覧
         # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
         user_table_qs = User.objects.all().select_related('profile')  # QuerySet
-        #                                         -------------------------
-        #                                         1
+        #                                 --------------------------
+        #                                 1
         # 1. これを付けて何が起こっているか分からないが、サンプルでよく付けているのを見かけるので真似する。外しても動く。
         #    User クラスを拡張して作った Profile クラスの OneToOneField フィールドの名前を指しています
         # print(f"user_table_qs={user_table_qs}")
@@ -64,18 +64,18 @@ class MhUser():
             username = user_rec["fields"]["username"]
             # print(f"user_rec['fields']['username']={username}")
 
-            profile_table_query_set = Profile.objects.filter(
+            # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+            profile_table_qs = Profile.objects.filter(  # QuerySet
+                #                             -------
+                #                             1
                 user__username=username)
-            #                         ------
-            #                         1
             # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
             # QuerySet は中身が見えないので JSON にダンプするのが定番
-            # print(f"Profile={profile_table_query_set}")
-
-            # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
-            profile_table_json_str = serializers.serialize(
-                'json', profile_table_query_set)
-            profile_table_doc = json.loads(profile_table_json_str)
+            # print(f"Profile={profile_table_qs}")
+            #
+            profile_table_json = serializers.serialize(
+                'json', profile_table_qs)
+            profile_table_doc = json.loads(profile_table_json)  # オブジェクト
             # print(f"profile_table_doc={json.dumps(profile_table_doc, indent=4)}")
 
             user_dic[user_rec["pk"]] = {

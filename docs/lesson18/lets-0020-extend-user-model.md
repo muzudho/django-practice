@@ -348,45 +348,44 @@ class MhUser():
         User = get_user_model()
 
         # 会員登録ユーザー一覧
-        user_table_query_set = User.objects.all().select_related('profile')
-        #                                         -------------------------
-        #                                         1
+        # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+        user_table_qs = User.objects.all().select_related('profile')  # QuerySet
+        #                                 --------------------------
+        #                                 1
         # 1. これを付けて何が起こっているか分からないが、サンプルでよく付けているのを見かけるので真似する。外しても動く。
         #    User クラスを拡張して作った Profile クラスの OneToOneField フィールドの名前を指しています
-        # print(f"user_table_query_set={user_table_query_set}")
-
-        # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
-        user_table_json_str = serializers.serialize(
-            'json', user_table_query_set)
-        user_table_doc = json.loads(user_table_json_str)
+        # print(f"user_table_qs={user_table_qs}")
+        #
+        user_table_json = serializers.serialize('json', user_table_qs)
+        user_table_doc = json.loads(user_table_json)
         # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
         # 使いやすい形に変換します
         user_dic = dict()
-        for user_record_doc in user_table_doc:
-            # print(f"user_record_doc={user_record_doc}")
-            username = user_record_doc["fields"]["username"]
-            # print(f"user_record_doc['fields']['username']={username}")
+        for user_rec in user_table_doc:  # User Record
+            # print(f"user_rec={user_rec}")
+            username = user_rec["fields"]["username"]
+            # print(f"user_rec['fields']['username']={username}")
 
-            profile_table_query_set = Profile.objects.filter(
+            # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+            profile_table_qs = Profile.objects.filter(  # QuerySet
+                #                             -------
+                #                             1
                 user__username=username)
-            #                         ------
-            #                         1
             # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
             # QuerySet は中身が見えないので JSON にダンプするのが定番
-            # print(f"Profile={profile_table_query_set}")
-
-            # ２段階変換　QuerySet ----> JSON文字列 ----> オブジェクト
-            profile_table_json_str = serializers.serialize(
-                'json', profile_table_query_set)
-            profile_table_doc = json.loads(profile_table_json_str)
+            # print(f"Profile={profile_table_qs}")
+            #
+            profile_table_json = serializers.serialize(
+                'json', profile_table_qs)
+            profile_table_doc = json.loads(profile_table_json)  # オブジェクト
             # print(f"profile_table_doc={json.dumps(profile_table_doc, indent=4)}")
 
-            user_dic[user_record_doc["pk"]] = {
-                "pk": user_record_doc["pk"],
-                "last_login": user_record_doc["fields"]["last_login"],
-                "username": user_record_doc["fields"]["username"],
-                "is_active": user_record_doc["fields"]["is_active"],
+            user_dic[user_rec["pk"]] = {
+                "pk": user_rec["pk"],
+                "last_login": user_rec["fields"]["last_login"],
+                "username": user_rec["fields"]["username"],
+                "is_active": user_rec["fields"]["is_active"],
 
                 "match_state": profile_table_doc[0]["fields"]["match_state"],
                 #                               ---
