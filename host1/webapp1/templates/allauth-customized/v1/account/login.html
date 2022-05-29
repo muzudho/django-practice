@@ -67,11 +67,13 @@
                             {% csrf_token %}
                             <!-- 手動フォーム作成 ここから -->
                             {{ form.non_field_errors }}
+
                             <!-- ユーザー名 -->
                             <div class="fieldWrapper">
                                 {{ form.login.errors }}
                                 <v-text-field name="login" v-model="vu_userName.value" :rules="vu_userName.rules" counter="16" label="ユーザー名" required hint="使える文字 a-z， 0-9． 先頭に数字は使えません。 最大 16 文字"></v-text-field>
                             </div>
+
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
                                 <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード" required></v-text-field>

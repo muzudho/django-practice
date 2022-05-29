@@ -486,21 +486,24 @@ class DjangoAllauthFormParser {
                             <!-- -->
                             <!-- 手動フォーム作成 ここから -->
                             {{ form.non_field_errors }}
+
+                            <!-- ユーザー名 -->
                             <div class="fieldWrapper">
                                 {{ form.username.errors }}
-                                <v-text-field name="username" v-model="vu_userName" :minlength="vu_usernameFormDoc.minlength" :maxlength="vu_usernameFormDoc.maxlength" counter label="ユーザー名：" required></v-text-field>
+                                <v-text-field name="username" v-model="vu_userName.value" :rules="vu_userName.rules" minlength="1" maxlength="16" counter="16" label="ユーザー名" required hint="使える文字 a-z， 0-9． 先頭に数字は使えません。 最大 16 文字"></v-text-field>
                             </div>
+
                             <div class="fieldWrapper">
                                 {{ form.email.errors }}
-                                <v-text-field name="email" v-model="vu_email" counter label="E-mali："></v-text-field>
+                                <v-text-field name="email" v-model="vu_email" counter label="E-mali"></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password1.errors }}
-                                <v-text-field type="password" name="password1" v-model="vu_password1" counter label="パスワード：" required></v-text-field>
+                                <v-text-field type="password" name="password1" v-model="vu_password1" counter label="パスワード" required></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password2.errors }}
-                                <v-text-field type="password" name="password2" v-model="vu_password2" counter label="パスワード（再入力）：" required></v-text-field>
+                                <v-text-field type="password" name="password2" v-model="vu_password2" counter label="パスワード（再入力）" required></v-text-field>
                             </div>
                             <!-- 手動フォーム作成 ここまで -->
                             {% if redirect_field_value %}
@@ -542,7 +545,20 @@ class DjangoAllauthFormParser {
 
                     // HTMLタグ文字列が渡されるので、解析します
                     vu_usernameFormDoc: new DjangoAllauthFormParser().parseHtmlString("username", "{{ form.username|escapejs }}"),
-                    vu_userName: "",
+
+                    // ユーザー名
+                    vu_userName: {
+                        value: "",
+                        rules: [
+                            // FIXME ここでルールを色々書いているが、モデル側で対応していないので、モデル側も対応してほしい
+                            (value) => !!value || "Required", // 空欄の禁止
+                            (v) => v.length <= 16 || "Max 16 characters", // 文字数上限
+                            (value) => {
+                                const pattern = /^[a-z][a-z0-9]*$/; // 正規表現で指定
+                                return pattern.test(value) || "Invalid format";
+                            },
+                        ],
+                    },
 
                     vu_emailFormDoc: new DjangoAllauthFormParser().parseHtmlString("email", "{{ form.email|escapejs }}"),
                     vu_email: "",
@@ -555,24 +571,24 @@ class DjangoAllauthFormParser {
                 },
                 methods: {
                     createPathOfSignin() {
-                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignin}`;
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfSignin}`;
                         //          --------------------  ---------------]-----------------------
                         //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`SignIn path=[${path}]`);
-                        return path;
+                        console.log(`SignIn url=[${url}]`);
+                        return url;
                     },
                     createPathOfSignup() {
-                        let path = `${location.protocol}//${location.host}${this.vu_pathOfSignup}`;
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfSignup}`;
                         //          --------------------  ---------------]-----------------------
                         //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`SignUp path=[${path}]`);
-                        return path;
+                        console.log(`SignUp url=[${url}]`);
+                        return url;
                     },
                 },
             });
@@ -725,11 +741,20 @@ urlpatterns = [
 
 📖 [http://localhost:8000/accounts/v1/signup/](http://localhost:8000/accounts/v1/signup/)  
 
+👆 サインアップ ページを開きます  
+
+既にログインしているなら、  
+
+📖 [http://localhost:8000/accounts/v1/logout/](http://localhost:8000/accounts/v1/logout/)  
+
+👆 ログアウトを試してみてください  
+
 あとは アカウントを作成したり、パスワードを忘れたときの手続きを試してほしい。  
 
 # 次の記事
 
-📖 [DjangoでWebページを追加しよう！](https://qiita.com/muzudho1/items/06fe071c1147b4b8f062)  
+📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)  
+
 * もっと勉強したい人向けの関連記事
   * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
