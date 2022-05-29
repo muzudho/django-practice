@@ -36,6 +36,9 @@ from webapp1.views import v_login_user, v_page1, v_member, v_practice_of_vuetify
 urlpatterns = [
     path('', v_index.index, name='index'),
 
+    # +----
+    # | 管理者
+
     # 管理画面
     path('admin/', admin.site.urls),
     #     ------   ---------------
@@ -43,11 +46,14 @@ urlpatterns = [
     # 1. 例えば `http://example.com/admin/` のような URLのパスの部分
     # 2. django に用意されている管理画面のパスを 1. のパスにぶら下げる形で全てコピーします
 
+    # | 管理者
+    # +----
+
 
 
 
     # +----
-    # | Allauth
+    # | 認証
 
     # https://sinyblog.com/django/django-allauth/
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -76,15 +82,6 @@ urlpatterns = [
     # 2. allauth の SignupView をカスタマイズしたオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
 
-    # | Allauth
-    # +----
-
-
-
-
-    # +----
-    # | django-allauth 改１
-
     # サインイン
     path("accounts/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
          # -----------------        ------------------------------------
@@ -97,7 +94,7 @@ urlpatterns = [
     # 2. 既に用意されているビューのオブジェクト？
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 
-    # | django-allauth 改１
+    # | 認証
     # +----
 
 

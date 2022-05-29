@@ -20,16 +20,15 @@ docker-compose up
 
 URL
 
+* auth
+  * http://localhost:8000/accounts/v1/login/
+  * http://localhost:8000/accounts/v1/logout/
 * http://localhost:8000/tic-tac-toe/v1/match-request/
 * (Old) http://localhost:8000/tic-tac-toe2/
 * http://localhost:8000/tic-tac-toe/v2/
 * http://localhost:8000/lobby/v1/
 * http://localhost:8000/admin/ - 管理画面
 
-
-Allauth
-
-* http://localhost:8000/account/login/
 
 Product
 
