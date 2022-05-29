@@ -29,13 +29,13 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂vuetify-practice
-        │   │       └── 📄desserts.json
+        │   │   └── 📂practice
+        │   │       └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       ├── 📂members
-        │   │       └── 📂vuetify-practice
+        │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
@@ -56,14 +56,14 @@
 以下の記事で掲載した JSON ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/static/vuetify-practice/desserts.json`
+  * 📄`host1/webapp1/static/practice/vuetify-desserts.json`
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂vuetify-practice
-👉                  └── 📄desserts.json
+                └── 📂practice
+👉                  └── 📄vuetify-desserts.json
 ```
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
@@ -76,8 +76,8 @@
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             └── 📂views
 👉              └── 📄v_practice_of_json.py
 ```
@@ -89,7 +89,7 @@ from django.http import JsonResponse # 追加
 
 def readJsonResponse1(request):
     """JSONでの応答練習"""
-    with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     return JsonResponse(doc)
@@ -103,8 +103,8 @@ def readJsonResponse1(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             ├── 📂views
             │   └── 📄v_practice_of_json.py
 👉          └── 📄urls.py
@@ -124,14 +124,14 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('json-practice/response1',
+    path('practice/json-response1',
          # ----------------------
          # 1
          v_practice_of_json.readJsonResponse1, name='readJsonResponse1'),
     #    ------------------------------------        -----------------
     #    2                                           3
-    # 1. 例えば `http://example.com/practice1/json-response1` のような URL のパスの部分
-    #                              -------------------------
+    # 1. 例えば `http://example.com/practice/json-response1` のような URL のパスの部分
+    #                              ------------------------
     # 2. v_practice_of_json.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 ]
@@ -147,7 +147,7 @@ cd host1
 docker-compose up
 ```
 
-📖 [http://localhost:8000/json-practice/response1](http://localhost:8000/json-practice/response1)  
+📖 [http://localhost:8000/practice/json-response1](http://localhost:8000/practice/json-response1)  
 
 # 次の記事
 
