@@ -13,6 +13,12 @@ id が 1 の部屋を表示したい。
 名前
 Elephant
 
+先手Id
+1
+
+後手Id
+2
+
 盤面
 +--+--+--+
 | X|  |  |
@@ -110,7 +116,19 @@ Elephant
         └── 📄<いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. HTMLファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -144,10 +162,16 @@ Elephant
                     <v-container>
                         <h3>部屋の詳細情報</h3>
                         <div class="card" style="width: 18rem">
-                            <!-- 部屋名 -->
+                            <!-- 部屋名，他 -->
                             <div class="card-body">
                                 <h5 class="card-title">部屋名</h5>
                                 <p class="card-text">{{ room.name }}</p>
+
+                                <h5 class="card-title">先手Id</h5>
+                                <p class="card-text">{{ room.sente_id }}</p>
+
+                                <h5 class="card-title">後手Id</h5>
+                                <p class="card-text">{{ room.gote_id }}</p>
                             </div>
                             <!-- 盤面 -->
                             <div class="card-body">
@@ -231,7 +255,7 @@ Elephant
 </html>
 ```
 
-# Step 2. ビュー編集 - v_room.py ファイル
+# Step 3. ビュー編集 - v_room.py ファイル
 
 以下のファイルを編集してほしい。  
 
@@ -270,7 +294,7 @@ def render_read_room(request, id=id):
     #                      -----------------------
 ```
 
-# Step 3. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -309,7 +333,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 ```shell
 # （していなければ）Dockerコンテナの起動

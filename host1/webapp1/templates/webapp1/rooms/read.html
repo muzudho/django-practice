@@ -18,10 +18,16 @@
                     <v-container>
                         <h3>部屋の詳細情報</h3>
                         <div class="card" style="width: 18rem">
-                            <!-- 部屋名 -->
+                            <!-- 部屋名，他 -->
                             <div class="card-body">
                                 <h5 class="card-title">部屋名</h5>
                                 <p class="card-text">{{ room.name }}</p>
+
+                                <h5 class="card-title">先手Id</h5>
+                                <p class="card-text">{{ room.sente_id }}</p>
+
+                                <h5 class="card-title">後手Id</h5>
+                                <p class="card-text">{{ room.gote_id }}</p>
                             </div>
                             <!-- 盤面 -->
                             <div class="card-body">
