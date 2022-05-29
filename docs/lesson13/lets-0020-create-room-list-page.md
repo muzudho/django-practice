@@ -6,11 +6,11 @@
 
 ```plaintext
 一覧表示
-ID    部屋名        対局者_先手Id 対局者_後手Id  盤面       棋譜       アクション
-----  -----------  ------------ ------------  ---------  ---------  ---------
-1     Elephant                1            2  XOXOXOXOX  012345678  [観る]
-2     Giraffe                 3            4  XOXOXOXOX  012345678  [観る]
-3     Lion                    5            6  XOXOXOXOX  012345678  [観る]
+ID    部屋名        先手Id  先手名  後手Id  後手名  盤面       棋譜       アクション
+----  -----------  ------  -----  ------  -----  ---------  ---------  ---------
+1     Elephant          1  aaaa        2  bbbb   XOXOXOXOX  012345678  [観る]
+2     Giraffe           3  cccc        4  dddd   XOXOXOXOX  012345678  [観る]
+3     Lion              5  eeee        6  ffff   XOXOXOXOX  012345678  [観る]
 ```
 
 # はじめに
@@ -144,21 +144,25 @@ docker-compose up
                                         <th>ID</th>
                                         <th>部屋名</th>
                                         <th>先手Id</th>
+                                        <th>先手名</th>
                                         <th>後手Id</th>
+                                        <th>後手名</th>
                                         <th>盤面</th>
                                         <th>棋譜</th>
                                         <th>アクション</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                    <tr v-for="room in vu_roomArray" :key="room.id">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
                                         <!--  -->
                                         {% verbatim %}
                                         <td>{{ room.id }}</td>
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.sente_id }}</td>
+                                        <td>{{ room.sente_name }}</td>
                                         <td>{{ room.gote_id }}</td>
+                                        <td>{{ room.gote_name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
                                         <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>
@@ -175,16 +179,17 @@ docker-compose up
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            var hotelDoc1 = JSON.parse("{{ dj_hotel|escapejs }}");
-            // var hotelDocStr1 = JSON.stringify(hotelDoc1, null, "    ");
-            // console.log(`hotelDocStr1=${hotelDocStr1}`);
+            // "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+            var roomArray = JSON.parse("{{ dj_room_array|escapejs }}");
+            // var rooms_array_str1 = JSON.stringify(roomArray, null, "    ");
+            // console.log(`rooms_array_str1=${rooms_array_str1}`);
 
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_hotelDoc: hotelDoc1,
+                    vu_roomArray: roomArray,
                     vu_readRoomPath: "{{ dj_read_room_path }}",
                 },
                 methods: {
@@ -208,7 +213,53 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー編集 - v_room.py ファイル
+# Step 3. モデルヘルパー作成 - mh_users.py ファイル
+
+以下のファイルを無ければ新規作成、有れば編集してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂models_helper
+👉          │   └── 📄mh_users.py
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂practice
+                        └── 📄user-list.html
+```
+
+```py
+import json
+from django.core import serializers
+from django.contrib.auth.models import User
+
+
+class MhUser():
+
+    @staticmethod
+    def get_name_by_id(id):
+        """ユーザーIDを使って、ユーザーを絞りこみます"""
+
+        # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+        user_table_qs = User.objects.filter(id=id)  # QuerySet
+        user_table_json = serializers.serialize(
+            'json', user_table_qs)  # JSON 文字列
+        # print(f"user_table_json={user_table_json}")
+
+        user_table_doc = json.loads(user_table_json)  # オブジェクト
+        print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
+
+        if len(user_table_doc) < 1:
+            # 該当なしは空文字列と決めておきます
+            return ""
+
+        return user_table_doc[0]["fields"]["username"]
+        #                    ---
+        #                    1
+        # 1. 先頭の要素
+```
+
+# Step 4. ビュー編集 - v_room.py ファイル
 
 以下のファイルを編集してほしい。  
 
@@ -229,6 +280,14 @@ from django.shortcuts import render
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
 #    1       2      3             4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+from webapp1.models_helper.mh_users import MhUser
+#    ------- ------------- --------        ------
+#    1       2             3               4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -265,30 +324,33 @@ def render_list_room(request):
     """
 
     # 使いやすい形に変換します
-    resDoc = dict()
-    resDoc["rooms"] = []
+    room_list = []
 
     for room_rec in room_table_doc:  # Room record
         # print(f"room_rec= --> {room_rec} <--")
 
-        resDoc["rooms"].append(
+        sente_id = room_rec["fields"]["sente_id"]
+        gote_id = room_rec["fields"]["gote_id"]
+
+        room_list.append(
             {
                 "id": room_rec["pk"],
                 "name": room_rec["fields"]["name"],
-                "sente_id": room_rec["fields"]["sente_id"],
-                "gote_id": room_rec["fields"]["gote_id"],
+                "sente_id": sente_id,
+                "sente_name": MhUser.get_name_by_id(sente_id),
+                "gote_id": gote_id,
+                "gote_name": MhUser.get_name_by_id(gote_id),
                 "board": room_rec["fields"]["board"],
                 "record": room_rec["fields"]["record"],
             }
         )
 
-    # print(f'resDoc={resDoc}')
+    # print(f'room_list={room_list}')
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 部屋がいっぱいあるので、名前はホテルとします
         # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
-        "dj_hotel": json.dumps(resDoc),
+        "dj_room_array": json.dumps(room_list),
         # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
         "dj_read_room_path": "/rooms/read/",
     }
@@ -301,7 +363,7 @@ def render_list_room(request):
     #                      -----------------------
 ```
 
-# Step 4. ルート編集 - urls.py ファイル
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -340,7 +402,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 5. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
 ```shell
 cd host1

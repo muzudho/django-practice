@@ -12,6 +12,31 @@ from webapp1.models.m_user_profile import Profile
 # 4. クラス名
 
 
+class MhUser():
+
+    @staticmethod
+    def get_name_by_id(id):
+        """ユーザーIDを使って、ユーザーを絞りこみます"""
+
+        # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+        user_table_qs = User.objects.filter(id=id)  # QuerySet
+        user_table_json = serializers.serialize(
+            'json', user_table_qs)  # JSON 文字列
+        # print(f"user_table_json={user_table_json}")
+
+        user_table_doc = json.loads(user_table_json)  # オブジェクト
+        print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
+
+        if len(user_table_doc) < 1:
+            # 該当なしは空文字列と決めておきます
+            return ""
+
+        return user_table_doc[0]["fields"]["username"]
+        #                    ---
+        #                    1
+        # 1. 先頭の要素
+
+
 def get_user_dic():
     """会員登録ユーザー一覧"""
     User = get_user_model()
@@ -90,24 +115,3 @@ def get_user_dic_v2():
         }
 
     return user_dic
-
-
-def get_name_by_id(id):
-    """ユーザーIDを使って、ユーザーを絞りこみます"""
-
-    # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
-    user_table_qs = User.objects.filter(id=id)  # QuerySet
-    user_table_json = serializers.serialize('json', user_table_qs)  # JSON 文字列
-    # print(f"user_table_json={user_table_json}")
-
-    user_table_doc = json.loads(user_table_json)  # オブジェクト
-    print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
-
-    if len(user_table_doc) < 1:
-        # 該当なしは空文字列と決めておきます
-        return ""
-
-    return user_table_doc[0]["fields"]["username"]
-    #                    ---
-    #                    1
-    # 1. 先頭の要素

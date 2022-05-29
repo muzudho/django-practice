@@ -26,7 +26,9 @@
                                         <th>ID</th>
                                         <th>部屋名</th>
                                         <th>先手Id</th>
+                                        <th>先手名</th>
                                         <th>後手Id</th>
+                                        <th>後手名</th>
                                         <th>盤面</th>
                                         <th>棋譜</th>
                                         <th>アクション</th>
@@ -40,7 +42,9 @@
                                         <td>{{ room.id }}</td>
                                         <td>{{ room.name }}</td>
                                         <td>{{ room.sente_id }}</td>
+                                        <td>{{ room.sente_name }}</td>
                                         <td>{{ room.gote_id }}</td>
+                                        <td>{{ room.gote_name }}</td>
                                         <td>{{ room.board }}</td>
                                         <td>{{ room.record }}</td>
                                         <td><v-btn :href="createRoomsReadPath(room.id)">観る</v-btn></td>

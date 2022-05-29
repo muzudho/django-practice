@@ -20,6 +20,14 @@ from webapp1.forms.f_room import RoomForm
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
+from webapp1.models_helper.mh_users import MhUser
+#    ------- ------------- --------        ------
+#    1       2             3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
 
 def render_list_room(request):
     """部屋一覧"""
@@ -56,12 +64,17 @@ def render_list_room(request):
     for room_rec in room_table_doc:  # Room record
         # print(f"room_rec= --> {room_rec} <--")
 
+        sente_id = room_rec["fields"]["sente_id"]
+        gote_id = room_rec["fields"]["gote_id"]
+
         room_list.append(
             {
                 "id": room_rec["pk"],
                 "name": room_rec["fields"]["name"],
-                "sente_id": room_rec["fields"]["sente_id"],
-                "gote_id": room_rec["fields"]["gote_id"],
+                "sente_id": sente_id,
+                "sente_name": MhUser.get_name_by_id(sente_id),
+                "gote_id": gote_id,
+                "gote_name": MhUser.get_name_by_id(gote_id),
                 "board": room_rec["fields"]["board"],
                 "record": room_rec["fields"]["record"],
             }
