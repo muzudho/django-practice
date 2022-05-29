@@ -20,9 +20,9 @@ from webapp1.forms.f_room import RoomForm
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-from webapp1.models_helper.mh_users import MhUser
-#    ------- ------------- --------        ------
-#    1       2             3               4
+from webapp1.models_helper.mh_user import MhUser
+#    ------- ------------- -------        ------
+#    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
