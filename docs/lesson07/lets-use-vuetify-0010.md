@@ -48,7 +48,7 @@ Django に最初から入っている HTMLレンダラー に満足できない�
         └── <いろいろ>
 ```
 
-# Step 1. HTMLファイルの作成
+# Step 1. 画面作成 - vuetify-hello1.html ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -57,8 +57,8 @@ Django に最初から入っている HTMLレンダラー に満足できない�
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂vuetify-practice
-👉                      └── 📄hello1.html
+                    └── 📂practice
+👉                      └── 📄vuetify-hello1.html
 ```
 
 ```html
@@ -97,7 +97,7 @@ Django に最初から入っている HTMLレンダラー に満足できない�
 
 👆 `<v-alert>` の説明は 📖[Vuetify Alerts Usage](https://vuetifyjs.com/en/components/alerts/#usage) のページにある。  
 
-# Step 2. ビュー編集 - v_vuetify_practice.py ファイル
+# Step 2. ビュー編集 - v_practice_of_vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -109,7 +109,7 @@ Django に最初から入っている HTMLレンダラー に満足できない�
             │       └── 📂vuetify-practice
             │           └── 📄hello1.html
             └── 📂views
-👉              └── 📄v_vuetify_practice.py
+👉              └── 📄v_practice_of_vuetify.py
 ```
 
 ```py
@@ -144,15 +144,15 @@ def readHello(request, id=id):
             │       └── 📂vuetify-practice
             │           └── 📄hello1.html
             ├── 📂views
-            │   └── 📄v_vuetify_practice.py
+            │   └── 📄v_practice_of_vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_vuetify_practice
-#    ------- -----        ------------------
+from webapp1.views import v_practice_of_vuetify
+#    ------- -----        ---------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -165,11 +165,11 @@ urlpatterns = [
     path('vuetify-practice/hello1',
          # ----------------------
          # 1
-         v_vuetify_practice.readHello, name='readHello'),
-    #     ---------------------------        ---------
-    #     2                                  3
+         v_practice_of_vuetify.readHello, name='readHello'),
+    #     ------------------------------        ---------
+    #     2                                     3
     # 1. URLの `vuetify-practice/hello1` というパスにマッチする
-    # 2. v_vuetify_practice.py ファイルの readHello メソッド
+    # 2. v_practice_of_vuetify.py ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 ]
 ```

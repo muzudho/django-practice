@@ -212,7 +212,7 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 </html>
 ```
 
-# Step 3. ビュー編集 - v_vuetify_practice.py ファイル
+# Step 3. ビュー編集 - v_practice_of_vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -227,7 +227,7 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
             │       └── 📂vuetify-practice
             │           └── data-table2.html
             └── 📂views
-👉              └── 📄v_vuetify_practice.py
+👉              └── 📄v_practice_of_vuetify.py
 ```
 
 ```py
@@ -268,15 +268,15 @@ def readDataTable2(request):
             │       └── 📂vuetify-practice
             │           └── 📄data-table2.html
             ├── 📂views
-            │   └── 📄v_vuetify_practice.py
+            │   └── 📄v_practice_of_vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_vuetify_practice
-#    ------- -----        ------------------
+from webapp1.views import v_practice_of_vuetify
+#    ------- -----        ---------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -286,15 +286,15 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/data-table2', v_vuetify_practice.readDataTable2,
-         # ---------------------------   ---------------------------------
+    path('vuetify-practice/data-table2', v_practice_of_vuetify.readDataTable2,
+         # ---------------------------   ------------------------------------
          # 1                             2
          name='readDataTable2'),
     #          --------------
     #          3
     # 1. 例えば `http://example.com/vuetify-practice/data-table2` のような URL のパスの部分
     #                              -----------------------------
-    # 2. v_vuetify_practice.py ファイルの readDataTable2 メソッド
+    # 2. v_practice_of_vuetify.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
 ```
