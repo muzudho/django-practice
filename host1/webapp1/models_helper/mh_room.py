@@ -16,16 +16,12 @@ class MhRoom():
 
     @staticmethod
     def get_all_rooms_as_dic():
-        # id順に要素を全部取得
-        room_table_qs = Room.objects.all().order_by('id')
+        # ２段階変換: 問合せ結果（QuerySet）id順 ----> JSON文字列 ----> オブジェクト
+        room_table_qs = Room.objects.all().order_by('id')  # QuerySet
         # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
         print(f"room_table_qs={room_table_qs}")
-
-        # JSON 文字列に変換
         room_table_json = serializers.serialize('json', room_table_qs)
-
-        # オブジェクトに変換
-        room_table_doc = json.loads(room_table_json)
+        room_table_doc = json.loads(room_table_json)  # オブジェクト
 
         # 使いやすい形に変換します
         room_dic = dict()
