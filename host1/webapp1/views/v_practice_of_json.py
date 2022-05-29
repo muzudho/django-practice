@@ -15,7 +15,7 @@ from webapp1.models.m_dessert import Dessert
 
 def readJsonResponse1(request):
     """JSONでの応答練習"""
-    with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     return JsonResponse(doc)
@@ -23,13 +23,13 @@ def readJsonResponse1(request):
 
 def readJsonTextarea2(request):
     """JSONでの応答練習"""
-    template = loader.get_template('json-practice/json-textarea2.html')
-    #                               ---------------------------------
+    template = loader.get_template('practice/json-textarea2.html')
+    #                               ----------------------------
     #                               1
-    # 1. host1/webapp1/templates/json-practice/json-textarea2.html を取ってきます。
-    #                            ---------------------------------
+    # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます。
+    #                            ----------------------------
 
-    with open('webapp1/static/json-practice/desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/practice/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {

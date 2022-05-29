@@ -40,8 +40,8 @@
         │   │   │       ├── 📄judge.js
         │   │   │       ├── 📄protocol_main.js
         │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
+        │   │   ├── 📂practice
+        │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   └── 📂tic-tac-toe
