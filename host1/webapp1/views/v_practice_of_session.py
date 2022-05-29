@@ -18,8 +18,8 @@ def render_active_user_list(request):
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
         'dj_users': json.dumps(MhSession.get_all_logged_in_users())
     }
-    return render(request, "webapp1/session-practice/active-user-list.html", context)
+    return render(request, "webapp1/practice/session-active-user-list.html", context)
     #                       ----------------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/session-practice/active-user-list.html
+    # 1. webapp1/templates/webapp1/practice/session-active-user-list.html
     #                      ----------------------------------------------

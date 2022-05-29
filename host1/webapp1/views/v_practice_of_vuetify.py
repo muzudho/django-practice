@@ -37,11 +37,11 @@ def readDataTable1(request, id=id):
 def readDataTable2(request):
     """Vuetify練習"""
     template = loader.get_template(
-        'webapp1/practice/vuetify-data-table-2.html')
-    #                     -------------------------
+        'webapp1/practice/vuetify-data-table2.html')
+    #                     ------------------------
     #                     1
-    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table-2.html を取ってきます。
-    #                            ------------------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
+    #                            -----------------------------------------
 
     with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
@@ -55,11 +55,11 @@ def readDataTable2(request):
 def readJsonTextarea1(request):
     """Vuetify練習"""
     template = loader.get_template(
-        'webapp1/practice/vuetify-json-textarea-1.html')
-    #    ---------------------------------------------
+        'webapp1/practice/vuetify-json-textarea1.html')
+    #    --------------------------------------------
     #    1
-    # 1. host1/webapp1/templates/webapp1/practice/vuetify-json-textarea-1.html を取ってきます。
-    #                            ---------------------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-json-textarea1.html を取ってきます。
+    #                            --------------------------------------------
 
     with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
@@ -75,11 +75,11 @@ def readDataTable2o2(request):
     form1Textarea1 = request.POST["textarea1"]
 
     template = loader.get_template(
-        'webapp1/practice/vuetify-data-table-2.html')
-    #    ------------------------------------------
+        'webapp1/practice/vuetify-data-table2.html')
+    #    -----------------------------------------
     #    1
-    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table-2.html を取ってきます。
-    #                            ------------------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
+    #                            -----------------------------------------
 
     context = {
         'dessertsJson': form1Textarea1

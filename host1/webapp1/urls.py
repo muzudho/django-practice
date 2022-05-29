@@ -519,14 +519,14 @@ urlpatterns = [
     # | セッション練習
 
     # アクティブ ユーザー一覧
-    path('session-practice/v1/active-user-list/',
+    path('practice/session-active-user-list/',
          # ------------------------------------
          # 1
          v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
     #    ---------------------------------------------        --------------------------------
     #    2                                                    3
     #
-    # 1. 例えば `http://example.com/session-practice/v1/active-user-list/` のような URL のパスの部分
+    # 1. 例えば `http://example.com/practice/session-active-user-list/` のような URL のパスの部分
     #                              --------------------------------------
     # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
