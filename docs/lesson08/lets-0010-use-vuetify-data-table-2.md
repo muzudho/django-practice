@@ -32,7 +32,7 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       ├── 📂members
-        │   │       └── 📂vuetify-practice
+        │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
         │   │   └── 📄<いろいろ>.py
@@ -48,7 +48,19 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
         └── <いろいろ>
 ```
 
-# Step 1. JSONファイルの作成
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. JSONファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -56,8 +68,8 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂vuetify-practice
-👉                  └── 📄desserts.json
+                └── 📂practice
+👉                  └── 📄vuetify-desserts.json
 ```
 
 ```json
@@ -160,7 +172,7 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 }
 ```
 
-# Step 2. HTMLファイルの作成
+# Step 3. 画面作成 - vuetify-data-table2.html ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -168,12 +180,12 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂vuetify-practice
-👉                      └── 📄data-table2.html
+                    └── 📂practice
+👉                      └── 📄vuetify-data-table2.html
 ```
 
 ```html
@@ -212,7 +224,7 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
 </html>
 ```
 
-# Step 3. ビュー編集 - v_practice_of_vuetify.py ファイル
+# Step 4. ビュー編集 - v_practice_of_vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -220,12 +232,12 @@ HTML の中の JavaScript に JSON を動的に埋め込もう。
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           └── data-table2.html
+            │       └── 📂practice
+            │           └── vuetify-data-table2.html
             └── 📂views
 👉              └── 📄v_practice_of_vuetify.py
 ```
@@ -238,13 +250,13 @@ from django.template import loader
 
 def readDataTable2(request):
     """Vuetify練習"""
-    template = loader.get_template('webapp1/vuetify-practice/data-table2.html')
+    template = loader.get_template('webapp1/practice/vuetify-data-table2.html')
     #                               -----------------------------------------
     #                               1
-    # 1. host1/webapp1/templates/webapp1/vuetify-practice/data-table2.html を取ってきます。
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
     #                            -----------------------------------------
 
-    with open('webapp1/static/vuetify-practice/desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -253,7 +265,7 @@ def readDataTable2(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 4. ルート編集 - urls.py ファイル
+# Step 5. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -261,12 +273,12 @@ def readDataTable2(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂vuetify-practice
-            │       └── 📄desserts.json
+            │   └── 📂practice
+            │       └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           └── 📄data-table2.html
+            │       └── 📂practice
+            │           └── 📄vuetify-data-table2.html
             ├── 📂views
             │   └── 📄v_practice_of_vuetify.py
 👉          └── 📄urls.py
@@ -286,27 +298,22 @@ urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('vuetify-practice/data-table2', v_practice_of_vuetify.readDataTable2,
+    path('practice/vuetify-data-table2', v_practice_of_vuetify.readDataTable2,
          # ---------------------------   ------------------------------------
          # 1                             2
          name='readDataTable2'),
     #          --------------
     #          3
-    # 1. 例えば `http://example.com/vuetify-practice/data-table2` のような URL のパスの部分
+    # 1. 例えば `http://example.com/practice/vuetify-data-table2` のような URL のパスの部分
     #                              -----------------------------
     # 2. v_practice_of_vuetify.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 5. Web画面へアクセス
+# Step 6. Web画面へアクセス
 
-```shell
-# （していなければ）Dockerコンテナの起動
-docker-compose up
-```
-
-📖 [http://localhost:8000/vuetify-practice/data-table2](http://localhost:8000/vuetify-practice/data-table2)  
+📖 [http://localhost:8000/practice/vuetify-data-table2](http://localhost:8000/practice/vuetify-data-table2)  
 
 # 次の記事
 
