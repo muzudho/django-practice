@@ -51,13 +51,12 @@ def render_list_room(request):
     """
 
     # 使いやすい形に変換します
-    resDoc = dict()
-    resDoc["rooms"] = []
+    room_list = []
 
     for room_rec in room_table_doc:  # Room record
         # print(f"room_rec= --> {room_rec} <--")
 
-        resDoc["rooms"].append(
+        room_list.append(
             {
                 "id": room_rec["pk"],
                 "name": room_rec["fields"]["name"],
@@ -68,13 +67,12 @@ def render_list_room(request):
             }
         )
 
-    # print(f'resDoc={resDoc}')
+    # print(f'room_list={room_list}')
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 部屋がいっぱいあるので、名前はホテルとします
         # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
-        "dj_hotel": json.dumps(resDoc),
+        "dj_room_array": json.dumps(room_list),
         # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
         "dj_read_room_path": "/rooms/read/",
     }

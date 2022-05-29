@@ -33,7 +33,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc.rooms" :key="room.id">
+                                    <tr v-for="room in vu_roomArray" :key="room.id">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
                                         <!--  -->
                                         {% verbatim %}
@@ -57,16 +57,17 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            var hotelDoc1 = JSON.parse("{{ dj_hotel|escapejs }}");
-            // var hotelDocStr1 = JSON.stringify(hotelDoc1, null, "    ");
-            // console.log(`hotelDocStr1=${hotelDocStr1}`);
+            // "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+            var roomArray = JSON.parse("{{ dj_room_array|escapejs }}");
+            // var rooms_array_str1 = JSON.stringify(roomArray, null, "    ");
+            // console.log(`rooms_array_str1=${rooms_array_str1}`);
 
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    vu_hotelDoc: hotelDoc1,
+                    vu_roomArray: roomArray,
                     vu_readRoomPath: "{{ dj_read_room_path }}",
                 },
                 methods: {
