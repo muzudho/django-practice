@@ -308,7 +308,7 @@ admin.site.register(Profile)
 
 👆 Profile モデルに、 User データに紐づくデータを登録しておいてほしい  
 
-# Step 8. モデルヘルパー作成 - mh_users.py ファイル
+# Step 8. モデルヘルパー作成 - mh_user.py ファイル
 
 既存の以下のファイルを編集してほしい  
 
@@ -318,7 +318,7 @@ admin.site.register(Profile)
             ├── 📂models
             │   └── 📄m_user_profile.py
             ├── 📂models_helper
-👉          │   └── 📄mh_users.py
+👉          │   └── 📄mh_user.py
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -403,7 +403,7 @@ def get_user_dic_v2():
             ├── 📂models
             │   └── 📄m_user_profile.py
             ├── 📂models_helper
-            │   └── 📄mh_users.py
+            │   └── 📄mh_user.py
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -417,9 +417,9 @@ def get_user_dic_v2():
 import json
 from django.shortcuts import render
 
-from webapp1.models_helper.mh_users import get_user_dic_v2
-#    ------- ------------- --------        ---------------
-#    1       2             3               4
+from webapp1.models_helper.mh_user import get_user_dic_v2
+#    ------- ------------- -------        ---------------
+#    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -451,7 +451,7 @@ def render_user_list_v2(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂models_helper
-            │   └── 📄mh_users.py
+            │   └── 📄mh_user.py
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
