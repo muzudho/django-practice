@@ -68,7 +68,7 @@
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
 
-# Step 2. ビュー編集 - v_json_practice.py ファイル
+# Step 2. ビュー編集 - v_practice_of_json.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -79,7 +79,7 @@
             │   └── 📂vuetify-practice
             │       └── 📄desserts.json
             └── 📂views
-👉              └── 📄v_json_practice.py
+👉              └── 📄v_practice_of_json.py
 ```
 
 ```py
@@ -106,15 +106,15 @@ def readJsonResponse1(request):
             │   └── 📂vuetify-practice
             │       └── 📄desserts.json
             ├── 📂views
-            │   └── 📄v_json_practice.py
+            │   └── 📄v_practice_of_json.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_json_practice
-#    ------- -----        ---------------
+from webapp1.views import v_practice_of_json
+#    ------- -----        ------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -127,12 +127,12 @@ urlpatterns = [
     path('json-practice/response1',
          # ----------------------
          # 1
-         v_json_practice.readJsonResponse1, name='readJsonResponse1'),
-    #    ---------------------------------        -----------------
-    #    2                                        3
+         v_practice_of_json.readJsonResponse1, name='readJsonResponse1'),
+    #    ------------------------------------        -----------------
+    #    2                                           3
     # 1. 例えば `http://example.com/practice1/json-response1` のような URL のパスの部分
     #                              -------------------------
-    # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
+    # 2. v_practice_of_json.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 ]
 ```

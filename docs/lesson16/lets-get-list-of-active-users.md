@@ -256,7 +256,7 @@ web_1  | ]
         return user_dic
 ```
 
-# Step 3. ビュー編集 - v_session_practice_v1.py ファイル
+# Step 3. ビュー編集 - v_practice_of_session.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -270,7 +270,7 @@ web_1  | ]
             ├── 📂models_helper
             │   └── 📄mh_session.py
             └── 📂views
-👉              └── 📄v_session_practice_v1.py
+👉              └── 📄v_practice_of_session.py
 ```
 
 ```py
@@ -316,12 +316,12 @@ def render_active_user_list(request):
             │           └── 📂v1
             │               └── active-user-list.html
             ├── 📂views
-            │   └── 📄v_session_practice_v1.py
+            │   └── 📄v_practice_of_session.py
 👉          └── 📄urls.py
 ```
 
 ```py
-from webapp1.views import v_session_practice_v1
+from webapp1.views import v_practice_of_session
 #    ------- -----        ---------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
@@ -335,12 +335,12 @@ urlpatterns = [
     path('session-practice/v1/active-user-list/',
          # ------------------------------------
          # 1
-         v_session_practice_v1.render_active_user_list, name='sessionPracticeV1_activeUserList'),
+         v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
     #    ---------------------------------------------        --------------------------------
     #    2                                                    3
     #
     # 1. URLの `session-practice/v1/active-user-list/` というパスにマッチする
-    # 2. v_session_practice_v1.py ファイルの render_active_user_list メソッド
+    # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 ]
 ```

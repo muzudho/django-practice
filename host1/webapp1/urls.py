@@ -30,8 +30,8 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_page1, v_member, v_practice_of_vuetify, \
-    v_json_practice, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
-    v_room, v_home_v2, v_lobby_v1, v_session_practice_v1, v_accounts_v1, v_practice
+    v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
+    v_room, v_home_v2, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
 
 urlpatterns = [
     path('', v_index.index, name='index'),
@@ -274,12 +274,12 @@ urlpatterns = [
     path('json-practice/response1',
          # ----------------------
          # 1
-         v_json_practice.readJsonResponse1, name='readJsonResponse1'),
-    #    ---------------------------------        -----------------
-    #    2                                        3
+         v_practice_of_json.readJsonResponse1, name='readJsonResponse1'),
+    #    ------------------------------------        -----------------
+    #    2                                           3
     # 1. 例えば `http://example.com/practice1/json-response1` のような URL のパスの部分
     #                              -------------------------
-    # 2. v_json_practice.py ファイルの readDataTable2o2 メソッド
+    # 2. v_practice_of_json.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
     # | Vuetify練習
@@ -295,24 +295,24 @@ urlpatterns = [
     path('json-practice/textarea2',
          # ----------------------
          # 1
-         v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
-    #    ---------------------------------        -----------------
-    #    2                                        3
+         v_practice_of_json.readJsonTextarea2, name='readJsonTextarea2'),
+    #    ------------------------------------        -----------------
+    #    2                                           3
     # 1. 例えば `http://example.com/json-practice/textarea2` のような URL のパスの部分
     #                              ------------------------
-    # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
+    # 2. v_practice_of_json.py ファイルの readJsonTextarea2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
     # JSONでの応答練習
     path('json-practice/data-table2o3',
          # --------------------------
          # 1
-         v_json_practice.readDataTable2o3, name='readDataTable2o3'),
-    #    --------------------------------        ----------------
-    #    2                                       3
+         v_practice_of_json.readDataTable2o3, name='readDataTable2o3'),
+    #    -----------------------------------        ----------------
+    #    2                                          3
     # 1. 例えば `http://example.com/json-practice/data-table2o3` のような URL のパスの部分
     #                              ---------------------------
-    # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
+    # 2. v_practice_of_json.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
     # | JSONでの応答練習
@@ -522,13 +522,13 @@ urlpatterns = [
     path('session-practice/v1/active-user-list/',
          # ------------------------------------
          # 1
-         v_session_practice_v1.render_active_user_list, name='sessionPracticeV1_activeUserList'),
+         v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
     #    ---------------------------------------------        --------------------------------
     #    2                                                    3
     #
     # 1. 例えば `http://example.com/session-practice/v1/active-user-list/` のような URL のパスの部分
     #                              --------------------------------------
-    # 2. v_session_practice_v1.py ファイルの render_active_user_list メソッド
+    # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 
     # | セッション練習

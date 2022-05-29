@@ -322,7 +322,7 @@ Iron (%):
 </html>
 ```
 
-# Step 10. ビュー編集 - v_json_practice.py ファイル
+# Step 10. ビュー編集 - v_practice_of_json.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -343,7 +343,7 @@ Iron (%):
             │       └── 📂json-practice
             │           └── 📄json-textarea2.html
             ├── 📂views
-👉          │   └── 📄v_json_practice.py
+👉          │   └── 📄v_practice_of_json.py
             └── 📄admin.py
 ```
 
@@ -419,7 +419,7 @@ def readDataTable2o3(request):
             │       └── 📂json-practice
             │           └── 📄json-textarea2.html
             ├── 📂views
-            │   └── 📄v_json_practice.py
+            │   └── 📄v_practice_of_json.py
             ├── 📄admin.py
 👉          └── 📄urls.py
 ```
@@ -427,8 +427,8 @@ def readDataTable2o3(request):
 ```py
 from django.urls import path
 
-from webapp1.views import v_json_practice
-#    ------- -----        ---------------
+from webapp1.views import v_practice_of_json
+#    ------- -----        ------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -441,24 +441,24 @@ urlpatterns = [
     path('json-practice/textarea2',
          # ----------------------
          # 1
-         v_json_practice.readJsonTextarea2, name='readJsonTextarea2'),
-    #    ---------------------------------        -----------------
-    #    2                                        3
+         v_practice_of_json.readJsonTextarea2, name='readJsonTextarea2'),
+    #    ------------------------------------        -----------------
+    #    2                                           3
     # 1. 例えば `http://example.com/json-practice/textarea2` のような URL のパスの部分
     #                              ------------------------
-    # 2. v_json_practice.py ファイルの readJsonTextarea2 メソッド
+    # 2. v_practice_of_json.py ファイルの readJsonTextarea2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
     # JSONでの応答練習
     path('json-practice/data-table2o3',
          # --------------------------
          # 1
-         v_json_practice.readDataTable2o3, name='readDataTable2o3'),
-    #    --------------------------------        ----------------
-    #    2                                       3
+         v_practice_of_json.readDataTable2o3, name='readDataTable2o3'),
+    #    -----------------------------------        ----------------
+    #    2                                          3
     # 1. 例えば `http://example.com/json-practice/data-table2o3` のような URL のパスの部分
     #                              ---------------------------
-    # 2. v_json_practice.py ファイルの readDataTable2o3 メソッド
+    # 2. v_practice_of_json.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 ]
 ```
