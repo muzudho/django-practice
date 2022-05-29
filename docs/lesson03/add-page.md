@@ -1,9 +1,3 @@
----
-title: DjangoでWebページを追加しよう！
-tags: Django Docker
-author: muzudho1
-slide: false
----
 # 目的
 
 Webサイトのページを追加したい。  
