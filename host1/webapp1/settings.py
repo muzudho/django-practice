@@ -68,7 +68,7 @@ ROOT_URLCONF = 'webapp1.urls'
 
 # 調べ終わったら消す
 # Example: `/code/webapp1/templates`
-#print(
+# print(
 #    f"os.path.join(BASE_DIR, 'webapp1', 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
 
 TEMPLATES = [
@@ -225,7 +225,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SITE_ID = 1  # 動かしているサイトを識別するID
 
 LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
-# LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
+# LOGIN_REDIRECT_URL = 'homeV1_home'  # ログイン後に遷移するURLの指定
 
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'  # ログアウト後に遷移するURLの指定
 #                              -------------------

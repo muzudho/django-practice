@@ -351,7 +351,7 @@ def render_lobby(request):
         'dj_room_dic': json.dumps(room_dic),
         'dj_user_dic': json.dumps(user_dic),
         # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_path_of_home": "/home/v2/",
+        "dj_path_of_home": "/home/v1/",
         "dj_path_of_rooms_read": "/rooms/read/",
     }
 

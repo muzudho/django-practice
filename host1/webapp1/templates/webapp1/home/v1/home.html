@@ -54,29 +54,29 @@
                 },
                 methods: {
                     createLobbyPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_lobbyPath}`;
-                        //          --------------------  ---------------- --------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_lobbyPath}`;
+                        //          --------------------  --------------]--------------------
+                        //          1                     2              3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`game path=[${path}]`);
-                        return path;
+                        console.log(`game url=[${url}]`);
+                        return url;
                     },
                     createTicTacToePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
-                        console.log(`game path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_ticTacToePath}`;
+                        console.log(`game url=[${url}]`);
+                        return url;
                     },
                     createLoginPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_loginPath}`;
-                        console.log(`login path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_loginPath}`;
+                        console.log(`login url=[${url}]`);
+                        return url;
                     },
                     createLogoutPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_logoutPath}`;
-                        console.log(`logout path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_logoutPath}`;
+                        console.log(`logout url=[${url}]`);
+                        return url;
                     },
                 },
             });

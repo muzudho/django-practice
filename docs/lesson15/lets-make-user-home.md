@@ -90,7 +90,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. HTMLファイルの作成
+# Step 2. 画面作成 - home.html ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -100,7 +100,7 @@ docker-compose up
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂home
-                        └── 📂v2
+                        └── 📂v1
 👉                          └── 📄home.html
 ```
 
@@ -161,29 +161,29 @@ docker-compose up
                 },
                 methods: {
                     createLobbyPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_lobbyPath}`;
-                        //          --------------------  ---------------- --------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_lobbyPath}`;
+                        //          --------------------  --------------]--------------------
+                        //          1                     2              3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`game path=[${path}]`);
-                        return path;
+                        console.log(`game url=[${url}]`);
+                        return url;
                     },
                     createTicTacToePath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_ticTacToePath}`;
-                        console.log(`game path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_ticTacToePath}`;
+                        console.log(`game url=[${url}]`);
+                        return url;
                     },
                     createLoginPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_loginPath}`;
-                        console.log(`login path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_loginPath}`;
+                        console.log(`login url=[${url}]`);
+                        return url;
                     },
                     createLogoutPath() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_logoutPath}`;
-                        console.log(`logout path=[${path}]`);
-                        return path;
+                        let url = `${location.protocol}//${location.host}${this.vu_logoutPath}`;
+                        console.log(`logout url=[${url}]`);
+                        return url;
                     },
                 },
             });
@@ -192,7 +192,7 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー編集 - v_home_v2.py ファイル
+# Step 3. ビュー編集 - v_home.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -202,10 +202,10 @@ docker-compose up
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂home
-            │           └── 📂v2
+            │           └── 📂v1
             │               └── 📄home.html
             └── 📂views
-👉              └── 📄v_home_v2.py
+👉              └── 📄v_home.py
 ```
 
 ```py
@@ -215,35 +215,39 @@ from django.template import loader
 
 def render_home(request):
     """ホーム"""
-    template = loader.get_template('webapp1/home/v2/home.html')
+    template = loader.get_template('webapp1/home/v1/home.html')
     #                               -------------------------
     #                               1
-    # 1. host1/webapp1/templates/webapp1/home/v2/home.html を取得
+    # 1. host1/webapp1/templates/webapp1/home/v1/home.html を取得
     #                            -------------------------
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
         'dj_user': request.user,
-        'dj_lobbyPath': 'lobby/v1/',
-        #                ---------
+
+        'dj_lobbyPath': '/lobby/v1/',
+        #                ----------
         #                1
         # 1. http://example.com/lobby/v1/
-        #                       ---------
-        'dj_ticTacToePath': 'tic-tac-toe/v2/',
-        #                    ---------------
+        #                      ----------
+
+        'dj_ticTacToePath': '/tic-tac-toe/v2/match-request/',
+        #                    ------------------------------
         #                    1
         # 1. http://example.com/tic-tac-toe/v2/match-request/
-        #                       -----------------------------
-        'dj_loginPath': 'tic-tac-toe/v2/login/',
-        #                ---------------------
+        #                      ------------------------------
+
+        'dj_loginPath': '/accounts/v1/login/',
+        #                -------------------
         #                1
-        # 1. http://example.com/tic-tac-toe/v2/login/
-        #                       ---------------------
-        'dj_logoutPath': 'tic-tac-toe/v2/logout/',
-        #                 ----------------------
+        # 1. http://example.com/accounts/v1/login/
+        #                      -------------------
+
+        'dj_logoutPath': '/accounts/v1/logout/',
+        #                 --------------------
         #                 1
-        # 1. http://example.com/tic-tac-toe/v2/logout/
-        #                       ----------------------
+        # 1. http://example.com/accounts/v1/logout/
+        #                      --------------------
     }
 
     return HttpResponse(template.render(context, request))
@@ -259,18 +263,18 @@ def render_home(request):
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂home
-            │           └── 📂v2
+            │           └── 📂v1
             │               └── 📄home.html
             ├── 📂views
-            │   └── 📄v_home_v2.py
+            │   └── 📄v_home.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_home_v2
-#    ------- -----        ---------
+from webapp1.views import v_home
+#    ------- -----        ------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -280,13 +284,13 @@ urlpatterns = [
     # ...中略...
 
     # ポータル
-    path('home/v2/', v_home_v2.render_home, name='homeV2_home'),
-    #     --------   ---------------------        -----------
-    #     1          2                            3
+    path('home/v1/', v_home.render_home, name='homeV1_home'),
+    #     --------   ------------------        -----------
+    #     1          2                         3
     #
-    # 1. URLの `home/v2/` というパスにマッチする
-    # 2. v_home_v2.py ファイルの render_home メソッド
-    # 3. HTMLテンプレートの中で {% url 'homeV2_home' %} のような形でURLを取得するのに使える
+    # 1. URLの `home/v1/` というパスにマッチする
+    # 2. v_home.py ファイルの render_home メソッド
+    # 3. HTMLテンプレートの中で {% url 'homeV1_home' %} のような形でURLを取得するのに使える
 ]
 ```
 
@@ -300,22 +304,22 @@ urlpatterns = [
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂home
-            │           └── 📂v2
+            │           └── 📂v1
             │               └── 📄home.html
             ├── 📂views
-            │   └── 📄v_home_v2.py
+            │   └── 📄v_home.py
 👉          ├── 📄settings.py
             └── 📄urls.py
 ```
 
 ```py
 # (Old) LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
-LOGIN_REDIRECT_URL = 'homeV2_home'  # ログイン後に遷移するURLの指定
+LOGIN_REDIRECT_URL = 'homeV1_home'  # ログイン後に遷移するURLの指定
 ```
 
 # Step 6. Web画面へアクセス
 
-📖 [http://localhost:8000/home/v2/](http://localhost:8000/home/v2/)  
+📖 [http://localhost:8000/home/v1/](http://localhost:8000/home/v1/)  
 
 # 次の記事
 
