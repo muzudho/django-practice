@@ -23,6 +23,9 @@ URL
 * auth
   * http://localhost:8000/accounts/v1/login/
   * http://localhost:8000/accounts/v1/logout/
+* user
+  * http://localhost:8000/practice/session-active-user-list/
+  * http://localhost:8000/practice/user-list/
 * http://localhost:8000/tic-tac-toe/v1/match-request/
 * (Old) http://localhost:8000/tic-tac-toe2/
 * http://localhost:8000/tic-tac-toe/v2/
@@ -33,6 +36,12 @@ URL
 Product
 
 * (Old) http://tic.warabenture.com:8000/tic-tac-toe2/
+* auth
+  * http://tic.warabenture.com:8000/accounts/v1/login/
+  * http://tic.warabenture.com:8000/accounts/v1/logout/
+* user
+  * http://tic.warabenture.com:8000/practice/session-active-user-list/
+  * http://tic.warabenture.com:8000/practice/user-list/
 * http://tic.warabenture.com:8000/tic-tac-toe/v2/
 * http://tic.warabenture.com:8000/lobby/v1/
 
