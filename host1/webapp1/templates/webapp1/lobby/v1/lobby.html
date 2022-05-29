@@ -37,7 +37,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc" :key="room.pk">
+                                    <tr v-for="room in vu_roomDic" :key="room.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
                                         <td>{{ room.pk }}</td>
                                         <td>{{ room.name }}</td>
@@ -63,7 +63,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="user in vu_parkDoc" :key="user.pk">
+                                    <tr v-for="user in vu_userDoc" :key="user.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
                                         <td>{{ user.pk }}</td>
                                         <td>{{ user.username }}</td>
@@ -87,34 +87,32 @@
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    // 部屋がいっぱいあるからホテル
-                    vu_hotelDoc: JSON.parse("{{ dj_hotel|escapejs }}"),
-                    // 人がいっぱいいるからパーク
-                    vu_parkDoc: JSON.parse("{{ dj_park|escapejs }}"),
+                    vu_roomDic: JSON.parse("{{ dj_room_dic|escapejs }}"),
+                    vu_userDoc: JSON.parse("{{ dj_user_dic|escapejs }}"),
 
-                    vu_pathOfHome: "{{ dj_pathOfHome }}",
-                    vu_pathOfRoomsRead: "{{ dj_pathOfRoomsRead }}",
+                    vu_pathOfHome: "{{ dj_path_of_home }}",
+                    vu_pathOfRoomsRead: "{{ dj_path_of_rooms_read }}",
                 },
                 methods: {
                     createPathOfHome() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfHome}`;
-                        //          --------------------  ---------------- ---------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfHome}`;
+                        //          --------------------  ---------------]---------------------
+                        //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`room path=[${path}]`);
-                        return path;
+                        console.log(`room url=[${url}]`);
+                        return url;
                     },
                     createPathOfRoomsRead(roomId) {
-                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfRoomsRead}${roomId}`;
-                        //          --------------------  ---------------- -----------------------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfRoomsRead}${roomId}`;
+                        //          --------------------  ---------------]-----------------------------------
+                        //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`room path=[${path}]`);
-                        return path;
+                        console.log(`room url=[${url}]`);
+                        return url;
                     },
                 },
             });

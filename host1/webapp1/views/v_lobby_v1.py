@@ -2,13 +2,13 @@ import json
 from django.http import HttpResponse
 from django.template import loader
 
-from webapp1.models_helper.mh_room import get_all_rooms
-#    ------- ------------- -------        -------------
+from webapp1.models_helper.mh_room import MhRoom
+#    ------- ------------- -------        ------
 #    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. 関数名
+# 4. クラス名
 
 
 from webapp1.models_helper.mh_session import MhSession
@@ -29,20 +29,18 @@ def render_lobby(request):
     #                      ---------------------------
 
     # 部屋の一覧
-    hotelDic = get_all_rooms()
+    room_dic = MhRoom.get_all_rooms_as_dic()
 
     # ユーザーの一覧
-    usersDic = MhSession.get_all_logged_in_users()
+    user_dic = MhSession.get_all_logged_in_users()
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 部屋がいっぱいあるからホテル
-        'dj_hotel': json.dumps(hotelDic),
-        # 人がいっぱいいるからパーク
-        'dj_park': json.dumps(usersDic),
-        # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_pathOfHome": "home/v2/",
-        "dj_pathOfRoomsRead": "rooms/read/",
+        'dj_room_dic': json.dumps(room_dic),
+        'dj_user_dic': json.dumps(user_dic),
+        # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
+        "dj_path_of_home": "/home/v2/",
+        "dj_path_of_rooms_read": "/rooms/read/",
     }
 
     return HttpResponse(template.render(context, request))

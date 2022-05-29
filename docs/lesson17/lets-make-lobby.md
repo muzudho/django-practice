@@ -148,7 +148,7 @@ docker-compose up
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="room in vu_hotelDoc" :key="room.pk">
+                                    <tr v-for="room in vu_roomDic" :key="room.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
                                         <td>{{ room.pk }}</td>
                                         <td>{{ room.name }}</td>
@@ -174,7 +174,7 @@ docker-compose up
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="user in vu_parkDoc" :key="user.pk">
+                                    <tr v-for="user in vu_userDoc" :key="user.pk">
                                         {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
                                         <td>{{ user.pk }}</td>
                                         <td>{{ user.username }}</td>
@@ -198,34 +198,32 @@ docker-compose up
                 vuetify: new Vuetify(),
                 data: {
                     // "vu_" は 「vue1.dataのメンバー」 の目印
-                    // 部屋がいっぱいあるからホテル
-                    vu_hotelDoc: JSON.parse("{{ dj_hotel|escapejs }}"),
-                    // 人がいっぱいいるからパーク
-                    vu_parkDoc: JSON.parse("{{ dj_park|escapejs }}"),
+                    vu_roomDic: JSON.parse("{{ dj_room_dic|escapejs }}"),
+                    vu_userDoc: JSON.parse("{{ dj_user_dic|escapejs }}"),
 
-                    vu_pathOfHome: "{{ dj_pathOfHome }}",
-                    vu_pathOfRoomsRead: "{{ dj_pathOfRoomsRead }}",
+                    vu_pathOfHome: "{{ dj_path_of_home }}",
+                    vu_pathOfRoomsRead: "{{ dj_path_of_rooms_read }}",
                 },
                 methods: {
                     createPathOfHome() {
-                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfHome}`;
-                        //          --------------------  ---------------- ---------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfHome}`;
+                        //          --------------------  ---------------]---------------------
+                        //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`room path=[${path}]`);
-                        return path;
+                        console.log(`room url=[${url}]`);
+                        return url;
                     },
                     createPathOfRoomsRead(roomId) {
-                        let path = `${location.protocol}//${location.host}/${this.vu_pathOfRoomsRead}${roomId}`;
-                        //          --------------------  ---------------- -----------------------------------
-                        //          1                     2                3
+                        let url = `${location.protocol}//${location.host}${this.vu_pathOfRoomsRead}${roomId}`;
+                        //          --------------------  ---------------]-----------------------------------
+                        //          1                     2               3
                         // 1. protocol
                         // 2. host
                         // 3. path
-                        console.log(`room path=[${path}]`);
-                        return path;
+                        console.log(`room url=[${url}]`);
+                        return url;
                     },
                 },
             });
@@ -264,34 +262,37 @@ from webapp1.models.m_room import Room
 # 4. クラス名
 
 
-def get_all_rooms():
-    # id順に要素を全部取得
-    dbRoomQuerySet = Room.objects.all().order_by('id')
-    # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
-    print(f"dbRoomQuerySet={dbRoomQuerySet}")
+class MhRoom():
 
-    # JSON 文字列に変換
-    dbRoomJsonStr = serializers.serialize('json', dbRoomQuerySet)
+    @staticmethod
+    def get_all_rooms_as_dic():
+        # id順に要素を全部取得
+        room_table_qs = Room.objects.all().order_by('id')
+        # roomSet=<QuerySet [<Room: Elephant>, <Room: Giraffe>, <Room: Gold>]>
+        print(f"room_table_qs={room_table_qs}")
 
-    # オブジェクトに変換
-    dbRoomDoc = json.loads(dbRoomJsonStr)
+        # JSON 文字列に変換
+        room_table_json = serializers.serialize('json', room_table_qs)
 
-    # 使いやすい形に変換します
-    hotelDic = dict()
-    for dbRoom in dbRoomDoc:
+        # オブジェクトに変換
+        room_table_doc = json.loads(room_table_json)
 
-        # Example:
-        # dbRoom= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
-        print(f"dbRoom= --> {dbRoom} <--")
+        # 使いやすい形に変換します
+        room_dic = dict()
+        for dbRoom in room_table_doc:
 
-        hotelDic[dbRoom["pk"]] = {
-            "pk": dbRoom["pk"],
-            "name": dbRoom["fields"]["name"],
-            "board": dbRoom["fields"]["board"],
-            "record": dbRoom["fields"]["record"],
-        }
+            # Example:
+            # dbRoom= --> {'model': 'webapp1.room', 'pk': 2, 'fields': {'name': 'Elephant', 'board': 'XOXOXOXOX', 'record': '012345678'}} <--
+            print(f"dbRoom= --> {dbRoom} <--")
 
-    return hotelDic
+            room_dic[dbRoom["pk"]] = {
+                "pk": dbRoom["pk"],
+                "name": dbRoom["fields"]["name"],
+                "board": dbRoom["fields"]["board"],
+                "record": dbRoom["fields"]["record"],
+            }
+
+        return room_dic
 ```
 
 # Step 4. ビュー編集 - v_lobby_v1.py ファイル
@@ -317,13 +318,13 @@ import json
 from django.http import HttpResponse
 from django.template import loader
 
-from webapp1.models_helper.mh_room import get_all_rooms
-#    ------- ------------- -------        -------------
+from webapp1.models_helper.mh_room import MhRoom
+#    ------- ------------- -------        ------
 #    1       2             3              4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. 関数名
+# 4. クラス名
 
 
 from webapp1.models_helper.mh_session import MhSession
@@ -344,20 +345,18 @@ def render_lobby(request):
     #                      ---------------------------
 
     # 部屋の一覧
-    hotelDic = get_all_rooms()
+    room_dic = MhRoom.get_all_rooms_as_dic()
 
     # ユーザーの一覧
-    usersDic = MhSession.get_all_logged_in_users()
+    user_dic = MhSession.get_all_logged_in_users()
 
     context = {
         # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # 部屋がいっぱいあるからホテル
-        'dj_hotel': json.dumps(hotelDic),
-        # 人がいっぱいいるからパーク
-        'dj_park': json.dumps(usersDic),
+        'dj_room_dic': json.dumps(room_dic),
+        'dj_user_dic': json.dumps(user_dic),
         # FIXME 相対パス。 URL を urls.py で変更したいとき、反映されないがどうするか？
-        "dj_pathOfHome": "home/v2/",
-        "dj_pathOfRoomsRead": "rooms/read/",
+        "dj_path_of_home": "/home/v2/",
+        "dj_path_of_rooms_read": "/rooms/read/",
     }
 
     return HttpResponse(template.render(context, request))
