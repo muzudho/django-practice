@@ -23,11 +23,17 @@
                                 <h5 class="card-title">部屋名</h5>
                                 <p class="card-text">{{ room.name }}</p>
 
-                                <h5 class="card-title">先手Id</h5>
-                                <p class="card-text">{{ room.sente_id }}</p>
+                                <h5 class="card-title">先手Idと名前</h5>
+                                <p class="card-text">
+                                    {{ room.sente_id }}<br />
+                                    {{ room.sente_name }}
+                                </p>
 
-                                <h5 class="card-title">後手Id</h5>
-                                <p class="card-text">{{ room.gote_id }}</p>
+                                <h5 class="card-title">後手Idと名前</h5>
+                                <p class="card-text">
+                                    {{ room.gote_id }}<br />
+                                    {{ room.gote_name }}
+                                </p>
                             </div>
                             <!-- 盤面 -->
                             <div class="card-body">

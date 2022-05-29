@@ -100,8 +100,45 @@ def render_list_room(request):
 
 def render_read_room(request, id=id):
     """部屋読取"""
+
+    # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+    # idを指定してメンバーを１人取得
+    room_table_qs = Room.objects.filter(pk=id)  # QuerySet
+    room_table_json = serializers.serialize('json', room_table_qs)
+    room_table_doc = json.loads(room_table_json)  # オブジェクト
+
+    # 使いやすい形に変換します
+    if len(room_table_doc) < 1:
+        room_dic = {
+            "pk": id,
+            "name": "",
+            "sente_id": "",
+            "sente_name": "",
+            "gote_id": "",
+            "gote_name": "",
+            "board": "",
+            "record": "",
+        }
+    else:
+        # 先頭の１件
+        room_rec = room_table_doc[0]
+
+        sente_id = room_rec["fields"]["sente_id"]
+        gote_id = room_rec["fields"]["gote_id"]
+
+        room_dic = {
+            "pk": room_rec["pk"],
+            "name": room_rec["fields"]["name"],
+            "sente_id": sente_id,
+            "sente_name": MhUser.get_name_by_id(sente_id),
+            "gote_id": gote_id,
+            "gote_name": MhUser.get_name_by_id(gote_id),
+            "board": room_rec["fields"]["board"],
+            "record": room_rec["fields"]["record"],
+        }
+
     context = {
-        'room': Room.objects.get(pk=id),  # idを指定してメンバーを１人取得
+        'room': room_dic,  # room_table_qs,
     }
     return render(request, "webapp1/rooms/read.html", context)
     #                       -----------------------
