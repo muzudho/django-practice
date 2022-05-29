@@ -91,9 +91,9 @@ docker-compose up
                         <v-form method="POST">
                             {% csrf_token %}
 
-                            <v-text-field v-model="roomName.value" :rules="roomName.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+                            <v-text-field v-model="userName.value" :rules="userName.rules" counter="16" hint="a-z, 0-9, No number at the beginning. Max 16 characters" label="User name" name="user_name"></v-text-field>
 
-                            <v-btn block elevation="2" type="submit"> Start Game </v-btn>
+                            <v-text-field v-model="roomName.value" :rules="roomName.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
                         </v-form>
                     </v-container>
                 </v-main>
@@ -107,10 +107,27 @@ docker-compose up
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    userName: {
+                        value: "elephant1234",
+                        rules: [
+                            (value) => !!value || "Required", // 空欄の禁止
+                            (v) => v.length <= 16 || "Max 16 characters", // 文字数上限
+                            (value) => {
+                                const pattern = /^[a-z][a-z0-9]*$/; // 正規表現で指定
+                                return pattern.test(value) || "Invalid format";
+                            },
+                        ],
+                    },
                     roomName: {
                         value: "Elephant",
-                        rules: [(v) => v.length <= 25 || "Max 25 characters"],
-                        wordsRules: [(v) => v.trim().split(" ").length <= 5 || "Max 5 words"],
+                        rules: [
+                            (value) => !!value || "Required", // 空欄の禁止
+                            (v) => v.length <= 25 || "Max 25 characters", // 文字数上限
+                            (value) => {
+                                const pattern = /^[A-Za-z_]+$/; // 正規表現で指定
+                                return pattern.test(value) || "Invalid format";
+                            },
+                        ],
                     },
                     selectedMyPiece: "X",
                     pieces: ["X", "O"],
@@ -140,9 +157,11 @@ docker-compose up
 from django.http import HttpResponse
 from django.template import loader
 
+# ...中略...
 
 def render_practice_text_field_validation1(request):
     """テキストフィールドのバリデーションの練習"""
+
     template = loader.get_template(
         'webapp1/practice/vuetify-text-field-validation1.html')
     #                     -----------------------------------
@@ -210,3 +229,8 @@ docker-compose up
 # 次の記事
 
 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)  
+
+# 参考にした記事
+
+📖 [Vuetifyでのバリデーションまとめ](https://inokawablog.org/vue-js/vuetify-validation/)  
+

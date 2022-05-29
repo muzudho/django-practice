@@ -54,6 +54,7 @@ def readDataTable2(request):
 
 def render_practice_text_field_validation1(request):
     """テキストフィールドのバリデーションの練習"""
+
     template = loader.get_template(
         'webapp1/practice/vuetify-text-field-validation1.html')
     #                     -----------------------------------
