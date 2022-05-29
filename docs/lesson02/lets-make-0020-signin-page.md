@@ -141,13 +141,14 @@ docker-compose up
                             {% csrf_token %}
                             <!-- 手動フォーム作成 ここから -->
                             {{ form.non_field_errors }}
+                            <!-- ユーザー名 -->
                             <div class="fieldWrapper">
                                 {{ form.login.errors }}
-                                <v-text-field name="login" v-model="vu_userName" :maxlength="vu_loginFormDoc.maxlength" counter label="アカウント名：" required></v-text-field>
+                                <v-text-field name="login" v-model="vu_userName.value" :rules="vu_userName.rules" counter="16" label="ユーザー名" required hint="使える文字 a-z， 0-9． 先頭に数字は使えません。 最大 16 文字"></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.password.errors }}
-                                <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード：" required></v-text-field>
+                                <v-text-field type="password" name="password" v-model="vu_password" counter label="パスワード" required></v-text-field>
                             </div>
                             <div class="fieldWrapper">
                                 {{ form.remember.errors }}
@@ -189,14 +190,28 @@ docker-compose up
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
                     // vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
-                    vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
+                    // vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
+                    vu_pathOfSignin: "/accounts/v1/login/", // urls.py で再設定したログイン用パス
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
 
                     // HTMLタグ文字列が渡されるので、解析します
                     vu_loginFormDoc: new DjangoAllauthFormParser().parseHtmlString("login", "{{ form.login|escapejs }}"),
-                    vu_userName: "",
+
+                    // ユーザー名
+                    vu_userName: {
+                        value: "",
+                        rules: [
+                            // FIXME ここでルールを色々書いているが、モデル側で対応していないので、モデル側も対応してほしい
+                            (value) => !!value || "Required", // 空欄の禁止
+                            (v) => v.length <= 16 || "Max 16 characters", // 文字数上限
+                            (value) => {
+                                const pattern = /^[a-z][a-z0-9]*$/; // 正規表現で指定
+                                return pattern.test(value) || "Invalid format";
+                            },
+                        ],
+                    },
 
                     vu_passwordFormDoc: new DjangoAllauthFormParser().parseHtmlString("password", "{{ form.password|escapejs }}"),
                     vu_password: "",
@@ -317,6 +332,14 @@ urlpatterns = [
 # Step 5. Web画面へアクセス
 
 📖 [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
+
+👆 ログイン ページを開きます  
+
+既にログインしているなら、  
+
+📖 [http://localhost:8000/accounts/v1/logout/](http://localhost:8000/accounts/v1/logout/)  
+
+👆 ログアウトを試してみてください  
 
 # 次の記事
 
