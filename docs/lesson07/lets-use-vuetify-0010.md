@@ -141,8 +141,8 @@ def readHello(request, id=id):
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂vuetify-practice
-            │           └── 📄hello1.html
+            │       └── 📂practice
+            │           └── 📄vuetify-hello1.html
             ├── 📂views
             │   └── 📄v_practice_of_vuetify.py
 👉          └── 📄urls.py
