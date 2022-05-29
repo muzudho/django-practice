@@ -246,6 +246,18 @@ urlpatterns = [
     # 2. v_practice_of_vuetify.py ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 
+    # Vuetifyのテキストフィールドのバリデーションの練習
+    path('practice/vuetify-text-field-validation1', v_practice_of_vuetify.render_practice_text_field_validation1,
+         # --------------------------------------   ------------------------------------------------------------
+         # 1                                        2
+         name='practice_text_field_validation1'),
+    #          -------------------------------
+    #          3
+    # 1. 例えば `http://example.com/practice/vuetify-text-field-validation1` のような URL のパスの部分
+    #                              ---------------------------------------
+    # 2. v_practice_of_vuetify.py ファイルの render_practice_text_field_validation1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'practice_text_field_validation1' %} のような形でURLを取得するのに使える
+
     # Vuetify練習
     path('practice/vuetify-json-textarea1', v_practice_of_vuetify.readJsonTextarea1,
          # ------------------------------   ---------------------------------------

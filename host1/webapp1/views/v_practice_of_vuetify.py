@@ -52,6 +52,20 @@ def readDataTable2(request):
     return HttpResponse(template.render(context, request))
 
 
+def render_practice_text_field_validation1(request):
+    """テキストフィールドのバリデーションの練習"""
+    template = loader.get_template(
+        'webapp1/practice/vuetify-text-field-validation1.html')
+    #                     -----------------------------------
+    #                     1
+    # 1. host1/webapp1/templates/webapp1/practice/vuetify-text-field-validation1.html を取ってきます。
+    #                            ----------------------------------------------------
+
+    context = {
+    }
+    return HttpResponse(template.render(context, request))
+
+
 def readJsonTextarea1(request):
     """Vuetify練習"""
     template = loader.get_template(
