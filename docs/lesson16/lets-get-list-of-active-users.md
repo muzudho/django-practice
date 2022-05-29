@@ -42,8 +42,8 @@
         │   │   │       ├── 📄judge.js
         │   │   │       ├── 📄protocol_main.js
         │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
+        │   │   ├── 📂practice
+        │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
@@ -92,7 +92,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. テンプレート編集 - active-user-list.html ファイル
+# Step 2. テンプレート編集 - session-active-user-list.html ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -101,8 +101,8 @@ docker-compose up
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-                    └── 📂session-practice
-👉                      └── active-user-list.html
+                    └── 📂practice
+👉                      └── session-active-user-list.html
 ```
 
 ```html
@@ -184,8 +184,8 @@ docker-compose up
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂session-practice
-            │           └── active-user-list.html
+            │       └── 📂practice
+            │           └── session-active-user-list.html
             └── 📂models_helper
 👉              └── 📄mh_session.py
 ```
@@ -265,8 +265,8 @@ web_1  | ]
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂session-practice
-            │           └── active-user-list.html
+            │       └── 📂practice
+            │           └── session-active-user-list.html
             ├── 📂models_helper
             │   └── 📄mh_session.py
             └── 📂views
@@ -294,10 +294,10 @@ def render_active_user_list(request):
         # Vue に渡すときは、 JSON オブジェクトではなく、 JSON 文字列です
         'dj_users': json.dumps(MhSession.get_all_logged_in_users())
     }
-    return render(request, "webapp1/session-practice/active-user-list.html", context)
+    return render(request, "webapp1/practice/session-active-user-list.html", context)
     #                       ----------------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/session-practice/active-user-list.html
+    # 1. webapp1/templates/webapp1/practice/session-active-user-list.html
     #                      ----------------------------------------------
 ```
 
@@ -312,9 +312,8 @@ def render_active_user_list(request):
             │   └── 📄mh_session.py
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂lobby
-            │           └── 📂v1
-            │               └── active-user-list.html
+            │       └── 📂practice
+            │           └── session-active-user-list.html
             ├── 📂views
             │   └── 📄v_practice_of_session.py
 👉          └── 📄urls.py
@@ -332,14 +331,14 @@ urlpatterns = [
     # ...中略...
 
     # アクティブ ユーザー一覧
-    path('session-practice/v1/active-user-list/',
-         # ------------------------------------
+    path('practice/session-active-user-list/',
+         # ---------------------------------
          # 1
          v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
     #    ---------------------------------------------        --------------------------------
     #    2                                                    3
     #
-    # 1. URLの `session-practice/v1/active-user-list/` というパスにマッチする
+    # 1. URLの `practice/session-active-user-list/` というパスにマッチする
     # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 ]
@@ -347,7 +346,7 @@ urlpatterns = [
 
 # Step 6. Web画面へアクセス
 
-📖 [http://localhost:8000/session-practice/v1/active-user-list/](http://localhost:8000/session-practice/v1/active-user-list/)  
+📖 [http://localhost:8000/practice/session-active-user-list/](http://localhost:8000/practice/session-active-user-list/)  
 
 # 次の記事
 
