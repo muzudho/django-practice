@@ -54,8 +54,8 @@ id が 4 の部屋を削除したい。
         │   │   │       ├── 📄judge.js
         │   │   │       ├── 📄protocol_main.js
         │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
+        │   │   ├── 📂practice
+        │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized

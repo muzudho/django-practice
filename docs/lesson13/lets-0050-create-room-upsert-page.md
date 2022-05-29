@@ -69,8 +69,8 @@ id が 4 の部屋が既に存在するなら更新をしたい。
         │   │   │       ├── 📄judge.js
         │   │   │       ├── 📄protocol_main.js
         │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂vuetify-practice
-        │   │   │   └── 📄desserts.json
+        │   │   ├── 📂practice
+        │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
