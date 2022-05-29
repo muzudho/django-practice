@@ -122,6 +122,8 @@ django-allauth>=0.32.0
         └── <いろいろ>
 ```
 
+👇 レッスンの進み具合によって、 URL などを変えてください  
+
 ```py
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -208,11 +210,17 @@ TEMPLATES = [
 SITE_ID = 1 # 動かしているサイトを識別するID
 LOGIN_REDIRECT_URL = 'home' # ログオン後に遷移するURLの指定
 
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'  # ログアウト後に遷移するURLの指定
+# ログアウト後に遷移するURLの指定
+#
+# * レッスンの進捗に応じて変えてください
+#
+# ACCOUNT_LOGOUT_REDIRECT_URL = 'home' # レッスンの最初はこれ
+# ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'
 #                              -------------------
 #                              1
 # 1. 例えば `http://example.com/accounts/v1/login/` というパスにマッチする
 #                             -------------------
+ACCOUNT_LOGOUT_REDIRECT_URL = 'homeV1_home'
 
 EMAIL_HOST = 'smtp.gmail.com' # メールサーバの指定
 EMAIL_PORT = 587 # ポート番号の指定

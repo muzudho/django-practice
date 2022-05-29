@@ -227,11 +227,17 @@ SITE_ID = 1  # 動かしているサイトを識別するID
 # LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
 LOGIN_REDIRECT_URL = 'homeV1_home'  # ログイン後に遷移するURLの指定
 
-ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'  # ログアウト後に遷移するURLの指定
+# ログアウト後に遷移するURLの指定
+#
+# * レッスンの進捗に応じて変えてください
+#
+# ACCOUNT_LOGOUT_REDIRECT_URL = 'home' # レッスンの最初はこれ
+# ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/v1/login/'
 #                              -------------------
 #                              1
 # 1. 例えば `http://example.com/accounts/v1/login/` というパスにマッチする
 #                             -------------------
+ACCOUNT_LOGOUT_REDIRECT_URL = 'homeV1_home'
 
 EMAIL_HOST = 'smtp.gmail.com'  # メールサーバの指定
 EMAIL_PORT = 587  # ポート番号の指定
