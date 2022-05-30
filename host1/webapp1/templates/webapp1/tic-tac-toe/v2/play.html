@@ -112,7 +112,28 @@
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(createSetMessageFromServer(), packReconnect()),
+                    engine: new Engine(
+                        createSetMessageFromServer(),
+                        packReconnect(),
+                        // 部屋名
+                        document.forms["form1"]["room_name"].value,
+                        // X か O
+                        document.forms["form1"]["my_piece"].value,
+                        // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+                        (roomName, myPiece) => {
+                            // 接続文字列
+                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
+                            //                                                                  ^
+                            //                        ----]----------------------]---------------------------------
+                            //                        1    2                      3
+                            // 1. プロトコル（Web socket）
+                            // 2. ホスト アドレス
+                            // 3. パス
+                            // console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+
+                            return connectionString;
+                        }
+                    ),
                     state: STATE_DURING_GAME,
                     result: "",
                     label0: PC_EMPTY_LABEL,
@@ -133,9 +154,10 @@
                 methods: {
                     // 画面を初期化
                     init() {
+                        // console.log("[Debug] Vue#init()");
+
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
                         this.engine.game.init(this.engine.connection.myPiece);
@@ -150,7 +172,8 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.game.isMyTurn=${this.engine.game.isMyTurn}`);
+
                         if (this.engine.game.board[sq] == PC_EMPTY) {
                             if (!this.engine.game.isMyTurn) {
                                 // Wait for other to place the move
@@ -170,6 +193,7 @@
                      */
                     setLabelOfButton(sq, piece) {
                         // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+
                         switch (sq) {
                             case 0:
                                 this.label0 = piece;
@@ -239,7 +263,7 @@
                      * 対局は終了しました
                      */
                     setGameIsOver(result) {
-                        console.log(`[setGameIsOver] result=${result}`);
+                        // console.log(`[Debug][setGameIsOver] result=${result}`);
 
                         this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
 

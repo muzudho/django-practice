@@ -14,23 +14,23 @@ function createSetMessageFromServer() {
         let myPiece = message["myPiece"];
         // 勝者
         let winner = message["winner"];
-        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
+        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "StoC_Start":
                 // 対局開始の一斉通知
-                vue1.init();   // 画面を初期化
+                vue1.init(); // 画面を初期化
                 break;
 
             case "StoC_End":
                 // 対局終了の一斉通知
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
-                    result = RESULT_DRAW
+                    result = RESULT_DRAW;
                 } else if (winner == vue1.engine.connection.myPiece) {
-                    result = RESULT_WON
+                    result = RESULT_WON;
                 } else {
-                    result = RESULT_LOST
+                    result = RESULT_LOST;
                 }
 
                 vue1.setGameIsOver(result);

@@ -21,6 +21,13 @@ class Connection {
     }
 
     /**
+     * X か O
+     */
+    get myPiece() {
+        return this._myPiece;
+    }
+
+    /**
      * セットアップ
      *
      * @param {string} roomName - 部屋名
@@ -28,6 +35,7 @@ class Connection {
      * @param {function} convertPartsToConnectionString - (roomName, myPiece) return connectionString
      */
     setup(roomName, myPiece, convertPartsToConnectionString) {
+        // console.log(`[Debug][Connection#setup] roomName=[${roomName}] myPiece=[${myPiece}]`);
         this._roomName = roomName;
         this._myPiece = myPiece;
         this._connectionString = convertPartsToConnectionString(this._roomName, this._myPiece);
@@ -41,12 +49,13 @@ class Connection {
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      */
     connect(onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
-        console.log(`[Connection#connect] Start`);
+        // console.log(`[Debug][Connection#connect] Start this._connectionString=[${this._connectionString}]`);
 
         // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
         try {
             // 接続できないと、この生成に失敗する。catch もできない
             this.webSock1 = new WebSocket(this._connectionString);
+            // console.log(`[Debug][Connection#connect] Connecting...`);
 
             this.webSock1.onopen = onOpenWebSocket;
             this.webSock1.onclose = onCloseWebSocket;

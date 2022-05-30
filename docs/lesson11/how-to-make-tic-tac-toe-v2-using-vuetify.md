@@ -225,6 +225,13 @@ class Connection {
     }
 
     /**
+     * X か O
+     */
+    get myPiece() {
+        return this._myPiece;
+    }
+
+    /**
      * セットアップ
      *
      * @param {string} roomName - 部屋名
@@ -232,6 +239,7 @@ class Connection {
      * @param {function} convertPartsToConnectionString - (roomName, myPiece) return connectionString
      */
     setup(roomName, myPiece, convertPartsToConnectionString) {
+        // console.log(`[Debug][Connection#setup] roomName=[${roomName}] myPiece=[${myPiece}]`);
         this._roomName = roomName;
         this._myPiece = myPiece;
         this._connectionString = convertPartsToConnectionString(this._roomName, this._myPiece);
@@ -245,12 +253,13 @@ class Connection {
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      */
     connect(onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
-        console.log(`[Connection#connect] Start`);
+        // console.log(`[Debug][Connection#connect] Start this._connectionString=[${this._connectionString}]`);
 
         // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
         try {
             // 接続できないと、この生成に失敗する。catch もできない
             this.webSock1 = new WebSocket(this._connectionString);
+            // console.log(`[Debug][Connection#connect] Connecting...`);
 
             this.webSock1.onopen = onOpenWebSocket;
             this.webSock1.onclose = onCloseWebSocket;
@@ -312,23 +321,23 @@ class Connection {
  * PC は Piece （駒、石、などの意味）の略です。
  * @type {number}
  */
-const PC_EMPTY = 0 // Pieceがないことを表します
-const PC_X = 1
-const PC_O = 2
+const PC_EMPTY = 0; // Pieceがないことを表します
+const PC_X = 1;
+const PC_O = 2;
 
 /**
  * ラベル
  * @type {string}
  */
-const PC_EMPTY_LABEL = ""
-const PC_X_LABEL = "X"
-const PC_O_LABEL = "O"
+const PC_EMPTY_LABEL = "";
+const PC_X_LABEL = "X";
+const PC_O_LABEL = "O";
 
 /**
  * 盤上の升の数
  * @type {number}
  */
-const BOARD_AREA = 9
+const BOARD_AREA = 9;
 
 /**
  * SQ is square
@@ -339,44 +348,42 @@ const BOARD_AREA = 9
  * +---------+
  * @type {number}
  */
-const SQ_0 = 0
-const SQ_1 = 1
-const SQ_2 = 2
-const SQ_3 = 3
-const SQ_4 = 4
-const SQ_5 = 5
-const SQ_6 = 6
-const SQ_7 = 7
-const SQ_8 = 8
+const SQ_0 = 0;
+const SQ_1 = 1;
+const SQ_2 = 2;
+const SQ_3 = 3;
+const SQ_4 = 4;
+const SQ_5 = 5;
+const SQ_6 = 6;
+const SQ_7 = 7;
+const SQ_8 = 8;
 
 /**
  * ゲーム
  */
 class Game {
     constructor() {
-        this.clear()
+        this.clear();
 
         // イベントリスナー
-        this._onDoMove = () => {}
+        this._onDoMove = () => {};
     }
 
     /**
      * 石を置いたとき
      */
     set onDoMove(func) {
-        this._onDoMove = func
+        this._onDoMove = func;
     }
 
     /**
      * クリアー
      */
     clear() {
+        // console.log(`[Debug][Game#clear] Begin this.isMyTurn=${this.isMyTurn}`);
+
         // 盤面
-        this.board = [
-            PC_EMPTY, PC_EMPTY, PC_EMPTY,
-            PC_EMPTY, PC_EMPTY, PC_EMPTY,
-            PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        ];
+        this.board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
         // 何手目
         this.countOfMove = 0;
@@ -386,17 +393,22 @@ class Game {
 
         // 相手の手番に着手しないでください
         this.isWaitForOther = false;
+
+        // console.log(`[Debug][Game#clear] End this.isMyTurn=${this.isMyTurn}`);
     }
 
     /**
      * 初期化
      */
     init(myPiece) {
-        this.clear()
+        this.clear();
 
         // 自分の手番か
         {
             let isMyTurn;
+
+            // console.log(`[Debug][Game#init] myPiece=${myPiece} PC_X_LABEL=${PC_X_LABEL}`);
+
             if (myPiece == PC_X_LABEL) {
                 isMyTurn = true;
             } else {
@@ -414,8 +426,7 @@ class Game {
      * @param {*} myPiece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
-    makeMove(sq, myPiece){
-
+    makeMove(sq, myPiece) {
         if (this.board[sq] == PC_EMPTY) {
             // 空升なら
 
@@ -434,10 +445,10 @@ class Game {
                     return false;
             }
 
-            this._onDoMove(sq, myPiece)
+            this._onDoMove(sq, myPiece);
         }
 
-        return true
+        return true;
     }
 }
 ```
@@ -611,34 +622,18 @@ class Engine {
      * 生成
      * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
+     * @param {string} roomName - 部屋名
+     * @param {string} myPiece - X か O
+     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
      */
-    constructor(onSetMessageFromServer, reconnect) {
+    constructor(onSetMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
         this._onSetMessageFromServer = onSetMessageFromServer;
         this._reconnect = reconnect;
 
         // 接続
         this._connection = new Connection();
 
-        let convertPartsToConnectionString = (roomName, myPiece) => {
-            // 接続文字列
-            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
-            //                                                                  ^
-            //                        ----]----------------------]---------------------------------
-            //                        1    2                      3
-            // 1. プロトコル（Web socket）
-            // 2. ホスト アドレス
-            // 3. パス
-            console.log(`[Debug] Connection#constructor roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
-        };
-
-        this._connection.setup(
-            // 部屋名
-            document.forms["form1"]["room_name"].value,
-            // X か O
-            document.forms["form1"]["my_piece"].value,
-            // 接続文字列を返す関数
-            convertPartsToConnectionString
-        );
+        this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
@@ -765,23 +760,23 @@ function createSetMessageFromServer() {
         let myPiece = message["myPiece"];
         // 勝者
         let winner = message["winner"];
-        console.log(`[setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
+        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "StoC_Start":
                 // 対局開始の一斉通知
-                vue1.init();   // 画面を初期化
+                vue1.init(); // 画面を初期化
                 break;
 
             case "StoC_End":
                 // 対局終了の一斉通知
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
-                    result = RESULT_DRAW
+                    result = RESULT_DRAW;
                 } else if (winner == vue1.engine.connection.myPiece) {
-                    result = RESULT_WON
+                    result = RESULT_WON;
                 } else {
-                    result = RESULT_LOST
+                    result = RESULT_LOST;
                 }
 
                 vue1.setGameIsOver(result);
@@ -935,7 +930,9 @@ function createSetMessageFromServer() {
                         <v-container>
                             <v-row justify="center" dense>
                                 <v-col>
-                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %} {% verbatim %}
+                                    {% comment %} Vue で二重波括弧（braces）は変数の展開に使っていることから、 Python のテンプレートに二重波括弧を変数の展開に使わないよう verbatim で指示します。 {% endcomment %}
+                                    <!-- -->
+                                    {% verbatim %}
                                     <v-btn id="square0" v-on:click="clickSquare(0)">{{label0}}</v-btn>
                                     <v-btn id="square1" v-on:click="clickSquare(1)">{{label1}}</v-btn>
                                     <v-btn id="square2" v-on:click="clickSquare(2)">{{label2}}</v-btn>
@@ -1022,7 +1019,28 @@ function createSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(createSetMessageFromServer(), packReconnect()),
+                    engine: new Engine(
+                        createSetMessageFromServer(),
+                        packReconnect(),
+                        // 部屋名
+                        document.forms["form1"]["room_name"].value,
+                        // X か O
+                        document.forms["form1"]["my_piece"].value,
+                        // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+                        (roomName, myPiece) => {
+                            // 接続文字列
+                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
+                            //                                                                  ^
+                            //                        ----]----------------------]---------------------------------
+                            //                        1    2                      3
+                            // 1. プロトコル（Web socket）
+                            // 2. ホスト アドレス
+                            // 3. パス
+                            // console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+
+                            return connectionString;
+                        }
+                    ),
                     state: STATE_DURING_GAME,
                     result: "",
                     label0: PC_EMPTY_LABEL,
@@ -1043,9 +1061,10 @@ function createSetMessageFromServer() {
                 methods: {
                     // 画面を初期化
                     init() {
+                        // console.log("[Debug] Vue#init()");
+
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        // console.log("[Debug] Vue#init()");
                         this.setState(STATE_DURING_GAME);
 
                         this.engine.game.init(this.engine.connection.myPiece);
@@ -1060,7 +1079,8 @@ function createSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        // console.log(`[Debug] Vue#clickSquare sq=${sq}`);
+                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.game.isMyTurn=${this.engine.game.isMyTurn}`);
+
                         if (this.engine.game.board[sq] == PC_EMPTY) {
                             if (!this.engine.game.isMyTurn) {
                                 // Wait for other to place the move
@@ -1080,6 +1100,7 @@ function createSetMessageFromServer() {
                      */
                     setLabelOfButton(sq, piece) {
                         // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+
                         switch (sq) {
                             case 0:
                                 this.label0 = piece;
@@ -1149,7 +1170,7 @@ function createSetMessageFromServer() {
                      * 対局は終了しました
                      */
                     setGameIsOver(result) {
-                        console.log(`[setGameIsOver] result=${result}`);
+                        // console.log(`[Debug][setGameIsOver] result=${result}`);
 
                         this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
 

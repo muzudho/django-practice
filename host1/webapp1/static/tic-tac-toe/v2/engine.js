@@ -6,34 +6,18 @@ class Engine {
      * 生成
      * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
+     * @param {string} roomName - 部屋名
+     * @param {string} myPiece - X か O
+     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
      */
-    constructor(onSetMessageFromServer, reconnect) {
+    constructor(onSetMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
         this._onSetMessageFromServer = onSetMessageFromServer;
         this._reconnect = reconnect;
 
         // 接続
         this._connection = new Connection();
 
-        let convertPartsToConnectionString = (roomName, myPiece) => {
-            // 接続文字列
-            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
-            //                                                                  ^
-            //                        ----]----------------------]---------------------------------
-            //                        1    2                      3
-            // 1. プロトコル（Web socket）
-            // 2. ホスト アドレス
-            // 3. パス
-            console.log(`[Debug] Connection#constructor roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
-        };
-
-        this._connection.setup(
-            // 部屋名
-            document.forms["form1"]["room_name"].value,
-            // X か O
-            document.forms["form1"]["my_piece"].value,
-            // 接続文字列を返す関数
-            convertPartsToConnectionString
-        );
+        this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
