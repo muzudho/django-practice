@@ -115,7 +115,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 以下略
 ```
 
-# Step 3. protocol_messages.js ファイルの作成
+# Step 3. プロトコル実装 - protocol_messages.js ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -847,8 +847,10 @@ function createSetMessageFromServer() {
                         <v-form method="POST">
                             {% csrf_token %}
 
-                            <v-text-field v-model="room.title" :rules="room.rules" counter="25" hint="a-z, A-Z, _. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+                            <!-- 部屋名 -->
+                            <v-text-field required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name" name="room_name"></v-text-field>
 
+                            <!-- X か O -->
                             <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
@@ -865,10 +867,15 @@ function createSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    room: {
-                        title: "Elephant",
-                        rules: [(v) => v.length <= 25 || "Max 25 characters"],
-                        wordsRules: [(v) => v.trim().split(" ").length <= 5 || "Max 5 words"],
+                    roomName: {
+                        value: "Elephant",
+                        rules: [
+                            (v) => v.length <= 25 || "Max 25 characters", // 文字数上限
+                            (value) => {
+                                const pattern = /^[A-Za-z][A-Za-z0-9]*$/; // 正規表現で指定
+                                return pattern.test(value) || "Invalid format";
+                            },
+                        ],
                     },
                     selectedMyPiece: "X",
                     pieces: ["X", "O"],

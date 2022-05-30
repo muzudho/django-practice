@@ -83,7 +83,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. protocol_messages.js ファイルの作成
+# Step 2. プロトコル実装 - protocol_messages.js ファイル
 
 以下のファイルを作成してほしい。  
 
