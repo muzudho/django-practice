@@ -221,7 +221,7 @@ urlpatterns = [
 
 
     # +----
-    # | Vuetify練習
+    # | 練習
 
     # Vuetify練習
     path('practice/vuetify-hello1',
@@ -307,15 +307,6 @@ urlpatterns = [
     # 2. v_practice_of_json.py ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 
-    # | Vuetify練習
-    # +----
-
-
-
-
-    # +----
-    # | JSONでの応答練習
-
     # JSONでの応答練習
     path('practice/json-textarea2',
          # ----------------------
@@ -340,14 +331,14 @@ urlpatterns = [
     # 2. v_practice_of_json.py ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
-    # | JSONでの応答練習
+    # | 練習
     # +----
 
 
 
 
     # +----
-    # | 〇×ゲームの練習１
+    # | 〇×ゲーム１
 
     # 対局要求
     path('tic-tac-toe/v1/match-request/',
@@ -368,14 +359,14 @@ urlpatterns = [
     #                              -----------------------------
     # 2. v_tic_tac_toe_v1.py ファイルの render_play メソッド
 
-    # | 〇×ゲームの練習１
+    # | 〇×ゲーム１
     # +----
 
 
 
 
     # +----
-    # | 〇×ゲームの練習２
+    # | 〇×ゲーム２
 
     # 対局要求
     path('tic-tac-toe/v2/match-request/',
@@ -399,7 +390,7 @@ urlpatterns = [
     #                              -----------------------------
     # 2. v_tic_tac_toe_v2.py ファイルの render_play メソッド
 
-    # | 〇×ゲームの練習２
+    # | 〇×ゲーム２
     # +----
 
 
