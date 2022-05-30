@@ -3,52 +3,36 @@
  *
  * * クライアントからサーバーへ送る
  */
-class ProtocolMessages {
-
+class ProtocolMessagesV3 {
     /**
-     * どちらかのプレイヤーが石を置いたとき
-     * @param {*} sq - 升番号
+     * プレイヤーが部屋に入ります
+     * @param {*} roomName - 部屋名
      * @param {*} myPiece - X か O
+     * @param {*} userId - ユーザーId
      * @returns メッセージ
      */
-    createDoMove(sq, myPiece) {
+    checkin(roomName, myPiece, userId) {
         return {
-            "event": "CtoS_Move",
-            "sq": sq,
-            "myPiece": myPiece,
-        }
+            event: "CtoS_Checkin",
+            roomName: roomName,
+            myPiece: myPiece,
+            userId: userId,
+        };
     }
 
     /**
-     * 引き分けたとき
-     * @returns メッセージ
-     */
-    createDraw() {
-        return {
-            "event": "CtoS_End",
-            "winner": PC_EMPTY_LABEL,
-        }
-    }
-
-    /**
-     * 対局を開始したとき
-     * @returns メッセージ
-     */
-    createStart() {
-        return {
-            "event": "CtoS_Start",
-        }
-    }
-
-    /**
-     * どちらかのプレイヤーが勝ったとき
+     * プレイヤーが部屋から出ます
+     * @param {*} roomName - 部屋名
      * @param {*} myPiece - X か O
+     * @param {*} userId - ユーザーId
      * @returns メッセージ
      */
-    createWon(myPiece) {
+    checkout(roomName, myPiece, userId) {
         return {
-            "event": "CtoS_End",
-            "winner": myPiece,
-        }
+            event: "CtoS_Checkout",
+            roomName: roomName,
+            myPiece: myPiece,
+            userId: userId,
+        };
     }
 }
