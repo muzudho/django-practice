@@ -210,42 +210,47 @@ class ProtocolMessages {
  * 接続
  */
 class Connection {
-
-    constructor()
-    {
+    constructor() {
         // 部屋名
-        this.roomName = document.forms["form1"]["room_name"].value;
+        this._roomName = "";
 
         // X か O か
-        this.myPiece = document.forms["form1"]["my_piece"].value;
+        this._myPiece = "";
 
-        // 接続文字列
-        this.connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${this.roomName}/`;
-        //                                                                 ^
-        //                      ---------------------------- --------------------------------------
-        //                      1                            2
-        // 1. ホスト アドレス
-        // 2. URLの一部
-        console.log(`[Debug] Connection#constructor roomName=${this.roomName} myPiece=${this.myPiece} connectionString=${this.connectionString}`)
+        // 接続文字列（初期値はダミー文字列）
+        this._connectionString = `ws://example.com/this/is/a/path/room_name/`;
 
         // 再接続中表示フラグ
-        this.isReconnectingDisplay = false
+        this.isReconnectingDisplay = false;
+    }
+
+    /**
+     * セットアップ
+     *
+     * @param {string} roomName - 部屋名
+     * @param {string} myPiece - X か O
+     * @param {function} convertPartsToConnectionString - (roomName, myPiece) return connectionString
+     */
+    setup(roomName, myPiece, convertPartsToConnectionString) {
+        this._roomName = roomName;
+        this._myPiece = myPiece;
+        this._connectionString = convertPartsToConnectionString(this._roomName, this._myPiece);
     }
 
     /**
      * 設定
-     * 
+     *
      * @param {*} onOpenWebSocket - Webソケットを開かれたとき
      * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      */
     connect(onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
-        console.log(`[Connection#connect] Start`)
+        console.log(`[Connection#connect] Start`);
 
         // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
         try {
             // 接続できないと、この生成に失敗する。catch もできない
-            this.webSock1 = new WebSocket(this.connectionString);
+            this.webSock1 = new WebSocket(this._connectionString);
 
             this.webSock1.onopen = onOpenWebSocket;
             this.webSock1.onclose = onCloseWebSocket;
@@ -255,35 +260,33 @@ class Connection {
                 // JSON を解析、メッセージだけ抽出
                 let data1 = JSON.parse(e.data);
                 let message = data1["message"];
-                setMessageFromServer(message)
+                setMessageFromServer(message);
             };
 
             // this.webSock1.onerror = onWebSocketError;
-            this.webSock1.addEventListener('error', (event1) => {
-                onWebSocketError(event1)
-            })
+            this.webSock1.addEventListener("error", (event1) => {
+                onWebSocketError(event1);
+            });
 
             // 状態を表示
             if (this.webSock1.readyState == WebSocket.CONNECTING) {
                 // 未接続
-                console.log('[Connect] Connecting socket.');
+                console.log("[Connect] Connecting socket.");
             } else if (this.webSock1.readyState == WebSocket.OPEN) {
-                console.log('[Connect] Open socket.');
+                console.log("[Connect] Open socket.");
                 this.webSock1.onopen();
             } else if (this.webSock1.readyState == WebSocket.CLOSING) {
-                console.log('[Connect] Closing socket.');
+                console.log("[Connect] Closing socket.");
             } else if (this.webSock1.readyState == WebSocket.CLOSED) {
                 // サーバーが落ちたりしたときは、ここ
-                console.log('[Connect] Closed socket.');
+                console.log("[Connect] Closed socket.");
             } else {
                 console.log(`[Connect] webSock1.readyState=${this.webSock1.readyState}`);
             }
-
         } catch (error) {
             // キャッチで捕まえられない
             console.log(`[Connect] Exception ${error}`);
         }
-
     }
 }
 ```
@@ -610,11 +613,33 @@ class Engine {
      * @param {*} reconnect - 再接続ラムダ関数
      */
     constructor(onSetMessageFromServer, reconnect) {
-        this._onSetMessageFromServer = onSetMessageFromServer
-        this._reconnect = reconnect
+        this._onSetMessageFromServer = onSetMessageFromServer;
+        this._reconnect = reconnect;
 
         // 接続
         this._connection = new Connection();
+
+        let convertPartsToConnectionString = (roomName, myPiece) => {
+            // 接続文字列
+            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
+            //                                                                  ^
+            //                        ----]----------------------]---------------------------------
+            //                        1    2                      3
+            // 1. プロトコル（Web socket）
+            // 2. ホスト アドレス
+            // 3. パス
+            console.log(`[Debug] Connection#constructor roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+        };
+
+        this._connection.setup(
+            // 部屋名
+            document.forms["form1"]["room_name"].value,
+            // X か O
+            document.forms["form1"]["my_piece"].value,
+            // 接続文字列を返す関数
+            convertPartsToConnectionString
+        );
+
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
         // ゲーム
@@ -624,17 +649,17 @@ class Engine {
 
         // どちらかが勝ったとき
         this._judge.onWon = (myPiece) => {
-            let response = this.protocolMessages.createWon(myPiece)
-            this._connection.webSock1.send(JSON.stringify(response))
-        }
+            let response = this.protocolMessages.createWon(myPiece);
+            this._connection.webSock1.send(JSON.stringify(response));
+        };
 
         // 引き分けたとき
         this._judge.onDraw = () => {
-            let response = this.protocolMessages.createDraw()
-            this._connection.webSock1.send(JSON.stringify(response))
-        }
+            let response = this.protocolMessages.createDraw();
+            this._connection.webSock1.send(JSON.stringify(response));
+        };
 
-        this.connect()
+        this.connect();
     }
 
     setup(setLabelOfButton) {
@@ -643,37 +668,37 @@ class Engine {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
-            let response = this.protocolMessages.createDoMove(sq, myPiece)
-            this._connection.webSock1.send(JSON.stringify(response))
-        }
+            let response = this.protocolMessages.createDoMove(sq, myPiece);
+            this._connection.webSock1.send(JSON.stringify(response));
+        };
     }
 
     /**
      * 接続
      */
     get connection() {
-        return this._connection
+        return this._connection;
     }
 
     /**
      * メッセージ一覧
      */
     get protocolMessages() {
-        return this._protocolMessages
+        return this._protocolMessages;
     }
 
     /**
      * ゲーム
      */
     get game() {
-        return this._game
+        return this._game;
     }
 
     /**
      * 勝敗判定
      */
     get judge() {
-        return this._judge
+        return this._judge;
     }
 
     /**
@@ -683,15 +708,15 @@ class Engine {
         this._connection.connect(
             // Webソケットを開かれたとき
             () => {
-                console.log('WebSockets connection created.');
-                let response = this.protocolMessages.createStart()
-                this._connection.webSock1.send(JSON.stringify(response))
+                console.log("WebSockets connection created.");
+                let response = this.protocolMessages.createStart();
+                this._connection.webSock1.send(JSON.stringify(response));
             },
             // Webソケットが閉じられたとき
             (e) => {
                 console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${e.reason}`);
                 // 1回だけ再接続を試みます
-                this._reconnect()
+                this._reconnect();
             },
             // サーバーからのメッセージを受信したとき
             this._onSetMessageFromServer,
@@ -699,7 +724,7 @@ class Engine {
             (e) => {
                 console.log(`Socket is error. ${e.reason}`);
             }
-        )
+        );
     }
 }
 ```
