@@ -118,9 +118,9 @@ def render_index(request):
         └── 📂webapp1
             ├── 📂templates
             │   └── 📂webapp1
-            │       └── 📄page1.html
+            │       └── 📄index.html
             ├── 📂views
-            │   └── 📄v_page1.py
+            │   └── 📄v_index.py
 👉          └── 📄urls.py
 ```
 
