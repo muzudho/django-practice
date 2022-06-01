@@ -48,7 +48,19 @@ http://<省略>.com/practice/page1
         └── <いろいろ>
 ```
 
-# Step 1. 画面作成 - page1.html ファイル
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. 画面作成 - page1.html ファイル
 
 以下のファイルを作成してほしい。
 
@@ -72,7 +84,7 @@ http://<省略>.com/practice/page1
 </html>
 ```
 
-# Step 2. ビュー作成 - v_practice_of_page1.py ファイル
+# Step 3. ビュー作成 - v_practice_of_pages.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -84,7 +96,7 @@ http://<省略>.com/practice/page1
             │       └── 📂practice
             │           └── 📄page1.html
             └── 📂views
-👉              └── 📄v_practice_of_page1.py
+👉              └── 📄v_practice_of_pages.py
 ```
 
 ```py
@@ -103,7 +115,7 @@ def render_page1(request):
     return HttpResponse(template.render(context, request))
 ```
 
-# Step 3. ルート編集 - urls.py
+# Step 4. ルート編集 - urls.py
 
 📄`host1/webapp1/urls.py` の、以下の該当箇所を追加してほしい。
 以下のファイルを編集してほしい。  
@@ -116,7 +128,7 @@ def render_page1(request):
             │       └── 📂practice
             │           └── 📄page1.html
             ├── 📂views
-            │   └── 📄v_practice_of_page1.py
+            │   └── 📄v_practice_of_pages.py
 👉          └── 📄urls.py
 ```
 
@@ -124,7 +136,7 @@ def render_page1(request):
 # 冒頭
 from django.urls import path
 
-from webapp1.views import v_practice_of_page1
+from webapp1.views import v_practice_of_pages
 #    ------- -----        -------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
@@ -135,16 +147,16 @@ from webapp1.views import v_practice_of_page1
 urlpatterns = [
     # ...中略...
 
-    path('practice/page1', v_practice_of_page1.render_page1, name='page1'),
+    path('practice/page1', v_practice_of_pages.render_page1, name='page1'),
     #     --------------   --------------------------------        -----
     #     1                2                                       3
     # 1. URLの `practice/page1` というパスにマッチする
-    # 2. v_practice_of_page1.py ファイルの render_page1 メソッド
+    # 2. v_practice_of_pages.py ファイルの render_page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 4. Webページにアクセスする
+# Step 5. Webページにアクセスする
 
 📖 [http://localhost:8000/practice/page1](http://localhost:8000/practice/page1)  
 
