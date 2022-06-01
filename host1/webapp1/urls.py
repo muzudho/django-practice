@@ -218,6 +218,17 @@ urlpatterns = [
     # 2. v_practice_of_pages.py ファイルの render_page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 
+    # ページ２の第１，２区画
+    path('practice/page2_1o2',
+         # -----------------
+         # 1
+         v_practice_of_pages.render_page2_section1o2, name='page1'),
+    #    -------------------------------------------        -----
+    #    2                                                  3
+    # 1. URLの `practice/page2_1o2` というパスにマッチする
+    # 2. v_practice_of_pages.py ファイルの render_page2_section1o2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
+
     # Vuetify練習
     path('practice/vuetify-hello1',
          # ----------------------

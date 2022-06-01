@@ -11,3 +11,14 @@ def render_page1(request):
 
     context = {}
     return HttpResponse(template.render(context, request))
+
+
+def render_page2_section1o2(request):
+    template = loader.get_template('webapp1/practice/page2_section1o2.html')
+    #                               --------------------------------------
+    #                               1
+    # 1. host1/webapp1/templates/webapp1/practice/page2_section1o2.html を取得
+    #                            --------------------------------------
+
+    context = {}
+    return HttpResponse(template.render(context, request))
