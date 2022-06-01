@@ -48,7 +48,7 @@ http://<省略>.com/practice/page1
         └── <いろいろ>
 ```
 
-# Step 1. HTMLファイルを置く
+# Step 1. 画面作成 - page1.html ファイル
 
 以下のファイルを作成してほしい。
 
@@ -57,7 +57,8 @@ http://<省略>.com/practice/page1
         └── 📂webapp1
             └── 📂templates
                 └── 📂webapp1
-👉                  └── 📄page1.html
+                    └── 📂practice
+👉                      └── 📄page1.html
 ```
 
 ```html
@@ -71,7 +72,7 @@ http://<省略>.com/practice/page1
 </html>
 ```
 
-# Step 2. ビュー作成 - v_page1.py ファイル
+# Step 2. ビュー作成 - v_practice_of_page1.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -80,9 +81,10 @@ http://<省略>.com/practice/page1
         └── 📂webapp1
             ├── 📂templates
             │   └── 📂webapp1
-            │       └── 📄page1.html
+            │       └── 📂practice
+            │           └── 📄page1.html
             └── 📂views
-👉              └── 📄v_page1.py
+👉              └── 📄v_practice_of_page1.py
 ```
 
 ```py
@@ -90,8 +92,8 @@ from django.http import HttpResponse
 from django.template import loader
 
 
-def page1(request):
-    template = loader.get_template('webapp1/page1.html')
+def render_page1(request):
+    template = loader.get_template('webapp1/practice/page1.html')
     context = {}
     return HttpResponse(template.render(context, request))
 ```
@@ -106,9 +108,10 @@ def page1(request):
         └── 📂webapp1
             ├── 📂templates
             │   └── 📂webapp1
-            │       └── 📄page1.html
+            │       └── 📂practice
+            │           └── 📄page1.html
             ├── 📂views
-            │   └── 📄v_page1.py
+            │   └── 📄v_practice_of_page1.py
 👉          └── 📄urls.py
 ```
 
@@ -116,8 +119,8 @@ def page1(request):
 # 冒頭
 from django.urls import path
 
-from webapp1.views import v_page1
-#    ------- -----        -------
+from webapp1.views import v_practice_of_page1
+#    ------- -----        -------------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
@@ -127,11 +130,11 @@ from webapp1.views import v_page1
 urlpatterns = [
     # ...中略...
 
-    path('practice/page1', v_page1.page1, name='page1'),
-    #     --------------   -------------        -----
-    #     1                 2                    3
+    path('practice/page1', v_practice_of_page1.render_page1, name='page1'),
+    #     --------------   --------------------------------        -----
+    #     1                2                                       3
     # 1. URLの `practice/page1` というパスにマッチする
-    # 2. v_page1.py ファイルの page1 メソッド
+    # 2. v_practice_of_page1.py ファイルの render_page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 ]
 ```

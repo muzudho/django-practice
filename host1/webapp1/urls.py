@@ -29,7 +29,7 @@ from webapp1.views import v_index
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
-from webapp1.views import v_login_user, v_page1, v_member, v_practice_of_vuetify, \
+from webapp1.views import v_login_user, v_practice_of_page1, v_member, v_practice_of_vuetify, \
     v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
     v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
 
@@ -111,21 +111,6 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 
     # | 認証
-    # +----
-
-
-
-
-    # +----
-    # | 練習１
-    path('practice/page1', v_page1.page1, name='page1'),
-    #     --------------   -------------        -----
-    #     1                 2                    3
-    # 1. 例えば `http://example.com/practice/page1` のような URL のパスの部分
-    #                              ---------------
-    # 2. v_page1.py ファイルの page1 メソッド
-    # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
-    # | 練習１
     # +----
 
 
@@ -220,8 +205,18 @@ urlpatterns = [
 
 
 
+
     # +----
-    # | 練習
+    # | 練習１
+
+    # ページ１
+    path('practice/page1', v_practice_of_page1.render_page1, name='page1'),
+    #     --------------   --------------------------------        -----
+    #     1                2                                       3
+    # 1. 例えば `http://example.com/practice/page1` のような URL のパスの部分
+    #                              ---------------
+    # 2. v_practice_of_page1.py ファイルの render_page1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
     path('practice/vuetify-hello1',
