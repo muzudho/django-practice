@@ -1,6 +1,6 @@
 # 目的
 
-データをJSON形式で渡して、サーバーへ記憶させたい。  
+データをJSON形式で渡して、サーバーへ記憶させたい  
 
 # はじめに
 
@@ -29,8 +29,10 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -231,8 +233,9 @@ Iron (%):
             ├── 📂models
             │   └── 📄m_dessert.py
             ├── 📂static
-            │   └── 📂practice
-👉          │       └── 📄vuetify-desserts-placeholder.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+👉          │           └── 📄vuetify-desserts-placeholder.json
             └── 📄admin.py
 ```
 
@@ -261,8 +264,9 @@ Iron (%):
             ├── 📂models
             │   └── 📄m_dessert.py
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts-placeholder.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts-placeholder.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -336,8 +340,9 @@ Iron (%):
             ├── 📂models
             │   └── 📄m_dessert.py
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts-placeholder.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts-placeholder.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -369,7 +374,7 @@ def readJsonTextarea2(request):
     # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます。
     #                            ----------------------------
 
-    with open('webapp1/static/practice/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -412,8 +417,9 @@ def readDataTable2o3(request):
             ├── 📂models
             │   └── 📄m_dessert.py
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts-placeholder.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts-placeholder.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
