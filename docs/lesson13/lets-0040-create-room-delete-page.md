@@ -160,8 +160,8 @@ def render_delete_room(request, id=id):
     template = loader.get_template('webapp1/rooms/delete.html')
     #                               -------------------------
     #                               1
-    # 1. webapp1/templates/webapp1/rooms/delete.html
-    #                      -------------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/delete.html
+    #                            -------------------------
 
     room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = room.name  # 名前だけまだ使う
