@@ -341,8 +341,8 @@ def render_read_room(request, id=id):
     return render(request, "webapp1/rooms/read.html", context)
     #                       -----------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/read.html
-    #                      -----------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/read.html
+    #                            -----------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
