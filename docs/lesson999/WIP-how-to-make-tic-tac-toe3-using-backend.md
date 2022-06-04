@@ -48,27 +48,26 @@ slide: false
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   ├── 📂v1
-        │   │   │   │   └── 📄<いろいろ>
-        │   │   │   └── 📂v2
-        │   │   │       ├── 📄connection.js
-        │   │   │       ├── 📄engine.js
-        │   │   │       ├── 📄game.js
-        │   │   │       ├── 📄judge.js
-        │   │   │       ├── 📄protocol_main.js
-        │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂practice
-        │   │   │   └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   ├── 📂webapp1
+        │   │   │   ├── 📂practice
+        │   │   │   │   └── 📄vuetify-desserts.json
+        │   │   │   └── 📂tic-tac-toe
+        │   │   │       ├── 📂v1
+        │   │   │       │   └── 📄<いろいろ>
+        │   │   │       └── 📂v2
+        │   │   │           └── 📄<いろいろ>.js
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
-        │   │   ├── 📂tic-tac-toe1
-        │   │   │   └── 📄<いろいろ>
-        │   │   ├── 📂tic-tac-toe2
-        │   │   │   ├── 📄index.html
-        │   │   │   └── 📄game.html
-        │   │   └── 📂<いろいろ>-practice
-        │   │       └── 📄<いろいろ>.html
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       ├── 📂tic-tac-toe1
+        │   │       │   └── 📄<いろいろ>
+        │   │       ├── 📂tic-tac-toe2
+        │   │       │   ├── 📄index.html
+        │   │       │   └── 📄game.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
         │   ├── 📂tic_tac_toe1
         │   │   └── 📄consumer1.py
         │   ├── 📂tic-tac-toe2
@@ -105,8 +104,9 @@ slide: false
 └── 📂host1
      └── 📂webapp1
        　　└── 📂static
-       　　      ├── 📂tic-tac-toe2
-       　　      │    └── protocol_messages.js 👈
+       　　      ├── 📂webapp1
+       　　      │  └── 📂tic-tac-toe2
+       　　      │      └── protocol_messages.js 👈
        　　      └── 🚀favicon.ico
 ```
 
@@ -924,12 +924,12 @@ function createSetMessageFromServer() {
             </v-app>
         </div>
 
-        <script src="{% static 'tic-tac-toe2/connection.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/engine.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/game.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/judge.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/protocol_main.js' %}"></script>
-        <script src="{% static 'tic-tac-toe2/protocol_messages.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/connection.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/engine.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/game.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/judge.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/protocol_main.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/protocol_messages.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
