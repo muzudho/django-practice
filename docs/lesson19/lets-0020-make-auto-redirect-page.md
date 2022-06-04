@@ -331,3 +331,7 @@ urlpatterns = [
 # Step 6. Web画面へアクセス
 
 📖 [http://localhost:8000/practice/waiting-for-match/v2/](http://localhost:8000/practice/waiting-for-match/v2/)  
+
+# 次の記事
+
+📖 [Djangoの〇×ゲームのPlayAgainボタンを外そう！](https://qiita.com/muzudho1/items/d4bfde69c1656616f8ce)  
