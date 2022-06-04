@@ -442,8 +442,8 @@ def render_user_list_v2(request):
     return render(request, "webapp1/practice/user-list-v2.html", context)
     #                       ----------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/practice/user-list-v2.html
-    #                      ----------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/user-list-v2.html
+    #                            ----------------------------------
 ```
 
 # Step 10. ルート編集 - urls.py ファイル
