@@ -615,8 +615,8 @@ def render_match_request(request):
     return render(request, "webapp1/tic-tac-toe/v1/match_request.html", {})
     #                       -----------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
-    #                      -----------------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
+    #                            -----------------------------------------
 
 
 def render_play(request, room_name):
@@ -631,8 +631,8 @@ def render_play(request, room_name):
     return render(request, "webapp1/tic-tac-toe/v1/play.html", context)
     #                       --------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v1/play.html
-    #                      --------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/play.html
+    #                            --------------------------------
 ```
 
 # Step 8. ルート編集 - urls.py ファイル
