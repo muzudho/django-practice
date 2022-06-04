@@ -43,7 +43,7 @@ def readDataTable2(request):
     # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
     #                            -----------------------------------------
 
-    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -76,7 +76,7 @@ def readJsonTextarea1(request):
     # 1. host1/webapp1/templates/webapp1/practice/vuetify-json-textarea1.html を取ってきます。
     #                            --------------------------------------------
 
-    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
