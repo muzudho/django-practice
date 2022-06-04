@@ -140,9 +140,10 @@ from django.shortcuts import render, redirect
 def render_match_request(request):
     """対局要求"""
     if request.method == "POST":
-        room_name = request.POST.get("room_name")
-        myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v3/play/{room_name}/?&mypiece={myPiece}')
+        # `po_` は POST送信するパラメーター名の目印
+        room_name = request.POST.get("po_room_name")
+        my_piece = request.POST.get("po_my_piece")
+        return redirect(f'/tic-tac-toe/v3/play/{room_name}/?&mypiece={my_piece}')
         #                               ^ three
         #                 ----------------------------------------------------
         #                 1
@@ -156,14 +157,16 @@ def render_match_request(request):
     #                            -----------------------------------------
 
 
-def render_play(request, room_name):
+def render_play(request, kw_room_name):
     """対局画面"""
-    myPiece = request.GET.get("mypiece")
-    if myPiece not in ['X', 'O']:
-        raise Http404(f"My piece '{myPiece}' does not exists")
+    my_piece = request.GET.get("mypiece")
+    if my_piece not in ['X', 'O']:
+        raise Http404(f"My piece '{my_piece}' does not exists")
+
+    # `dj_` は Djangoでレンダーするパラメーター名の目印
     context = {
-        "my_piece": myPiece,
-        "room_name": room_name
+        "dj_room_name": kw_room_name,
+        "dj_my_piece": my_piece,
     }
     return render(request, "webapp1/tic-tac-toe/v3/play.html.txt", context)
     #                                            ^ three
