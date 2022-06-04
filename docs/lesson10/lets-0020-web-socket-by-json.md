@@ -1,7 +1,7 @@
 # 目的
 
 Webサーバーとクライアント間でテキストを双方向の非同期通信するのは前にやった。  
-今回は送受信するデータが JSON形式 しかないと割り切ってみる。  
+今回は送受信するデータが JSON形式 しかないと割り切ってみる  
 
 # はじめに
 
@@ -39,9 +39,12 @@ Webサーバーとクライアント間でテキストを双方向の非同期�
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
+        │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
