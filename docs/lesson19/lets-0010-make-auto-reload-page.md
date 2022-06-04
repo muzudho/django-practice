@@ -265,8 +265,8 @@ def render_waiting_for_match(request):
     return render(request, "webapp1/practice/waiting-for-match-v1.html", context)
     #                       ------------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/practice/waiting-for-match-v1.html
-    #                      ------------------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/waiting-for-match-v1.html
+    #                            ------------------------------------------
 ```
 
 # Step 6. ルート編集 - urls.py ファイル
