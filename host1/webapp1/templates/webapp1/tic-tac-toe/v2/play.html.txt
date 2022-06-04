@@ -16,6 +16,13 @@
 
 {% block method_section1 %}
                     /**
+                     *
+                     */
+                    clickPlayAgain() {
+                        console.log(`Play Again`);
+                        this.init();
+                    },
+                    /**
                      * Play again ボタンは非表示か
                      */
                     isDisabledPlayAgainButton() {

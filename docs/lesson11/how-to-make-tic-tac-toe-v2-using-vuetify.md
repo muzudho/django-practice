@@ -1152,13 +1152,6 @@ function createSetMessageFromServer() {
                     /**
                      *
                      */
-                    clickPlayAgain() {
-                        console.log(`Play Again`);
-                        this.init();
-                    },
-                    /**
-                     *
-                     */
                     setState(state) {
                         this.state = state;
                     },
@@ -1261,6 +1254,13 @@ function createSetMessageFromServer() {
 {% endblock footer_section1 %}
 
 {% block method_section1 %}
+                    /**
+                     *
+                     */
+                    clickPlayAgain() {
+                        console.log(`Play Again`);
+                        this.init();
+                    },
                     /**
                      * Play again ボタンは非表示か
                      */
