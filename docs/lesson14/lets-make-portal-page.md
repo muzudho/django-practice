@@ -247,9 +247,10 @@ def render_portal(request):
 def render_login_user(request):
     """〇×ゲームの練習２"""
     if request.method == "POST":
-        room_name = request.POST.get("room_name")
-        myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={myPiece}')
+        # `po_` は POST送信するパラメーター名の目印
+        room_name = request.POST.get("po_room_name")
+        my_piece = request.POST.get("po_my_piece")
+        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
         #                               ^
         #               ------------------------------------------------------
         #               1
