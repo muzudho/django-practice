@@ -2,21 +2,18 @@
  * ユーザーコントロール
  */
 class UserCtrl {
-    constructor() {
+    /**
+     *
+     * @param {*} playeq - 遊具
+     */
+    constructor(playeq) {
         // 遊具
-        this._playeq = new PlaygroundEquipment();
+        this._playeq = playeq;
 
         this.clear();
 
         // イベントリスナー
         this._onDoMove = () => {};
-    }
-
-    /**
-     * 遊具
-     */
-    get playeq() {
-        return this._playeq;
     }
 
     /**
@@ -34,9 +31,6 @@ class UserCtrl {
 
         // 遊具
         this._playeq.clear();
-
-        // 何手目
-        this.countOfMove = 0;
 
         // 自分の手番ではない
         this.isMyTurn = false;
@@ -77,18 +71,18 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
-        if (this.playeq.getPieceBySq(sq) == PC_EMPTY) {
+        if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
-            this.countOfMove++; // 何手目を＋１
+            this._playeq.incrementCountOfMove(); // 手数を１増やします
 
             // 石を置きます
             switch (myPiece) {
                 case PC_X_LABEL:
-                    this.playeq.setPiece(sq, PC_X);
+                    this._playeq.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this.playeq.setPiece(sq, PC_O);
+                    this._playeq.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid my piece = ${myPiece}`);

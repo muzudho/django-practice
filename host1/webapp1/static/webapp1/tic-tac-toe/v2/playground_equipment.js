@@ -12,6 +12,9 @@ class PlaygroundEquipment {
     clear() {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+
+        // 何手目
+        this._countOfMove = 0;
     }
 
     /**
@@ -30,5 +33,26 @@ class PlaygroundEquipment {
      */
     setPiece(sq, piece) {
         this._board[sq] = piece;
+    }
+
+    /**
+     * 手数を１増やします
+     */
+    incrementCountOfMove() {
+        this._countOfMove++;
+    }
+
+    /**
+     * マスがすべて埋まっていますか
+     */
+    isBoardFill() {
+        return this._countOfMove == 9;
+    }
+
+    /**
+     * 同じ駒が３個ありますか
+     */
+    isThere3SamePieces() {
+        return 5 <= this._countOfMove;
     }
 }

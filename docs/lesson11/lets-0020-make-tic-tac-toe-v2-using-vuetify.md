@@ -452,6 +452,9 @@ class PlaygroundEquipment {
     clear() {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+
+        // 何手目
+        this._countOfMove = 0;
     }
 
     /**
@@ -470,6 +473,27 @@ class PlaygroundEquipment {
      */
     setPiece(sq, piece) {
         this._board[sq] = piece;
+    }
+
+    /**
+     * 手数を１増やします
+     */
+    incrementCountOfMove() {
+        this._countOfMove++;
+    }
+
+    /**
+     * マスがすべて埋まっていますか
+     */
+    isBoardFill() {
+        return this._countOfMove == 9;
+    }
+
+    /**
+     * 同じ駒が３個ありますか
+     */
+    isThere3SamePieces() {
+        return 5 <= this._countOfMove;
     }
 }
 ```
@@ -497,21 +521,18 @@ class PlaygroundEquipment {
  * ユーザーコントロール
  */
 class UserCtrl {
-    constructor() {
+    /**
+     *
+     * @param {*} playeq - 遊具
+     */
+    constructor(playeq) {
         // 遊具
-        this._playeq = new PlaygroundEquipment();
+        this._playeq = playeq;
 
         this.clear();
 
         // イベントリスナー
         this._onDoMove = () => {};
-    }
-
-    /**
-     * 遊具
-     */
-    get playeq() {
-        return this._playeq;
     }
 
     /**
@@ -529,9 +550,6 @@ class UserCtrl {
 
         // 遊具
         this._playeq.clear();
-
-        // 何手目
-        this.countOfMove = 0;
 
         // 自分の手番ではない
         this.isMyTurn = false;
@@ -572,18 +590,18 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
-        if (this.playeq.getPieceBySq(sq) == PC_EMPTY) {
+        if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
-            this.countOfMove++; // 何手目を＋１
+            this._playeq.incrementCountOfMove(); // 手数を１増やします
 
             // 石を置きます
             switch (myPiece) {
                 case PC_X_LABEL:
-                    this.playeq.setPiece(sq, PC_X);
+                    this._playeq.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this.playeq.setPiece(sq, PC_O);
+                    this._playeq.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid my piece = ${myPiece}`);
@@ -622,7 +640,16 @@ class UserCtrl {
  * 審判コントロール
  */
 class JudgeCtrl {
-    constructor(userCtrl) {
+    /**
+     *
+     * @param {*} playeq - 遊具
+     * @param {*} userCtrl - ユーザーコントロール
+     */
+    constructor(playeq, userCtrl) {
+        // 遊具
+        this._playeq = playeq;
+
+        // ユーザーコントロール
         this._userCtrl = userCtrl;
 
         // イベントリスナー
@@ -657,7 +684,7 @@ class JudgeCtrl {
                 this._onWon(myPiece);
             }
             // 盤が埋まったら引き分け
-            else if (!gameOver && this._userCtrl.countOfMove == 9) {
+            else if (!gameOver && this._playeq.isBoardFill()) {
                 this._onDraw();
             }
         }
@@ -668,7 +695,7 @@ class JudgeCtrl {
      * @returns 勝ちなら真、それ以外は偽
      */
     #isGameOver() {
-        if (5 <= this._userCtrl.countOfMove) {
+        if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     return true;
@@ -685,9 +712,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[2])
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
@@ -732,15 +759,19 @@ class Engine {
 
         // 接続
         this._connection = new Connection();
-
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
+
+        // 遊具
+        this._playeq = new PlaygroundEquipment();
+
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl();
+        this._userCtrl = new UserCtrl(this._playeq);
+
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
         // どちらかが勝ったとき
         this._judgeCtrl.onWon = (myPiece) => {
@@ -780,6 +811,13 @@ class Engine {
      */
     get protocolMessages() {
         return this._protocolMessages;
+    }
+
+    /**
+     * 遊具
+     */
+    get playeq() {
+        return this._playeq;
     }
 
     /**
@@ -1196,7 +1234,7 @@ function createSetMessageFromServer() {
                     clickSquare(sq) {
                         // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
 
-                        if (this.engine.userCtrl.playeq.getPieceBySq(sq) == PC_EMPTY) {
+                        if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.userCtrl.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");

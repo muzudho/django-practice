@@ -16,15 +16,19 @@ class Engine {
 
         // 接続
         this._connection = new Connection();
-
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
+
+        // 遊具
+        this._playeq = new PlaygroundEquipment();
+
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl();
+        this._userCtrl = new UserCtrl(this._playeq);
+
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
         // どちらかが勝ったとき
         this._judgeCtrl.onWon = (myPiece) => {
@@ -64,6 +68,13 @@ class Engine {
      */
     get protocolMessages() {
         return this._protocolMessages;
+    }
+
+    /**
+     * 遊具
+     */
+    get playeq() {
+        return this._playeq;
     }
 
     /**

@@ -176,7 +176,7 @@
                     clickSquare(sq) {
                         // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
 
-                        if (this.engine.userCtrl.playeq.getPieceBySq(sq) == PC_EMPTY) {
+                        if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.userCtrl.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");

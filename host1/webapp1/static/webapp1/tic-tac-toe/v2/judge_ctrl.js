@@ -2,7 +2,16 @@
  * 審判コントロール
  */
 class JudgeCtrl {
-    constructor(userCtrl) {
+    /**
+     *
+     * @param {*} playeq - 遊具
+     * @param {*} userCtrl - ユーザーコントロール
+     */
+    constructor(playeq, userCtrl) {
+        // 遊具
+        this._playeq = playeq;
+
+        // ユーザーコントロール
         this._userCtrl = userCtrl;
 
         // イベントリスナー
@@ -37,7 +46,7 @@ class JudgeCtrl {
                 this._onWon(myPiece);
             }
             // 盤が埋まったら引き分け
-            else if (!gameOver && this._userCtrl.countOfMove == 9) {
+            else if (!gameOver && this._playeq.isBoardFill()) {
                 this._onDraw();
             }
         }
@@ -48,7 +57,7 @@ class JudgeCtrl {
      * @returns 勝ちなら真、それ以外は偽
      */
     #isGameOver() {
-        if (5 <= this._userCtrl.countOfMove) {
+        if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     return true;
@@ -65,9 +74,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[2])
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
