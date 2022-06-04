@@ -1,11 +1,11 @@
 # 目的
 
 ロビー（待合室）を作りたい。  
-そこには　部屋の一覧と、　アクティブ ユーザー の一覧がある。  
+そこには　部屋の一覧と、　アクティブ ユーザー の一覧がある  
 
 ただし、まだ用意していないため、  
 部屋のデータは 現在対局中のものを反映しておらず 仮のものとし、  
-アクティブ ユーザーも 現在 対局中かどうかの状態を保持していない。  
+アクティブ ユーザーも 現在 対局中かどうかの状態を保持していない  
 
 # はじめに
 
@@ -35,20 +35,18 @@
         │   ├── 📂models_helper
         │   │   └── 📄mh_session.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   ├── 📂v1
-        │   │   │   │   └── 📄<いろいろ>
-        │   │   │   └── 📂v2
-        │   │   │       ├── 📄connection.js
-        │   │   │       ├── 📄engine.js
-        │   │   │       ├── 📄game.js
-        │   │   │       ├── 📄judge.js
-        │   │   │       ├── 📄protocol_main.js
-        │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂practice
-        │   │   │   └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   ├── 📂webapp1
+        │   │   │   ├── 📂practice
+        │   │   │   │   └── 📄vuetify-desserts.json
+        │   │   │   └── 📂tic-tac-toe
+        │   │   │       ├── 📂v1
+        │   │   │       │   └── 📄<いろいろ>
+        │   │   │       └── 📂v2
+        │   │   │           └── 📄<いろいろ>.js
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
+        │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       ├── 📂tic-tac-toe
         │   │       │   ├── 📂v1
