@@ -65,9 +65,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._userCtrl.board[squaresOfWinPattern[0]] !== PC_EMPTY && //
-            this._userCtrl.board[squaresOfWinPattern[0]] === this._userCtrl.board[squaresOfWinPattern[1]] &&
-            this._userCtrl.board[squaresOfWinPattern[0]] === this._userCtrl.board[squaresOfWinPattern[2]]
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }

@@ -73,6 +73,7 @@
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/playground_equipment.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
@@ -175,7 +176,7 @@
                     clickSquare(sq) {
                         // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
 
-                        if (this.engine.userCtrl.board[sq] == PC_EMPTY) {
+                        if (this.engine.userCtrl.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.userCtrl.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");

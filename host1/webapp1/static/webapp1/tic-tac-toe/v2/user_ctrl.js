@@ -3,10 +3,20 @@
  */
 class UserCtrl {
     constructor() {
+        // 遊具
+        this._playeq = new PlaygroundEquipment();
+
         this.clear();
 
         // イベントリスナー
         this._onDoMove = () => {};
+    }
+
+    /**
+     * 遊具
+     */
+    get playeq() {
+        return this._playeq;
     }
 
     /**
@@ -22,8 +32,8 @@ class UserCtrl {
     clear() {
         // console.log(`[Debug][UserCtrl#clear] Begin this.isMyTurn=${this.isMyTurn}`);
 
-        // 盤面
-        this.board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+        // 遊具
+        this._playeq.clear();
 
         // 何手目
         this.countOfMove = 0;
@@ -67,7 +77,7 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
-        if (this.board[sq] == PC_EMPTY) {
+        if (this.playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
             this.countOfMove++; // 何手目を＋１
@@ -75,10 +85,10 @@ class UserCtrl {
             // 石を置きます
             switch (myPiece) {
                 case PC_X_LABEL:
-                    this.board[sq] = PC_X;
+                    this.playeq.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this.board[sq] = PC_O;
+                    this.playeq.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid my piece = ${myPiece}`);

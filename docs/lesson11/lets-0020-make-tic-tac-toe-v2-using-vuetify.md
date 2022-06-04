@@ -88,7 +88,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. favicon.ico ファイルの設置
+# Step 2. アイコンの設定 - favicon.ico ファイル
 
 favicon.ico は、例えば 以下のサイトで作れる。作ってきてほしい。  
 
@@ -190,7 +190,7 @@ class ProtocolMessages {
 }
 ```
 
-# Step 4. connection.js ファイルの作成
+# Step 4. 通信接続の作成 - connection.js ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -419,7 +419,62 @@ WIN_PATTERN = [
 ];
 ```
 
-# Step 6. ユーザーコントロール作成 - user_ctrl.js ファイル
+# Step 6. 遊具作成 - playground_equipment.js ファイル
+
+以下のファイルを作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+                │           ├── game_rule.js
+👉              │           ├── playground_equipment.js
+                │           └── protocol_messages.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 遊具
+ */
+class PlaygroundEquipment {
+    constructor() {
+        this.clear();
+    }
+
+    /**
+     * クリアー
+     */
+    clear() {
+        // 盤面
+        this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+    }
+
+    /**
+     * 盤上のマス番号で示して、駒を取得
+     * @param {number} sq - マス番号
+     */
+    getPieceBySq(sq) {
+        return this._board[sq];
+    }
+
+    /**
+     * 盤上のマスに駒を上書きします
+     *
+     * @param {*} sq - マス番号
+     * @param {*} piece - 駒
+     */
+    setPiece(sq, piece) {
+        this._board[sq] = piece;
+    }
+}
+```
+
+# Step 7. ユーザーコントロール作成 - user_ctrl.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -443,10 +498,20 @@ WIN_PATTERN = [
  */
 class UserCtrl {
     constructor() {
+        // 遊具
+        this._playeq = new PlaygroundEquipment();
+
         this.clear();
 
         // イベントリスナー
         this._onDoMove = () => {};
+    }
+
+    /**
+     * 遊具
+     */
+    get playeq() {
+        return this._playeq;
     }
 
     /**
@@ -462,8 +527,8 @@ class UserCtrl {
     clear() {
         // console.log(`[Debug][UserCtrl#clear] Begin this.isMyTurn=${this.isMyTurn}`);
 
-        // 盤面
-        this.board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+        // 遊具
+        this._playeq.clear();
 
         // 何手目
         this.countOfMove = 0;
@@ -507,7 +572,7 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
-        if (this.board[sq] == PC_EMPTY) {
+        if (this.playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
             this.countOfMove++; // 何手目を＋１
@@ -515,10 +580,10 @@ class UserCtrl {
             // 石を置きます
             switch (myPiece) {
                 case PC_X_LABEL:
-                    this.board[sq] = PC_X;
+                    this.playeq.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this.board[sq] = PC_O;
+                    this.playeq.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid my piece = ${myPiece}`);
@@ -533,7 +598,7 @@ class UserCtrl {
 }
 ```
 
-# Step 7. 審判作成 - judge_ctrl.js ファイル
+# Step 8. 審判作成 - judge_ctrl.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -620,15 +685,15 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._userCtrl.board[squaresOfWinPattern[0]] !== PC_EMPTY && //
-            this._userCtrl.board[squaresOfWinPattern[0]] === this._userCtrl.board[squaresOfWinPattern[1]] &&
-            this._userCtrl.board[squaresOfWinPattern[0]] === this._userCtrl.board[squaresOfWinPattern[2]]
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[0]) === this._userCtrl.playeq.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
 ```
 
-# Step 8. ゲームエンジン作成 - engine.js ファイル
+# Step 9. ゲームエンジン作成 - engine.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -759,7 +824,7 @@ class Engine {
 }
 ```
 
-# Step 9. 通信プロトコル作成 - protocol_main.js ファイル
+# Step 10. 通信プロトコル作成 - protocol_main.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -839,7 +904,7 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 10. match_request.html ファイルの作成
+# Step 11. 対局申込画面作成 - match_request.html ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -925,7 +990,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 11. 対局画面作成 - play_base.html ファイル
+# Step 12. 対局画面作成 - play_base.html ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1028,6 +1093,7 @@ function createSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/playground_equipment.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
@@ -1130,7 +1196,7 @@ function createSetMessageFromServer() {
                     clickSquare(sq) {
                         // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
 
-                        if (this.engine.userCtrl.board[sq] == PC_EMPTY) {
+                        if (this.engine.userCtrl.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.userCtrl.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
@@ -1250,7 +1316,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 12. 対局画面作成 - play.html.txt ファイル
+# Step 13. 対局画面作成 - play.html.txt ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -1319,7 +1385,7 @@ function createSetMessageFromServer() {
 {% endblock method_section1 %}
 ```
 
-# Step 13. protocol.py ファイルの作成
+# Step 14. 通信プロトコル作成 - protocol.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -1386,7 +1452,7 @@ class Protocol():
         raise ValueError(f"Unknown event: {event}")
 ```
 
-# Step 14. consumer.py ファイルの作成
+# Step 15. Webソケットの通信プロトコル作成 - consumer.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -1482,7 +1548,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 15. ビュー編集 - v_tic_tac_toe_v2.py ファイル
+# Step 16. ビュー編集 - v_tic_tac_toe_v2.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -1557,7 +1623,7 @@ def render_play(request, room_name):
     #                            ------------------------------------
 ```
 
-# Step 16. ルート編集 - urls.py ファイル
+# Step 17. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -1625,7 +1691,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 17. ルート編集 - routing1.py ファイル
+# Step 18. ルート編集 - routing1.py ファイル
 
 以下のファイルを無ければ作成、あればマージしてほしい。  
 
@@ -1694,7 +1760,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 18. Web画面へアクセス
+# Step 19. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
