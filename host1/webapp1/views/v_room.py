@@ -94,8 +94,8 @@ def render_list_room(request):
     return render(request, "webapp1/rooms/list.html", context)
     #                       -----------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/list.html
-    #                      -----------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/list.html
+    #                            -----------------------
 
 
 def render_read_room(request, id=id):
@@ -143,8 +143,8 @@ def render_read_room(request, id=id):
     return render(request, "webapp1/rooms/read.html", context)
     #                       -----------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/read.html
-    #                      -----------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/read.html
+    #                            -----------------------
 
 
 def render_delete_room(request, id=id):
@@ -152,8 +152,8 @@ def render_delete_room(request, id=id):
     template = loader.get_template('webapp1/rooms/delete.html')
     #                               -------------------------
     #                               1
-    # 1. webapp1/templates/webapp1/rooms/delete.html
-    #                      -------------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/delete.html
+    #                            -------------------------
 
     room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
     name = room.name  # 名前だけまだ使う
@@ -190,5 +190,5 @@ def render_upsert_room(request, id=None):
     return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
     #                       -------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/upsert.html
-    #                      -------------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/upsert.html
+    #                            -------------------------

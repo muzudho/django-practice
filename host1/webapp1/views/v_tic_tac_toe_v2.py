@@ -17,8 +17,8 @@ def render_match_request(request):
     #                                            ^
     #                       -----------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
-    #                      -----------------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
+    #                            -----------------------------------------
 
 
 def render_play(request, room_name):
@@ -34,5 +34,5 @@ def render_play(request, room_name):
     #                                            ^
     #                       ------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html.txt
-    #                      ------------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play.html.txt
+    #                            ------------------------------------

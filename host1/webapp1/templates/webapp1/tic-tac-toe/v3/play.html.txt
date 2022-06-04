@@ -1,0 +1,17 @@
+{% extends "tic-tac-toe/v2/play_base.html" %}
+{#          -----------------------------
+            1
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play_base.html
+                                   -----------------------------
+
+    自動フォーマットしないでください
+    Do not auto fomatting
+#}
+
+{% block footer_section1 %}
+                    <!-- フッターにボタンを置きません -->
+{% endblock footer_section1 %}
+
+{% block method_section1 %}
+                    // フッターのボタンは除きました
+{% endblock method_section1 %}

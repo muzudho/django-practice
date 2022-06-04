@@ -7,15 +7,17 @@ def render_match_request(request):
     if request.method == "POST":
         room_name = request.POST.get("room_name")
         myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v1/play/{room_name}/?&mypiece={myPiece}')
+        return redirect(f'/tic-tac-toe/v3/play/{room_name}/?&mypiece={myPiece}')
+        #                               ^ three
         #                 ----------------------------------------------------
         #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v1/play/Elephant/?&mypiece=X
+        # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
         #                           -----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v1/match_request.html", {})
+    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+    #                                            ^ two
     #                       -----------------------------------------
     #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
     #                            -----------------------------------------
 
 
@@ -28,8 +30,9 @@ def render_play(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "webapp1/tic-tac-toe/v1/play.html", context)
-    #                       --------------------------------
+    return render(request, "webapp1/tic-tac-toe/v3/play.html.txt", context)
+    #                                            ^ three
+    #                       ------------------------------------
     #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/play.html
-    #                            --------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/play.html.txt
+    #                            ------------------------------------

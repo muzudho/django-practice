@@ -30,7 +30,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_practice_of_pages, v_member, v_practice_of_vuetify, \
-    v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe3, \
+    v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, \
     v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
 
 urlpatterns = [
@@ -403,6 +403,24 @@ urlpatterns = [
 
 
     # +----
+    # | 〇×ゲーム３
+
+    # 対局中
+    path('tic-tac-toe/v3/play/<str:room_name>/', v_tic_tac_toe_v3.render_play),
+    #                  ^                                        ^
+    #     ------------------------------------   ----------------------------
+    #     1                                      2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/play/<部屋名>/` のような URL のパスの部分。 <部屋名> に入った文字列は room_name 変数に渡されます
+    #                              -----------------------------
+    # 2. v_tic_tac_toe_v3.py ファイルの render_play メソッド
+
+    # | 〇×ゲーム３
+    # +----
+
+
+
+
+    # +----
     # | 部屋
 
     # 部屋一覧
@@ -634,32 +652,6 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatchV2' %} のような形でURLを取得するのに使える
 
     # | 練習
-    # +----
-
-
-
-    # +----
-    # | WIP
-
-    path('tic-tac-toe3/', v_tic_tac_toe3.indexOfTicTacToe3),
-    #                ^                    ^
-    #     -------------
-    #     1
-    #
-    # 1. 例えば `http://example.com/tic-tac-toe3/` のような URL のパスの部分
-    #                              --------------
-
-    path('tic-tac-toe3/<str:room_name>/',
-         #           ^
-         # ----------------------------
-         # 1
-         #
-         # 1. 例えば `http://example.com/tic-tac-toe3/<str:room_name>/` のような URL のパスの部分。<room_name> に入った文字列は room_name 変数に渡されます
-         #                              ------------------------------
-         v_tic_tac_toe3.playGameOfTicTacToe3),
-    #                                          ^
-
-    # | WIP
     # +----
 ]
 
