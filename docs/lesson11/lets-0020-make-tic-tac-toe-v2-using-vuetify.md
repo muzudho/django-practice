@@ -1,7 +1,7 @@
 # 目的
 
 前の記事で、１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）を作った。  
-これのフロントエンドを Vuetify に置き換えたい。  
+これのフロントエンドを Vuetify に置き換えたい  
 
 # はじめに
 
@@ -35,13 +35,16 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   └── 📂v1
-        │   │   │       ├── 📄game.js
-        │   │   │       └── 📄main.css
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       ├── 📂practice
+        │   │       │   └── 📄vuetify-desserts.json
+        │   │       └── 📂tic-tac-toe
+        │   │           └── 📂v1
+        │   │               ├── 📄game.js
+        │   │               └── 📄main.css
         │   ├── 📂templates
+        │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       ├── 📂tic-tac-toe
         │   │       │   └── 📂v1
@@ -123,9 +126,10 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-👉              │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+👉              │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -194,10 +198,11 @@ class ProtocolMessages {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-👉              │       ├── connection.js
-                │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+👉              │           ├── connection.js
+                │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -308,11 +313,12 @@ class Connection {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-                │       ├── connection.js
-👉              │       ├── game.js
-                │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+👉              │           ├── game.js
+                │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -461,12 +467,13 @@ class Game {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-                │       ├── connection.js
-                │       ├── game.js
-👉              │       ├── judge.js
-                │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+                │           ├── game.js
+👉              │           ├── judge.js
+                │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -603,13 +610,14 @@ class Judge {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-                │       ├── connection.js
-👉              │       ├── engine.js
-                │       ├── game.js
-                │       ├── judge.js
-                │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+👉              │           ├── engine.js
+                │           ├── game.js
+                │           ├── judge.js
+                │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -732,14 +740,15 @@ class Engine {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                ├── 📂tic-tac-toe
-                │   └── 📂v2
-                │       ├── connection.js
-                │       ├── engine.js
-                │       ├── game.js
-                │       ├── judge.js
-👉              │       ├── protocol_main.js
-                │       └── protocol_messages.js
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+                │           ├── engine.js
+                │           ├── game.js
+                │           ├── judge.js
+👉              │           ├── protocol_main.js
+                │           └── protocol_messages.js
                 └── 🚀favicon.ico
 ```
 
@@ -810,14 +819,15 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -894,14 +904,15 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -983,12 +994,12 @@ function createSetMessageFromServer() {
             </v-app>
         </div>
 
-        <script src="{% static 'tic-tac-toe/v2/connection.js' %}"></script>
-        <script src="{% static 'tic-tac-toe/v2/engine.js' %}"></script>
-        <script src="{% static 'tic-tac-toe/v2/game.js' %}"></script>
-        <script src="{% static 'tic-tac-toe/v2/judge.js' %}"></script>
-        <script src="{% static 'tic-tac-toe/v2/protocol_main.js' %}"></script>
-        <script src="{% static 'tic-tac-toe/v2/protocol_messages.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/game.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/judge.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -1216,14 +1227,15 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -1283,14 +1295,15 @@ function createSetMessageFromServer() {
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -1348,14 +1361,15 @@ class Protocol():
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -1442,14 +1456,15 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -1515,14 +1530,15 @@ def render_play(request, room_name):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -1581,14 +1597,15 @@ urlpatterns = [
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   ├── 📂tic-tac-toe
-            │   │   └── 📂v2
-            │   │       ├── connection.js
-            │   │       ├── engine.js
-            │   │       ├── game.js
-            │   │       ├── judge.js
-            │   │       ├── protocol_main.js
-            │   │       └── protocol_messages.js
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── connection.js
+            │   │           ├── engine.js
+            │   │           ├── game.js
+            │   │           ├── judge.js
+            │   │           ├── protocol_main.js
+            │   │           └── protocol_messages.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
