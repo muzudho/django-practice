@@ -337,8 +337,8 @@ def render_lobby(request):
     template = loader.get_template('webapp1/lobby/v1/lobby.html')
     #                               ---------------------------
     #                               1
-    # 1. webapp1/templates/webapp1/lobby/v1/lobby.html
-    #                      ---------------------------
+    # 1. host1/webapp1/templates/webapp1/lobby/v1/lobby.html
+    #                            ---------------------------
 
     # 部屋の一覧
     room_dic = MhRoom.get_all_rooms_as_dic()
