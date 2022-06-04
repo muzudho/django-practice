@@ -40,12 +40,12 @@ function createSetMessageFromServer() {
                 // 指し手の一斉通知
                 if (myPiece != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.game.makeMove(parseInt(sq), myPiece);
-                    vue1.engine.judge.judge(myPiece);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), myPiece);
+                    vue1.engine.judgeCtrl.doJudge(myPiece);
 
                     // 自分の手番に変更
-                    vue1.engine.game.isMyTurn = true;
-                    vue1.engine.game.isWaitForOther = false;
+                    vue1.engine.userCtrl.isMyTurn = true;
+                    vue1.engine.userCtrl.isWaitForOther = false;
                 }
                 break;
 

@@ -268,7 +268,7 @@ class Connection {
 }
 ```
 
-# Step 4. game.js ファイルの作成
+# Step 4. game_rule.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -278,7 +278,7 @@ class Connection {
        　　└── 📂static
        　　      ├── 📂tic-tac-toe2
        　　      │    ├── connection.js
-       　　      │    ├── game.js 👈
+       　　      │    ├── game_rule.js 👈
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
 ```
@@ -390,7 +390,7 @@ class Game {
      * @param {*} myPiece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
-    makeMove(sq, myPiece){
+    doMove(sq, myPiece){
 
         if (this.board[sq] == PC_EMPTY) {
             // 空升なら
@@ -418,7 +418,7 @@ class Game {
 }
 ```
 
-# Step 5. judge.js ファイルの作成
+# Step 5. judge_ctrl.js ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -428,8 +428,8 @@ class Game {
        　　└── 📂static
        　　      ├── 📂tic-tac-toe2
        　　      │    ├── connection.js
-       　　      │    ├── game.js
-       　　      │    ├── judge.js 👈
+       　　      │    ├── game_rule.js
+       　　      │    ├── judge_ctrl.js 👈
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
 ```
@@ -489,9 +489,9 @@ WIN_PATTERN = [
     [SQ_2, SQ_4, SQ_6]
 ]
 
-class Judge {
-    constructor(game) {
-        this._game = game
+class JudgeCtrl {
+    constructor(userCtrl) {
+        this._gamePlay = userCtrl
 
         // イベントリスナー
         this._onWon = () => {}
@@ -516,7 +516,7 @@ class Judge {
      * 勝敗判定
      */
     judge(myPiece) {
-        if(this._game.isMyTurn){
+        if(this._gamePlay.isMyTurn){
             // 終局判定
             const gameOver = this.#isGameOver();
 
@@ -525,7 +525,7 @@ class Judge {
                 this._onWon(myPiece)
             }
             // 盤が埋まったら引き分け
-            else if (!gameOver && this._game.countOfMove == 9) {
+            else if (!gameOver && this._gamePlay.countOfMove == 9) {
                 this._onDraw()
             }
         }
@@ -536,7 +536,7 @@ class Judge {
      * @returns 勝ちなら真、それ以外は偽
      */
     #isGameOver(){
-        if (5 <= this._game.countOfMove) {
+        if (5 <= this._gamePlay.countOfMove) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     return true;
@@ -552,9 +552,9 @@ class Judge {
      * @returns 並んでいれば真、それ以外は偽
      */
     #isPieceInLine(squaresOfWinPattern) {
-        return this._game.board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-            this._game.board[squaresOfWinPattern[0]] === this._game.board[squaresOfWinPattern[1]] &&
-            this._game.board[squaresOfWinPattern[0]] === this._game.board[squaresOfWinPattern[2]];
+        return this._gamePlay.board[squaresOfWinPattern[0]] !== PC_EMPTY &&
+            this._gamePlay.board[squaresOfWinPattern[0]] === this._gamePlay.board[squaresOfWinPattern[1]] &&
+            this._gamePlay.board[squaresOfWinPattern[0]] === this._gamePlay.board[squaresOfWinPattern[2]];
     }
 }
 ```
@@ -570,8 +570,8 @@ class Judge {
        　　      ├── 📂tic-tac-toe2
        　　      │    ├── connection.js
        　　      │    ├── engine.js 👈
-       　　      │    ├── game.js
-       　　      │    ├── judge.js
+       　　      │    ├── game_rule.js
+       　　      │    ├── judge_ctrl.js
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
 ```
@@ -594,10 +594,10 @@ class Engine {
         this._connection = new Connection();
         // メッセージ一覧
         this._protocolMessages = new ProtocolMessages();
-        // ゲーム
-        this._game = new Game();
+        // ゲームプレイ
+        this._gamePlay = new Game();
         // 勝敗判定
-        this._judge = new Judge(this._game);
+        this._judge = new Judge(this._gamePlay);
 
         // どちらかが勝ったとき
         this._judge.onWon = (myPiece) => {
@@ -616,7 +616,7 @@ class Engine {
 
     setup(setLabelOfButton) {
         // １手進めたとき
-        this._game.onDoMove = (sq, myPiece) => {
+        this._gamePlay.onDoMove = (sq, myPiece) => {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
@@ -640,10 +640,10 @@ class Engine {
     }
 
     /**
-     * ゲーム
+     * ゲームプレイ
      */
     get game() {
-        return this._game
+        return this._gamePlay
     }
 
     /**
@@ -692,8 +692,8 @@ class Engine {
        　　      ├── 📂tic-tac-toe2
        　　      │    ├── connection.js
        　　      │    ├── engine.js
-       　　      │    ├── game.js
-       　　      │    ├── judge.js
+       　　      │    ├── game_rule.js
+       　　      │    ├── judge_ctrl.js
        　　      │    ├── protocol_main.js 👈
        　　      │    └── protocol_messages.js
        　　      └── 🚀favicon.ico
@@ -742,7 +742,7 @@ function createSetMessageFromServer() {
                 // 指し手の一斉通知
                 if (myPiece != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.game.makeMove(parseInt(sq), myPiece);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), myPiece);
                     vue1.engine.judge.judge(myPiece);
 
                     // 自分の手番に変更
@@ -769,8 +769,8 @@ function createSetMessageFromServer() {
        　　│    ├── 📂tic-tac-toe2
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
-       　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── game_rule.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -843,8 +843,8 @@ function createSetMessageFromServer() {
        　　│    ├── 📂tic-tac-toe2
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
-       　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── game_rule.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -927,7 +927,7 @@ function createSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe2/game.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe2/judge.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe2/protocol_main.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe2/protocol_messages.js' %}"></script>
 
@@ -1152,7 +1152,7 @@ function createSetMessageFromServer() {
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1212,7 +1212,7 @@ class Protocol():
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1294,7 +1294,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1354,7 +1354,7 @@ def playGameOfTicTacToe3(request, room_name):
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico
@@ -1403,7 +1403,7 @@ urlpatterns = [
        　　│    │    ├── connection.js
        　　│    │    ├── engine.js
        　　│    │    ├── game.js
-       　　│    │    ├── judge.js
+       　　│    │    ├── judge_ctrl.js
        　　│    │    ├── protocol_main.js
        　　│    │    └── protocol_messages.js
        　　│    └── 🚀favicon.ico

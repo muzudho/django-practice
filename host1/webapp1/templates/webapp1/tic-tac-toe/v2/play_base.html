@@ -71,10 +71,11 @@
 
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/game.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/judge.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
@@ -160,7 +161,7 @@
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.game.init(this.engine.connection.myPiece);
+                        this.engine.userCtrl.init(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -172,17 +173,17 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.game.isMyTurn=${this.engine.game.isMyTurn}`);
+                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
 
-                        if (this.engine.game.board[sq] == PC_EMPTY) {
-                            if (!this.engine.game.isMyTurn) {
+                        if (this.engine.userCtrl.board[sq] == PC_EMPTY) {
+                            if (!this.engine.userCtrl.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
-                                this.engine.game.isWaitForOther = true;
+                                this.engine.userCtrl.isWaitForOther = true;
                             } else {
-                                this.engine.game.isMyTurn = false;
+                                this.engine.userCtrl.isMyTurn = false;
 
-                                this.engine.game.makeMove(parseInt(sq), this.engine.connection.myPiece);
+                                this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
                             }
                         }
                     },
@@ -267,10 +268,10 @@
                      * 対局中で、自分の手番ならアラートを常時表示
                      */
                     isAlertYourMoveShow() {
-                        return this.state == STATE_DURING_GAME && this.engine.game.isMyTurn;
+                        return this.state == STATE_DURING_GAME && this.engine.userCtrl.isMyTurn;
                     },
                     isAlertWaitForOther() {
-                        return this.engine.game.isWaitForOther;
+                        return this.engine.userCtrl.isWaitForOther;
                     },
                     /**
                      * 対局が終了していたら、結果を常時表示
