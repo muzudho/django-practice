@@ -156,13 +156,11 @@
                 methods: {
                     // 画面を初期化
                     init() {
-                        // console.log("[Debug] Vue#init()");
-
                         this.engine.setup(this.packSetLabelOfButton());
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.userCtrl.init(this.engine.connection.myPiece);
+                        this.engine.playeq.init(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -174,12 +172,20 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
+                        console.log(`[clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
+                        if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
+                            // Ban on illegal move
+                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
+                            return;
+                        }
+
                         if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
                             } else {
+                                // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
 
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);

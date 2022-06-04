@@ -1,4 +1,14 @@
 /**
+ * ゲームオーバー判定
+ *
+ * * 自分視点
+ */
+const GAMEOVER_NONE = 0; // ゲームオーバーしてません
+const GAMEOVER_WIN = 1; // 勝ち
+const GAMEOVER_DRAW = 2; // 引き分け
+const GAMEOVER_LOSE = 3; // 負け
+
+/**
  * PC は Piece （駒、石、などの意味）の略です。
  * @type {number}
  */

@@ -3,24 +3,29 @@
  */
 class PlaygroundEquipment {
     constructor() {
-        this.clear();
+        // あとで init(...) を呼出してください
     }
 
     /**
-     * クリアー
+     * 初期化
      */
-    clear() {
+    init(myPiece) {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
         // 何手目
         this._countOfMove = 0;
 
-        // 自分の手番ではない
-        this._isMyTurn = false;
+        // 自分の手番か
+        this._isMyTurn = myPiece == PC_X_LABEL;
 
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
+
+        // ゲームオーバーしてません
+        this._gameoverState = GAMEOVER_NONE;
+
+        // イベントハンドラはそのまま
     }
 
     /**
@@ -82,5 +87,16 @@ class PlaygroundEquipment {
 
     set isVisibleAlertWaitForOther(value) {
         this._isVisibleAlertWaitForOther = value;
+    }
+
+    /**
+     * ゲームオーバー状態
+     */
+    get gameoverState() {
+        return this._gameoverState;
+    }
+
+    set gameoverState(value) {
+        this._gameoverState = value;
     }
 }

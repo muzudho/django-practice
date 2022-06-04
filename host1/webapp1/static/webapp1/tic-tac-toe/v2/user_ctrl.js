@@ -10,8 +10,6 @@ class UserCtrl {
         // 遊具
         this._playeq = playeq;
 
-        this.clear();
-
         // イベントリスナー
         this._onDoMove = () => {};
     }
@@ -24,43 +22,17 @@ class UserCtrl {
     }
 
     /**
-     * クリアー
-     */
-    clear() {
-        // 遊具
-        this._playeq.clear();
-    }
-
-    /**
-     * 初期化
-     */
-    init(myPiece) {
-        this.clear();
-
-        // 自分の手番か
-        {
-            let isMyTurn;
-
-            // console.log(`[Debug][UserCtrl#init] myPiece=${myPiece} PC_X_LABEL=${PC_X_LABEL}`);
-
-            if (myPiece == PC_X_LABEL) {
-                isMyTurn = true;
-            } else {
-                isMyTurn = false;
-            }
-            this._playeq.isMyTurn = isMyTurn;
-        }
-
-        // イベントハンドラはそのまま
-    }
-
-    /**
      * 石を置きます
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} myPiece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
+        if (this._playeq.gameoverState != GAMEOVER_NONE) {
+            // Warning of illegal move
+            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
+        }
+
         if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 

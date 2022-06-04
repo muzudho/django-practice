@@ -324,6 +324,16 @@ class Connection {
 
 ```js
 /**
+ * ゲームオーバー判定
+ *
+ * * 自分視点
+ */
+const GAMEOVER_NONE = 0; // ゲームオーバーしてません
+const GAMEOVER_WIN = 1; // 勝ち
+const GAMEOVER_DRAW = 2; // 引き分け
+const GAMEOVER_LOSE = 3; // 負け
+
+/**
  * PC は Piece （駒、石、などの意味）の略です。
  * @type {number}
  */
@@ -443,24 +453,29 @@ WIN_PATTERN = [
  */
 class PlaygroundEquipment {
     constructor() {
-        this.clear();
+        // あとで init(...) を呼出してください
     }
 
     /**
-     * クリアー
+     * 初期化
      */
-    clear() {
+    init(myPiece) {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
         // 何手目
         this._countOfMove = 0;
 
-        // 自分の手番ではない
-        this._isMyTurn = false;
+        // 自分の手番か
+        this._isMyTurn = myPiece == PC_X_LABEL;
 
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
+
+        // ゲームオーバーしてません
+        this._gameoverState = GAMEOVER_NONE;
+
+        // イベントハンドラはそのまま
     }
 
     /**
@@ -523,6 +538,17 @@ class PlaygroundEquipment {
     set isVisibleAlertWaitForOther(value) {
         this._isVisibleAlertWaitForOther = value;
     }
+
+    /**
+     * ゲームオーバー状態
+     */
+    get gameoverState() {
+        return this._gameoverState;
+    }
+
+    set gameoverState(value) {
+        this._gameoverState = value;
+    }
 }
 ```
 
@@ -557,8 +583,6 @@ class UserCtrl {
         // 遊具
         this._playeq = playeq;
 
-        this.clear();
-
         // イベントリスナー
         this._onDoMove = () => {};
     }
@@ -571,43 +595,17 @@ class UserCtrl {
     }
 
     /**
-     * クリアー
-     */
-    clear() {
-        // 遊具
-        this._playeq.clear();
-    }
-
-    /**
-     * 初期化
-     */
-    init(myPiece) {
-        this.clear();
-
-        // 自分の手番か
-        {
-            let isMyTurn;
-
-            // console.log(`[Debug][UserCtrl#init] myPiece=${myPiece} PC_X_LABEL=${PC_X_LABEL}`);
-
-            if (myPiece == PC_X_LABEL) {
-                isMyTurn = true;
-            } else {
-                isMyTurn = false;
-            }
-            this._playeq.isMyTurn = isMyTurn;
-        }
-
-        // イベントハンドラはそのまま
-    }
-
-    /**
      * 石を置きます
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} myPiece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, myPiece) {
+        if (this._playeq.gameoverState != GAMEOVER_NONE) {
+            // Warning of illegal move
+            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
+        }
+
         if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
@@ -690,37 +688,60 @@ class JudgeCtrl {
     }
 
     /**
-     * 勝敗判定
+     * ゲームオーバー判定
      */
     doJudge(myPiece) {
-        if (this._playeq.isMyTurn) {
-            // 終局判定
-            const gameOver = this.#isGameOver();
+        this._playeq.gameoverState = this.#makeGameoverState();
+        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState}`);
 
-            // 打った後、負けと判定されたなら、相手が負け
-            if (gameOver) {
+        switch (this._playeq.gameoverState) {
+            case GAMEOVER_WIN:
                 this._onWon(myPiece);
-            }
-            // 盤が埋まったら引き分け
-            else if (!gameOver && this._playeq.isBoardFill()) {
+                break;
+            case GAMEOVER_DRAW:
                 this._onDraw();
-            }
+                break;
+            case GAMEOVER_LOSE:
+                break;
+            case GAMEOVER_NONE:
+                break;
+            default:
+                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState}`);
         }
     }
 
     /**
-     * 手番を持っている方が勝っているか？
-     * @returns 勝ちなら真、それ以外は偽
+     * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @returns ゲームオーバー状態
      */
-    #isGameOver() {
+    #makeGameoverState() {
+        console.log(`[#makeGameoverState] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
+                console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    return true;
+                    console.log(`[#makeGameoverState] this._playeq.isMyTurn=${this._playeq.isMyTurn}`);
+                    if (this._playeq.isMyTurn) {
+                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
+                        return GAMEOVER_LOSE;
+                    } else {
+                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
+                        return GAMEOVER_WIN;
+                    }
                 }
             }
         }
-        return false;
+
+        // 勝ち負けが付かず、盤が埋まったら引き分け
+        if (this._playeq.isBoardFill()) {
+            return GAMEOVER_DRAW;
+        }
+
+        // ゲームオーバーしてません
+        return GAMEOVER_NONE;
     }
 
     /**
@@ -910,15 +931,13 @@ function createSetMessageFromServer() {
     return (message) => {
         // イベント
         let event = message["event"];
-        // テキスト
-        let text = message["text"];
         // 升番号
         let sq = message["sq"];
-        // X か O
-        let myPiece = message["myPiece"];
+        // 手番。 X か O
+        let turn = message["myPiece"];
         // 勝者
         let winner = message["winner"];
-        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
+        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "StoC_Start":
@@ -941,16 +960,23 @@ function createSetMessageFromServer() {
                 break;
 
             case "StoC_Move":
+                console.log(`[Debug][setMessage] StoC_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+
                 // 指し手の一斉通知
-                if (myPiece != vue1.engine.connection.myPiece) {
+                if (turn != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), myPiece);
-                    vue1.engine.judgeCtrl.doJudge(myPiece);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), turn);
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
+
+                    // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;
                 }
+
+                // どちらの手番でもゲームオーバー判定は行います
+                vue1.engine.judgeCtrl.doJudge(turn);
+
                 break;
 
             default:
@@ -1232,13 +1258,11 @@ function createSetMessageFromServer() {
                 methods: {
                     // 画面を初期化
                     init() {
-                        // console.log("[Debug] Vue#init()");
-
                         this.engine.setup(this.packSetLabelOfButton());
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.userCtrl.init(this.engine.connection.myPiece);
+                        this.engine.playeq.init(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -1250,12 +1274,20 @@ function createSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
+                        console.log(`[clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
+                        if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
+                            // Ban on illegal move
+                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
+                            return;
+                        }
+
                         if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
                             } else {
+                                // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
 
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);

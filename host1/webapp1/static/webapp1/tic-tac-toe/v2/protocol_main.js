@@ -6,15 +6,13 @@ function createSetMessageFromServer() {
     return (message) => {
         // イベント
         let event = message["event"];
-        // テキスト
-        let text = message["text"];
         // 升番号
         let sq = message["sq"];
-        // X か O
-        let myPiece = message["myPiece"];
+        // 手番。 X か O
+        let turn = message["myPiece"];
         // 勝者
         let winner = message["winner"];
-        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} myPiece=${myPiece} winner=${winner}`); // ちゃんと動いているようなら消す
+        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "StoC_Start":
@@ -37,16 +35,23 @@ function createSetMessageFromServer() {
                 break;
 
             case "StoC_Move":
+                console.log(`[Debug][setMessage] StoC_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+
                 // 指し手の一斉通知
-                if (myPiece != vue1.engine.connection.myPiece) {
+                if (turn != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), myPiece);
-                    vue1.engine.judgeCtrl.doJudge(myPiece);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), turn);
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
+
+                    // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;
                 }
+
+                // どちらの手番でもゲームオーバー判定は行います
+                vue1.engine.judgeCtrl.doJudge(turn);
+
                 break;
 
             default:

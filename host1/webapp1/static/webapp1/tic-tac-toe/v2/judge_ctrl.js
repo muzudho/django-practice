@@ -34,37 +34,60 @@ class JudgeCtrl {
     }
 
     /**
-     * 勝敗判定
+     * ゲームオーバー判定
      */
     doJudge(myPiece) {
-        if (this._playeq.isMyTurn) {
-            // 終局判定
-            const gameOver = this.#isGameOver();
+        this._playeq.gameoverState = this.#makeGameoverState();
+        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState}`);
 
-            // 打った後、負けと判定されたなら、相手が負け
-            if (gameOver) {
+        switch (this._playeq.gameoverState) {
+            case GAMEOVER_WIN:
                 this._onWon(myPiece);
-            }
-            // 盤が埋まったら引き分け
-            else if (!gameOver && this._playeq.isBoardFill()) {
+                break;
+            case GAMEOVER_DRAW:
                 this._onDraw();
-            }
+                break;
+            case GAMEOVER_LOSE:
+                break;
+            case GAMEOVER_NONE:
+                break;
+            default:
+                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState}`);
         }
     }
 
     /**
-     * 手番を持っている方が勝っているか？
-     * @returns 勝ちなら真、それ以外は偽
+     * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @returns ゲームオーバー状態
      */
-    #isGameOver() {
+    #makeGameoverState() {
+        console.log(`[#makeGameoverState] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
+                console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    return true;
+                    console.log(`[#makeGameoverState] this._playeq.isMyTurn=${this._playeq.isMyTurn}`);
+                    if (this._playeq.isMyTurn) {
+                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
+                        return GAMEOVER_LOSE;
+                    } else {
+                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
+                        return GAMEOVER_WIN;
+                    }
                 }
             }
         }
-        return false;
+
+        // 勝ち負けが付かず、盤が埋まったら引き分け
+        if (this._playeq.isBoardFill()) {
+            return GAMEOVER_DRAW;
+        }
+
+        // ゲームオーバーしてません
+        return GAMEOVER_NONE;
     }
 
     /**
