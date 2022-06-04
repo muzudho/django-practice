@@ -30,7 +30,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_practice_of_pages, v_member, v_practice_of_vuetify, \
-    v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, \
+    v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe_v3, \
     v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
 
 urlpatterns = [
@@ -404,6 +404,19 @@ urlpatterns = [
 
     # +----
     # | 〇×ゲーム３
+
+    # 対局要求
+    path('tic-tac-toe/v3/match-request/',
+         #             ^
+         # -----------------------------
+         # 1
+         v_tic_tac_toe_v3.render_match_request),
+    #                   ^
+    #    -------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/match-request/` のような URL のパスの部分
+    #                              ------------------------------
+    # 2. v_tic_tac_toe_v3.py ファイルの render_match_request メソッド
 
     # 対局中
     path('tic-tac-toe/v3/play/<str:room_name>/', v_tic_tac_toe_v3.render_play),
