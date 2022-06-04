@@ -77,3 +77,6 @@ exit
 ```
 
 # Other documents
+
+📖 [ゼロからリアルタイムサーバーを作るまで](https://logmi.jp/tech/articles/322569)  
+📖 [Pub/Subメッセージングモデルの業務利用における難しさ](https://qiita.com/TakaakiOtomo/items/badba239ade07c4ea59f)  
