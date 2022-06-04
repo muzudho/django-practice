@@ -1,6 +1,6 @@
 # 目的
 
-サーバーからデータをJSON形式で受信したい。  
+サーバーからデータをJSON形式で受信したい  
 
 # はじめに
 
@@ -29,8 +29,10 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -56,14 +58,15 @@
 以下の記事で掲載した JSON ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/static/practice/vuetify-desserts.json`
+  * 📄`host1/webapp1/static/webapp1/practice/vuetify-desserts.json`
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂practice
-👉                  └── 📄vuetify-desserts.json
+                └── 📂webapp1
+                    └── 📂practice
+👉                      └── 📄vuetify-desserts.json
 ```
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
@@ -76,8 +79,9 @@
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             └── 📂views
 👉              └── 📄v_practice_of_json.py
 ```
@@ -89,7 +93,7 @@ from django.http import JsonResponse # 追加
 
 def readJsonResponse1(request):
     """JSONでの応答練習"""
-    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     return JsonResponse(doc)
@@ -103,8 +107,9 @@ def readJsonResponse1(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             ├── 📂views
             │   └── 📄v_practice_of_json.py
 👉          └── 📄urls.py
