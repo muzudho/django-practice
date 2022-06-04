@@ -289,11 +289,13 @@ def render_waiting_for_match_v2(request):
             ├── 📂models_helper
             │   └── 📄mh_user.py
             ├── 📂static
+        │   │   ├── 📂allauth-customized
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
             │           ├── 📄clock.js
             │           └── 📄waiting-for-match.js
             ├── 📂templates
+        │   │   ├── 📂allauth-customized
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
             │           └── 📄waiting-for-match-v2.html
