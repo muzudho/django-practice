@@ -1,7 +1,7 @@
 # 目的
 
 現在、サーバーに接続しているソケット（≒アクティブ・ユーザー）を一覧したい。  
-ログアウトせず、まだセッション期限切れではなく　放置されているソケットを数えても構わないものとする。  
+ログアウトせず、まだセッション期限切れではなく　放置されているソケットを数えても構わないものとする  
 
 # はじめに
 
@@ -32,18 +32,15 @@
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   ├── 📂tic-tac-toe
-        │   │   │   ├── 📂v1
-        │   │   │   │   └── 📄<いろいろ>
-        │   │   │   └── 📂v2
-        │   │   │       ├── 📄connection.js
-        │   │   │       ├── 📄engine.js
-        │   │   │       ├── 📄game.js
-        │   │   │       ├── 📄judge.js
-        │   │   │       ├── 📄protocol_main.js
-        │   │   │       └── 📄protocol_messages.js
-        │   │   ├── 📂practice
-        │   │   │   └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   ├── 📂webapp1
+        │   │   │   ├── 📂practice
+        │   │   │   │   └── 📄vuetify-desserts.json
+        │   │   │   └── 📂tic-tac-toe
+        │   │   │       ├── 📂v1
+        │   │   │       │   └── 📄<いろいろ>
+        │   │   │       └── 📂v2
+        │   │   │           └── 📄<いろいろ>.js
         │   │   └── 🚀favicon.ico
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
