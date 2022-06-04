@@ -80,3 +80,8 @@ exit
 
 📖 [ゼロからリアルタイムサーバーを作るまで](https://logmi.jp/tech/articles/322569)  
 📖 [Pub/Subメッセージングモデルの業務利用における難しさ](https://qiita.com/TakaakiOtomo/items/badba239ade07c4ea59f)  
+
+* セッション
+
+📖 [Django Channelsで実装した認証付きWebsocketにPythonで接続する](https://www.denzow.me/entry/2018/07/06/003238)  
+

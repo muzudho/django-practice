@@ -1,0 +1,47 @@
+scope =
+{
+    'type': 'websocket',
+    'path': '/tic-tac-toe/v2/play/Elephant/',
+    'raw_path': b'/tic-tac-toe/v2/play/Elephant/',
+    'headers':
+    [
+        (b'host', b'localhost:8000'),
+        (b'connection', b'Upgrade'),
+        (b'pragma', b'no-cache'),
+        (b'cache-control', b'no-cache'),
+        (b'user-agent', b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'),
+        (b'upgrade', b'websocket'), (b'origin', b'http://localhost:8000'),
+        (b'sec-websocket-version', b'13'),
+        (b'accept-encoding', b'gzip, deflate, br'),
+        (b'accept-language', b'ja,en-US;q=0.9,en;q=0.8'),
+        (b'cookie', b'csrftoken=oHIXohlSzU2r8UueHZigvWW12mTu6x0Of78C2Pc2OOhEy95tqWcsYyxOh5tvDXg3'),
+        (b'sec-websocket-key', b'1dIEHDJ6rDQViyGSYs3MYw=='),
+        (b'sec-websocket-extensions', b'permessage-deflate; client_max_window_bits')
+    ],
+    'query_string': b'',
+    'client': ['172.22.0.1', 41270],
+    'server': ['172.22.0.3', 8000],
+    'subprotocols': [],
+    'asgi': {'version': '3.0'},
+    'cookies': {'csrftoken': 'oHIXohlSzU2r8UueHZigvWW12mTu6x0Of78C2Pc2OOhEy95tqWcsYyxOh5tvDXg3'},
+    'session': < django.utils.functional.LazyObject object at 0x7fe3952c7c70 > ,
+    'user': < channels.auth.UserLazyObject object at 0x7fe3952c7c10 > ,
+    'path_remaining': '',
+    'url_route':
+    {
+        'args': (),
+        'kwargs': {'kw_room_name': 'Elephant'}
+    }
+}
+
+
+
+
+self.scope=
+{'type': 'websocket', 'path': '/tic-tac-toe/v2/play/Elephant/', 'raw_path': b'/tic-tac-toe/v2/play/Elephant/', 'headers': [(b'host', b'localhost:8000'), (b'connection', b'Upgrade'), (b'pragma', b'no-cache'), (b'cache-control', b'no-cache'), (b'user-agent', b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36'), (b'upgrade', b'websocket'), (b'origin', b'http://localhost:8000'), (b'sec-websocket-version', b'13'), (b'accept-encoding', b'gzip, deflate, br'), (b'accept-language', b'ja,en-US;q=0.9,en;q=0.8'), (b'cookie', b'csrftoken=oHIXohlSzU2r8UueHZigvWW12mTu6x0Of78C2Pc2OOhEy95tqWcsYyxOh5tvDXg3'), (b'sec-websocket-key', b'2nKEouP0PRvuYAyg9uZ7Cw=='), (b'sec-websocket-extensions', b'permessage-deflate; client_max_window_bits')], 'query_string': b'', 'client': ['172.22.0.1', 41388], 'server': ['172.22.0.3', 8000], 'subprotocols': [], 'asgi': {'version': '3.0'}, 'cookies': {'csrftoken': 'oHIXohlSzU2r8UueHZigvWW12mTu6x0Of78C2Pc2OOhEy95tqWcsYyxOh5tvDXg3'},
+        'session': <django.utils.functional.LazyObject object at 0x7fe3ed3fc4f0>,
+        'user': <channels.auth.UserLazyObject object at 0x7fe3ed3fc250>,
+        'path_remaining': '',
+        'url_route': {'args': (), 'kwargs': {'kw_room_name': 'Elephant'}
+    }
+} 

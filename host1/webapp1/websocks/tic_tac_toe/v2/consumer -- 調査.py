@@ -23,8 +23,17 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         """接続"""
         print("Connect")
+        # print(f"Connect self.scope={self.scope}")
+        # print(
+        #     f'Connect self.scope["cookies"]["csrftoken"]={self.scope["cookies"]["csrftoken"]}')
+        # print(f'Connect self.scope["session"]={self.scope["session"]}')
+        # print(f'Connect self.scope["user"]={self.scope["user"]}')
+
         # ログインしていれば、ユーザーのPrimaryKeyは以下で取得可能。ログインしていなければ None
-        # print(f'Connect self.scope["user"].pk={self.scope["user"].pk}')
+        print(
+            f'Connect self.scope["user"].pk={self.scope["user"].pk}')
+        # print(
+        #    f'Connect self.scope["user"].username={self.scope["user"].username}')
 
         self.room_name = self.scope['url_route']['kwargs']['kw_room_name']
         self.room_group_name = f'room_{self.room_name}'
