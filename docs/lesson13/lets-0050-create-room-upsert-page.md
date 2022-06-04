@@ -255,8 +255,8 @@ def render_upsert_room(request, id=None):
     return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
     #                       -------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/upsert.html
-    #                      -------------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/upsert.html
+    #                            -------------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
