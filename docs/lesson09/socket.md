@@ -1,9 +1,9 @@
 # 目的
 
 Webサーバーとクライアント間で通知したい。  
-その手法の１つに **Webソケット** があるが いきなり取り掛かるのは大変なので **ソケット** の説明をする。  
+その手法の１つに **Webソケット** があるが いきなり取り掛かるのは大変なので **ソケット** の説明をする  
 
-この記事では Django は関係ない。  
+この記事では Django は関係ない  
 
 # はじめに
 
@@ -30,9 +30,12 @@ Webサーバーとクライアント間で通知したい。
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
+        │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
