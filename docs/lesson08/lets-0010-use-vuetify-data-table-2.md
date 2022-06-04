@@ -1,7 +1,7 @@
 # 目的
 
 Vuetify に JSON形式でデータを渡したい。  
-HTML の中の JavaScript に JSON を動的に埋め込もう。  
+HTML の中の JavaScript に JSON を動的に埋め込もう  
 
 # はじめに
 
@@ -68,8 +68,9 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂practice
-👉                  └── 📄vuetify-desserts.json
+                └── 📂webapp1
+                    └── 📂practice
+👉                      └── 📄vuetify-desserts.json
 ```
 
 ```json
@@ -180,8 +181,9 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
@@ -232,12 +234,13 @@ docker-compose up
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
-            │           └── vuetify-data-table2.html
+            │           └── 📄vuetify-data-table2.html
             └── 📂views
 👉              └── 📄v_practice_of_vuetify.py
 ```
@@ -256,7 +259,7 @@ def readDataTable2(request):
     # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table2.html を取ってきます。
     #                            -----------------------------------------
 
-    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -273,8 +276,9 @@ def readDataTable2(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
