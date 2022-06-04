@@ -297,8 +297,8 @@ def render_active_user_list(request):
     return render(request, "webapp1/practice/session-active-user-list.html", context)
     #                       ----------------------------------------------
     #                       1
-    # 1. webapp1/templates/webapp1/practice/session-active-user-list.html
-    #                      ----------------------------------------------
+    # 1. host1/webapp1/templates/webapp1/practice/session-active-user-list.html
+    #                            ----------------------------------------------
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
