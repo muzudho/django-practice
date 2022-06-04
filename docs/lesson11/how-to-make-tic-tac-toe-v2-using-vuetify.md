@@ -886,7 +886,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 10. play.html ファイルの作成
+# Step 10. 対局画面作成 - play_base.html ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -908,7 +908,7 @@ function createSetMessageFromServer() {
                     └── 📂tic-tac-toe
                         └── 📂v2
                             ├── match_request.html
-👉                          └── play.html
+👉                          └── play_base.html
 ```
 
 ```html
@@ -968,9 +968,9 @@ function createSetMessageFromServer() {
                         <input type="hidden" name="room_name" value="{{room_name}}" />
                         <input type="hidden" name="my_piece" value="{{my_piece}}" />
                     </form>
-                    <v-container>
-                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
-                    </v-container>
+                    {% block footer_section1 %}
+                    <!-- あれば、ここにボタンを置く -->
+                    {% endblock footer_section1 %}
                     <v-container>
                         <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isAlertWaitForOther()">Wait for other to place the move</v-alert>
@@ -1163,17 +1163,6 @@ function createSetMessageFromServer() {
                         this.state = state;
                     },
                     /**
-                     *
-                     */
-                    isDisabledPlayAgainButton() {
-                        switch (this.state) {
-                            case STATE_GAME_IS_OVER:
-                                return false; // Enable
-                            default:
-                                return true; // Disable
-                        }
-                    },
-                    /**
                      * 対局は終了しました
                      */
                     setGameIsOver(result) {
@@ -1216,6 +1205,9 @@ function createSetMessageFromServer() {
                     isAlertReconnectingShow() {
                         return this.engine.connection.isReconnectingDisplay;
                     },
+                    {% block method_section1 %}
+                    // あれば、ここにメソッドを置く
+                    {% endblock method_section1 %}
                 },
             });
         </script>
@@ -1223,7 +1215,67 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 11. protocol.py ファイルの作成
+# Step 11. 対局画面作成 - play.html.txt ファイル
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   ├── 📂tic-tac-toe
+            │   │   └── 📂v2
+            │   │       ├── connection.js
+            │   │       ├── engine.js
+            │   │       ├── game.js
+            │   │       ├── judge.js
+            │   │       ├── protocol_main.js
+            │   │       └── protocol_messages.js
+            │   └── 🚀favicon.ico
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂tic-tac-toe
+                        └── 📂v2
+                            ├── match_request.html
+                            ├── play_base.html
+👉                          └── play.html.txt
+```
+
+👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
+
+```html
+{% extends "tic-tac-toe/v2/play_base.html" %}
+{#          -----------------------------
+            1
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play_base.html
+                                   -----------------------------
+
+    自動フォーマットしないでください
+    Do not auto fomatting
+#}
+
+{% block footer_section1 %}
+                    <v-container>
+                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+                    </v-container>
+{% endblock footer_section1 %}
+
+{% block method_section1 %}
+                    /**
+                     * Play again ボタンは非表示か
+                     */
+                    isDisabledPlayAgainButton() {
+                        switch (this.state) {
+                            case STATE_GAME_IS_OVER:
+                                return false; // Enable
+                            default:
+                                return true; // Disable
+                        }
+                    },
+{% endblock method_section1 %}
+```
+
+# Step 12. protocol.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1288,7 +1340,7 @@ class Protocol():
         raise ValueError(f"Unknown event: {event}")
 ```
 
-# Step 12. consumer.py ファイルの作成
+# Step 13. consumer.py ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -1382,7 +1434,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 13. ビュー編集 - v_tic_tac_toe_v2.py ファイル
+# Step 14. ビュー編集 - v_tic_tac_toe_v2.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -1447,13 +1499,15 @@ def render_play(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "webapp1/tic-tac-toe/v2/play.html", context)
+    return render(request, "webapp1/tic-tac-toe/v2/play.html.txt", context)
     #                                            ^
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html
-    #                      --------------------------------
+    #                       ------------------------------------
+    #                       1
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html.txt
+    #                      ------------------------------------
 ```
 
-# Step 14. ルート編集 - urls.py ファイル
+# Step 15. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -1519,7 +1573,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 15. ルート編集 - routing1.py ファイル
+# Step 16. ルート編集 - routing1.py ファイル
 
 以下のファイルを無ければ作成、あればマージしてほしい。  
 
@@ -1586,7 +1640,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 16. Web画面へアクセス
+# Step 17. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 

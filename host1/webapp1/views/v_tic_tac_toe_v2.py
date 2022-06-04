@@ -30,7 +30,9 @@ def render_play(request, room_name):
         "my_piece": myPiece,
         "room_name": room_name
     }
-    return render(request, "webapp1/tic-tac-toe/v2/play.html", context)
+    return render(request, "webapp1/tic-tac-toe/v2/play.html.txt", context)
     #                                            ^
-    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html
-    #                      --------------------------------
+    #                       ------------------------------------
+    #                       1
+    # 1. webapp1/templates/webapp1/tic-tac-toe/v2/play.html.txt
+    #                      ------------------------------------
