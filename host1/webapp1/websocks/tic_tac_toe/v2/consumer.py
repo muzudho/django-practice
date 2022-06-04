@@ -23,7 +23,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         """接続"""
         print("Connect")
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_name = self.scope['url_route']['kwargs']['kw_room_name']
         self.room_group_name = f'room_{self.room_name}'
 
         # Join room group

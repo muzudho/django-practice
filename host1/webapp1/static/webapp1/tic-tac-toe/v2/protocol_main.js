@@ -47,6 +47,8 @@ function createSetMessageFromServer() {
 
                     // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;
+                    // v-showが働かなかったので、シンプルな変数に写す
+                    vue1.isVisibleAlertWaitForOtherFlag = vue1.engine.playeq.isVisibleAlertWaitForOther;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います

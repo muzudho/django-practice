@@ -18,11 +18,12 @@
                         <v-form method="POST">
                             {% csrf_token %}
 
+                            <!-- `po_` は POST送信するパラメーター名の目印 -->
                             <!-- 部屋名 -->
-                            <v-text-field required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+                            <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
-                            <!-- X か O -->
-                            <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <!-- 自分の駒。 X か O -->
+                            <v-select name="po_my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>

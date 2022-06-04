@@ -15,7 +15,7 @@
                 <v-main>
                     <v-container>
                         <h1>TIC TAC TOE</h1>
-                        <h3>Welcome to room_{{room_name}}</h3>
+                        <h3>Welcome to room_{{dj_room_name}}</h3>
                     </v-container>
 
                     <form name="form1" method="POST">
@@ -51,15 +51,17 @@
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <input type="hidden" name="room_name" value="{{room_name}}" />
-                        <input type="hidden" name="my_piece" value="{{my_piece}}" />
+
+                        <!-- `po_` は POST送信するパラメーター名の目印 -->
+                        <input type="hidden" name="po_room_name" value="{{dj_room_name}}" />
+                        <input type="hidden" name="po_my_piece" value="{{dj_my_piece}}" />
                     </form>
                     {% block footer_section1 %}
                     <!-- あれば、ここにボタンを置く -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-                        <v-alert type="warning" color="orange" v-show="isAlertWaitForOther()">Wait for other to place the move</v-alert>
+                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
                         {% endverbatim %}
@@ -117,10 +119,11 @@
                     engine: new Engine(
                         createSetMessageFromServer(),
                         packReconnect(),
+                        // `po_` は POST送信するパラメーター名の目印
                         // 部屋名
-                        document.forms["form1"]["room_name"].value,
-                        // X か O
-                        document.forms["form1"]["my_piece"].value,
+                        document.forms["form1"]["po_room_name"].value,
+                        // 自分の駒。 X か O
+                        document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
                             // 接続文字列
@@ -147,6 +150,7 @@
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isVisibleAlertWaitForOtherFlag: false,
                 },
                 // page loaded
                 mounted: () => {
@@ -184,6 +188,8 @@
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
+                                // v-showが働かなかったので、シンプルな変数に写す
+                                this.isVisibleAlertWaitForOtherFlag = this.engine.playeq.isVisibleAlertWaitForOther;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
@@ -275,9 +281,10 @@
                     isAlertYourMoveShow() {
                         return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
-                    isAlertWaitForOther() {
-                        return this.engine.playeq.isVisibleAlertWaitForOther;
-                    },
+                    // 複雑だと動かないみたい
+                    // isAlertWaitForOther() {
+                    //    return this.engine.playeq.isVisibleAlertWaitForOther;
+                    // },
                     /**
                      * 対局が終了していたら、結果を常時表示
                      */
