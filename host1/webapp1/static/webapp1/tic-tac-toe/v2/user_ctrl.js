@@ -27,18 +27,11 @@ class UserCtrl {
      * クリアー
      */
     clear() {
-        // console.log(`[Debug][UserCtrl#clear] Begin this.isMyTurn=${this.isMyTurn}`);
-
         // 遊具
         this._playeq.clear();
 
-        // 自分の手番ではない
-        this.isMyTurn = false;
-
         // 相手の手番に着手しないでください
         this.isWaitForOther = false;
-
-        // console.log(`[Debug][UserCtrl#clear] End this.isMyTurn=${this.isMyTurn}`);
     }
 
     /**
@@ -58,7 +51,7 @@ class UserCtrl {
             } else {
                 isMyTurn = false;
             }
-            this.isMyTurn = isMyTurn;
+            this._playeq.isMyTurn = isMyTurn;
         }
 
         // イベントハンドラはそのまま

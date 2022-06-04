@@ -44,7 +44,7 @@ function createSetMessageFromServer() {
                     vue1.engine.judgeCtrl.doJudge(myPiece);
 
                     // 自分の手番に変更
-                    vue1.engine.userCtrl.isMyTurn = true;
+                    vue1.engine.playeq.isMyTurn = true;
                     vue1.engine.userCtrl.isWaitForOther = false;
                 }
                 break;

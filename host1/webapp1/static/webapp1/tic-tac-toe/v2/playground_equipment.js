@@ -15,6 +15,9 @@ class PlaygroundEquipment {
 
         // 何手目
         this._countOfMove = 0;
+
+        // 自分の手番ではない
+        this._isMyTurn = false;
     }
 
     /**
@@ -54,5 +57,16 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this._countOfMove;
+    }
+
+    /**
+     * 私のターンですか
+     */
+    get isMyTurn() {
+        return this._isMyTurn;
+    }
+
+    set isMyTurn(value) {
+        this._isMyTurn = value;
     }
 }

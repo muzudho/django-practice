@@ -37,7 +37,7 @@ class JudgeCtrl {
      * 勝敗判定
      */
     doJudge(myPiece) {
-        if (this._userCtrl.isMyTurn) {
+        if (this._playeq.isMyTurn) {
             // 終局判定
             const gameOver = this.#isGameOver();
 

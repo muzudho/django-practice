@@ -455,6 +455,9 @@ class PlaygroundEquipment {
 
         // 何手目
         this._countOfMove = 0;
+
+        // 自分の手番ではない
+        this._isMyTurn = false;
     }
 
     /**
@@ -494,6 +497,17 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this._countOfMove;
+    }
+
+    /**
+     * 私のターンですか
+     */
+    get isMyTurn() {
+        return this._isMyTurn;
+    }
+
+    set isMyTurn(value) {
+        this._isMyTurn = value;
     }
 }
 ```
@@ -546,18 +560,11 @@ class UserCtrl {
      * クリアー
      */
     clear() {
-        // console.log(`[Debug][UserCtrl#clear] Begin this.isMyTurn=${this.isMyTurn}`);
-
         // 遊具
         this._playeq.clear();
 
-        // 自分の手番ではない
-        this.isMyTurn = false;
-
         // 相手の手番に着手しないでください
         this.isWaitForOther = false;
-
-        // console.log(`[Debug][UserCtrl#clear] End this.isMyTurn=${this.isMyTurn}`);
     }
 
     /**
@@ -577,7 +584,7 @@ class UserCtrl {
             } else {
                 isMyTurn = false;
             }
-            this.isMyTurn = isMyTurn;
+            this._playeq.isMyTurn = isMyTurn;
         }
 
         // イベントハンドラはそのまま
@@ -675,7 +682,7 @@ class JudgeCtrl {
      * 勝敗判定
      */
     doJudge(myPiece) {
-        if (this._userCtrl.isMyTurn) {
+        if (this._playeq.isMyTurn) {
             // 終局判定
             const gameOver = this.#isGameOver();
 
@@ -930,7 +937,7 @@ function createSetMessageFromServer() {
                     vue1.engine.judgeCtrl.doJudge(myPiece);
 
                     // 自分の手番に変更
-                    vue1.engine.userCtrl.isMyTurn = true;
+                    vue1.engine.playeq.isMyTurn = true;
                     vue1.engine.userCtrl.isWaitForOther = false;
                 }
                 break;
@@ -944,7 +951,7 @@ function createSetMessageFromServer() {
 
 # Step 11. 対局申込画面作成 - match_request.html ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1232,15 +1239,13 @@ function createSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
-
                         if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.userCtrl.isMyTurn) {
+                            if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.userCtrl.isWaitForOther = true;
                             } else {
-                                this.engine.userCtrl.isMyTurn = false;
+                                this.engine.playeq.isMyTurn = false;
 
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
                             }
@@ -1327,7 +1332,7 @@ function createSetMessageFromServer() {
                      * 対局中で、自分の手番ならアラートを常時表示
                      */
                     isAlertYourMoveShow() {
-                        return this.state == STATE_DURING_GAME && this.engine.userCtrl.isMyTurn;
+                        return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
                     isAlertWaitForOther() {
                         return this.engine.userCtrl.isWaitForOther;

@@ -174,15 +174,13 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        // console.log(`[Debug] Vue#clickSquare sq=${sq} this.engine.userCtrl.isMyTurn=${this.engine.userCtrl.isMyTurn}`);
-
                         if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.userCtrl.isMyTurn) {
+                            if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.userCtrl.isWaitForOther = true;
                             } else {
-                                this.engine.userCtrl.isMyTurn = false;
+                                this.engine.playeq.isMyTurn = false;
 
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
                             }
@@ -269,7 +267,7 @@
                      * 対局中で、自分の手番ならアラートを常時表示
                      */
                     isAlertYourMoveShow() {
-                        return this.state == STATE_DURING_GAME && this.engine.userCtrl.isMyTurn;
+                        return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
                     isAlertWaitForOther() {
                         return this.engine.userCtrl.isWaitForOther;
