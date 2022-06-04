@@ -359,8 +359,8 @@ def render_list_room(request):
     return render(request, "webapp1/rooms/list.html", context)
     #                       -----------------------
     #                       1
-    # 1. webapp1/templates/webapp1/rooms/list.html
-    #                      -----------------------
+    # 1. host1/webapp1/templates/webapp1/rooms/list.html
+    #                            -----------------------
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
