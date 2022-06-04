@@ -972,6 +972,8 @@ function createSetMessageFromServer() {
 
                     // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;
+                    // v-showが働かなかったので、シンプルな変数に写す
+                    vue1.isVisibleAlertWaitForOtherFlag = vue1.engine.playeq.isVisibleAlertWaitForOther;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
@@ -1033,11 +1035,12 @@ function createSetMessageFromServer() {
                         <v-form method="POST">
                             {% csrf_token %}
 
+                            <!-- `po_` は POST送信するパラメーター名の目印 -->
                             <!-- 部屋名 -->
-                            <v-text-field required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name" name="room_name"></v-text-field>
+                            <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
-                            <!-- X か O -->
-                            <v-select name="my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <!-- 自分の駒。 X か O -->
+                            <v-select name="po_my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -1117,7 +1120,7 @@ function createSetMessageFromServer() {
                 <v-main>
                     <v-container>
                         <h1>TIC TAC TOE</h1>
-                        <h3>Welcome to room_{{room_name}}</h3>
+                        <h3>Welcome to room_{{dj_room_name}}</h3>
                     </v-container>
 
                     <form name="form1" method="POST">
@@ -1153,15 +1156,17 @@ function createSetMessageFromServer() {
                                 </v-col>
                             </v-row>
                         </v-container>
-                        <input type="hidden" name="room_name" value="{{room_name}}" />
-                        <input type="hidden" name="my_piece" value="{{my_piece}}" />
+
+                        <!-- `po_` は POST送信するパラメーター名の目印 -->
+                        <input type="hidden" name="po_room_name" value="{{dj_room_name}}" />
+                        <input type="hidden" name="po_my_piece" value="{{dj_my_piece}}" />
                     </form>
                     {% block footer_section1 %}
                     <!-- あれば、ここにボタンを置く -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{my_piece}}</strong></v-alert>
-                        <v-alert type="warning" color="orange" v-show="isAlertWaitForOther()">Wait for other to place the move</v-alert>
+                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
                         {% endverbatim %}
@@ -1219,10 +1224,11 @@ function createSetMessageFromServer() {
                     engine: new Engine(
                         createSetMessageFromServer(),
                         packReconnect(),
+                        // `po_` は POST送信するパラメーター名の目印
                         // 部屋名
-                        document.forms["form1"]["room_name"].value,
-                        // X か O
-                        document.forms["form1"]["my_piece"].value,
+                        document.forms["form1"]["po_room_name"].value,
+                        // 自分の駒。 X か O
+                        document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
                             // 接続文字列
@@ -1249,6 +1255,7 @@ function createSetMessageFromServer() {
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isVisibleAlertWaitForOtherFlag: false,
                 },
                 // page loaded
                 mounted: () => {
@@ -1286,6 +1293,8 @@ function createSetMessageFromServer() {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
+                                // v-showが働かなかったので、シンプルな変数に写す
+                                this.isVisibleAlertWaitForOtherFlag = this.engine.playeq.isVisibleAlertWaitForOther;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
@@ -1377,9 +1386,10 @@ function createSetMessageFromServer() {
                     isAlertYourMoveShow() {
                         return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
-                    isAlertWaitForOther() {
-                        return this.engine.playeq.isVisibleAlertWaitForOther;
-                    },
+                    // 複雑だと動かないみたい
+                    // isAlertWaitForOther() {
+                    //    return this.engine.playeq.isVisibleAlertWaitForOther;
+                    // },
                     /**
                      * 対局が終了していたら、結果を常時表示
                      */
@@ -1596,7 +1606,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         """接続"""
         print("Connect")
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
+        self.room_name = self.scope['url_route']['kwargs']['kw_room_name']
         self.room_group_name = f'room_{self.room_name}'
 
         # Join room group
@@ -1676,9 +1686,10 @@ from django.shortcuts import render, redirect
 def render_match_request(request):
     """対局要求"""
     if request.method == "POST":
-        room_name = request.POST.get("room_name")
-        myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={myPiece}')
+        # `po_` は POST送信するパラメーター名の目印
+        room_name = request.POST.get("po_room_name")
+        my_piece = request.POST.get("po_my_piece")
+        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
         #                               ^
         #                 ----------------------------------------------------
         #                 1
@@ -1692,14 +1703,16 @@ def render_match_request(request):
     #                            -----------------------------------------
 
 
-def render_play(request, room_name):
+def render_play(request, kw_room_name):
     """対局画面"""
-    myPiece = request.GET.get("mypiece")
-    if myPiece not in ['X', 'O']:
-        raise Http404(f"My piece '{myPiece}' does not exists")
+    my_piece = request.GET.get("mypiece")
+    if my_piece not in ['X', 'O']:
+        raise Http404(f"My piece '{my_piece}' does not exists")
+
+    # `dj_` は Djangoでレンダーするパラメーター名の目印
     context = {
-        "my_piece": myPiece,
-        "room_name": room_name
+        "dj_room_name": kw_room_name,
+        "dj_my_piece": my_piece,
     }
     return render(request, "webapp1/tic-tac-toe/v2/play.html.txt", context)
     #                                            ^
@@ -1768,11 +1781,13 @@ urlpatterns = [
     # 2. v_tic_tac_toe_v2.py ファイルの render_match_request メソッド
 
     # 対局中
-    path('tic-tac-toe/v2/play/<str:room_name>/', v_tic_tac_toe_v2.render_play),
-    #                  ^                                        ^
-    #     ------------------------------------   ----------------------------
-    #     1                                      2
-    # 1. URLの `tic-tac-toe/v2/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
+    path('tic-tac-toe/v2/play/<str:kw_room_name>/', v_tic_tac_toe_v2.render_play),
+    #                  ^                                           ^
+    #     ---------------------------------------   ----------------------------
+    #     1                                         2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/<部屋名>/` のような URL のパスの部分。
+    #                              -----------------------------
+    #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
     # 2. v_tic_tac_toe_v2.py ファイルの render_play メソッド
 ]
 ```
@@ -1833,15 +1848,16 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe/v2/play/(?P<room_name>\w+)/$',
+    url(r'^tic-tac-toe/v2/play/(?P<kw_room_name>\w+)/$',
         #               ^
-        # -----------------------------------------
+        # --------------------------------------------
         # 1
         TicTacToeV2Consumer.as_asgi()),
     #             ^
     #   -----------------------------
     #   2
-    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
+    #    kw_room_name は変数として渡される
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```
