@@ -1,6 +1,6 @@
 # 目的
 
-Web ページで表示する内容を、JSON形式のテキストで渡したい。  
+Web ページで表示する内容を、JSON形式のテキストで渡したい  
 
 # はじめに
 
@@ -29,8 +29,10 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
         │   ├── 📂models
         │   │   └── 📄<いろいろ>.py
         │   ├── 📂static
-        │   │   └── 📂practice
-        │   │       └── 📄vuetify-desserts.json
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
@@ -56,14 +58,15 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 以下の記事で掲載した JSON ファイルを再利用してほしい。  
 
 * 📖 [Djangoで動的生成するHTMLの中のJavaScriptにJSONを埋め込もう！](https://qiita.com/muzudho1/items/b3b0c25fc329eb9bc0c1)
-  * 📄`host1/webapp1/static/practice/vuetify-desserts.json`
+  * 📄`host1/webapp1/static/webapp1/practice/vuetify-desserts.json`
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂static
-                └── 📂practice
-👉                  └── 📄vuetify-desserts.json
+                └── 📂webapp1
+                    └── 📂practice
+👉                      └── 📄vuetify-desserts.json
 ```
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
@@ -76,8 +79,9 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
@@ -139,8 +143,9 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂practice
@@ -156,8 +161,9 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
@@ -182,7 +188,7 @@ def readJsonTextarea1(request):
     # 1. host1/webapp1/templates/webapp1/practice/vuetify-json-textarea1.html を取ってきます。
     #                            --------------------------------------------
 
-    with open('webapp1/static/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
         doc = json.load(f)
 
     context = {
@@ -215,8 +221,9 @@ def readDataTable2o2(request):
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂static
-            │   └── 📂practice
-            │       └── 📄vuetify-desserts.json
+            │   └── 📂webapp1
+            │       └── 📂practice
+            │           └── 📄vuetify-desserts.json
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
