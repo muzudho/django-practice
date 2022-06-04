@@ -18,6 +18,9 @@ class PlaygroundEquipment {
 
         // 自分の手番ではない
         this._isMyTurn = false;
+
+        // 「相手の手番に着手しないでください」というアラートの可視性
+        this._isVisibleAlertWaitForOther = false;
     }
 
     /**
@@ -68,5 +71,16 @@ class PlaygroundEquipment {
 
     set isMyTurn(value) {
         this._isMyTurn = value;
+    }
+
+    /**
+     * 「相手の手番に着手しないでください」というアラートの可視性
+     */
+    get isVisibleAlertWaitForOther() {
+        return this._isVisibleAlertWaitForOther;
+    }
+
+    set isVisibleAlertWaitForOther(value) {
+        this._isVisibleAlertWaitForOther = value;
     }
 }

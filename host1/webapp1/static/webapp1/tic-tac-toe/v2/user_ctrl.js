@@ -29,9 +29,6 @@ class UserCtrl {
     clear() {
         // 遊具
         this._playeq.clear();
-
-        // 相手の手番に着手しないでください
-        this.isWaitForOther = false;
     }
 
     /**

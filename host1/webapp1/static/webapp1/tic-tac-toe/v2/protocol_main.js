@@ -45,7 +45,7 @@ function createSetMessageFromServer() {
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
-                    vue1.engine.userCtrl.isWaitForOther = false;
+                    vue1.engine.playeq.isVisibleAlertWaitForOther = false;
                 }
                 break;
 

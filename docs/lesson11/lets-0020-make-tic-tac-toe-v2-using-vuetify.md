@@ -458,6 +458,9 @@ class PlaygroundEquipment {
 
         // 自分の手番ではない
         this._isMyTurn = false;
+
+        // 「相手の手番に着手しないでください」というアラートの可視性
+        this._isVisibleAlertWaitForOther = false;
     }
 
     /**
@@ -508,6 +511,17 @@ class PlaygroundEquipment {
 
     set isMyTurn(value) {
         this._isMyTurn = value;
+    }
+
+    /**
+     * 「相手の手番に着手しないでください」というアラートの可視性
+     */
+    get isVisibleAlertWaitForOther() {
+        return this._isVisibleAlertWaitForOther;
+    }
+
+    set isVisibleAlertWaitForOther(value) {
+        this._isVisibleAlertWaitForOther = value;
     }
 }
 ```
@@ -562,9 +576,6 @@ class UserCtrl {
     clear() {
         // 遊具
         this._playeq.clear();
-
-        // 相手の手番に着手しないでください
-        this.isWaitForOther = false;
     }
 
     /**
@@ -938,7 +949,7 @@ function createSetMessageFromServer() {
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
-                    vue1.engine.userCtrl.isWaitForOther = false;
+                    vue1.engine.playeq.isVisibleAlertWaitForOther = false;
                 }
                 break;
 
@@ -1243,7 +1254,7 @@ function createSetMessageFromServer() {
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
-                                this.engine.userCtrl.isWaitForOther = true;
+                                this.engine.playeq.isVisibleAlertWaitForOther = true;
                             } else {
                                 this.engine.playeq.isMyTurn = false;
 
@@ -1335,7 +1346,7 @@ function createSetMessageFromServer() {
                         return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
                     isAlertWaitForOther() {
-                        return this.engine.userCtrl.isWaitForOther;
+                        return this.engine.playeq.isVisibleAlertWaitForOther;
                     },
                     /**
                      * 対局が終了していたら、結果を常時表示

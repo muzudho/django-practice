@@ -178,7 +178,7 @@
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
-                                this.engine.userCtrl.isWaitForOther = true;
+                                this.engine.playeq.isVisibleAlertWaitForOther = true;
                             } else {
                                 this.engine.playeq.isMyTurn = false;
 
@@ -270,7 +270,7 @@
                         return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
                     isAlertWaitForOther() {
-                        return this.engine.userCtrl.isWaitForOther;
+                        return this.engine.playeq.isVisibleAlertWaitForOther;
                     },
                     /**
                      * 対局が終了していたら、結果を常時表示
