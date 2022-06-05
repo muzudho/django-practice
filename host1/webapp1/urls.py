@@ -407,28 +407,32 @@ urlpatterns = [
     # +----
     # | 〇×ゲーム３
 
-    # 対局要求
-    path('tic-tac-toe/v3/match-request/',
+    # 対局申込
+    path('tic-tac-toe/v3/match-application/',
          #             ^
-         # -----------------------------
+         # --------------------------------
          # 1
-         v_tic_tac_toe_v3.render_match_request),
+         v_tic_tac_toe_v3.MatchApplication.render),
     #                   ^
-    #    -------------------------------------
+    #    ----------------------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v3/match-request/` のような URL のパスの部分
-    #                              ------------------------------
-    # 2. v_tic_tac_toe_v3.py ファイルの render_match_request メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/match-application/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. v_tic_tac_toe_v3.py ファイルの MatchApplication クラスの render メソッド
 
     # 対局中
-    path('tic-tac-toe/v3/play/<str:kw_room_name>/', v_tic_tac_toe_v3.render_play),
-    #                  ^                                           ^
-    #     ---------------------------------------   ----------------------------
-    #     1                                         2
-    # 1. 例えば `http://example.com/tic-tac-toe/v3/play/<部屋名>/` のような URL のパスの部分。
-    #                              -----------------------------
+    path('tic-tac-toe/v3/playing/<str:kw_room_name>/',
+         #             ^
+         # -----------------------------------------
+         # 1
+         v_tic_tac_toe_v3.Playing.render),
+    #                   ^
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v3.py ファイルの render_play メソッド
+    # 2. v_tic_tac_toe_v3.py ファイルの Playing クラスの render 静的メソッド
 
     # | 〇×ゲーム３
     # +----

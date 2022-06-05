@@ -80,7 +80,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. 対局画面作成 - play.html.txt ファイル
+# Step 2. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -91,7 +91,7 @@ docker-compose up
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v3
-👉                          └── play.html.txt
+👉                          └── playing.html.txt
 ```
 
 👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
@@ -127,7 +127,7 @@ docker-compose up
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v3
-            │               └── play.html.txt
+            │               └── playing.html.txt
             └── 📂views
                 └── v_tic_tac_toe_v3.py
 ```
@@ -137,43 +137,78 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def render_match_request(request):
-    """対局要求"""
-    if request.method == "POST":
-        # `po_` は POST送信するパラメーター名の目印
-        room_name = request.POST.get("po_room_name")
-        my_piece = request.POST.get("po_my_piece")
-        return redirect(f'/tic-tac-toe/v3/play/{room_name}/?&mypiece={my_piece}')
-        #                               ^ three
-        #                 ----------------------------------------------------
-        #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
-        #                           -----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
-    #                                            ^ two
-    #                       -----------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
-    #                            -----------------------------------------
+class MatchApplication():
+    """対局申込ページ"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+
+        if request.method == "POST":
+            # 送信後
+            MatchApplication.on_sent(request)
+
+            # `po_` は POST送信するパラメーター名の目印
+            room_name = request.POST.get("po_room_name")
+            my_piece = request.POST.get("po_my_piece")
+            return redirect(f'/tic-tac-toe/v3/playing/{room_name}/?&mypiece={my_piece}')
+            #                               ^ three
+            #                 --------------------------------------------------------
+            #                 1
+            # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
+            #                           --------------------------------------------
+
+        # 訪問後
+        MatchApplication.on_visited(request)
+        return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+        #                                            ^ two
+        #                       -----------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
+        #                            -----------------------------------------
+
+    @staticmethod
+    def on_sent(request):
+        """送信後"""
+        # 拡張したい挙動があれば、ここに書く
+        pass
+
+    @staticmethod
+    def on_visited(request):
+        """訪問後"""
+        # 拡張したい挙動があれば、ここに書く
+        pass
 
 
-def render_play(request, kw_room_name):
-    """対局画面"""
-    my_piece = request.GET.get("mypiece")
-    if my_piece not in ['X', 'O']:
-        raise Http404(f"My piece '{my_piece}' does not exists")
+class Playing():
+    """対局ページ"""
 
-    # `dj_` は Djangoでレンダーするパラメーター名の目印
-    context = {
-        "dj_room_name": kw_room_name,
-        "dj_my_piece": my_piece,
-    }
-    return render(request, "webapp1/tic-tac-toe/v3/play.html.txt", context)
-    #                                            ^ three
-    #                       ------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/play.html.txt
-    #                            ------------------------------------
+    @staticmethod
+    def render(request, kw_room_name):
+        """描画"""
+        my_piece = request.GET.get("mypiece")
+        if my_piece not in ['X', 'O']:
+            raise Http404(f"My piece '{my_piece}' does not exists")
+
+        Playing.on_update(request)
+
+        # `dj_` は Djangoでレンダーするパラメーター名の目印
+        context = {
+            "dj_room_name": kw_room_name,
+            "dj_my_piece": my_piece,
+        }
+        return render(request, "webapp1/tic-tac-toe/v3/playing.html.txt", context)
+        #                                            ^ three
+        #                       ---------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
+        #                            ---------------------------------------
+
+    @staticmethod
+    def on_update(request):
+        """訪問後または送信後"""
+        # 拡張したい挙動があれば、ここに書く
+        pass
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -187,7 +222,7 @@ def render_play(request, kw_room_name):
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v3
-            │               └── play.html.txt
+            │               └── playing.html.txt
 👉          └── urls.py
 ```
 
@@ -206,18 +241,18 @@ from webapp1.views import v_tic_tac_toe_v3
 urlpatterns = [
     # ...略...
 
-    # 対局要求
-    path('tic-tac-toe/v3/match-request/',
+    # 対局申込
+    path('tic-tac-toe/v3/match-application/',
          #             ^
-         # -----------------------------
+         # --------------------------------
          # 1
-         v_tic_tac_toe_v3.render_match_request),
+         v_tic_tac_toe_v3.MatchApplication.render),
     #                   ^
-    #    -------------------------------------
+    #    ----------------------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v3/match-request/` のような URL のパスの部分
-    #                              ------------------------------
-    # 2. v_tic_tac_toe_v3.py ファイルの render_match_request メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/match-application/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. v_tic_tac_toe_v3.py ファイルの MatchApplication クラスの render メソッド
 
     # 対局中
     path('tic-tac-toe/v3/play/<str:room_name>/', v_tic_tac_toe_v3.render_play),
@@ -234,4 +269,4 @@ urlpatterns = [
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe/v3/match-request/](http://localhost:8000/tic-tac-toe/v3/match-request/)  
+📖 [http://localhost:8000/tic-tac-toe/v3/match-application/](http://localhost:8000/tic-tac-toe/v3/match-application/)  
