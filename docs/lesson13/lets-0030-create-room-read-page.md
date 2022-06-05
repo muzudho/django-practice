@@ -293,53 +293,57 @@ from webapp1.models_helper.mh_user import MhUser
 # 4. クラス名
 
 
-def render_read_room(request, id=id):
-    """部屋読取"""
+class RoomView():
+    """部屋"""
 
-    # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
-    # idを指定してメンバーを１人取得
-    room_table_qs = Room.objects.filter(pk=id)  # QuerySet
-    room_table_json = serializers.serialize('json', room_table_qs)
-    room_table_doc = json.loads(room_table_json)  # オブジェクト
+    @staticmethod
+    def render_read(request, id=id):
+        """読取ページ"""
 
-    # 使いやすい形に変換します
-    if len(room_table_doc) < 1:
-        room_dic = {
-            "pk": id,
-            "name": "",
-            "sente_id": "",
-            "sente_name": "",
-            "gote_id": "",
-            "gote_name": "",
-            "board": "",
-            "record": "",
+        # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
+        # idを指定してメンバーを１人取得
+        room_table_qs = Room.objects.filter(pk=id)  # QuerySet
+        room_table_json = serializers.serialize('json', room_table_qs)
+        room_table_doc = json.loads(room_table_json)  # オブジェクト
+
+        # 使いやすい形に変換します
+        if len(room_table_doc) < 1:
+            room_dic = {
+                "pk": id,
+                "name": "",
+                "sente_id": "",
+                "sente_name": "",
+                "gote_id": "",
+                "gote_name": "",
+                "board": "",
+                "record": "",
+            }
+        else:
+            # 先頭の１件
+            room_rec = room_table_doc[0]
+
+            sente_id = room_rec["fields"]["sente_id"]
+            gote_id = room_rec["fields"]["gote_id"]
+
+            room_dic = {
+                "pk": room_rec["pk"],
+                "name": room_rec["fields"]["name"],
+                "sente_id": sente_id,
+                "sente_name": MhUser.get_name_by_id(sente_id),
+                "gote_id": gote_id,
+                "gote_name": MhUser.get_name_by_id(gote_id),
+                "board": room_rec["fields"]["board"],
+                "record": room_rec["fields"]["record"],
+            }
+
+        context = {
+            'room': room_dic,  # room_table_qs,
         }
-    else:
-        # 先頭の１件
-        room_rec = room_table_doc[0]
-
-        sente_id = room_rec["fields"]["sente_id"]
-        gote_id = room_rec["fields"]["gote_id"]
-
-        room_dic = {
-            "pk": room_rec["pk"],
-            "name": room_rec["fields"]["name"],
-            "sente_id": sente_id,
-            "sente_name": MhUser.get_name_by_id(sente_id),
-            "gote_id": gote_id,
-            "gote_name": MhUser.get_name_by_id(gote_id),
-            "board": room_rec["fields"]["board"],
-            "record": room_rec["fields"]["record"],
-        }
-
-    context = {
-        'room': room_dic,  # room_table_qs,
-    }
-    return render(request, "webapp1/rooms/read.html", context)
-    #                       -----------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/rooms/read.html
-    #                            -----------------------
+        return render(request, "webapp1/rooms/read.html", context)
+        #                       -----------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/rooms/read.html
+        #                            -----------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -371,13 +375,20 @@ from webapp1.views import v_room
 urlpatterns = [
     # ...中略...
 
-    # 部屋読取
-    path('rooms/read/<int:id>/', v_room.render_read_room, name='readRoom'),
-    #     --------------------   -----------------------        ----------
-    #     1                      2                              3
-    # 1. URLの `rooms/read/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
-    # 2. v_room.py ファイルの render_read_room メソッド
+    # +----
+    # | 部屋
+
+    # 読取
+    path('rooms/read/<int:id>/', v_room.RoomView.render_read, name='readRoom'),
+    #     --------------------   ---------------------------        ----------
+    #     1                      2                                  3
+    # 1. 例えば `http://example.com/rooms/read/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
+    #                              --------------------
+    # 2. v_room.py ファイルの RoomView クラスの render_read 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
+
+    # | 部屋
+    # +----
 ]
 ```
 
