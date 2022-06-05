@@ -1,5 +1,6 @@
 {% extends "tic-tac-toe/v2/playing_base.html" %}
-{#          --------------------------------
+{#                       ^ two
+            --------------------------------
             1
 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing_base.html
                                    --------------------------------
