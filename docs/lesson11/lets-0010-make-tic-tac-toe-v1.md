@@ -204,8 +204,8 @@ select {
 var roomName = document.getElementById("board").getAttribute("room_name");
 var myPiece = document.getElementById("board").getAttribute("my_piece");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/play/${roomName}/`;
-//                           ----------------------- -------------------------------
+var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/playing/${roomName}/`;
+//                           ----------------------- -----------------------------------
 //                           1                       2
 // 1. ホスト アドレス
 // 2. URLの一部
@@ -469,7 +469,7 @@ function connect() {
 connect();
 ```
 
-# Step 5. match_request.html ファイルの作成
+# Step 5. match_application.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -486,7 +486,7 @@ connect();
         │       └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │           └── 📂tic-tac-toe
         │               └── 📂v1
-👉      │                   └── 📄match_request.html
+👉      │                   └── 📄match_application.html
         └── 📄requirements.txt
 ```
 
@@ -523,7 +523,7 @@ connect();
 </html>
 ```
 
-# Step 6. play.html ファイルの作成
+# Step 6. playing.html ファイルの作成
 
 以下のファイルを作成してほしい。  
 
@@ -540,8 +540,8 @@ connect();
         │       └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │           └── 📂tic-tac-toe
         │               └── 📂v1
-        │                   ├── 📄match_request.html
-👉      │                   └── 📄play.html
+        │                   ├── 📄match_application.html
+👉      │                   └── 📄playing.html
         └── 📄requirements.txt
 ```
 
@@ -598,8 +598,8 @@ connect();
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂tic-tac-toe
         │   │           └── 📂v1
-        │   │               ├── 📄match_request.html
-        │   │               └── 📄play.html
+        │   │               ├── 📄match_application.html
+        │   │               └── 📄playing.html
         │   └── 📂views
 👉      │       └── 📄v_tic_tac_toe_v1.py
         └── 📄requirements.txt
@@ -610,37 +610,50 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def render_match_request(request):
-    """対局要求"""
-    if request.method == "POST":
-        room_name = request.POST.get("room_name")
-        myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v1/play/{room_name}/?&mypiece={myPiece}')
-        #                 ----------------------------------------------------
-        #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v1/play/Elephant/?&mypiece=X
-        #                           -----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v1/match_request.html", {})
-    #                       -----------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
-    #                            -----------------------------------------
+class MatchApplication():
+    """対局申込"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+        if request.method == "POST":
+            # 送信後
+
+            room_name = request.POST.get("room_name")
+            myPiece = request.POST.get("my_piece")
+            return redirect(f'/tic-tac-toe/v1/playing/{room_name}/?&mypiece={myPiece}')
+            #                 -------------------------------------------------------
+            #                 1
+            # 1. http://example.com:8000/tic-tac-toe/v1/playing/Elephant/?&mypiece=X
+            #                           --------------------------------------------
+
+        # 訪問後
+        return render(request, "webapp1/tic-tac-toe/v1/match_application.html", {})
+        #                       ---------------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_application.html
+        #                            ---------------------------------------------
 
 
-def render_play(request, room_name):
+class Playing():
     """対局画面"""
-    myPiece = request.GET.get("mypiece")
-    if myPiece not in ['X', 'O']:
-        raise Http404(f"My piece '{myPiece}' does not exists")
-    context = {
-        "my_piece": myPiece,
-        "room_name": room_name
-    }
-    return render(request, "webapp1/tic-tac-toe/v1/play.html", context)
-    #                       --------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/play.html
-    #                            --------------------------------
+
+    @staticmethod
+    def render(request, room_name):
+        """描画"""
+
+        myPiece = request.GET.get("mypiece")
+        if myPiece not in ['X', 'O']:
+            raise Http404(f"My piece '{myPiece}' does not exists")
+        context = {
+            "my_piece": myPiece,
+            "room_name": room_name
+        }
+        return render(request, "webapp1/tic-tac-toe/v1/playing.html", context)
+        #                       -----------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/playing.html
+        #                            -----------------------------------
 ```
 
 # Step 8. ルート編集 - urls.py ファイル
@@ -660,8 +673,8 @@ def render_play(request, room_name):
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂tic-tac-toe
         │   │           └── 📂v1
-        │   │               ├── 📄match_request.html
-        │   │               └── 📄play.html
+        │   │               ├── 📄match_application.html
+        │   │               └── 📄playing.html
         │   ├── 📂views
         │   │   └── 📄v_tic_tac_toe_v1.py
 👉      │   └── 📄urls.py
@@ -681,19 +694,28 @@ from webapp1.views import v_tic_tac_toe_v1
 urlpatterns = [
     # ...略...
 
-    # 対局要求
-    path('tic-tac-toe/v1/match-equest/', v_tic_tac_toe_v1.render_match_request),
-    #     ----------------------------   -------------------------------------
-    #     1                 2
-    # 1. URLの `tic-tac-toe/v1/match-equest/` というパスにマッチする
-    # 2. v_tic_tac_toe_v1.py ファイルの render_match_request メソッド
+    # 対局申込
+    path('tic-tac-toe/v1/match-application/',
+         # --------------------------------
+         # 1
+         v_tic_tac_toe_v1.MatchApplication.render),
+    #    ----------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-application/` のような URL のパスの部分
+    #                              ----------------------------------
+    # 2. v_tic_tac_toe_v1.py ファイルの MatchApplication クラスの render 静的メソッド
 
-    # 〇×ゲームの練習１
-    path('tic-tac-toe/v1/play/<str:room_name>/', v_tic_tac_toe_v1.render_play),
-    #     ------------------------------------   ----------------------------
-    #     1                                      2
-    # 1. URLの `tic-tac-toe/v1/play/<部屋名>/` というパスにマッチする。 <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v1.py ファイルの render_play メソッド
+    # 対局中
+    path('tic-tac-toe/v1/playing/<str:room_name>/',
+         # --------------------------------------
+         # 1
+         v_tic_tac_toe_v1.Playing.render),
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
+    #    <部屋名> に入った文字列は room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v1.py ファイルの Playing クラスの render 静的メソッド
 ]
 ```
 
@@ -714,8 +736,8 @@ urlpatterns = [
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂tic-tac-toe
         │   │           └── 📂v1
-        │   │               ├── 📄match_request.html
-        │   │               └── 📄play.html
+        │   │               ├── 📄match_application.html
+        │   │               └── 📄playing.html
         │   ├── 📂websocks
         │   │   └── 📂tic_tac_toe
         │   │       └── 📂v1
@@ -811,8 +833,8 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂tic-tac-toe
         │   │           └── 📂v1
-        │   │               ├── 📄match_request.html
-        │   │               └── 📄play.html
+        │   │               ├── 📄match_application.html
+        │   │               └── 📄playing.html
         │   ├── 📂websocks
         │   │   └── 📂tic_tac_toe
         │   │       └── 📂v1
@@ -840,13 +862,13 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習１
-    url(r'^tic-tac-toe/v1/play/(?P<room_name>\w+)/$',
-        # -----------------------------------------
+    url(r'^tic-tac-toe/v1/playing/(?P<room_name>\w+)/$',
+        # --------------------------------------------
         # 1
         TicTacToeV1Consumer.as_asgi()),
     #   -----------------------------
     #   2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```
@@ -868,8 +890,8 @@ websocket_urlpatterns = [
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
         │   │       └── 📂tic-tac-toe
         │   │           └── 📂v1
-        │   │               ├── 📄match_request.html
-        │   │               └── 📄play.html
+        │   │               ├── 📄match_application.html
+        │   │               └── 📄playing.html
         │   ├── 📂websocks
         │   │   └── 📂tic_tac_toe
         │   │       └── 📂v1
@@ -926,7 +948,7 @@ docker-compose up
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe/v1/match-request/](http://localhost:8000/tic-tac-toe/v1/match-request/)  
+📖 [http://localhost:8000/tic-tac-toe/v1/match-application/](http://localhost:8000/tic-tac-toe/v1/match-application/)  
 
 # 次の記事
 
