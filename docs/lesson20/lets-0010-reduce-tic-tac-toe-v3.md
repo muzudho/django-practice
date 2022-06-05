@@ -97,7 +97,8 @@ docker-compose up
 
 ```html
 {% extends "tic-tac-toe/v2/playing_base.html" %}
-{#          --------------------------------
+{#                       ^ two
+            --------------------------------
             1
 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing_base.html
                                    --------------------------------
@@ -117,7 +118,7 @@ docker-compose up
 
 # Step 3. ビュー作成 - v_tic_tac_toe_v3.py ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -128,7 +129,7 @@ docker-compose up
             │           └── 📂v3
             │               └── playing.html.txt
             └── 📂views
-                └── v_tic_tac_toe_v3.py
+👉              └── v_tic_tac_toe_v3.py
 ```
 
 ```py
