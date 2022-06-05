@@ -117,15 +117,15 @@ urlpatterns = [
 
 
     # +----
-    # | ログイン
+    # | ログイン/ログアウト
 
     # ログイン
-    path('login-user', v_login_user.render_login_user, name='loginUser'),
-    #     ----------   ------------------------------        ---------
-    #     1            2                                     3
+    path('login-user', v_login_user.LoggingIn.render, name='loginUser'),
+    #     ----------   -----------------------------        ---------
+    #     1            2                                    3
     # 1. 例えば `http://example.com/login-user` のような URL のパスの部分
     #                              -----------
-    # 2. v_login_user.py ファイルの render_login_user メソッド
+    # 2. v_login_user.py ファイルの LoggingIn クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
@@ -528,15 +528,15 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.render_login_user,
-         # --------------------   ------------------------------------
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.LoggingIn.render,
+         # --------------------   -----------------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
     #          -----------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/login/` のような URL のパスの部分
     #                              ----------------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_login_user メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingIn クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト

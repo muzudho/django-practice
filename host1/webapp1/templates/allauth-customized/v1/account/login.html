@@ -118,8 +118,7 @@
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
                     // vu_pathOfSignin: "{% url 'account_login' %}", // django-allauth のデフォルト
                     // vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
-                    // vu_pathOfSignin: "/accounts/login/", // django-allauth のログイン用パス
-                    vu_pathOfSignin: "/accounts/v1/login/", // urls.py で再設定したログイン用パス
+                    vu_pathOfSignin: "/accounts/v1/login/", // urls.py で設定した django-allauth のログイン用パス
 
                     // vu_pathOfSignup: "{{ signup_url }}", // django-allauth のデフォルト
                     vu_pathOfSignup: "{% url 'accounts_v1_signup' %}",
