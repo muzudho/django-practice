@@ -296,6 +296,8 @@ from webapp1.models_helper.mh_user import MhUser
 class RoomView():
     """部屋"""
 
+    # ...中略...
+
     @staticmethod
     def render_read(request, id=id):
         """読取ページ"""

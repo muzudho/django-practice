@@ -156,6 +156,8 @@ from webapp1.models.m_room import Room
 class RoomView():
     """部屋"""
 
+    # ...中略...
+
     @staticmethod
     def render_delete(request, id=id):
         """削除ページ"""

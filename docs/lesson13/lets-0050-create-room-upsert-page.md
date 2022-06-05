@@ -228,32 +228,39 @@ from webapp1.forms.f_room import RoomForm
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-def render_upsert_room(request, id=None):
-    """部屋の作成または更新"""
 
-    if id:  # idがあるとき（更新の時）
-        # idで検索して、結果を戻すか、404エラー
-        room = get_object_or_404(Room, pk=id)
-    else:  # idが無いとき（作成の時）
-        room = Room()
+class RoomView():
+    """部屋"""
 
-    # POSTの時（作成であれ更新であれ送信ボタンが押されたとき）
-    if request.method == 'POST':
-        # フォームを生成
-        form = RoomForm(request.POST, instance=room)
-        if form.is_valid():  # バリデーションがOKなら保存
-            room = form.save(commit=False)
-            room.save()
-            return redirect('listRoom')
-    else:  # GETの時（フォームを生成）
-        form = RoomForm(instance=room)
+    # ...中略...
 
-    # 作成・更新画面を表示
-    return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
-    #                       -------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/rooms/upsert.html
-    #                            -------------------------
+    @staticmethod
+    def render_upsert(request, id=None):
+        """作成または更新のページ"""
+
+        if id:  # idがあるとき（更新の時）
+            # idで検索して、結果を戻すか、404エラー
+            room = get_object_or_404(Room, pk=id)
+        else:  # idが無いとき（作成の時）
+            room = Room()
+
+        # POSTの時（作成であれ更新であれ送信ボタンが押されたとき）
+        if request.method == 'POST':
+            # フォームを生成
+            form = RoomForm(request.POST, instance=room)
+            if form.is_valid():  # バリデーションがOKなら保存
+                room = form.save(commit=False)
+                room.save()
+                return redirect('listRoom')
+        else:  # GETの時（フォームを生成）
+            form = RoomForm(instance=room)
+
+        # 作成・更新画面を表示
+        return render(request, 'webapp1/rooms/upsert.html', dict(form=form, id=id))
+        #                       -------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/rooms/upsert.html
+        #                            -------------------------
 ```
 
 # Step 4. ルート編集 - urls.py ファイル
@@ -287,24 +294,32 @@ from webapp1.views import v_room
 urlpatterns = [
     # ...中略...
 
-    # 部屋作成
-    path('rooms/create/', v_room.render_upsert_room, name='createRoom'),
-    #     -------------   -------------------------        ----------
-    #     1               2                                3
-    # 1. URLの `rooms/create/` というパスにマッチする
-    # 2. v_room.py ファイルの render_upsert_room メソッド
+    # +----
+    # | 部屋
+
+    # 作成
+    path('rooms/create/', v_room.RoomView.render_upsert, name='createRoom'),
+    #     -------------   -----------------------------        ----------
+    #     1               2                                    3
+    # 1. 例えば `http://example.com/rooms/create/` のような URL のパスの部分
+    #                              --------------
+    # 2. v_room.py ファイルの RoomView クラスの render_upsert 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
 
-    # 部屋更新
+    # 更新
     path('rooms/update/<int:id>/',
          # ---------------------
          # 1
-         v_room.render_upsert_room, name='updateRoom'),
-    #    -------------------------        ----------
-    #    2                                3
-    # 1. URLの `rooms/update/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
-    # 2. v_room.py ファイルの render_upsert_room メソッド
+         v_room.RoomView.render_upsert, name='updateRoom'),
+    #    -----------------------------        ----------
+    #    2                                    3
+    # 1. 例えば `http://example.com/rooms/update/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
+    #                              ----------------------
+    # 2. v_room.py ファイルの RoomView クラスの render_upsert 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
+
+    # | 部屋
+    # +----
 ]
 ```
 
