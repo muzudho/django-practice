@@ -20,11 +20,11 @@ def render_home(request):
         # 1. http://example.com/lobby/v1/
         #                      ----------
 
-        'dj_ticTacToePath': '/tic-tac-toe/v2/match-request/',
-        #                    ------------------------------
+        'dj_ticTacToePath': '/tic-tac-toe/v2/match-application/',
+        #                    ----------------------------------
         #                    1
-        # 1. http://example.com/tic-tac-toe/v2/match-request/
-        #                      ------------------------------
+        # 1. http://example.com/tic-tac-toe/v2/match-application/
+        #                      ----------------------------------
 
         'dj_loginPath': '/accounts/v1/login/',
         #                -------------------

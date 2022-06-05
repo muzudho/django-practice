@@ -346,25 +346,28 @@ urlpatterns = [
     # +----
     # | 〇×ゲーム１
 
-    # 対局要求
-    path('tic-tac-toe/v1/match-request/',
-         # ----------------------------
+    # 対局申込
+    path('tic-tac-toe/v1/match-application/',
+         # --------------------------------
          # 1
-         v_tic_tac_toe_v1.render_match_request),
-    #    -------------------------------------
+         v_tic_tac_toe_v1.MatchApplication.render),
+    #    ----------------------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-request/` のような URL のパスの部分
-    #                              -----------------------------
-    # 2. v_tic_tac_toe_v1.py ファイルの render_match_request メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-application/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. v_tic_tac_toe_v1.py ファイルの MatchApplication クラスの render 静的メソッド
 
     # 対局中
-    path('tic-tac-toe/v1/play/<str:room_name>/', v_tic_tac_toe_v1.render_play),
-    #     ------------------------------------   ----------------------------
-    #     1                                      2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/play/<部屋名>/` のような URL のパスの部分。
-    #                              -----------------------------
+    path('tic-tac-toe/v1/playing/<str:room_name>/',
+         # --------------------------------------
+         # 1
+         v_tic_tac_toe_v1.Playing.render),
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
     #    <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v1.py ファイルの render_play メソッド
+    # 2. v_tic_tac_toe_v1.py ファイルの Playing クラスの render 静的メソッド
 
     # | 〇×ゲーム１
     # +----
@@ -375,28 +378,32 @@ urlpatterns = [
     # +----
     # | 〇×ゲーム２
 
-    # 対局要求
-    path('tic-tac-toe/v2/match-request/',
+    # 対局申込
+    path('tic-tac-toe/v2/match-application/',
          #             ^
-         # -----------------------------
+         # --------------------------------
          # 1
-         v_tic_tac_toe_v2.render_match_request),
+         v_tic_tac_toe_v2.MatchApplication.render),
     #                   ^
-    #    -------------------------------------
+    #    ----------------------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v2/match-request/` のような URL のパスの部分
-    #                              ------------------------------
-    # 2. v_tic_tac_toe_v2.py ファイルの render_match_request メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/match-application/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. v_tic_tac_toe_v2.py ファイルの MatchApplication クラスの render 静的メソッド
 
     # 対局中
-    path('tic-tac-toe/v2/play/<str:kw_room_name>/', v_tic_tac_toe_v2.render_play),
-    #                  ^                                           ^
-    #     ---------------------------------------   ----------------------------
-    #     1                                         2
-    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/<部屋名>/` のような URL のパスの部分。
-    #                              -----------------------------
+    path('tic-tac-toe/v2/playing/<str:kw_room_name>/',
+         #             ^
+         # -----------------------------------------
+         # 1
+         v_tic_tac_toe_v2.Playing.render),
+    #                   ^
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v2.py ファイルの render_play メソッド
+    # 2. v_tic_tac_toe_v2.py ファイルの Playing クラスの render 静的メソッド
 
     # | 〇×ゲーム２
     # +----

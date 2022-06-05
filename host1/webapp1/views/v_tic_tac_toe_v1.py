@@ -2,34 +2,47 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def render_match_request(request):
-    """対局要求"""
-    if request.method == "POST":
-        room_name = request.POST.get("room_name")
-        myPiece = request.POST.get("my_piece")
-        return redirect(f'/tic-tac-toe/v1/play/{room_name}/?&mypiece={myPiece}')
-        #                 ----------------------------------------------------
-        #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v1/play/Elephant/?&mypiece=X
-        #                           -----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v1/match_request.html", {})
-    #                       -----------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_request.html
-    #                            -----------------------------------------
+class MatchApplication():
+    """対局申込"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+        if request.method == "POST":
+            # 送信後
+
+            room_name = request.POST.get("room_name")
+            myPiece = request.POST.get("my_piece")
+            return redirect(f'/tic-tac-toe/v1/playing/{room_name}/?&mypiece={myPiece}')
+            #                 -------------------------------------------------------
+            #                 1
+            # 1. http://example.com:8000/tic-tac-toe/v1/playing/Elephant/?&mypiece=X
+            #                           --------------------------------------------
+
+        # 訪問後
+        return render(request, "webapp1/tic-tac-toe/v1/match_application.html", {})
+        #                       ---------------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_application.html
+        #                            ---------------------------------------------
 
 
-def render_play(request, room_name):
+class Playing():
     """対局画面"""
-    myPiece = request.GET.get("mypiece")
-    if myPiece not in ['X', 'O']:
-        raise Http404(f"My piece '{myPiece}' does not exists")
-    context = {
-        "my_piece": myPiece,
-        "room_name": room_name
-    }
-    return render(request, "webapp1/tic-tac-toe/v1/play.html", context)
-    #                       --------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/play.html
-    #                            --------------------------------
+
+    @staticmethod
+    def render(request, room_name):
+        """描画"""
+
+        myPiece = request.GET.get("mypiece")
+        if myPiece not in ['X', 'O']:
+            raise Http404(f"My piece '{myPiece}' does not exists")
+        context = {
+            "my_piece": myPiece,
+            "room_name": room_name
+        }
+        return render(request, "webapp1/tic-tac-toe/v1/playing.html", context)
+        #                       -----------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/playing.html
+        #                            -----------------------------------

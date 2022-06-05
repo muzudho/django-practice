@@ -46,7 +46,7 @@
                     // "vu_" は 「vue1.dataのメンバー」 の目印
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
-                    vu_pathOfMatchRequest: "{{ dj_pathOfMatchRequest }}",
+                    vu_pathOfMatchApplication: "{{ dj_pathOfMatchApplication }}",
 
                     // vu_pathOfSignin: "{{ dj_pathOfSignin }}",
                     vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
@@ -55,8 +55,8 @@
                 },
                 methods: {
                     createGamePath() {
-                        let path = `${location.protocol}//${location.host}${this.vu_pathOfMatchRequest}`;
-                        //          --------------------  ---------------]-----------------------------
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfMatchApplication}`;
+                        //          --------------------  ---------------]--------------------------------
                         //          1                     2               3
                         // 1. protocol
                         // 2. host

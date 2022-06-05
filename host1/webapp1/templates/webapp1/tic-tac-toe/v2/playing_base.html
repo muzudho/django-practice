@@ -127,9 +127,9 @@
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
                             // 接続文字列
-                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
+                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/playing/${roomName}/`;
                             //                                                                  ^
-                            //                        ----]----------------------]---------------------------------
+                            //                        ----]----------------------]------------------------------------
                             //                        1    2                      3
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス

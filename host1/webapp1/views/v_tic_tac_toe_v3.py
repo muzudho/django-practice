@@ -25,12 +25,12 @@ class MatchApplication():
 
         # 訪問後
         MatchApplication.on_visited(request)
-        return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
         #                                            ^ two
-        #                       -----------------------------------------
+        #                       ---------------------------------------------
         #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
-        #                            -----------------------------------------
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+        #                            ---------------------------------------------
 
     @staticmethod
     def on_sent(request):

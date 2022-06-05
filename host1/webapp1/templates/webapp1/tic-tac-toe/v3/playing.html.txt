@@ -1,8 +1,8 @@
-{% extends "tic-tac-toe/v2/play_base.html" %}
-{#          -----------------------------
+{% extends "tic-tac-toe/v2/playing_base.html" %}
+{#          --------------------------------
             1
-1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play_base.html
-                                   -----------------------------
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing_base.html
+                                   --------------------------------
 
     自動フォーマットしないでください
     Do not auto fomatting

@@ -26,7 +26,7 @@ URL
 * user
   * http://localhost:8000/practice/session-active-user-list/
   * http://localhost:8000/practice/user-list/
-* http://localhost:8000/tic-tac-toe/v1/match-request/
+* http://localhost:8000/tic-tac-toe/v1/match-application/
 * (Old) http://localhost:8000/tic-tac-toe2/
 * http://localhost:8000/tic-tac-toe/v2/
 * http://localhost:8000/lobby/v1/
