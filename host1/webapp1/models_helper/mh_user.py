@@ -25,7 +25,7 @@ class MhUser():
         print(f"user_table_qs={user_table_qs}")
         user_table_json = serializers.serialize('json', user_table_qs)
         user_table_doc = json.loads(user_table_json)  # オブジェクト
-        print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
+        # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
         # 使いやすい形に変換します
         user_dic = dict()
@@ -101,7 +101,7 @@ class MhUser():
         user_table_json = serializers.serialize('json', user_table_qs)
         # print(f"user_table_json={user_table_json}")
         user_table_doc = json.loads(user_table_json)  # オブジェクト
-        print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
+        # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
         if len(user_table_doc) < 1:
             # 該当なしは空文字列と決めておきます

@@ -101,14 +101,6 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] user username={user.username}")
 
-            # sente_id フィールドに 自分のユーザーIdを上書き
-            if room.sente_id is None or room.sente_id == 0:
-                room.sente_id = user_pk
-            elif room.gote_id is None or room.gote_id == 0:
-                room.gote_id = user_pk
-
-            # TODO 空いてなかったらどうする？
-
             # 自分の Profile レコード 取得
             profile = Profile.objects.get(user__pk=user_pk)
             #                             --------
@@ -119,8 +111,29 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
-            # ユーザーの状態を対局中（3）にします
-            profile.match_state = 3
+            # sente_id フィールドに 自分のユーザーIdを上書き
+            if room.sente_id is None or room.sente_id == 0:
+                # 先に部屋に入ってきた方を先手
+                room.sente_id = user_pk
+                # ユーザーの状態を対局中（3）にします
+                profile.match_state = 3
+
+            elif room.gote_id is None or room.gote_id == 0:
+                # 後に部屋に入ってきた方を後手
+                #
+                # * 先手と後手が同じユーザーでも構わないものとします
+                #
+                room.gote_id = user_pk
+                # 盤と棋譜を空っぽにする
+                room.board = ""
+                room.record = ""
+                # ユーザーの状態を対局中（3）にします
+                profile.match_state = 3
+
+            else:
+                # 部屋に入ってきた３人目以降は、対局者ではなく、視聴者として扱う
+                # ユーザーの状態を観戦中（4）にします
+                profile.match_state = 4
 
             # print(
             #     f"[MatchApplication on_sent] room .name=[{room.name}] .sente_id=[{room.sente_id}] .gote_id=[{room.gote_id}] .board=[{room.board}] .record=[{room.record}]")
