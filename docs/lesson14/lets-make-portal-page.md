@@ -251,7 +251,7 @@ class Portal():
 class LoggingIn():
     """ログイン中"""
 
-    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、 settings.py の LOGIN_URL で指定した URL に飛ばします
     @staticmethod
     def render(request):
         """描画"""
@@ -278,10 +278,16 @@ class LoggingIn():
         #                            -----------------------------------------
 
 
-def render_logout_user(request):
-    """ログアウト"""
-    logout(request)
-    return redirect('ticTacToeV2_portal')
+class LoggingOut():
+    """ログアウト中"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+
+        logout(request)  # Django の認証機能のログアウトを使う
+
+        return redirect('ticTacToeV2_portal')  # ホームに戻る
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -350,14 +356,15 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.render_logout_user,
-         # ---------------------   -------------------------------------
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.LoggingOut.render,
+         # ---------------------   ------------------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
     #          --------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/logout/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_logout_user メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/logout/` のような URL のパスの部分
+    #                              -----------------------
+    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingOut クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 ]
 ```
