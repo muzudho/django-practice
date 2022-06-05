@@ -193,12 +193,6 @@ class Profile(models.Model):
 
     # この User オブジェクトの下に Profile オブジェクトをぶら下げると思ってください
     #
-    # Example
-    # -------
-    #
-    # user = User.objects.get(pk=user_id)
-    # print(user.profile.match_state)
-    #
     # OneToOneField - 1対1対応のリレーション。 デフォルトで Unique 属性
     #
     # * `on_delete` - 必須。 models.CASCADE なら、親テーブルのレコードが消されると、子テーブルのレコードも削除されます
@@ -373,7 +367,7 @@ class MhUser():
             profile_table_qs = Profile.objects.filter(  # QuerySet
                 #                             -------
                 #                             1
-                user__username=username)
+                user__username=username) # TODO ★ ここは pk じゃなくて大丈夫か？
             # 1. filter ならインスタンスが返ってくる。 get なら文字列表現が返ってくる
             # QuerySet は中身が見えないので JSON にダンプするのが定番
             # print(f"Profile={profile_table_qs}")
