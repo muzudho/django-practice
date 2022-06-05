@@ -196,7 +196,7 @@ class MhUser():
         print(f"user_table_qs={user_table_qs}")
         user_table_json = serializers.serialize('json', user_table_qs)
         user_table_doc = json.loads(user_table_json)  # オブジェクト
-        print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
+        # print(f"user_table_doc={json.dumps(user_table_doc, indent=4)}")
 
         # 使いやすい形に変換します
         user_dic = dict()
