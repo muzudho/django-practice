@@ -238,8 +238,7 @@ class MhUser():
 
         # ２段階変換: 問合せ結果（QuerySet） ----> JSON文字列 ----> オブジェクト
         user_table_qs = User.objects.filter(id=id)  # QuerySet
-        user_table_json = serializers.serialize(
-            'json', user_table_qs)  # JSON 文字列
+        user_table_json = serializers.serialize('json', user_table_qs)
         # print(f"user_table_json={user_table_json}")
 
         user_table_doc = json.loads(user_table_json)  # オブジェクト
