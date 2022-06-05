@@ -248,25 +248,34 @@ class Portal():
         return HttpResponse(template.render(context, request))
 
 
-@login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def render_login_user(request):
-    """〇×ゲームの練習２"""
-    if request.method == "POST":
-        # `po_` は POST送信するパラメーター名の目印
-        room_name = request.POST.get("po_room_name")
-        my_piece = request.POST.get("po_my_piece")
-        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
-        #                               ^
-        #               ------------------------------------------------------
-        #               1
-        # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
-        #                       ----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
-    #                                            ^
-    #                       -----------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html を取得
-    #                            -----------------------------------------
+class LoggingIn():
+    """ログイン中"""
+
+    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+    @staticmethod
+    def render(request):
+        """描画"""
+
+        if request.method == "POST":
+            # 送信後
+
+            # `po_` は POST送信するパラメーター名の目印
+            room_name = request.POST.get("po_room_name")
+            my_piece = request.POST.get("po_my_piece")
+            return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
+            #                               ^
+            #               ------------------------------------------------------
+            #               1
+            # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
+            #                       ----------------------------------------
+
+        # 訪問後
+        return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+        #                                            ^
+        #                       -----------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html を取得
+        #                            -----------------------------------------
 
 
 def render_logout_user(request):
@@ -330,14 +339,14 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.render_login_user,
-         # --------------------   ------------------------------------
+    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.LoggingIn.render,
+         # --------------------   -----------------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
     #          -----------------------
     #          3
     # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_login_user メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingIn クラス render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
