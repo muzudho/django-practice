@@ -53,7 +53,7 @@ Webサーバーとクライアント間でテキストを双方向の非同期�
         │   ├── 📂websocks
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
-        │   │           └── 📄consumer.py
+        │   │           └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py

@@ -1239,7 +1239,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
 
     def __init__(self):
         super().__init__()
-        self.protocol = Protocol()
+        self._protocol = Protocol()
 
     async def connect(self):
         """接続"""
@@ -1270,7 +1270,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
         request = json.loads(text_data)
-        response = self.protocol.execute(request)
+        response = self._protocol.execute(request)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)

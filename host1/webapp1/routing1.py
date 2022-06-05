@@ -30,10 +30,10 @@ from webapp1.websocks.tic_tac_toe.v1.consumer import TicTacToeV1Consumer
 # 4. クラス名
 
 # 〇×ゲームの練習２
-from webapp1.websocks.tic_tac_toe.v2.consumer import TicTacToeV2Consumer
-#                                  ^                           ^
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
+from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
+#                                  ^ two                            ^ two
+#    ------- ----------------------- -------------        -----------------------
+#    1       2                       3                    4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -91,7 +91,7 @@ websocket_urlpatterns = [
         #               ^
         # -----------------------------------------------
         # 1
-        TicTacToeV2Consumer.as_asgi()),
+        TicTacToeV2ConsumerBase.as_asgi()),
     #             ^
     #   -----------------------------
     #   2

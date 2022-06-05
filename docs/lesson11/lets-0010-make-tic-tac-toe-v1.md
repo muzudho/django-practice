@@ -56,7 +56,7 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
         │   ├── 📂websocks
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
-        │   │           └── 📄consumer.py
+        │   │           └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py

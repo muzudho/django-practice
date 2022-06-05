@@ -13,27 +13,18 @@ from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
 # 4. クラス名
 
 
-class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
+class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
     #           ^
 
     def __init__(self):
         super().__init__()
-        self.protocol = TicTacToeV2Protocol()
+        self._protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""
         print("Connect")
-        # print(f"Connect self.scope={self.scope}")
-        # print(
-        #     f'Connect self.scope["cookies"]["csrftoken"]={self.scope["cookies"]["csrftoken"]}')
-        # print(f'Connect self.scope["session"]={self.scope["session"]}')
-        # print(f'Connect self.scope["user"]={self.scope["user"]}')
-
         # ログインしていれば、ユーザーのPrimaryKeyは以下で取得可能。ログインしていなければ None
-        print(
-            f'Connect self.scope["user"].pk={self.scope["user"].pk}')
-        # print(
-        #    f'Connect self.scope["user"].username={self.scope["user"].username}')
+        # print(f'Connect self.scope["user"].pk={self.scope["user"].pk}')
 
         self.room_name = self.scope['url_route']['kwargs']['kw_room_name']
         self.room_group_name = f'room_{self.room_name}'
@@ -61,7 +52,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
         request = json.loads(text_data)
-        response = self.protocol.execute(request)
+        response = self._protocol.execute(request)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)

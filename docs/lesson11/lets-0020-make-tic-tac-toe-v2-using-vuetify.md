@@ -1569,7 +1569,7 @@ class TicTacToeV2Protocol():
         pass
 ```
 
-# Step 15. Webソケットの通信プロトコル作成 - consumer.py ファイル
+# Step 15. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -1597,7 +1597,7 @@ class TicTacToeV2Protocol():
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      ├── consumer1.py
+👉                      ├── consumer_base.py
                         └── protocol.py
 ```
 
@@ -1617,12 +1617,12 @@ from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
 # 4. クラス名
 
 
-class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
+class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
     #           ^
 
     def __init__(self):
         super().__init__()
-        self.protocol = TicTacToeV2Protocol()
+        self._protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""
@@ -1656,7 +1656,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
         request = json.loads(text_data)
-        response = self.protocol.execute(request)
+        response = self._protocol.execute(request)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
@@ -1698,7 +1698,7 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── consumer1.py
+                        ├── consumer_base.py
                         └── protocol.py
 ```
 
@@ -1788,7 +1788,7 @@ class Playing():
             ├── 📂websocks
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── consumer1.py
+            │           ├── consumer_base.py
             │           └── protocol.py
 👉          └── urls.py
 ```
@@ -1867,7 +1867,7 @@ urlpatterns = [
             ├── 📂websocks
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── consumer1.py
+            │           ├── consumer_base.py
             │           └── protocol.py
 👉          ├── routing1.py
             └── urls.py
@@ -1877,10 +1877,10 @@ urlpatterns = [
 
 ```py
 # 〇×ゲームの練習２
-from webapp1.websocks.tic_tac_toe.v2.consumer import TicTacToeV2Consumer
-#                                  ^                           ^
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
+from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
+#                                  ^ two                            ^ two
+#    ------- ----------------------- -------------        -----------------------
+#    1       2                       3                    4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -1897,7 +1897,7 @@ websocket_urlpatterns = [
         #               ^
         # -----------------------------------------------
         # 1
-        TicTacToeV2Consumer.as_asgi()),
+        TicTacToeV2ConsumerBase.as_asgi()),
     #             ^
     #   -----------------------------
     #   2

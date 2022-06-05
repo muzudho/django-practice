@@ -57,8 +57,7 @@ Django に最初から付いている User モデルを拡張したい
         │   │   └── 📂tic_tac_toe
         │   │       ├── 📂v1
         │   │       └── 📂v2
-        │   │           ├── 📄consumer.py
-        │   │           └── 📄protocol.py
+        │   │           └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
