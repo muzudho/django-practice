@@ -4,21 +4,12 @@
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. クラス名
-
 
 class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
-    #           ^
+    """Webソケット用コンシューマー"""
 
     def __init__(self):
         super().__init__()
-        self._protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""
@@ -52,10 +43,20 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
         request = json.loads(text_data)
-        response = self._protocol.execute(request)
+
+        response = self.on_receive(request)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
+
+    def on_receive(self, request):
+        """クライアントからメッセージを受信したとき
+
+        Returns
+        -------
+        response
+        """
+        return {}  # Empty
 
     async def send_message(self, message):
         """メッセージ送信"""

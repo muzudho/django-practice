@@ -1608,21 +1608,12 @@ class TicTacToeV2Protocol():
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
-from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. クラス名
-
 
 class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
-    #           ^
+    """Webソケット用コンシューマー"""
 
     def __init__(self):
         super().__init__()
-        self._protocol = TicTacToeV2Protocol()
 
     async def connect(self):
         """接続"""
@@ -1656,10 +1647,20 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
         request = json.loads(text_data)
-        response = self._protocol.execute(request)
+
+        response = self.on_receive(request)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
+
+    def on_receive(self, request):
+        """クライアントからメッセージを受信したとき
+
+        Returns
+        -------
+        response
+        """
+        return {}  # Empty
 
     async def send_message(self, message):
         """メッセージ送信"""
@@ -1668,7 +1669,75 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 16. ビュー編集 - v_tic_tac_toe_v2.py ファイル
+# Step 16. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
+
+以下のファイルを作成してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂static
+            │   ├── 📂webapp1
+            │   │   └── 📂tic-tac-toe
+            │   │       └── 📂v2
+            │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
+            │   │           ├── 📄game_rule.js
+            │   │           ├── 📄judge_ctrl.js
+            │   │           ├── 📄protocol_main.js
+            │   │           ├── 📄protocol_messages.js
+            │   │           └── 📄user_ctrl.js
+            │   └── 🚀favicon.ico
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v2
+            │               ├── match_application.html
+            │               └── playing.html
+            └── 📂websocks
+                └── 📂tic-tac-toe
+                    └── 📂v2
+                        ├── consumer_base.py
+👉                      ├── consumer_custom.py
+                        └── protocol.py
+```
+
+```py
+from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
+#    ------- ----------------------- -------------        -----------------------
+#    1       2                       3                    4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
+#    ------- ----------------------- --------        -------------------
+#    1       2                       3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+
+class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
+    """Webソケット用コンシューマー"""
+
+    def __init__(self):
+        super().__init__()
+        self._protocol = TicTacToeV2Protocol()
+
+    def on_receive(self, request):
+        """クライアントからメッセージを受信したとき
+
+        Returns
+        -------
+        response
+        """
+        return self._protocol.execute(request)
+```
+
+# Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル
 
 以下のファイルを新規作成してほしい。  
 
@@ -1699,6 +1768,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
                 └── 📂tic-tac-toe
                     └── 📂v2
                         ├── consumer_base.py
+                        ├── consumer_custom.py
                         └── protocol.py
 ```
 
@@ -1758,7 +1828,7 @@ class Playing():
         #                            ---------------------------------------
 ```
 
-# Step 17. ルート編集 - urls.py ファイル
+# Step 18. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -1789,6 +1859,7 @@ class Playing():
             │   └── 📂tic-tac-toe
             │       └── 📂v2
             │           ├── consumer_base.py
+            │           ├── consumer_custom.py
             │           └── protocol.py
 👉          └── urls.py
 ```
@@ -1837,7 +1908,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 18. ルート編集 - routing1.py ファイル
+# Step 19. ルート編集 - routing1.py ファイル
 
 以下のファイルを無ければ作成、あればマージしてほしい。  
 
@@ -1868,6 +1939,7 @@ urlpatterns = [
             │   └── 📂tic-tac-toe
             │       └── 📂v2
             │           ├── consumer_base.py
+            │           ├── consumer_custom.py
             │           └── protocol.py
 👉          ├── routing1.py
             └── urls.py
@@ -1877,10 +1949,10 @@ urlpatterns = [
 
 ```py
 # 〇×ゲームの練習２
-from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
-#                                  ^ two                            ^ two
-#    ------- ----------------------- -------------        -----------------------
-#    1       2                       3                    4
+from webapp1.websocks.tic_tac_toe.v2.consumer_custom import TicTacToeV2ConsumerCustom
+#                                  ^ two                              ^ two
+#    ------- ----------------------- ---------------        -------------------------
+#    1       2                       3                      4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -1897,9 +1969,9 @@ websocket_urlpatterns = [
         #               ^
         # -----------------------------------------------
         # 1
-        TicTacToeV2ConsumerBase.as_asgi()),
+        TicTacToeV2ConsumerCustom.as_asgi()),
     #             ^
-    #   -----------------------------
+    #   -----------------------------------
     #   2
     # 1. 例えば `http://example.com/tic-tac-toe/v2/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
     #    kw_room_name は変数として渡される
@@ -1907,7 +1979,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 19. Web画面へアクセス
+# Step 20. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
