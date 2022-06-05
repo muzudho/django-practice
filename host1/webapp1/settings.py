@@ -224,6 +224,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1  # 動かしているサイトを識別するID
 
+# ログインしていないときに飛ばされる先。指定しないと '/accounts/login/'
+LOGIN_URL = '/accounts/v1/login/'  # 慣れない内は URL で指定
+# LOGIN_URL = 'login' # 慣れてくれば name で指定
+
 # LOGIN_REDIRECT_URL = 'home'  # ログイン後に遷移するURLの指定
 LOGIN_REDIRECT_URL = 'homeV1_home'  # ログイン後に遷移するURLの指定
 

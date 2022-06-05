@@ -44,7 +44,7 @@ class Portal():
 class LoggingIn():
     """ログイン中"""
 
-    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、 settings.py の LOGIN_URL で指定した URL に飛ばします
     @staticmethod
     def render(request):
         """描画"""
@@ -71,10 +71,13 @@ class LoggingIn():
         #                            -----------------------------------------
 
 
-def render_logout_user(request):
-    """ログアウト"""
+class LoggingOut():
+    """ログアウト中"""
 
-    logout(request)
+    @staticmethod
+    def render(request):
+        """描画"""
 
-    # 訪問後
-    return redirect('ticTacToeV2_portal')
+        logout(request)  # Django の認証機能のログアウトを使う
+
+        return redirect('ticTacToeV2_portal')  # ホームに戻る

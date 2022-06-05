@@ -129,12 +129,12 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout', v_login_user.render_logout_user, name='logoutUser'),
-    #     ------   -------------------------------        ----------
-    #     1        2                                      3
+    path('logout', v_login_user.LoggingOut.render, name='logoutUser'),
+    #     ------   ------------------------------        ----------
+    #     1        2                                     3
     # 1. 例えば `http://example.com/logout` のような URL のパスの部分
     #                              -------
-    # 2. v_login_user.py ファイルの render_logout_user メソッド
+    # 2. v_login_user.py ファイルの LoggingOut クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 
     # | ログイン
@@ -540,15 +540,15 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.render_logout_user,
-         # ---------------------   -------------------------------------
+    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.LoggingOut.render,
+         # ---------------------   ------------------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
     #          --------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/logout/` のような URL のパスの部分
     #                              -----------------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_logout_user メソッド
+    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingOut クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
 
     # | ポータル作成
