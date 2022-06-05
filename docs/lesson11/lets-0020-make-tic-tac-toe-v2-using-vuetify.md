@@ -988,7 +988,7 @@ function createSetMessageFromServer() {
 }
 ```
 
-# Step 11. 対局申込画面作成 - match_request.html ファイル
+# Step 11. 対局申込画面作成 - match_application.html ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1011,7 +1011,7 @@ function createSetMessageFromServer() {
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-👉                          └── match_request.html
+👉                          └── match_application.html
 ```
 
 ```html
@@ -1075,7 +1075,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 12. 対局画面作成 - play_base.html ファイル
+# Step 12. 対局画面作成 - playing_base.html ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1098,8 +1098,8 @@ function createSetMessageFromServer() {
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-                            ├── match_request.html
-👉                          └── play_base.html
+                            ├── match_application.html
+👉                          └── playing_base.html
 ```
 
 ```html
@@ -1232,9 +1232,9 @@ function createSetMessageFromServer() {
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
                             // 接続文字列
-                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/play/${roomName}/`;
+                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/playing/${roomName}/`;
                             //                                                                  ^
-                            //                        ----]----------------------]---------------------------------
+                            //                        ----]----------------------]------------------------------------
                             //                        1    2                      3
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
@@ -1412,7 +1412,7 @@ function createSetMessageFromServer() {
 </html>
 ```
 
-# Step 13. 対局画面作成 - play.html.txt ファイル
+# Step 13. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -1435,19 +1435,19 @@ function createSetMessageFromServer() {
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-                            ├── match_request.html
-                            ├── play_base.html
-👉                          └── play.html.txt
+                            ├── match_application.html
+                            ├── playing_base.html
+👉                          └── playing.html.txt
 ```
 
 👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
 
 ```html
-{% extends "tic-tac-toe/v2/play_base.html" %}
-{#          -----------------------------
+{% extends "tic-tac-toe/v2/playing_base.html" %}
+{#          --------------------------------
             1
-1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play_base.html
-                                   -----------------------------
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing_base.html
+                                   --------------------------------
 
     自動フォーマットしないでください
     Do not auto fomatting
@@ -1504,8 +1504,8 @@ function createSetMessageFromServer() {
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_request.html
-            │               └── play.html
+            │               ├── match_application.html
+            │               └── playing.html
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
@@ -1571,8 +1571,8 @@ class Protocol():
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_request.html
-            │               └── play.html
+            │               ├── match_application.html
+            │               └── playing.html
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
@@ -1670,8 +1670,8 @@ class TicTacToeV2Consumer(AsyncJsonWebsocketConsumer):
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_request.html
-            │               └── play.html
+            │               ├── match_application.html
+            │               └── playing.html
             ├── 📂views
 👉          │   └── v_tic_tac_toe_v2.py
             └── 📂websocks
@@ -1686,43 +1686,55 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
-def render_match_request(request):
-    """対局要求"""
-    if request.method == "POST":
-        # `po_` は POST送信するパラメーター名の目印
-        room_name = request.POST.get("po_room_name")
-        my_piece = request.POST.get("po_my_piece")
-        return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
-        #                               ^
-        #                 ----------------------------------------------------
-        #                 1
-        # 1. http://example.com:8000/tic-tac-toe/v2/play/Elephant/?&mypiece=X
-        #                           -----------------------------------------
-    return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
-    #                                            ^
-    #                       -----------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
-    #                            -----------------------------------------
+class MatchApplication():
+    """対局申込"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+        if request.method == "POST":
+            # 送信後
+
+            # `po_` は POST送信するパラメーター名の目印
+            room_name = request.POST.get("po_room_name")
+            my_piece = request.POST.get("po_my_piece")
+            return redirect(f'/tic-tac-toe/v2/playing/{room_name}/?&mypiece={my_piece}')
+            #                               ^
+            #                 --------------------------------------------------------
+            #                 1
+            # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
+            #                           --------------------------------------------
+
+        # 訪問後
+        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
+        #                                            ^
+        #                       ---------------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+        #                            ---------------------------------------------
 
 
-def render_play(request, kw_room_name):
-    """対局画面"""
-    my_piece = request.GET.get("mypiece")
-    if my_piece not in ['X', 'O']:
-        raise Http404(f"My piece '{my_piece}' does not exists")
+class Playing():
 
-    # `dj_` は Djangoでレンダーするパラメーター名の目印
-    context = {
-        "dj_room_name": kw_room_name,
-        "dj_my_piece": my_piece,
-    }
-    return render(request, "webapp1/tic-tac-toe/v2/play.html.txt", context)
-    #                                            ^
-    #                       ------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play.html.txt
-    #                            ------------------------------------
+    @staticmethod
+    def render(request, kw_room_name):
+        """対局画面"""
+
+        my_piece = request.GET.get("mypiece")
+        if my_piece not in ['X', 'O']:
+            raise Http404(f"My piece '{my_piece}' does not exists")
+
+        # `dj_` は Djangoでレンダーするパラメーター名の目印
+        context = {
+            "dj_room_name": kw_room_name,
+            "dj_my_piece": my_piece,
+        }
+        return render(request, "webapp1/tic-tac-toe/v2/playing.html.txt", context)
+        #                                            ^
+        #                       ---------------------------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing.html.txt
+        #                            ---------------------------------------
 ```
 
 # Step 17. ルート編集 - urls.py ファイル
@@ -1748,8 +1760,8 @@ def render_play(request, kw_room_name):
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_request.html
-            │               └── play.html
+            │               ├── match_application.html
+            │               └── playing.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
             ├── 📂websocks
@@ -1775,23 +1787,32 @@ from webapp1.views import v_tic_tac_toe_v2
 urlpatterns = [
     # ...略...
 
-    # 対局要求
-    path('tic-tac-toe/v2/match-request/', v_tic_tac_toe_v2.render_match_request),
-    #                  ^                                 ^
-    #     -----------------------------   -------------------------------------
-    #     1                               2
-    # 1. URLの `tic-tac-toe/v2/match-request/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2.py ファイルの render_match_request メソッド
+    # 対局申込
+    path('tic-tac-toe/v2/match-application/',
+         #             ^
+         # --------------------------------
+         # 1
+         v_tic_tac_toe_v2.MatchApplication.render),
+    #                   ^
+    #    ----------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/match-application/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. v_tic_tac_toe_v2.py ファイルの MatchApplication クラスの render 静的メソッド
 
     # 対局中
-    path('tic-tac-toe/v2/play/<str:kw_room_name>/', v_tic_tac_toe_v2.render_play),
-    #                  ^                                           ^
-    #     ---------------------------------------   ----------------------------
-    #     1                                         2
-    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/<部屋名>/` のような URL のパスの部分。
-    #                              -----------------------------
+    path('tic-tac-toe/v2/playing/<str:kw_room_name>/',
+         #             ^
+         # -----------------------------------------
+         # 1
+         v_tic_tac_toe_v2.Playing.render),
+    #                   ^
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v2.py ファイルの render_play メソッド
+    # 2. v_tic_tac_toe_v2.py ファイルの Playing クラスの render 静的メソッド
 ]
 ```
 
@@ -1818,8 +1839,8 @@ urlpatterns = [
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_request.html
-            │               └── play.html
+            │               ├── match_application.html
+            │               └── playing.html
             ├── 📂views
             │   └── v_tic_tac_toe_v2.py
             ├── 📂websocks
@@ -1851,15 +1872,15 @@ websocket_urlpatterns = [
     # ...中略...
 
     # 〇×ゲームの練習２
-    url(r'^tic-tac-toe/v2/play/(?P<kw_room_name>\w+)/$',
+    url(r'^tic-tac-toe/v2/playing/(?P<kw_room_name>\w+)/$',
         #               ^
-        # --------------------------------------------
+        # -----------------------------------------------
         # 1
         TicTacToeV2Consumer.as_asgi()),
     #             ^
     #   -----------------------------
     #   2
-    # 1. 例えば `http://example.com/tic-tac-toe/v2/play/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
     #    kw_room_name は変数として渡される
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
@@ -1869,7 +1890,7 @@ websocket_urlpatterns = [
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
 
-📖 [http://localhost:8000/tic-tac-toe/v2/match-request/](http://localhost:8000/tic-tac-toe/v2/match-request/)  
+📖 [http://localhost:8000/tic-tac-toe/v2/match-application/](http://localhost:8000/tic-tac-toe/v2/match-application/)  
 
 # 次の記事
 
