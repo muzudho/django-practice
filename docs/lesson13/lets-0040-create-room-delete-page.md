@@ -152,23 +152,29 @@ from webapp1.models.m_room import Room
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-def render_delete_room(request, id=id):
-    """部屋削除"""
-    template = loader.get_template('webapp1/rooms/delete.html')
-    #                               -------------------------
-    #                               1
-    # 1. host1/webapp1/templates/webapp1/rooms/delete.html
-    #                            -------------------------
 
-    room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
-    name = room.name  # 名前だけまだ使う
-    room.delete()
-    context = {
-        'room': {
-            'name': name
+class RoomView():
+    """部屋"""
+
+    @staticmethod
+    def render_delete(request, id=id):
+        """削除ページ"""
+
+        template = loader.get_template('webapp1/rooms/delete.html')
+        #                               -------------------------
+        #                               1
+        # 1. host1/webapp1/templates/webapp1/rooms/delete.html
+        #                            -------------------------
+
+        room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
+        name = room.name  # 名前だけまだ使う
+        room.delete()
+        context = {
+            'room': {
+                'name': name
+            }
         }
-    }
-    return HttpResponse(template.render(context, request))
+        return HttpResponse(template.render(context, request))
 ```
 
 # Step 3. ルート編集 - urls.py ファイル
@@ -200,16 +206,24 @@ from webapp1.views import v_room
 urlpatterns = [
     # ...中略...
 
-    # 部屋削除
+    # +----
+    # | 部屋
+
+    # 削除
     path('rooms/delete/<int:id>/',
-         # ------------------------
+         # ---------------------
          # 1
-         v_room.render_delete_room, name='deleteRoom'),
-    #    -------------------------        ------------
-    #    2                                3
-    # 1. URLの `rooms/delete/<数字列>/` というパスにマッチする。数字列は views.py の中で id という名前で取得できる
-    # 2. v_room.py ファイルの render_delete_room メソッド
+         v_room.RoomView.render_delete, name='deleteRoom'),
+    #    -----------------------------        ----------
+    #    2                                    3
+    # 1. 例えば `http://example.com/rooms/delete/<数字列>/` のような URL のパスの部分
+    #                              ----------------------
+    #    数字列は v_room.py の中で id という名前で取得できる
+    # 2. v_room.py ファイルの RoomView クラスの render_delete 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
+
+    # | 部屋
+    # +----
 ]
 ```
 
