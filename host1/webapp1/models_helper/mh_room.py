@@ -1,5 +1,4 @@
 import json
-from os import stat
 from django.core import serializers
 
 
@@ -13,6 +12,7 @@ from webapp1.models.m_room import Room
 
 
 class MhRoom():
+    """部屋モデルヘルパー"""
 
     @staticmethod
     def get_all_rooms_as_dic():
