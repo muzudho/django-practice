@@ -47,8 +47,7 @@ Django に最初から付いている User モデルを拡張したい
         │   │       ├── 📂tic-tac-toe
         │   │       │   ├── 📂v1
         │   │       │   └── 📂v2
-        │   │       │       ├── 📄match_request.html
-        │   │       │       └── 📄play.html
+        │   │       │       └── 📄<いろいろ>.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
