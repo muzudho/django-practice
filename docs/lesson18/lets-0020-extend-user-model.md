@@ -193,6 +193,12 @@ class Profile(models.Model):
 
     # この User オブジェクトの下に Profile オブジェクトをぶら下げると思ってください
     #
+    # Example
+    # -------
+    #
+    # user = User.objects.get(pk=user_id)
+    # print(user.profile.match_state)
+    #
     # OneToOneField - 1対1対応のリレーション。 デフォルトで Unique 属性
     #
     # * `on_delete` - 必須。 models.CASCADE なら、親テーブルのレコードが消されると、子テーブルのレコードも削除されます
@@ -200,6 +206,8 @@ class Profile(models.Model):
         User, related_name='profile', on_delete=models.CASCADE)
 
     # 対局のマッチング状態
+    #
+    # 0 を休憩中、 1 を対局申込中、 2 を対局案内中、 3 を対局中 とする
     #
     # * `blank` - 未指定でもセーブを受け入れるなら真
     # * `default` - 初期値

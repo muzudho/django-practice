@@ -22,6 +22,8 @@ class Profile(models.Model):
 
     # 対局のマッチング状態
     #
+    # 0 を休憩中、 1 を対局申込中、 2 を対局案内中、 3 を対局中 とする
+    #
     # * `blank` - 未指定でもセーブを受け入れるなら真
     # * `default` - 初期値
     match_state = models.IntegerField(
