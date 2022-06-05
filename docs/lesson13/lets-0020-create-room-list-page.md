@@ -289,73 +289,78 @@ from webapp1.models_helper.mh_user import MhUser
 # 4. クラス名
 
 
-def render_list_room(request):
-    """部屋一覧"""
+class RoomView():
+    """部屋"""
 
-    # ２段階変換: roomテーブルid順 ----> JSON文字列 ----> オブジェクト
-    room_table_qs = Room.objects.all().order_by('id')  # Query Set
-    room_table_json = serializers.serialize('json', room_table_qs)  # JSON 文字列
-    # print(f"room_table_json={room_table_json}")
+    @staticmethod
+    def render_list(request):
+        """一覧ページ"""
 
-    room_table_doc = json.loads(room_table_json)  # オブジェクト
-    # print(f"room_table_doc={json.dumps(room_table_doc, indent=4)}")
-    """
-    # Example
-    room_table_doc=
-    [
-        {
-            "model": "webapp1.room",
-            "pk": 2,
-            "fields": {
-                "name": "Elephant",
-                "sente_id": 1,
-                "gote_id": 2,
-                "board": "XOXOXOXOX",
-                "record": "012345678"
-            }
-        },
-        ...中略...
-    ]
-    """
+        # ２段階変換: roomテーブルid順 ----> JSON文字列 ----> オブジェクト
+        room_table_qs = Room.objects.all().order_by('id')  # Query Set
+        room_table_json = serializers.serialize(
+            'json', room_table_qs)  # JSON 文字列
+        # print(f"room_table_json={room_table_json}")
 
-    # 使いやすい形に変換します
-    room_list = []
-
-    for room_rec in room_table_doc:  # Room record
-        # print(f"room_rec= --> {room_rec} <--")
-
-        sente_id = room_rec["fields"]["sente_id"]
-        gote_id = room_rec["fields"]["gote_id"]
-
-        room_list.append(
+        room_table_doc = json.loads(room_table_json)  # オブジェクト
+        # print(f"room_table_doc={json.dumps(room_table_doc, indent=4)}")
+        """
+        # Example
+        room_table_doc=
+        [
             {
-                "id": room_rec["pk"],
-                "name": room_rec["fields"]["name"],
-                "sente_id": sente_id,
-                "sente_name": MhUser.get_name_by_id(sente_id),
-                "gote_id": gote_id,
-                "gote_name": MhUser.get_name_by_id(gote_id),
-                "board": room_rec["fields"]["board"],
-                "record": room_rec["fields"]["record"],
-            }
-        )
+                "model": "webapp1.room",
+                "pk": 2,
+                "fields": {
+                    "name": "Elephant",
+                    "sente_id": 1,
+                    "gote_id": 2,
+                    "board": "XOXOXOXOX",
+                    "record": "012345678"
+                }
+            },
+            ...中略...
+        ]
+        """
 
-    # print(f'room_list={room_list}')
+        # 使いやすい形に変換します
+        room_list = []
 
-    context = {
-        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
-        "dj_room_array": json.dumps(room_list),
-        # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
-        "dj_read_room_path": "/rooms/read/",
-    }
-    # print(f"context={context}")
+        for room_rec in room_table_doc:  # Room record
+            # print(f"room_rec= --> {room_rec} <--")
 
-    return render(request, "webapp1/rooms/list.html", context)
-    #                       -----------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/rooms/list.html
-    #                            -----------------------
+            sente_id = room_rec["fields"]["sente_id"]
+            gote_id = room_rec["fields"]["gote_id"]
+
+            room_list.append(
+                {
+                    "id": room_rec["pk"],
+                    "name": room_rec["fields"]["name"],
+                    "sente_id": sente_id,
+                    "sente_name": MhUser.get_name_by_id(sente_id),
+                    "gote_id": gote_id,
+                    "gote_name": MhUser.get_name_by_id(gote_id),
+                    "board": room_rec["fields"]["board"],
+                    "record": room_rec["fields"]["record"],
+                }
+            )
+
+        # print(f'room_list={room_list}')
+
+        context = {
+            # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+            # Vue には、 JSONオブジェクト を渡すのではなく、 JSON文字列 を渡します
+            "dj_room_array": json.dumps(room_list),
+            # FIXME URL を urls.py で変更しても、こちらに反映されないが、どうするか？
+            "dj_read_room_path": "/rooms/read/",
+        }
+        # print(f"context={context}")
+
+        return render(request, "webapp1/rooms/list.html", context)
+        #                       -----------------------
+        #                       1
+        # 1. host1/webapp1/templates/webapp1/rooms/list.html
+        #                            -----------------------
 ```
 
 # Step 5. ルート編集 - urls.py ファイル
@@ -387,13 +392,20 @@ from webapp1.views import v_room
 urlpatterns = [
     # ...中略...
 
-    # 部屋一覧
-    path('rooms/', v_room.render_list_room, name='listRoom'),
-    #     ------   -----------------------        ----------
-    #     1        2                              3
-    # 1. URLの `rooms/` というパスにマッチする
-    # 2. v_room.py ファイルの render_list_room メソッド
+    # +----
+    # | 部屋
+
+    # 一覧
+    path('rooms/', v_room.RoomView.render_list, name='listRoom'),
+    #     ------   ---------------------------        ----------
+    #     1        2                                  3
+    # 1. 例えば `http://example.com/rooms/` のような URL のパスの部分
+    #                              -------
+    # 2. v_room.py ファイルの RoomView クラスの render_list 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
+
+    # | 部屋
+    # +----
 ]
 ```
 
