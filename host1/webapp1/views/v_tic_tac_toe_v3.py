@@ -31,9 +31,12 @@ class MatchApplication():
             MatchApplication.on_sent(request)
 
             # `po_` は POST送信するパラメーター名の目印
-            room_name = request.POST.get("po_room_name")
-            my_piece = request.POST.get("po_my_piece")
-            return redirect(f'/tic-tac-toe/v3/playing/{room_name}/?&mypiece={my_piece}')
+            po_room_name = request.POST.get("po_room_name")
+            po_my_piece = request.POST.get("po_my_piece")
+
+            # TODO バリデーションチェックしたい
+
+            return redirect(f'/tic-tac-toe/v3/playing/{po_room_name}/?&mypiece={po_my_piece}')
             #                               ^ three
             #                 --------------------------------------------------------
             #                 1
@@ -65,6 +68,8 @@ class MatchApplication():
         # `po_` は POST送信するパラメーター名の目印
         # 部屋名
         po_room_name = request.POST.get("po_room_name")
+        # 自分の駒。 X か O
+        po_my_piece = request.POST.get("po_my_piece")
 
         # 部屋の取得 または 新規作成
         #
@@ -111,29 +116,30 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
-            # sente_id フィールドに 自分のユーザーIdを上書き
-            if room.sente_id is None or room.sente_id == 0:
-                # 先に部屋に入ってきた方を先手
+            if po_my_piece == "X":
+                # X を取った方は先手とします
                 room.sente_id = user_pk
                 # ユーザーの状態を対局中（3）にします
                 profile.match_state = 3
 
-            elif room.gote_id is None or room.gote_id == 0:
-                # 後に部屋に入ってきた方を後手
+            elif po_my_piece == "O":
+                # O を取った方は後手とします
                 #
                 # * 先手と後手が同じユーザーでも構わないものとします
-                #
                 room.gote_id = user_pk
-                # 盤と棋譜を空っぽにする
-                room.board = ""
-                room.record = ""
                 # ユーザーの状態を対局中（3）にします
                 profile.match_state = 3
 
             else:
-                # 部屋に入ってきた３人目以降は、対局者ではなく、視聴者として扱う
+                # それ以外は観戦者として扱う
                 # ユーザーの状態を観戦中（4）にします
                 profile.match_state = 4
+
+            # 先手と後手の両方が埋まったなら
+            if not(room.sente_id is None or room.sente_id == 0 or room.gote_id is None or room.gote_id == 0):
+                # 盤と棋譜を空っぽにする
+                room.board = ""
+                room.record = ""
 
             # print(
             #     f"[MatchApplication on_sent] room .name=[{room.name}] .sente_id=[{room.sente_id}] .gote_id=[{room.gote_id}] .board=[{room.board}] .record=[{room.record}]")
