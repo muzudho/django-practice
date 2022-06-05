@@ -213,34 +213,39 @@ from django.shortcuts import render, redirect
 from django.template import loader
 
 
-def render_portal(request):
+class Portal():
     """ポータル"""
-    template = loader.get_template('webapp1/tic-tac-toe/v2/portal.html')
-    #                               ----------------------------------
-    #                               1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/portal.html を取得
-    #                            ----------------------------------
 
-    context = {
-        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        'dj_user': request.user,
-        'dj_pathOfMatchRequest': '/tic-tac-toe/v2/match-request/',
-        #                         ------------------------------
-        #                         1
-        # 1. http://example.com/tic-tac-toe/v2/match-request/
-        #                      ------------------------------
-        'dj_pathOfSignin': '/tic-tac-toe/v2/login/',
-        #                  ----------------------
-        #                  1
-        # 1. http://example.com/tic-tac-toe/v2/login/
-        #                      ----------------------
-        'dj_pathOfLogout': '/tic-tac-toe/v2/logout/',
-        #                   -----------------------
-        #                   1
-        # 1. http://example.com/tic-tac-toe/v2/logout/
-        #                      -----------------------
-    }
-    return HttpResponse(template.render(context, request))
+    @staticmethod
+    def render(request):
+        """描画"""
+
+        template = loader.get_template('webapp1/tic-tac-toe/v2/portal.html')
+        #                               ----------------------------------
+        #                               1
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/portal.html を取得
+        #                            ----------------------------------
+
+        context = {
+            # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
+            'dj_user': request.user,
+            'dj_pathOfMatchRequest': '/tic-tac-toe/v2/match-request/',
+            #                         ------------------------------
+            #                         1
+            # 1. http://example.com/tic-tac-toe/v2/match-request/
+            #                      ------------------------------
+            'dj_pathOfSignin': '/tic-tac-toe/v2/login/',
+            #                  ----------------------
+            #                  1
+            # 1. http://example.com/tic-tac-toe/v2/login/
+            #                      ----------------------
+            'dj_pathOfLogout': '/tic-tac-toe/v2/logout/',
+            #                   -----------------------
+            #                   1
+            # 1. http://example.com/tic-tac-toe/v2/logout/
+            #                      -----------------------
+        }
+        return HttpResponse(template.render(context, request))
 
 
 @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
@@ -301,25 +306,27 @@ urlpatterns = [
     # ...中略...
 
     # 旧ポータル
-    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.render_portal,
+    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.Portal.render,
          # ------------   --------------------------------
-         # 1             2
+         # 1              2
          name='ticTacToeV2_portal'),
-    #          ----------------------
+    #          ------------------
     #          3
-    # 1. URLの `tic-tac-toe2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe2/` のような URL のパスの部分
+    #                              --------------
+    # 2. v_tic_tac_toe_v2o1.py ファイルの Portal クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ポータル
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.render_portal,
+    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.Portal.render,
          # --------------   --------------------------------
          # 1                2
          name='ticTacToeV2_portal'),
-    #          ----------------------
+    #          ------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの render_portal メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/` のような URL のパスの部分
+    #                              ----------------
+    # 2. v_tic_tac_toe_v2o1.py ファイルの Portal クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
