@@ -1,7 +1,7 @@
 # 目的
 
 ログインしている自分のユーザー情報を表示したい。  
-フォーマットは以下のように考えている。  
+フォーマットは以下のように考えている  
 
 ```
 Login user.
@@ -96,23 +96,28 @@ from django.template import loader
 from django.shortcuts import redirect
 
 
-@login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
-def render_login_user(request):
+class LoggingIn():
+    """ログイン中"""
 
-    template = loader.get_template('webapp1/login-user.html')
-    #                               -----------------------
-    #                               1
-    # 1. host1/webapp1/templates/webapp1/login-user.html を取ってきます。
-    #                            -----------------------
-    #    webapp1 が２回出てくるのはテクニックのようです
+    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+    @staticmethod
+    def render(request):
+        """描画"""
 
-    user = request.user
-    context = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-    }
-    return HttpResponse(template.render(context, request))
+        template = loader.get_template('webapp1/login-user.html')
+        #                               -----------------------
+        #                               1
+        # 1. host1/webapp1/templates/webapp1/login-user.html を取得
+        #                            -----------------------
+        #    webapp1 が２回出てくるのはテクニックのようです
+
+        user = request.user
+        context = {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+        }
+        return HttpResponse(template.render(context, request))
 
 
 def render_logout_user(request):
@@ -151,11 +156,12 @@ urlpatterns = [
     # ...中略...
 
     # ログイン
-    path('login-user', v_login_user.render_login_user, name='loginUser'),
-    #     ----------   ------------------------------        ---------
-    #     1            2                                     3
-    # 1. URLの `login-user` というパスにマッチする
-    # 2. v_login_user.py ファイルの render_login_user メソッド
+    path('login-user', v_login_user.LoggingIn.render, name='loginUser'),
+    #     ----------   -----------------------------        ---------
+    #     1            2                                    3
+    # 1. 例えば `http://example.com/login-user` のような URL のパスの部分
+    #                              -----------
+    # 2. v_login_user.py ファイルの LoggingIn クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
