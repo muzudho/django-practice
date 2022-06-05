@@ -48,8 +48,7 @@
         │   │       ├── 📂tic-tac-toe
         │   │       │   ├── 📂v1
         │   │       │   └── 📂v2
-        │   │       │       ├── 📄match_request.html
-        │   │       │       └── 📄play.html
+        │   │       │       └── 📄<いろいろ>.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
@@ -154,7 +153,7 @@ docker-compose up
                     // "vu_" は 「vue1.dataのメンバー」 の目印
 
                     // URL は、レッスンの進み具合によって適宜、貼り替えてください
-                    vu_pathOfMatchRequest: "{{ dj_pathOfMatchRequest }}",
+                    vu_pathOfMatchApplication: "{{ dj_pathOfMatchApplication }}",
 
                     // vu_pathOfSignin: "{{ dj_pathOfSignin }}",
                     vu_pathOfSignin: "{% url 'accounts_v1_login' %}",
@@ -163,8 +162,8 @@ docker-compose up
                 },
                 methods: {
                     createGamePath() {
-                        let path = `${location.protocol}//${location.host}${this.vu_pathOfMatchRequest}`;
-                        //          --------------------  ---------------]-----------------------------
+                        let path = `${location.protocol}//${location.host}${this.vu_pathOfMatchApplication}`;
+                        //          --------------------  ---------------]--------------------------------
                         //          1                     2               3
                         // 1. protocol
                         // 2. host
@@ -229,11 +228,11 @@ class Portal():
         context = {
             # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
             'dj_user': request.user,
-            'dj_pathOfMatchRequest': '/tic-tac-toe/v2/match-request/',
-            #                         ------------------------------
-            #                         1
-            # 1. http://example.com/tic-tac-toe/v2/match-request/
-            #                      ------------------------------
+            'dj_pathOfMatchApplication': '/tic-tac-toe/v2/match-application/',
+            #                             ---------------------------------
+            #                             1
+            # 1. http://example.com/tic-tac-toe/v2/match-application/
+            #                      ----------------------------------
             'dj_pathOfSignin': '/tic-tac-toe/v2/login/',
             #                  ----------------------
             #                  1
@@ -262,20 +261,20 @@ class LoggingIn():
             # `po_` は POST送信するパラメーター名の目印
             room_name = request.POST.get("po_room_name")
             my_piece = request.POST.get("po_my_piece")
-            return redirect(f'/tic-tac-toe/v2/play/{room_name}/?&mypiece={my_piece}')
+            return redirect(f'/tic-tac-toe/v2/playing/{room_name}/?&mypiece={my_piece}')
             #                               ^
-            #               ------------------------------------------------------
+            #               ----------------------------------------------------------
             #               1
-            # 1. http://example.com/tic-tac-toe/v2/play/Elephant/?&mypiece=X
-            #                       ----------------------------------------
+            # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
+            #                       -------------------------------------------
 
         # 訪問後
-        return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
         #                                            ^
-        #                       -----------------------------------------
+        #                       ---------------------------------------------
         #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html を取得
-        #                            -----------------------------------------
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html を取得
+        #                            ---------------------------------------------
 
 
 class LoggingOut():
