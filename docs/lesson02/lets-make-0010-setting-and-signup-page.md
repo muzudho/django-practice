@@ -1,12 +1,12 @@
 # 目的
 
-会員制サイトを作りたい。  
+会員制サイトを作りたい  
 
 1. ユーザー登録（サインアップ）
 2. ログイン（サインイン）
 3. 指定のメールアドレスへパスワードの変更画面URLを送る機能
 
-を付ける方法を説明する。  
+を付ける方法を説明する  
 
 # はじめに
 
@@ -107,7 +107,7 @@ EMAIL_HOST_PASSWORD=あなたのGmailアドレスのアプリパスワード
 django-allauth>=0.32.0
 ```
 
-# Step 6. settings.py の設定
+# Step 6. 設定編集 - settings.py ファイル
 
 以下のように該当箇所を追加してほしい。  
 
@@ -209,6 +209,10 @@ TEMPLATES = [
 
 SITE_ID = 1 # 動かしているサイトを識別するID
 LOGIN_REDIRECT_URL = 'home' # ログオン後に遷移するURLの指定
+
+# ログインしていないときに飛ばされる先
+# LOGIN_URL = '/accounts/v1/login/'  # 慣れない内は URL で指定
+LOGIN_URL = 'login' # 慣れてくれば name で指定
 
 # ログアウト後に遷移するURLの指定
 #
