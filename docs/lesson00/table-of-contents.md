@@ -123,3 +123,7 @@ Lesson 19. Web page reload and redirect automatically
 Lesson 20. Reduce client-side functionality
 
 * 📖 [Djangoの〇×ゲームのPlayAgainボタンを外そう！](https://qiita.com/muzudho1/items/d4bfde69c1656616f8ce)
+
+Lesson 21. Check-in
+
+* 📖 [Djangoでチェックインを作ろう！](https://qiita.com/muzudho1/items/1ce542dd66929d7bce3f)
