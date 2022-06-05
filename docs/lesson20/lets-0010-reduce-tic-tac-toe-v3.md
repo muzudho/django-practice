@@ -42,8 +42,7 @@
         │   │       ├── 📂tic-tac-toe
         │   │       │   ├── 📂v1
         │   │       │   └── 📂v2
-        │   │       │       ├── 📄match_request.html
-        │   │       │       └── 📄play.html
+        │   │       │       └── 📄<いろいろ>.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
@@ -97,11 +96,11 @@ docker-compose up
 👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
 
 ```html
-{% extends "tic-tac-toe/v2/play_base.html" %}
-{#          -----------------------------
+{% extends "tic-tac-toe/v2/playing_base.html" %}
+{#          --------------------------------
             1
-1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/play_base.html
-                                   -----------------------------
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/playing_base.html
+                                   --------------------------------
 
     自動フォーマットしないでください
     Do not auto fomatting
@@ -160,12 +159,12 @@ class MatchApplication():
 
         # 訪問後
         MatchApplication.on_visited(request)
-        return render(request, "webapp1/tic-tac-toe/v2/match_request.html", {})
+        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
         #                                            ^ two
-        #                       -----------------------------------------
+        #                       ---------------------------------------------
         #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_request.html
-        #                            -----------------------------------------
+        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+        #                            ---------------------------------------------
 
     @staticmethod
     def on_sent(request):
@@ -255,13 +254,18 @@ urlpatterns = [
     # 2. v_tic_tac_toe_v3.py ファイルの MatchApplication クラスの render メソッド
 
     # 対局中
-    path('tic-tac-toe/v3/play/<str:room_name>/', v_tic_tac_toe_v3.render_play),
-    #                  ^                                        ^
-    #     ------------------------------------   ----------------------------
-    #     1                                      2
-    # 1. 例えば `http://example.com/tic-tac-toe/v3/play/<部屋名>/` のような URL のパスの部分。 <部屋名> に入った文字列は room_name 変数に渡されます
-    #                              -----------------------------
-    # 2. v_tic_tac_toe_v3.py ファイルの render_play メソッド
+    path('tic-tac-toe/v3/playing/<str:kw_room_name>/',
+         #             ^
+         # -----------------------------------------
+         # 1
+         v_tic_tac_toe_v3.Playing.render),
+    #                   ^
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3/playing/<部屋名>/` のような URL のパスの部分。
+    #                              --------------------------------
+    #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v3.py ファイルの Playing クラスの render 静的メソッド
 ]
 ```
 
