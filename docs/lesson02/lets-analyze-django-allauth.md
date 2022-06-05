@@ -34,7 +34,8 @@ Django で Web サイト作ろうとしている あなた と同じように、
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                └── 📄page1.html
+                └── 📂webapp1               # アプリケーション フォルダー と同じ名前
+                    └── 📄page1.html
 ```
 
 👇自分の Webサイトに、 allauth のテンプレートを合体させたければ、以下のように置けばよい  
@@ -43,20 +44,22 @@ Django で Web サイト作ろうとしている あなた と同じように、
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
-                ├── 📂account               # この名前のフォルダーは django-allauth が使ってる
-                │   ├── 📄login.html
-                │   ├── 📄logout.html
-                │   ├── ...中略...
-                │   └── 📄<いろいろ>.html
-                └── 📄page1.html
+                ├── 📂allauth-customized    # 別のアプリケーションからコピーしたことが分かる名前を付ける
+                │   └── 📂v1                    # バージョンが更新される悲劇に備える
+                │       └── 📂account               # このフォルダーは django-allauth が使ってる名前と同じにする
+                │           ├── 📄login.html
+                │           ├── 📄logout.html
+                │           ├── ...中略...
+                │           └── 📄<いろいろ>.html
+                └── 📂webapp1               # アプリケーション フォルダー と同じ名前
+                    └── 📄page1.html
 ```
 
-allauth のテンプレートはいっぱいある。 base.html を下敷きにして login.html があるとか、結合もいっぱいある。  
-しかし気にせず、見た目を替えたいファイルだけをコピーしてもってきて、それを改造すればよい  
+allauth から コピーしてくるテンプレート（.html）は、見た目を替えたいファイルだけでよい  
 
 # HTMLを編集しろ
 
-このとき、 `host1/webapp1/templates/allauth/login.html` ファイルの  
+このとき、 `host1/webapp1/templates/allauth-customized/v1/account/login.html` ファイルの  
 
 ```html
 <h1>{% trans "Sign In" %}</h1>
@@ -68,7 +71,7 @@ allauth のテンプレートはいっぱいある。 base.html を下敷きに�
 <h1>{% trans "Sign In" %}（＾ｑ＾）</h1>
 ```
 
-のように変えておくことで、 allauth の login.html ではなく、 コピーした方の login.html が使われていることを目視確認できるようにしておく  
+のように変えておくことで、 allauth の `account/login.html` ではなく、 コピーした方の login.html が使われていることを目視確認できるようにしておく  
 
 ## URLを引っ張ってこい
 
@@ -78,12 +81,15 @@ allauth のテンプレートはいっぱいある。 base.html を下敷きに�
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
             ├── 📂templates
-            │   ├── 📂account
-            │   │   ├── 📄login.html
-            │   │   ├── 📄logout.html
-            │   │   ├── ...中略...
-            │   │   └── 📄<いろいろ>.html
-            │   └── 📄page1.html
+            │   ├── 📂allauth-customized    # 別のアプリケーションからコピーしたことが分かる名前を付ける
+            │   │   └── 📂v1                    # バージョンが更新される悲劇に備える
+            │   │       └── 📂account               # このフォルダーは django-allauth が使ってる名前と同じにする
+            │   │           ├── 📄login.html
+            │   │           ├── 📄logout.html
+            │   │           ├── ...中略...
+            │   │           └── 📄<いろいろ>.html
+            │   └── 📂webapp1               # アプリケーション フォルダー と同じ名前
+            │       └── 📄page1.html
 👉          └── 📄urls.py
 ```
 
@@ -95,12 +101,12 @@ from django.urls import include, path
 urlpatterns = [
     # ...中略...
 
-    path('accounts/', include('allauth.urls')),
-    #     ---------   -----------------------
-    #     1           2
-    # 1. URLの `http://example.com/accounts/` というパスにマッチする
-    #                              ---------
-    # 2. allauth に既に用意されているビューを割り当てる
+    # allauth の URLのパスのコピー
+    path('accounts/v1/', include('allauth.urls')),
+    #     ------------   -----------------------
+    #     1
+    # 1. 例えば `http://example.com/accounts/v1/` のような URLのパスの部分
+    # 2. allauth の例えば `login/` のようなパスを 1. のパスにぶら下げる形で全てコピーします
 ]
 ```
 
@@ -108,7 +114,9 @@ urlpatterns = [
 
 ローカルホストに Webサイト が起ちあがっているなら、以下の URL で allauth のログイン画面にアクセスできるはずだ  
 
-* [http://localhost:8000/accounts/login/](http://localhost:8000/accounts/login/)  
+* サインアップ [http://localhost:8000/accounts/v1/signup/](http://localhost:8000/accounts/v1/signup/)  
+* ログイン [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
+* ログアウト [http://localhost:8000/accounts/v1/logout/](http://localhost:8000/accounts/v1/logout/) - ホームに戻ります  
 
 # allauth にはどんな URL、どんなテンプレート があるか？
 
