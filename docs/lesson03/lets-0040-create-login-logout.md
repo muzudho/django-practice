@@ -49,7 +49,37 @@ Login user.
         └── <いろいろ>
 ```
 
-# Step 1. HTMLファイルを置く
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. 設定編集 - settings.py ファイル
+
+以下のように該当箇所を追加してほしい。  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+👉       　　└── 📄settings.py
+```
+
+👇 レッスンの進み具合によって、 URL などを変えてください  
+
+```py
+# ログインしていないときに飛ばされる先。指定しないと '/accounts/login/'
+LOGIN_URL = '/accounts/v1/login/'  # 慣れない内は URL で指定
+# LOGIN_URL = 'login' # 慣れてくれば name で指定
+```
+
+# Step 3. HTMLファイルを置く
 
 以下のディレクトリ、ファイルを作成してほしい。  
 
@@ -58,7 +88,8 @@ Login user.
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ構造を繰り返す
-                    └── 📄login-user.html
+                    └── 📂practice
+                        └── 📄login-user.html
 ```
 
 ```html
@@ -74,7 +105,7 @@ Login user.
 </html>
 ```
 
-# Step 2. ビュー作成 - v_login_user.py ファイル
+# Step 4. ビュー作成 - v_login_user.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -83,7 +114,8 @@ Login user.
         └── 📂webapp1
             ├── 📂templates
             │   └── 📂webapp1
-            │       └── 📄login-user.html
+            │       └── 📂practice
+            │           └── 📄login-user.html
             └── 📂views
 👉              └── 📄v_login_user.py
 ```
@@ -99,16 +131,16 @@ from django.shortcuts import redirect
 class LoggingIn():
     """ログイン中"""
 
-    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、認証ページに飛ばします
+    @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、 settings.py の LOGIN_URL で指定した URL に飛ばします
     @staticmethod
     def render(request):
         """描画"""
 
-        template = loader.get_template('webapp1/login-user.html')
-        #                               -----------------------
+        template = loader.get_template('webapp1/practice/login-user.html')
+        #                               --------------------------------
         #                               1
-        # 1. host1/webapp1/templates/webapp1/login-user.html を取得
-        #                            -----------------------
+        # 1. host1/webapp1/templates/webapp1/practice/login-user.html を取得
+        #                            --------------------------------
         #    webapp1 が２回出てくるのはテクニックのようです
 
         user = request.user
@@ -120,13 +152,19 @@ class LoggingIn():
         return HttpResponse(template.render(context, request))
 
 
-def render_logout_user(request):
-    """ログアウト"""
-    logout(request)
-    redirect('home')
+class LoggingOut():
+    """ログアウト中"""
+
+    @staticmethod
+    def render(request):
+        """描画"""
+
+        logout(request)  # Django の認証機能のログアウトを使う
+
+        return redirect('home')  # ホームに戻る
 ```
 
-# Step 3. ルート編集 - urls.py ファイル
+# Step 5. ルート編集 - urls.py ファイル
 
 以下のファイルの該当箇所を追記してほしい
 
@@ -135,7 +173,8 @@ def render_logout_user(request):
         └── 📂webapp1
             ├── 📂templates
             │   └── 📂webapp1
-            │       └── 📄login-user.html
+            │       └── 📂practice
+            │           └── 📄login-user.html
             ├── 📂views
             │   └── 📄v_login_user.py
 👉          └── 📄urls.py
@@ -165,16 +204,17 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('logout', v_login_user.render_logout_user, name='logoutUser'),
-    #     ------   -------------------------------        ----------
-    #     1        2                                      3
-    # 1. URLの `logout` というパスにマッチする
-    # 2. v_login_user.py ファイルの render_logout_user メソッド
+    path('logout', v_login_user.LoggingOut.render, name='logoutUser'),
+    #     ------   ------------------------------        ----------
+    #     1        2                                     3
+    # 1. 例えば `http://example.com/logout` のような URL のパスの部分
+    #                              -------
+    # 2. v_login_user.py ファイルの LoggingOut クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'logoutUser' %} のような形でURLを取得するのに使える
 ]
 ```
 
-# Step 4. Webページへアクセス
+# Step 6. Webページへアクセス
 
 ログインする、ログイン情報を見る:  
 
@@ -191,3 +231,4 @@ urlpatterns = [
 # 関連する記事
 
 📖 [Using the Django authentication system](https://docs.djangoproject.com/en/3.1/topics/auth/default/)  
+📖 [Djangoメモ(25) : login_requiredデコレータでビューをログイン済みユーザーのみに制限](https://wonderwall.hatenablog.com/entry/2018/03/25/180000)  
