@@ -54,8 +54,7 @@
         │   │   └── 📂tic_tac_toe
         │   │       ├── 📂v1
         │   │       └── 📂v2
-        │   │           ├── 📄consumer.py
-        │   │           └── 📄protocol.py
+        │   │           └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
@@ -135,6 +134,8 @@ class MatchApplication():
         # `po_` は POST送信するパラメーター名の目印
         # 部屋名
         po_room_name = request.POST.get("po_room_name")
+        # 自分の駒。 X か O
+        po_my_piece = request.POST.get("po_my_piece")
 
         # 部屋の取得 または 新規作成
         #
@@ -171,14 +172,6 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] user username={user.username}")
 
-            # sente_id フィールドに 自分のユーザーIdを上書き
-            if room.sente_id is None or room.sente_id == 0:
-                room.sente_id = user_pk
-            elif room.gote_id is None or room.gote_id == 0:
-                room.gote_id = user_pk
-
-            # TODO 空いてなかったらどうする？
-
             # 自分の Profile レコード 取得
             profile = Profile.objects.get(user__pk=user_pk)
             #                             --------
@@ -189,8 +182,30 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
-            # ユーザーの状態を対局中（3）にします
-            profile.match_state = 3
+            if po_my_piece == "X":
+                # X を取った方は先手とします
+                room.sente_id = user_pk
+                # ユーザーの状態を対局中（3）にします
+                profile.match_state = 3
+
+            elif po_my_piece == "O":
+                # O を取った方は後手とします
+                #
+                # * 先手と後手が同じユーザーでも構わないものとします
+                room.gote_id = user_pk
+                # ユーザーの状態を対局中（3）にします
+                profile.match_state = 3
+
+            else:
+                # それ以外は観戦者として扱う
+                # ユーザーの状態を観戦中（4）にします
+                profile.match_state = 4
+
+            # 先手と後手の両方が埋まったなら
+            if not(room.sente_id is None or room.sente_id == 0 or room.gote_id is None or room.gote_id == 0):
+                # 盤と棋譜を空っぽにする
+                room.board = ""
+                room.record = ""
 
             # print(
             #     f"[MatchApplication on_sent] room .name=[{room.name}] .sente_id=[{room.sente_id}] .gote_id=[{room.gote_id}] .board=[{room.board}] .record=[{room.record}]")
