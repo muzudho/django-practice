@@ -228,7 +228,7 @@ class MatchApplication():
 
 * このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください
 * テストするためには `サインアップ` してアカウントを作ってから、 `ログイン` してください
-* 既存でない部屋名、または　既存の部屋名　の両方で対局部屋に入ってください
+* 最初のテストは　既存でない部屋名で、次のテストは　既存の部屋名　で行うといいかもしれません
 
 📖 [http://localhost:8000/accounts/v1/signup/](http://localhost:8000/accounts/v1/signup/)  
 📖 [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
