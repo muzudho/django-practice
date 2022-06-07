@@ -1812,6 +1812,9 @@ class MatchApplication():
 
 class Playing():
 
+    path_of_playing = "/tic-tac-toe/v2/playing/"
+    #                                ^ two
+
     @staticmethod
     def render(request, kw_room_name):
         """対局画面"""
@@ -1824,8 +1827,7 @@ class Playing():
         context = {
             "dj_room_name": kw_room_name,
             "dj_my_piece": my_piece,
-            "dj_path_of_playing": "/tic-tac-toe/v2/playing/",
-            #                                    ^ two
+            "dj_path_of_playing": Playing.path_of_playing,
         }
         return render(request, "webapp1/tic-tac-toe/v2/playing.html.txt", context)
         #                                            ^
