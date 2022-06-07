@@ -1232,10 +1232,9 @@ function createSetMessageFromServer() {
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
                             // 接続文字列
-                            // TODO パスをDjangoから埋め込みたい
-                            const connectionString = `ws://${window.location.host}/tic-tac-toe/v2/playing/${roomName}/`;
-                            //                                                                  ^
-                            //                        ----]----------------------]------------------------------------
+                            // `dj_` は Djangoでレンダーするパラメーター名の目印
+                            const connectionString = `ws://${window.location.host}{{dj_path_of_playing}}${roomName}/`;
+                            //                        ----]----------------------]----------------------------------
                             //                        1    2                      3
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
@@ -1825,6 +1824,8 @@ class Playing():
         context = {
             "dj_room_name": kw_room_name,
             "dj_my_piece": my_piece,
+            "dj_path_of_playing": "/tic-tac-toe/v2/playing/",
+            #                                    ^ two
         }
         return render(request, "webapp1/tic-tac-toe/v2/playing.html.txt", context)
         #                                            ^
