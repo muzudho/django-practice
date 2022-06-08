@@ -36,8 +36,8 @@ class MatchApplication():
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
-    @staticmethod
-    def render(request):
+    @classmethod
+    def render(clazz, request):
         """描画"""
 
         if request.method == "POST":
@@ -56,8 +56,8 @@ class MatchApplication():
         MatchApplication.on_visited(request)
         return render(request, MatchApplication.path_of_html, {})
 
-    @staticmethod
-    def on_sent(request):
+    @classmethod
+    def on_sent(clazz, request):
         """送信後"""
 
         # Specification
@@ -161,8 +161,8 @@ class MatchApplication():
             # print(f"[MatchApplication on_sent] ★ ゲスト")
             pass
 
-    @staticmethod
-    def on_visited(request):
+    @classmethod
+    def on_visited(clazz, request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
         pass
@@ -178,8 +178,8 @@ class Playing():
     # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
     #                      ------------------------
 
-    @staticmethod
-    def render(request, kw_room_name):
+    @classmethod
+    def render(clazz, request, kw_room_name):
         """描画"""
         my_piece = request.GET.get("mypiece")
         if my_piece not in ['X', 'O']:
@@ -200,8 +200,8 @@ class Playing():
         # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
         #                            ---------------------------------------
 
-    @staticmethod
-    def on_update(request):
+    @classmethod
+    def on_update(clazz, request):
         """訪問後または送信後"""
         # 拡張したい挙動があれば、ここに書く
         pass
