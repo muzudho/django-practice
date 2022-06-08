@@ -31,8 +31,8 @@ class MainFinally:
         sys.exit(MainFinally.run(Main1()))
     """
 
-    @classmethod
-    def run(clazz, target):
+    @staticmethod
+    def run(target):
         """アプリケーション終了時に必ず on_finally()メソッドを呼び出します。
         通常の処理は on_main()メソッドに書いてください
 
