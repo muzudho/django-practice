@@ -27,10 +27,10 @@ class MatchApplication(MatchApplicationV3):
     # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
     #                           ----------------------------------------------
 
-    path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
-    #                                    ^ two
-    #               ---------------------------------------------
-    #               1
+    _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                     ^ two
+    #                ---------------------------------------------
+    #                1
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 

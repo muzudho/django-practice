@@ -146,10 +146,10 @@ class MatchApplication():
     # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
-    path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
-    #                                    ^ two
-    #               ---------------------------------------------
-    #               1
+    _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                     ^ two
+    #                ---------------------------------------------
+    #                1
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
@@ -157,6 +157,11 @@ class MatchApplication():
     @property
     def path_of_playing(clazz):
         return clazz._path_of_playing
+
+    @classmethod
+    @property
+    def path_of_html(clazz):
+        return clazz._path_of_html
 
     @classmethod
     def render(clazz, request):
@@ -176,7 +181,7 @@ class MatchApplication():
 
         # 訪問後
         MatchApplication.on_visited(request)
-        return render(request, MatchApplication.path_of_html, {})
+        return render(request, clazz.path_of_html, {})
 
     @classmethod
     def on_sent(clazz, request):
