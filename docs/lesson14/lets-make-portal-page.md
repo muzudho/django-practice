@@ -255,10 +255,10 @@ class LoggingIn():
     # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
-    path_of_match_application = "webapp1/tic-tac-toe/v2/match_application.html"
-    #                                                 ^ two
-    #                            ---------------------------------------------
-    #                            1
+    _path_of_match_application = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                                  ^ two
+    #                             ---------------------------------------------
+    #                             1
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
@@ -266,6 +266,11 @@ class LoggingIn():
     @property
     def path_of_playing(clazz):
         return clazz._path_of_playing
+
+    @classmethod
+    @property
+    def path_of_match_application(clazz):
+        return clazz._path_of_match_application
 
     @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、 settings.py の LOGIN_URL で指定した URL に飛ばします
     @classmethod
@@ -282,7 +287,7 @@ class LoggingIn():
             return redirect(clazz.path_of_playing.format(room_name, my_piece))
 
         # 訪問後
-        return render(request, LoggingIn.path_of_match_application, {})
+        return render(request, clazz.path_of_match_application, {})
 
 
 class LoggingOut():
