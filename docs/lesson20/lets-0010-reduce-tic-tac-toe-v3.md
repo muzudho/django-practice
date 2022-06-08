@@ -139,10 +139,10 @@ from django.shortcuts import render, redirect
 class MatchApplication():
     """対局申込ページ"""
 
-    path_of_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
-    #                                ^ three
-    #                  -----------------------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
+    #                                 ^ three
+    #                   -----------------------------------------
+    #                   1
     # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -152,6 +152,11 @@ class MatchApplication():
     #               1
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
+
+    @classmethod
+    @property
+    def path_of_playing(clazz):
+        return clazz._path_of_playing
 
     @classmethod
     def render(clazz, request):
@@ -167,7 +172,7 @@ class MatchApplication():
 
             # TODO バリデーションチェックしたい
 
-            return redirect(MatchApplication.path_of_playing.format(po_room_name, po_my_piece))
+            return redirect(clazz.path_of_playing.format(po_room_name, po_my_piece))
 
         # 訪問後
         MatchApplication.on_visited(request)
@@ -189,12 +194,17 @@ class MatchApplication():
 class Playing():
     """対局ページ"""
 
-    path_of_playing = "/tic-tac-toe/v2/playing/"
-    #                                ^ two
-    #                  ------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v2/playing/"
+    #                                 ^ two
+    #                   ------------------------
+    #                   1
     # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
     #                      ------------------------
+
+    @classmethod
+    @property
+    def path_of_playing(clazz):
+        return clazz._path_of_playing
 
     @classmethod
     def render(clazz, request, kw_room_name):
@@ -209,7 +219,7 @@ class Playing():
         context = {
             "dj_room_name": kw_room_name,
             "dj_my_piece": my_piece,
-            "dj_path_of_playing": Playing.path_of_playing,
+            "dj_path_of_playing": clazz.path_of_playing,
         }
         return render(request, "webapp1/tic-tac-toe/v3/playing.html.txt", context)
         #                                            ^ three
