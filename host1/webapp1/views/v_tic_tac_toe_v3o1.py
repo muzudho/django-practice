@@ -20,10 +20,10 @@ from webapp1.views.v_tic_tac_toe_v3 import Playing as PlayingV3
 class MatchApplication(MatchApplicationV3):
     """対局申込ページ"""
 
-    path_of_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
-    #                                ^^^ three o one
-    #                  -------------------------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
+    #                                 ^^^ three o one
+    #                   -------------------------------------------
+    #                   1
     # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
     #                           ----------------------------------------------
 
@@ -37,9 +37,9 @@ class MatchApplication(MatchApplicationV3):
 
 class Playing(PlayingV3):
 
-    path_of_playing = "/tic-tac-toe/v3o1/playing/"
-    #                                ^^^ three o one
-    #                  --------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v3o1/playing/"
+    #                                 ^^^ three o one
+    #                   --------------------------
+    #                   1
     # 1. http://example.com/tic-tac-toe/v3o1/playing/Elephant/
     #                      --------------------------

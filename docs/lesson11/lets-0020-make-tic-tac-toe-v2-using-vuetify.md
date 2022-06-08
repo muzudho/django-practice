@@ -1780,10 +1780,10 @@ from django.shortcuts import render, redirect
 class MatchApplication():
     """対局申込"""
 
-    path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
-    #                                ^ two
-    #                  -----------------------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    #                                 ^ two
+    #                   -----------------------------------------
+    #                   1
     # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -1794,8 +1794,13 @@ class MatchApplication():
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
-    @staticmethod
-    def render(request):
+    @classmethod
+    @property
+    def path_of_playing(clazz):
+        return clazz._path_of_playing
+
+    @classmethod
+    def render(clazz, request):
         """描画"""
         if request.method == "POST":
             # 送信後
@@ -1804,7 +1809,7 @@ class MatchApplication():
             room_name = request.POST.get("po_room_name")
             my_piece = request.POST.get("po_my_piece")
 
-            return redirect(MatchApplication.path_of_playing.format(room_name, my_piece))
+            return redirect(clazz.path_of_playing.format(room_name, my_piece))
 
         # 訪問後
         return render(request, MatchApplication.path_of_match_application, {})
@@ -1812,11 +1817,16 @@ class MatchApplication():
 
 class Playing():
 
-    path_of_playing = "/tic-tac-toe/v2/playing/"
-    #                                ^ two
+    _path_of_playing = "/tic-tac-toe/v2/playing/"
+    #                                 ^ two
 
-    @staticmethod
-    def render(request, kw_room_name):
+    @classmethod
+    @property
+    def path_of_playing(clazz):
+        return clazz._path_of_playing
+
+    @classmethod
+    def render(clazz, request, kw_room_name):
         """対局画面"""
 
         my_piece = request.GET.get("mypiece")
@@ -1827,7 +1837,7 @@ class Playing():
         context = {
             "dj_room_name": kw_room_name,
             "dj_my_piece": my_piece,
-            "dj_path_of_playing": Playing.path_of_playing,
+            "dj_path_of_playing": clazz.path_of_playing,
         }
         return render(request, "webapp1/tic-tac-toe/v2/playing.html.txt", context)
         #                                            ^

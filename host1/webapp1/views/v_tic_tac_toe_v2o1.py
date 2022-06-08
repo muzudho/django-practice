@@ -44,10 +44,10 @@ class Portal():
 class LoggingIn():
     """ログイン中"""
 
-    path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
-    #                                ^ two
-    #                  -----------------------------------------
-    #                  1
+    _path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    #                                 ^ two
+    #                   -----------------------------------------
+    #                   1
     # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -58,9 +58,14 @@ class LoggingIn():
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
+    @classmethod
+    @property
+    def path_of_playing(clazz):
+        return clazz._path_of_playing
+
     @login_required  # 👈 このデコレーターを付けると、ログインしていないなら、 settings.py の LOGIN_URL で指定した URL に飛ばします
-    @staticmethod
-    def render(request):
+    @classmethod
+    def render(clazz, request):
         """描画"""
 
         if request.method == "POST":
@@ -70,7 +75,7 @@ class LoggingIn():
             room_name = request.POST.get("po_room_name")
             my_piece = request.POST.get("po_my_piece")
 
-            return redirect(LoggingIn.path_of_playing.format(room_name, my_piece))
+            return redirect(clazz.path_of_playing.format(room_name, my_piece))
 
         # 訪問後
         return render(request, LoggingIn.path_of_match_application, {})
