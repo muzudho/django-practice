@@ -118,8 +118,8 @@ class MatchApplication():
 
     # ...中略...
 
-    @staticmethod
-    def on_sent(request):
+    @classmethod
+    def on_sent(clazz, request):
         """送信後"""
 
         # Specification
