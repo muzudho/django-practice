@@ -14,8 +14,8 @@ from webapp1.models.m_member import Member
 
 class MhMember():
 
-    @staticmethod
-    def get_all_members():
+    @classmethod
+    def get_all_members(clazz):
         """TODO 使ってない？"""
 
         # ２段階変換: 問合せ結果（QuerySet）id順 ----> JSON文字列 ----> オブジェクト
