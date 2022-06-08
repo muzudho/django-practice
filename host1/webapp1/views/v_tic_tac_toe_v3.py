@@ -22,6 +22,20 @@ from webapp1.models.m_user_profile import Profile
 class MatchApplication():
     """対局申込ページ"""
 
+    path_of_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
+    #                                ^ three
+    #                  -----------------------------------------
+    #                  1
+    # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
+    #                           --------------------------------------------
+
+    path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                    ^ two
+    #               ---------------------------------------------
+    #               1
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+    #                            ---------------------------------------------
+
     @staticmethod
     def render(request):
         """描画"""
@@ -36,21 +50,11 @@ class MatchApplication():
 
             # TODO バリデーションチェックしたい
 
-            return redirect(f'/tic-tac-toe/v3/playing/{po_room_name}/?&mypiece={po_my_piece}')
-            #                               ^ three
-            #                 --------------------------------------------------------
-            #                 1
-            # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
-            #                           --------------------------------------------
+            return redirect(MatchApplication.path_of_playing.format(po_room_name, po_my_piece))
 
         # 訪問後
         MatchApplication.on_visited(request)
-        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
-        #                                            ^ two
-        #                       ---------------------------------------------
-        #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
-        #                            ---------------------------------------------
+        return render(request, MatchApplication.path_of_html, {})
 
     @staticmethod
     def on_sent(request):
@@ -169,6 +173,10 @@ class Playing():
 
     path_of_playing = "/tic-tac-toe/v2/playing/"
     #                                ^ two
+    #                  ------------------------
+    #                  1
+    # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
+    #                      ------------------------
 
     @staticmethod
     def render(request, kw_room_name):

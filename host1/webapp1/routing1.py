@@ -39,6 +39,16 @@ from webapp1.websocks.tic_tac_toe.v2.consumer_custom import TicTacToeV2ConsumerC
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
+# 〇×ゲームの練習３．１
+from webapp1.websocks.tic_tac_toe.v3o1.consumer_custom import TicTacToeV3o1ConsumerCustom
+#                                  ^^^ three o one                      ^^^ three o one
+#    ------- ------------------------- ---------------        ---------------------------
+#    1       2                         3                      4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
 
 websocket_urlpatterns = [
 
@@ -96,6 +106,20 @@ websocket_urlpatterns = [
     #   -----------------------------------
     #   2
     # 1. 例えば `http://example.com/tic-tac-toe/v2/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
+    #    kw_room_name は変数として渡される
+    # 2. クラス名とメソッド。 URL を ASGI形式にする
+
+    # 〇×ゲームの練習３．１
+    url(r'^tic-tac-toe/v3o1/playing/(?P<kw_room_name>\w+)/$',
+        #               ^^^ three o one
+        # -------------------------------------------------
+        # 1
+        TicTacToeV3o1ConsumerCustom.as_asgi()),
+    #             ^^^ three o one
+    #   -------------------------------------
+    #   2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3o1/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
+    #                              -----------------------------------
     #    kw_room_name は変数として渡される
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]

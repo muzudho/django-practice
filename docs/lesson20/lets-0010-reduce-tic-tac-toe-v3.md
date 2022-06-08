@@ -139,6 +139,20 @@ from django.shortcuts import render, redirect
 class MatchApplication():
     """対局申込ページ"""
 
+    path_of_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
+    #                                ^ three
+    #                  -----------------------------------------
+    #                  1
+    # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
+    #                           --------------------------------------------
+
+    path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                    ^ two
+    #               ---------------------------------------------
+    #               1
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+    #                            ---------------------------------------------
+
     @staticmethod
     def render(request):
         """描画"""
@@ -148,23 +162,16 @@ class MatchApplication():
             MatchApplication.on_sent(request)
 
             # `po_` は POST送信するパラメーター名の目印
-            room_name = request.POST.get("po_room_name")
-            my_piece = request.POST.get("po_my_piece")
-            return redirect(f'/tic-tac-toe/v3/playing/{room_name}/?&mypiece={my_piece}')
-            #                               ^ three
-            #                 --------------------------------------------------------
-            #                 1
-            # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
-            #                           --------------------------------------------
+            po_room_name = request.POST.get("po_room_name")
+            po_my_piece = request.POST.get("po_my_piece")
+
+            # TODO バリデーションチェックしたい
+
+            return redirect(MatchApplication.path_of_playing.format(po_room_name, po_my_piece))
 
         # 訪問後
         MatchApplication.on_visited(request)
-        return render(request, "webapp1/tic-tac-toe/v2/match_application.html", {})
-        #                                            ^ two
-        #                       ---------------------------------------------
-        #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
-        #                            ---------------------------------------------
+        return render(request, MatchApplication.path_of_html, {})
 
     @staticmethod
     def on_sent(request):
@@ -184,6 +191,10 @@ class Playing():
 
     path_of_playing = "/tic-tac-toe/v2/playing/"
     #                                ^ two
+    #                  ------------------------
+    #                  1
+    # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
+    #                      ------------------------
 
     @staticmethod
     def render(request, kw_room_name):
@@ -216,7 +227,7 @@ class Playing():
 
 # Step 4. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1

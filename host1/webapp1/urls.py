@@ -31,7 +31,8 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_practice_of_pages, v_member, v_practice_of_vuetify, \
     v_practice_of_json, v_tic_tac_toe_v1, v_tic_tac_toe_v2, v_tic_tac_toe_v2o1, v_tic_tac_toe_v3, \
-    v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
+    v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice, \
+    v_tic_tac_toe_v3o1
 
 urlpatterns = [
 
@@ -440,6 +441,33 @@ urlpatterns = [
     #                              --------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
     # 2. v_tic_tac_toe_v3.py ファイルの Playing クラスの render 静的メソッド
+
+    # 対局申込
+    path('tic-tac-toe/v3o1/match-application/',
+         #             ^^^
+         # ----------------------------------
+         # 1
+         v_tic_tac_toe_v3o1.MatchApplication.render),
+    #                   ^^^
+    #    ------------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3o1/match-application/` のような URL のパスの部分
+    #                              -----------------------------------
+    # 2. v_tic_tac_toe_v3o1.py ファイルの MatchApplication クラスの render メソッド
+
+    # 対局中
+    path('tic-tac-toe/v3o1/playing/<str:kw_room_name>/',
+         #             ^^^
+         # -------------------------------------------
+         # 1
+         v_tic_tac_toe_v3o1.Playing.render),
+    #                   ^^^
+    #    ---------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3o1/playing/<部屋名>/` のような URL のパスの部分。
+    #                              ----------------------------------
+    #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
+    # 2. v_tic_tac_toe_v3o1.py ファイルの Playing クラスの render 静的メソッド
 
     # | 〇×ゲーム３
     # +----
