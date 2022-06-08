@@ -85,3 +85,6 @@ exit
 
 📖 [Django Channelsで実装した認証付きWebsocketにPythonで接続する](https://www.denzow.me/entry/2018/07/06/003238)  
 
+## デコレーター
+
+📖 [【Python】初心者向けにデコレータの解説](https://djangobrothers.com/blogs/python_decorator/)  

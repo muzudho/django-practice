@@ -1,6 +1,11 @@
-from django.http import Http404
-from django.shortcuts import render, redirect
 # from django.contrib.auth.models import User # デバッグ用
+
+from webapp1.views import v_tic_tac_toe_v2
+#    ------- -----        ----------------
+#    1       2            3
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -36,38 +41,14 @@ class MatchApplication():
     # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
     #                            ---------------------------------------------
 
-    @classmethod
-    @property
-    def path_of_playing(clazz):
-        return clazz._path_of_playing
-
-    @classmethod
-    @property
-    def path_of_html(clazz):
-        return clazz._path_of_html
-
-    @classmethod
-    def render(clazz, request):
+    @staticmethod
+    def render(request):
         """描画"""
+        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.on_visited)
+        #                     ^ two
 
-        if request.method == "POST":
-            # 送信後
-            MatchApplication.on_sent(request)
-
-            # `po_` は POST送信するパラメーター名の目印
-            po_room_name = request.POST.get("po_room_name")
-            po_my_piece = request.POST.get("po_my_piece")
-
-            # TODO バリデーションチェックしたい
-
-            return redirect(clazz.path_of_playing.format(po_room_name, po_my_piece))
-
-        # 訪問後
-        MatchApplication.on_visited(request)
-        return render(request, clazz.path_of_html, {})
-
-    @classmethod
-    def on_sent(clazz, request):
+    @staticmethod
+    def on_sent(request):
         """送信後"""
 
         # Specification
@@ -171,8 +152,8 @@ class MatchApplication():
             # print(f"[MatchApplication on_sent] ★ ゲスト")
             pass
 
-    @classmethod
-    def on_visited(clazz, request):
+    @staticmethod
+    def on_visited(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
         pass
@@ -188,35 +169,21 @@ class Playing():
     # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
     #                      ------------------------
 
-    @classmethod
-    @property
-    def path_of_playing(clazz):
-        return clazz._path_of_playing
+    _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
+    #                                     ^ three
+    #                ---------------------------------------
+    #                1
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
+    #                            ---------------------------------------
 
-    @classmethod
-    def render(clazz, request, kw_room_name):
+    @staticmethod
+    def render(request, kw_room_name):
         """描画"""
-        my_piece = request.GET.get("mypiece")
-        if my_piece not in ['X', 'O']:
-            raise Http404(f"My piece '{my_piece}' does not exists")
+        return v_tic_tac_toe_v2.playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        #                     ^ two
 
-        Playing.on_update(request)
-
-        # `dj_` は Djangoでレンダーするパラメーター名の目印
-        context = {
-            "dj_room_name": kw_room_name,
-            "dj_my_piece": my_piece,
-            "dj_path_of_playing": clazz.path_of_playing,
-        }
-        return render(request, "webapp1/tic-tac-toe/v3/playing.html.txt", context)
-        #                                            ^ three
-        #                       ---------------------------------------
-        #                       1
-        # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
-        #                            ---------------------------------------
-
-    @classmethod
-    def on_update(clazz, request):
+    @staticmethod
+    def on_update(request):
         """訪問後または送信後"""
         # 拡張したい挙動があれば、ここに書く
         pass
