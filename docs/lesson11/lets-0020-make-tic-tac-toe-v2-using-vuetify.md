@@ -1516,14 +1516,13 @@ function createSetMessageFromServer() {
 class TicTacToeV2Protocol():
     """サーバープロトコル"""
 
-    def execute(self, doc_received, user):
+    async def execute(self, doc_received, user):
         """サーバーからクライアントへ送信するメッセージの作成"""
 
-        # ログインしていなければ AnonymousUser
-        print(f"[TicTacToeV2Protocol execute] user=[{user}]")
-
-
         event = doc_received.get("event", None)
+
+        # ログインしていなければ AnonymousUser
+        print(f"[TicTacToeV2Protocol execute] user=[{user}] event=[{event}]")
 
         if event == 'CtoS_End':
             # 対局終了時
@@ -1539,7 +1538,7 @@ class TicTacToeV2Protocol():
         elif event == 'CtoS_Move':
             # 石を置いたとき
 
-            self.on_move(doc_received, user)
+            await self.on_move(doc_received, user)
 
             return {
                 'type': 'send_message',
@@ -1562,20 +1561,23 @@ class TicTacToeV2Protocol():
 
     def on_end(self, doc_received):
         """対局終了時"""
+        print("[TicTacToeV2Protocol on_end] ignored")
         pass
 
-    def on_move(self, doc_received, user):
+    async def on_move(self, doc_received, user):
         """石を置いたとき"""
+        print("[TicTacToeV2Protocol on_end] on_move")
         pass
 
     def on_start(self, doc_received):
         """対局開始時"""
+        print("[TicTacToeV2Protocol on_end] on_start")
         pass
 ```
 
 # Step 15. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1652,12 +1654,12 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
 
         doc_received = json.loads(text_data)
 
-        response = self.on_receive(doc_received)
+        response = await self.on_receive(doc_received)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
 
-    def on_receive(self, doc_received):
+    async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
@@ -1733,7 +1735,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         super().__init__()
         self._protocol = TicTacToeV2Protocol()
 
-    def on_receive(self, doc_received):
+    async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
@@ -1744,7 +1746,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        return self._protocol.execute(doc_received, user)
+        return await self._protocol.execute(doc_received, user)
 ```
 
 # Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル

@@ -24,7 +24,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         super().__init__()
         self._protocol = TicTacToeV2Protocol()
 
-    def on_receive(self, doc_received):
+    async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
@@ -35,4 +35,4 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        return self._protocol.execute(doc_received, user)
+        return await self._protocol.execute(doc_received, user)

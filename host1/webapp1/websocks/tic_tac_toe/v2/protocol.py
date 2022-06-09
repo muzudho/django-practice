@@ -1,13 +1,13 @@
 class TicTacToeV2Protocol():
     """サーバープロトコル"""
 
-    def execute(self, doc_received, user):
+    async def execute(self, doc_received, user):
         """サーバーからクライアントへ送信するメッセージの作成"""
 
-        # ログインしていなければ AnonymousUser
-        print(f"[TicTacToeV2Protocol execute] user=[{user}]")
-
         event = doc_received.get("event", None)
+
+        # ログインしていなければ AnonymousUser
+        print(f"[TicTacToeV2Protocol execute] user=[{user}] event=[{event}]")
 
         if event == 'CtoS_End':
             # 対局終了時
@@ -23,7 +23,7 @@ class TicTacToeV2Protocol():
         elif event == 'CtoS_Move':
             # 石を置いたとき
 
-            self.on_move(doc_received, user)
+            await self.on_move(doc_received, user)
 
             return {
                 'type': 'send_message',
@@ -46,12 +46,15 @@ class TicTacToeV2Protocol():
 
     def on_end(self, doc_received):
         """対局終了時"""
+        print("[TicTacToeV2Protocol on_end] ignored")
         pass
 
-    def on_move(self, doc_received, user):
+    async def on_move(self, doc_received, user):
         """石を置いたとき"""
+        print("[TicTacToeV2Protocol on_end] on_move")
         pass
 
     def on_start(self, doc_received):
         """対局開始時"""
+        print("[TicTacToeV2Protocol on_end] on_start")
         pass

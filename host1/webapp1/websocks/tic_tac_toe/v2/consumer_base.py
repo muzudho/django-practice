@@ -44,12 +44,12 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
 
         doc_received = json.loads(text_data)
 
-        response = self.on_receive(doc_received)
+        response = await self.on_receive(doc_received)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
 
-    def on_receive(self, doc_received):
+    async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns

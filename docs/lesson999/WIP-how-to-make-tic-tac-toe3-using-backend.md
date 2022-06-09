@@ -1168,7 +1168,7 @@ function createSetMessageFromServer() {
 class Protocol():
     """サーバープロトコル"""
 
-    def execute(self, response, user):
+    async def execute(self, response, user):
         """サーバーからクライアントへ送信するメッセージの作成"""
 
         # ログインしていなければ AnonymousUser
@@ -1277,7 +1277,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        response = self._protocol.execute(doc_received, user)
+        response = await self._protocol.execute(doc_received, user)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
