@@ -1,4 +1,5 @@
 from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
+#                                  ^ two                            ^ two
 #    ------- ----------------------- -------------        -----------------------
 #    1       2                       3                    4
 # 1. アプリケーション フォルダー名
@@ -7,6 +8,7 @@ from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBas
 # 4. クラス名
 
 from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
+#                                  ^ two                       ^ two
 #    ------- ----------------------- --------        -------------------
 #    1       2                       3               4
 # 1. アプリケーション フォルダー名
@@ -22,11 +24,15 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         super().__init__()
         self._protocol = TicTacToeV2Protocol()
 
-    def on_receive(self, request):
+    def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
         -------
         response
         """
-        return self._protocol.execute(request)
+
+        # ログインしていなければ AnonymousUser
+        user = self.scope["user"]
+        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
+        return self._protocol.execute(doc_received, user)

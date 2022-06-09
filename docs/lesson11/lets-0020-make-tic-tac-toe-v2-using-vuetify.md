@@ -1483,7 +1483,7 @@ function createSetMessageFromServer() {
 
 # Step 14. 通信プロトコル作成 - protocol.py ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1516,38 +1516,42 @@ function createSetMessageFromServer() {
 class TicTacToeV2Protocol():
     """サーバープロトコル"""
 
-    def execute(self, request):
+    def execute(self, doc_received, user):
         """サーバーからクライアントへ送信するメッセージの作成"""
 
-        event = request.get("event", None)
+        # ログインしていなければ AnonymousUser
+        print(f"[TicTacToeV2Protocol execute] user=[{user}]")
+
+
+        event = doc_received.get("event", None)
 
         if event == 'CtoS_End':
             # 対局終了時
 
-            self.on_end(request)
+            self.on_end(doc_received)
 
             return {
                 'type': 'send_message',
                 'event': "StoC_End",
-                'winner': request.get("winner", None),
+                'winner': doc_received.get("winner", None),
             }
 
         elif event == 'CtoS_Move':
             # 石を置いたとき
 
-            self.on_move(request)
+            self.on_move(doc_received)
 
             return {
                 'type': 'send_message',
                 "event": "StoC_Move",
-                'sq': request.get("sq", None),
-                'myPiece': request.get("myPiece", None),
+                'sq': doc_received.get("sq", None),
+                'myPiece': doc_received.get("myPiece", None),
             }
 
         elif event == 'CtoS_Start':
             # 対局開始時
 
-            self.on_start(request)
+            self.on_start(doc_received)
 
             return {
                 'type': 'send_message',
@@ -1556,15 +1560,15 @@ class TicTacToeV2Protocol():
 
         raise ValueError(f"Unknown event: {event}")
 
-    def on_end(self, request):
+    def on_end(self, doc_received):
         """対局終了時"""
         pass
 
-    def on_move(self, request):
+    def on_move(self, doc_received):
         """石を置いたとき"""
         pass
 
-    def on_start(self, request):
+    def on_start(self, doc_received):
         """対局開始時"""
         pass
 ```
@@ -1646,14 +1650,14 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         print(
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
-        request = json.loads(text_data)
+        doc_received = json.loads(text_data)
 
-        response = self.on_receive(request)
+        response = self.on_receive(doc_received)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
 
-    def on_receive(self, request):
+    def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
@@ -1671,7 +1675,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
 
 # Step 16. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1704,6 +1708,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
 
 ```py
 from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBase
+#                                  ^ two                            ^ two
 #    ------- ----------------------- -------------        -----------------------
 #    1       2                       3                    4
 # 1. アプリケーション フォルダー名
@@ -1712,6 +1717,7 @@ from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBas
 # 4. クラス名
 
 from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
+#                                  ^ two                       ^ two
 #    ------- ----------------------- --------        -------------------
 #    1       2                       3               4
 # 1. アプリケーション フォルダー名
@@ -1727,14 +1733,18 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         super().__init__()
         self._protocol = TicTacToeV2Protocol()
 
-    def on_receive(self, request):
+    def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
         -------
         response
         """
-        return self._protocol.execute(request)
+
+        # ログインしていなければ AnonymousUser
+        user = self.scope["user"]
+        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
+        return self._protocol.execute(doc_received, user)
 ```
 
 # Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル
