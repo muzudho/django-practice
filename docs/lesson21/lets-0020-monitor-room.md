@@ -131,15 +131,17 @@ class TicTacToeV3o1Protocol(TicTacToeV2Protocol):
             f"[TicTacToeV3o1Protocol on_move] doc_received={doc_received}")
         # [TicTacToeV3o1Protocol on_move] doc_received={'event': 'CtoS_Move', 'sq': 2, 'myPiece': 'X'}
 
-        event = doc_received.get("event", None),
+        event = doc_received.get("event", None)
         # 石を置いたマス番号
-        sq = doc_received.get("sq", None),
+        sq = doc_received.get("sq", None)
         # 自分の石
-        my_piece = doc_received.get("myPiece", None),
+        my_piece = doc_received.get("myPiece", None)
         print(
             f"[TicTacToeV3o1Protocol on_move] user=[{user}] event=[{event}] sq=[{sq}] my_piece=[{my_piece}]")
+        # [TicTacToeV3o1Protocol on_move] user=[muzudho] event=[CtoS_Move] sq=[2] my_piece=[X]
 
         # ユーザーに紐づく部屋を取得します
+        # FIXME 非同期スレッドの中でデータベースアクセスできない？
         if my_piece == "X":
             room = Room.objects.get(sente_id=user.pk)
         elif my_piece == "O":
