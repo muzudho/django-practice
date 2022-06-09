@@ -25,7 +25,7 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
         self._protocol = TicTacToeV3o1Protocol()
         #                          ^^^ three o one
 
-    def on_receive(self, doc_received):
+    async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
 
         Returns
@@ -36,4 +36,4 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV3o1ConsumerCustom on_receive] user=[{user}]")
-        return self._protocol.execute(doc_received, user)
+        return await self._protocol.execute(doc_received, user)
