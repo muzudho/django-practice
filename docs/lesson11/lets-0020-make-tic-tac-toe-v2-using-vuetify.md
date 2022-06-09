@@ -1539,7 +1539,7 @@ class TicTacToeV2Protocol():
         elif event == 'CtoS_Move':
             # 石を置いたとき
 
-            self.on_move(doc_received)
+            self.on_move(doc_received, user)
 
             return {
                 'type': 'send_message',
@@ -1564,7 +1564,7 @@ class TicTacToeV2Protocol():
         """対局終了時"""
         pass
 
-    def on_move(self, doc_received):
+    def on_move(self, doc_received, user):
         """石を置いたとき"""
         pass
 
