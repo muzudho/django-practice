@@ -1168,8 +1168,11 @@ function createSetMessageFromServer() {
 class Protocol():
     """サーバープロトコル"""
 
-    def execute(self, response):
+    def execute(self, response, user):
         """サーバーからクライアントへ送信するメッセージの作成"""
+
+        # ログインしていなければ AnonymousUser
+        print(f"[Protocol execute] user=[{user}]")
 
         event = response.get("event", None)
 
@@ -1269,8 +1272,12 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
         print(
             f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
 
-        request = json.loads(text_data)
-        response = self._protocol.execute(request)
+        doc_received = json.loads(text_data)
+
+        # ログインしていなければ AnonymousUser
+        user = self.scope["user"]
+        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
+        response = self._protocol.execute(doc_received, user)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)

@@ -19,48 +19,60 @@ from webapp1.models.m_room import Room
 class TicTacToeV3o1Protocol(TicTacToeV2Protocol):
     """サーバープロトコル"""
 
-    def on_end(self, request):
+    def on_end(self, doc_received):
         """対局終了時"""
         pass
 
-    def on_move(self, request):
+    def on_move(self, doc_received, user):
         """石を置いたとき"""
 
-        sq = request.get("sq", None),
-        # my_piece = request.get("myPiece", None),
-        print(
-            f"[TicTacToeV3o1Protocol on_move] sq=[{sq}]")
+        # ログインしていなければ AnonymousUser
+        if user.is_anonymous:
+            # ログインしていないユーザーの操作は記録しません
+            return
 
-        # `po_` は POST送信するパラメーター名の目印
-        # 部屋名
-        po_room_name = request.POST.get("po_room_name")
-        # 自分の駒。 X か O
-        po_my_piece = request.POST.get("po_my_piece")
         print(
-            f"[TicTacToeV3o1Protocol on_move] po_room_name=[{po_room_name}] po_my_piece=[{po_my_piece}]")
+            f"[TicTacToeV3o1Protocol on_move] doc_received={doc_received}")
+        # [TicTacToeV3o1Protocol on_move] doc_received={'event': 'CtoS_Move', 'sq': 2, 'myPiece': 'X'}
 
-        # 部屋の取得 または 新規作成
-        #
-        # * ID ではなく、部屋名から行う
-        room_table_qs = Room.objects.filter(name=po_room_name)
+        event = doc_received.get("event", None),
+        # 石を置いたマス番号
+        sq = doc_received.get("sq", None),
+        # 自分の石
+        my_piece = doc_received.get("myPiece", None),
         print(
-            f"[TicTacToeV3o1Protocol on_move] len(room_table_qs)={len(room_table_qs)}")
+            f"[TicTacToeV3o1Protocol on_move] user=[{user}] event=[{event}] sq=[{sq}] my_piece=[{my_piece}]")
 
-        if 1 == len(room_table_qs):
-            # FIXME 名前被りの部屋が存在すると正しく動きません
-            room = room_table_qs[0]
+        # ユーザーに紐づく部屋を取得します
+        if my_piece == "X":
+            room = Room.objects.get(sente_id=user.pk)
+        elif my_piece == "O":
+            room = Room.objects.get(gote_id=user.pk)
         else:
-            raise ValueError(f"room fail. po_room_name=[{po_room_name}]")
+            raise ValueError(f"Unexpected my_piece = [{my_piece}]")
+
+        print(
+            f"[TicTacToeV3o1Protocol on_move] room name=[{room.name}]")
 
         # （デバッグ）現状を出力
         print(
             f"[TicTacToeV3o1Protocol on_move] now room.board=[{room.board}] room.record=[{room.record}]")
 
-        # TODO room.board 文字列に石を追加したい
-        # TODO room.record 文字列に座標を追加したい
+        # 石を置きます
+        #
+        # * 盤が9マスになるように右を '.' で埋めます
+        room.board.ljust(9, '.')
+        room.board[sq] = my_piece
 
-        pass
+        # 棋譜を書きます
+        #
+        # * 相手が AnonymousUser なら、相手の指し手が記録されていないものになります
+        # * 空文字列か、そうでなければ 末尾はカンマで終わります
+        room.record = f"{room.record}{sq},"
 
-    def on_start(self, request):
+        # 部屋を上書きします
+        room.save()
+
+    def on_start(self, doc_received):
         """対局開始時"""
         pass
