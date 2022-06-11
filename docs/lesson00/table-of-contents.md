@@ -127,3 +127,8 @@ Lesson 20. Reduce client-side functionality
 Lesson 21. Check-in
 
 * 📖 [Djangoでチェックインを作ろう！](https://qiita.com/muzudho1/items/1ce542dd66929d7bce3f)
+
+Lesson 22. Monitor
+
+* 📖 [Djangoでゲーム対局部屋をモニターしよう！](https://qiita.com/muzudho1/items/e5e6e6ba76da401c4c00)
+

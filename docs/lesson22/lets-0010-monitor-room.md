@@ -2,8 +2,9 @@
 
 ゲーム対局部屋をモニターしたい  
 
-* 対局開始時に、初期盤面を保存する。棋譜は空っぽにする
-* 一手指す毎に、現盤面で上書きする。棋譜に１手分追加する
+* 一手指す毎に
+  * 盤面を、現盤面で上書きする
+  * 棋譜に１手分追加する
 
 # はじめに
 
@@ -321,121 +322,85 @@ websocket_urlpatterns = [
 ```
 
 ```py
-from asgiref.sync import sync_to_async
-
-from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2MessageConverter
-#                                  ^ two                       ^ two
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
+from webapp1.views import v_tic_tac_toe_v2
+#                                        ^ two
+#    ------- -----        ----------------
+#    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. クラス名
 
-from webapp1.models.m_room import Room
-#    ------- ------ ------        ----
-#    1       2      3             4
+from webapp1.views import v_tic_tac_toe_v3
+#                                        ^ three
+#    ------- -----        ----------------
+#    1       2            3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
-# 4. クラス名
 
 
-class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
-    """サーバープロトコル"""
+class MatchApplication():
+    """対局申込ページ"""
 
-    def on_end(self, scope, doc_received):
-        """対局終了時"""
-        pass
+    _path_of_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
+    #                                 ^^^ three o one
+    #                   -------------------------------------------
+    #                   1
+    # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
+    #                           ----------------------------------------------
 
-    async def on_move(self, scope, doc_received):
-        """石を置いたとき"""
+    _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
+    #                                     ^ two
+    #                ---------------------------------------------
+    #                1
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/match_application.html
+    #                            ---------------------------------------------
 
-        # ログインしていなければ AnonymousUser
-        user = scope["user"]
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] user=[{user}] doc_received={doc_received}")
-        # [TicTacToeV3o1MessageConverter on_move] doc_received={'event': 'C2S_Move', 'sq': 2, 'myPiece': 'X'}
-        if user.is_anonymous:
-            # ログインしていないユーザーの操作は記録しません
-            return
+    @staticmethod
+    def render(request):
+        """描画"""
+        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.on_visited)
+        #                     ^ two
 
+    @staticmethod
+    def on_sent(request):
+        """送信後"""
+        return v_tic_tac_toe_v3.match_application_on_sent(request)
 
-        event = doc_received.get("event", None)
-        # 石を置いたマス番号
-        sq = doc_received.get("sq", None)
-        # 自分の石
-        my_piece = doc_received.get("myPiece", None)
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] user=[{user}] event=[{event}] sq=[{sq}] my_piece=[{my_piece}]")
-        # [TicTacToeV3o1MessageConverter on_move] user=[muzudho] event=[C2S_Move] sq=[2] my_piece=[X]
-
-        # ユーザーに紐づく部屋を取得します
-        # FIXME `sync_to_async` を用いて、一時的に非同期スレッドにする必要があります
-        if my_piece == "X":
-            room = await get_room_by_sente_id(user.pk)
-        elif my_piece == "O":
-            room = await get_room_by_gote_id(user.pk)
-        else:
-            raise ValueError(f"Unexpected my_piece = [{my_piece}]")
-
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] room=[{room}]")
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] room name=[{room.name}]")
-
-        # （デバッグ）現状を出力
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] now room.board=[{room.board}] room.record=[{room.record}]")
-
-        # 石を置きます
-        #
-        # * 盤が9マスになるように右を '.' で埋めます
-        room.board = room.board.ljust(9, '.')
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] now2 room.board=[{room.board}]")
-
-        room.board = f"{room.board[:sq]}{my_piece}{room.board[sq+1:]}"
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] now3 room.board=[{room.board}]")
-
-        # 棋譜を書きます
-        #
-        # * 相手が AnonymousUser なら、相手の指し手が記録されていないものになります
-        # * 9文字を超えるようなら、切り捨てます
-
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] now4 room.record=[{room.record}]")
-        room.record = f"{room.record}{sq}"[:9]
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] now5 room.record=[{room.record}]")
-
-        # 部屋を上書きします
-        await save_room(room)
-
-        print(f"[TicTacToeV3o1MessageConverter on_move] saved")
-
-    def on_start(self, scope, doc_received):
-        """対局開始時"""
-        print(f"[TicTacToeV3o1MessageConverter on_start] ignored")
+    @staticmethod
+    def on_visited(request):
+        """訪問後"""
+        # 拡張したい挙動があれば、ここに書く
         pass
 
 
-@sync_to_async
-def get_room_by_sente_id(user_id):
-    # FIXME １人のユーザーが複数の部屋にいる（多面指し）することは可能。部屋を一意に取得するには？
-    return Room.objects.filter(sente_id=user_id)[0]
+class Playing():
 
+    _path_of_playing = "/tic-tac-toe/v3o1/playing/"
+    #                                 ^^^ three o one
+    #                   --------------------------
+    #                   1
+    # 1. http://example.com/tic-tac-toe/v3o1/playing/Elephant/
+    #                      --------------------------
 
-@sync_to_async
-def get_room_by_gote_id(user_id):
-    # FIXME １人のユーザーが複数の部屋にいる（多面指し）することは可能。部屋を一意に取得するには？
-    return Room.objects.filter(sente_id=user_id)[0]
+    _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
+    #                                     ^ three
+    #                ---------------------------------------
+    #                1
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
+    #                            ---------------------------------------
 
+    @staticmethod
+    def render(request, kw_room_name):
+        """描画"""
+        return v_tic_tac_toe_v2.playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        #                     ^ two
 
-@sync_to_async
-def save_room(room):
-    room.save()
+    @staticmethod
+    def on_update(request):
+        """訪問後または送信後"""
+        # 拡張したい挙動があれば、ここに書く
+        pass
 ```
 
 # Step 6. ルート編集 - urls.py ファイル
