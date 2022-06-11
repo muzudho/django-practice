@@ -23,7 +23,7 @@
                             <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
                             <!-- 自分の駒。 X か O -->
-                            <v-select name="po_my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.choices" item-text="visitor.value" item-value="visitor.value" label="Your piece" persistent-hint return-object single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -39,6 +39,7 @@
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    // 部屋名
                     roomName: {
                         value: "Elephant",
                         rules: [
@@ -49,8 +50,11 @@
                             },
                         ],
                     },
-                    selectedMyPiece: "X",
-                    pieces: ["X", "O"],
+                    // 入場者
+                    visitor: {
+                        value: "X",
+                        choices: ["X", "O"],
+                    },
                 },
             });
         </script>

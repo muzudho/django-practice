@@ -33,8 +33,6 @@ class TicTacToeV2MessageConverter():
             print(
                 f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
 
-            print(
-                f"[TicTacToeV2MessageConverter on_receive] C2S_Move on_move呼出し")
             await self.on_move(scope, doc_received)
 
             return {
@@ -60,15 +58,15 @@ class TicTacToeV2MessageConverter():
 
     def on_end(self, scope, doc_received):
         """対局終了時"""
-        print("[TicTacToeV2MessageConverter on_end] ignored")
+        # print("[TicTacToeV2MessageConverter on_end] ignored")
         pass
 
     async def on_move(self, scope, doc_received):
         """石を置いたとき"""
-        print("[TicTacToeV2MessageConverter on_move] ignored")
+        # print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 
     def on_start(self, scope, doc_received):
         """対局開始時"""
-        print("[TicTacToeV2MessageConverter on_start] ignored")
+        # print("[TicTacToeV2MessageConverter on_start] ignored")
         pass

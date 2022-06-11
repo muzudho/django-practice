@@ -85,7 +85,11 @@ def match_application_render(request, path_of_playing, path_of_html, on_sent, on
 
     # 訪問後
     on_visited(request)
-    return render(request, path_of_html, {})
+
+    # `dj_` は Djangoでレンダーするパラメーター名の目印
+    context = {}
+
+    return render(request, path_of_html, context)
 
 
 def playing_render(request, kw_room_name, path_of_playing, path_of_html, on_update):

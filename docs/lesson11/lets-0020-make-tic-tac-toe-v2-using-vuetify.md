@@ -1056,7 +1056,7 @@ function packSetMessageFromServer() {
                             <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
                             <!-- 自分の駒。 X か O -->
-                            <v-select name="po_my_piece" v-model="selectedMyPiece" :items="pieces" item-text="selectedMyPiece" item-value="selectedMyPiece" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.choices" item-text="visitor.value" item-value="visitor.value" label="Your piece" persistent-hint return-object single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -1072,6 +1072,7 @@ function packSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    // 部屋名
                     roomName: {
                         value: "Elephant",
                         rules: [
@@ -1082,8 +1083,11 @@ function packSetMessageFromServer() {
                             },
                         ],
                     },
-                    selectedMyPiece: "X",
-                    pieces: ["X", "O"],
+                    // 入場者
+                    visitor: {
+                        value: "X",
+                        choices: ["X", "O"],
+                    },
                 },
             });
         </script>
@@ -1565,8 +1569,6 @@ class TicTacToeV2MessageConverter():
             print(
                 f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
 
-            print(
-                f"[TicTacToeV2MessageConverter on_receive] C2S_Move on_move呼出し")
             await self.on_move(scope, doc_received)
 
             return {
@@ -1592,17 +1594,17 @@ class TicTacToeV2MessageConverter():
 
     def on_end(self, scope, doc_received):
         """対局終了時"""
-        print("[TicTacToeV2MessageConverter on_end] ignored")
+        # print("[TicTacToeV2MessageConverter on_end] ignored")
         pass
 
     async def on_move(self, scope, doc_received):
         """石を置いたとき"""
-        print("[TicTacToeV2MessageConverter on_move] ignored")
+        # print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 
     def on_start(self, scope, doc_received):
         """対局開始時"""
-        print("[TicTacToeV2MessageConverter on_start] ignored")
+        # print("[TicTacToeV2MessageConverter on_start] ignored")
         pass
 ```
 
@@ -1779,7 +1781,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
 
 # Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1900,7 +1902,11 @@ def match_application_render(request, path_of_playing, path_of_html, on_sent, on
 
     # 訪問後
     on_visited(request)
-    return render(request, path_of_html, {})
+
+    # `dj_` は Djangoでレンダーするパラメーター名の目印
+    context = {}
+
+    return render(request, path_of_html, context)
 
 
 def playing_render(request, kw_room_name, path_of_playing, path_of_html, on_update):
@@ -2083,4 +2089,10 @@ websocket_urlpatterns = [
 
 # 参考にした記事
 
+## Web socket 関連
+
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  
+
+## HTML render 関連
+
+📖 [【Django】renderで渡した配列をjavascript側で受け取る](https://www.tcom242242.net/entry/memo/django-js-array-memo/)  
