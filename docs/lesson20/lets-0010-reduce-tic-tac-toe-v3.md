@@ -134,7 +134,9 @@ docker-compose up
 ```py
 # from django.contrib.auth.models import User # デバッグ用
 
+import json
 from webapp1.views import v_tic_tac_toe_v2
+#                                        ^ two
 #    ------- -----        ----------------
 #    1       2            3
 # 1. アプリケーション フォルダー名
@@ -178,7 +180,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.on_visited)
+        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
         #                     ^ two
 
     @staticmethod
@@ -187,10 +189,12 @@ class MatchApplication():
         return match_application_on_sent(request)
 
     @staticmethod
-    def on_visited(request):
+    def open(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
-        pass
+
+        return v_tic_tac_toe_v2.match_application_open_context
+        #                     ^ two
 
 
 class Playing():
@@ -224,7 +228,6 @@ class Playing():
 
 
 # 以下、関数
-
 
 def match_application_on_sent(request):
     """対局申込 - 送信後
