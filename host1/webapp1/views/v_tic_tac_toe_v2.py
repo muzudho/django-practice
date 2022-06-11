@@ -3,6 +3,22 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 
 
+# 以下、よく使う定型データ
+
+
+# 対局申込 - 訪問後
+match_application_open_context = {
+    # `dj_` は Djangoでレンダーするパラメーター名の目印
+    # 入場者データ
+    "dj_visitor_value": "X",
+    # Python と JavaScript 間で配列データを渡すために JSON 文字列形式にします
+    "dj_visitor_choices": json.dumps(["X", "O"]),
+}
+
+
+# 以下、ロジック
+
+
 class MatchApplication():
     """対局申込"""
 
@@ -23,7 +39,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.on_visited)
+        return match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
 
     @staticmethod
     def on_sent(request):
@@ -32,10 +48,11 @@ class MatchApplication():
         pass
 
     @staticmethod
-    def on_visited(request):
+    def open(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
-        pass
+
+        return match_application_open_context
 
 
 class Playing():
@@ -70,7 +87,7 @@ class Playing():
 # 以下、関数
 
 
-def match_application_render(request, path_of_playing, path_of_html, on_sent, on_visited):
+def match_application_render(request, path_of_playing, path_of_html, on_sent, open):
     """対局申込 - 描画"""
     if request.method == "POST":
         # 送信後
@@ -85,15 +102,7 @@ def match_application_render(request, path_of_playing, path_of_html, on_sent, on
         return redirect(path_of_playing.format(po_room_name, po_my_piece))
 
     # 訪問後
-    on_visited(request)
-
-    # `dj_` は Djangoでレンダーするパラメーター名の目印
-    context = {
-        # 入場者データ
-        "dj_visitor_value": "X",
-        # Python と JavaScript 間で配列データを渡すために JSON 文字列形式にします
-        "dj_visitor_choices": json.dumps(["X", "O"]),
-    }
+    context = open(request)
 
     return render(request, path_of_html, context)
 
