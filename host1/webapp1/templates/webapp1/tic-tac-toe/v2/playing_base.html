@@ -76,8 +76,8 @@
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/playground_equipment.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -117,7 +117,7 @@
                 vuetify: new Vuetify(),
                 data: {
                     engine: new Engine(
-                        createSetMessageFromServer(),
+                        packSetMessageFromServer(),
                         packReconnect(),
                         // `po_` は POST送信するパラメーター名の目印
                         // 部屋名

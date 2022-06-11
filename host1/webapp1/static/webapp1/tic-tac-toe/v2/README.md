@@ -1,13 +1,13 @@
 # tic-tac-toe v2
 
 ```plaintext
-                   📄protocol_main.js
+                   📄message_receiver.js
 ------------------------------------------------------------
                    Vue
 ------------------------------------------------------------
                    📄engine.js
 ------------------------------------------------------------
-📄protocol_messages.js    📄connection.js    📄judge_ctrl.js
+📄message_sender.js       📄connection.js    📄judge_ctrl.js
 -----------------------------------------    ---------------
                                              📄user_ctrl.js
                                              ---------------

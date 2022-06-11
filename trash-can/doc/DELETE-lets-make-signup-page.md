@@ -38,8 +38,8 @@
         │   │   │       ├── 📄engine.js
         │   │   │       ├── 📄game.js
         │   │   │       ├── 📄judge.js
-        │   │   │       ├── 📄protocol_main.js
-        │   │   │       └── 📄protocol_messages.js
+        │   │   │       ├── 📄message_receiver.js
+        │   │   │       └── 📄message_sender.js
         │   │   ├── 📂practice
         │   │   │   └── 📄vuetify-desserts.json
         │   │   └── 🚀favicon.ico

@@ -1,26 +1,27 @@
 /**
- * サーバーからのメッセージをセットする関数を返します
+ * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
  * @returns 関数
  */
-function createSetMessageFromServer() {
+function packSetMessageFromServer() {
     return (message) => {
+        // `s2c_` は サーバーからクライアントへ送られてきた変数の目印
         // イベント
-        let event = message["event"];
+        let event = message["s2c_event"];
         // 升番号
-        let sq = message["sq"];
+        let sq = message["s2c_sq"];
         // 手番。 X か O
-        let turn = message["myPiece"];
+        let turn = message["s2c_myPiece"];
         // 勝者
-        let winner = message["winner"];
-        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        let winner = message["s2c_winner"];
+        console.log(`[Debug][setMessage] event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
-            case "StoC_Start":
+            case "S2C_Start":
                 // 対局開始の一斉通知
                 vue1.init(); // 画面を初期化
                 break;
 
-            case "StoC_End":
+            case "S2C_End":
                 // 対局終了の一斉通知
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
@@ -34,8 +35,8 @@ function createSetMessageFromServer() {
                 vue1.setGameIsOver(result);
                 break;
 
-            case "StoC_Move":
-                console.log(`[Debug][setMessage] StoC_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+            case "S2C_Move":
+                console.log(`[Debug][setMessage] S2C_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
 
                 // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {

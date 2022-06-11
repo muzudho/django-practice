@@ -7,10 +7,10 @@ from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBas
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-from webapp1.websocks.tic_tac_toe.v3o1.protocol import TicTacToeV3o1Protocol
-#                                  ^^^ three o one               ^ three o one
-#    ------- ----------------------- ----------        ---------------------
-#    1       2                       3                 4
+from webapp1.websocks.tic_tac_toe.v3o1.message_converter import TicTacToeV3o1MessageConverter
+#                                  ^^^ three o one                        ^^^ three o one
+#    ------- ------------------------- -----------------        -----------------------------
+#    1       2                         3                        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -22,7 +22,7 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
 
     def __init__(self):
         super().__init__()
-        self._protocol = TicTacToeV3o1Protocol()
+        self._messageConverter = TicTacToeV3o1MessageConverter()
         #                          ^^^ three o one
 
     async def on_receive(self, doc_received):
@@ -36,4 +36,4 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV3o1ConsumerCustom on_receive] user=[{user}]")
-        return await self._protocol.execute(doc_received, user)
+        return await self._messageConverter.on_receive(doc_received, user)

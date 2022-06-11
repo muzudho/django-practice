@@ -4,22 +4,25 @@
 class Engine {
     /**
      * 生成
-     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
      * @param {string} roomName - 部屋名
      * @param {string} myPiece - X か O
      * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
      */
-    constructor(onSetMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
-        this._onSetMessageFromServer = onSetMessageFromServer;
+    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
+        this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
+
+        // 部屋名
+        this._roomName = roomName;
 
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
-        this._protocolMessages = new ProtocolMessages();
+        this._messageSender = new MessageSender();
 
         // 遊具
         this._playeq = new PlaygroundEquipment();
@@ -32,13 +35,13 @@ class Engine {
 
         // どちらかが勝ったとき
         this._judgeCtrl.onWon = (myPiece) => {
-            let response = this.protocolMessages.createWon(myPiece);
+            let response = this.messageSender.createWon(myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
 
         // 引き分けたとき
         this._judgeCtrl.onDraw = () => {
-            let response = this.protocolMessages.createDraw();
+            let response = this.messageSender.createDraw();
             this._connection.webSock1.send(JSON.stringify(response));
         };
 
@@ -51,7 +54,7 @@ class Engine {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
-            let response = this.protocolMessages.createDoMove(sq, myPiece);
+            let response = this.messageSender.createDoMove(this._roomName, sq, myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
     }
@@ -66,8 +69,8 @@ class Engine {
     /**
      * メッセージ一覧
      */
-    get protocolMessages() {
-        return this._protocolMessages;
+    get messageSender() {
+        return this._messageSender;
     }
 
     /**
@@ -99,7 +102,7 @@ class Engine {
             // Webソケットを開かれたとき
             () => {
                 console.log("WebSockets connection created.");
-                let response = this.protocolMessages.createStart();
+                let response = this.messageSender.createStart();
                 this._connection.webSock1.send(JSON.stringify(response));
             },
             // Webソケットが閉じられたとき
@@ -109,7 +112,7 @@ class Engine {
                 this._reconnect();
             },
             // サーバーからのメッセージを受信したとき
-            this._onSetMessageFromServer,
+            this._setMessageFromServer,
             // エラー時
             (e) => {
                 console.log(`Socket is error. ${e.reason}`);
