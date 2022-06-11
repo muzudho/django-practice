@@ -9,14 +9,15 @@ function packSetMessageFromServer() {
         let event = message["s2c_event"];
         // 升番号
         let sq = message["s2c_sq"];
-        // 手番。 X か O
+        // 手番。 "X" か "O"
         let turn = message["s2c_myPiece"];
         // 勝者
         let winner = message["s2c_winner"];
-        console.log(`[Debug][setMessage] event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        // console.log(`[Debug][setMessage] event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "S2C_Start":
+                console.log(`[Debug][setMessage] S2C_Start`);
                 // 対局開始の一斉通知
                 vue1.init(); // 画面を初期化
                 break;
@@ -36,7 +37,7 @@ function packSetMessageFromServer() {
                 break;
 
             case "S2C_Move":
-                console.log(`[Debug][setMessage] S2C_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Move turn s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
 
                 // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
@@ -58,7 +59,8 @@ function packSetMessageFromServer() {
                 break;
 
             default:
-                console.log("No event");
+                // Undefined behavior
+                console.log(`[Debug][setMessage] ignored. event=[${event}]`);
         }
     };
 }

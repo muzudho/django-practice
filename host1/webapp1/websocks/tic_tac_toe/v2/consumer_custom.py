@@ -32,7 +32,4 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         response
         """
 
-        # ログインしていなければ AnonymousUser
-        user = self.scope["user"]
-        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        return await self._messageConverter.on_receive(doc_received, user)
+        return await self._messageConverter.on_receive(self.scope, doc_received)

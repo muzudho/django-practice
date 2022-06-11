@@ -142,16 +142,15 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 class MessageSender {
     /**
      * どちらかのプレイヤーが石を置いたとき
-     * @param {string} roomName - 部屋名
      * @param {int} sq - 升番号
      * @param {string} myPiece - X か O
      * @returns メッセージ
      */
-    createDoMove(roomName, sq, myPiece) {
+    createDoMove(sq, myPiece) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
+        console.log(`[MessageSender createDoMove] sq=${sq} myPiece=${myPiece}`);
         return {
             c2s_event: "C2S_Move",
-            c2s_roomName: roomName,
             c2s_sq: sq,
             c2s_myPiece: myPiece,
         };
@@ -629,6 +628,7 @@ class UserCtrl {
                     return false;
             }
 
+            console.log(`[UserCtrl doMove] sq=${sq} myPiece=${myPiece}`);
             this._onDoMove(sq, myPiece);
         }
 
@@ -801,9 +801,6 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
-        // 部屋名
-        this._roomName = roomName;
-
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -841,7 +838,7 @@ class Engine {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
-            let response = this.messageSender.createDoMove(this._roomName, sq, myPiece);
+            let response = this.messageSender.createDoMove(sq, myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
     }
@@ -942,7 +939,7 @@ function packSetMessageFromServer() {
         let event = message["s2c_event"];
         // 升番号
         let sq = message["s2c_sq"];
-        // 手番。 X か O
+        // 手番。 "X" か "O"
         let turn = message["s2c_myPiece"];
         // 勝者
         let winner = message["s2c_winner"];
@@ -950,6 +947,7 @@ function packSetMessageFromServer() {
 
         switch (event) {
             case "S2C_Start":
+                console.log(`[Debug][setMessage] S2C_Start`);
                 // 対局開始の一斉通知
                 vue1.init(); // 画面を初期化
                 break;
@@ -969,7 +967,7 @@ function packSetMessageFromServer() {
                 break;
 
             case "S2C_Move":
-                console.log(`[Debug][setMessage] S2C_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Move turn s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
 
                 // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
@@ -991,7 +989,8 @@ function packSetMessageFromServer() {
                 break;
 
             default:
-                console.log("No event");
+                // Undefined behavior
+                console.log(`[Debug][setMessage] ignored. event=[${event}]`);
         }
     };
 }
@@ -1525,66 +1524,72 @@ function packSetMessageFromServer() {
 class TicTacToeV2MessageConverter():
     """サーバープロトコル"""
 
-    async def on_receive(self, doc_received, user):
+    async def on_receive(self, scope, doc_received):
         """クライアントからサーバーへ送られてきた変数を解析し、
         サーバーからクライアントへ送信するメッセージの作成"""
+
+        # ログインしていなければ AnonymousUser
+        user = scope["user"]
+        print(f"[TicTacToeV2MessageConverter on_receive] user=[{user}]")
 
         # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
         event = doc_received.get("c2s_event", None)
 
-        # ログインしていなければ AnonymousUser
-        print(
-            f"[TicTacToeV2MessageConverter on_receive] user=[{user}] event=[{event}]")
-
         if event == 'C2S_End':
             # 対局終了時
+            print(f"[TicTacToeV2MessageConverter on_receive] C2S_End")
 
-            self.on_end(doc_received)
+            self.on_end(scope, doc_received)
 
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             return {
-                'type': 'send_message', # type属性は必須
+                'type': 'send_message',  # type属性は必須
                 's2c_event': "S2C_End",
                 's2c_winner': doc_received.get("c2s_winner", None),
             }
 
         elif event == 'C2S_Move':
             # 石を置いたとき
-
-            await self.on_move(doc_received, user)
-
             # `s2c_` は サーバーからクライアントへ送る変数の目印
+            c2s_sq = doc_received.get("c2s_sq", None)
+            c2s_myPiece = doc_received.get("c2s_myPiece", None)
+            print(
+                f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
+
+            await self.on_move(scope, doc_received)
+
             return {
-                'type': 'send_message', # type属性は必須
-                "s2c_event": "S2C_Move",
-                's2c_sq': doc_received.get("c2s_sq", None),
-                's2c_myPiece': doc_received.get("c2s_myPiece", None),
+                'type': 'send_message',  # type属性は必須
+                's2c_event': 'S2C_Move',
+                's2c_sq': c2s_sq,
+                's2c_myPiece': c2s_myPiece,
             }
 
         elif event == 'C2S_Start':
             # 対局開始時
+            print(f"[TicTacToeV2MessageConverter on_receive] C2S_Start")
 
-            self.on_start(doc_received)
+            self.on_start(scope, doc_received)
 
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             return {
-                'type': 'send_message', # type属性は必須
+                'type': 'send_message',  # type属性は必須
                 's2c_event': "S2C_Start",
             }
 
         raise ValueError(f"Unknown event: {event}")
 
-    def on_end(self, doc_received):
+    def on_end(self, scope, doc_received):
         """対局終了時"""
         print("[TicTacToeV2MessageConverter on_end] ignored")
         pass
 
-    async def on_move(self, doc_received, user):
+    async def on_move(self, scope, doc_received):
         """石を置いたとき"""
         print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 
-    def on_start(self, doc_received):
+    def on_start(self, scope, doc_received):
         """対局開始時"""
         print("[TicTacToeV2MessageConverter on_start] ignored")
         pass
@@ -1665,7 +1670,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         """クライアントからのメッセージの受信"""
 
         print(
-            f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
+            f"[Debug][TicTacToeV2ConsumerBase receive] text_data={text_data}")  # ちゃんと動いているようなら消す
 
         doc_received = json.loads(text_data)
 
@@ -1758,10 +1763,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         response
         """
 
-        # ログインしていなければ AnonymousUser
-        user = self.scope["user"]
-        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        return await self._messageConverter.on_receive(doc_received, user)
+        return await self._messageConverter.on_receive(self.scope, doc_received)
 ```
 
 # Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル

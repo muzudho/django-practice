@@ -14,9 +14,6 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
-        // 部屋名
-        this._roomName = roomName;
-
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -54,7 +51,7 @@ class Engine {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
-            let response = this.messageSender.createDoMove(this._roomName, sq, myPiece);
+            let response = this.messageSender.createDoMove(sq, myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
     }

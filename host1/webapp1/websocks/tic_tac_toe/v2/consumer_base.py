@@ -40,7 +40,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         """クライアントからのメッセージの受信"""
 
         print(
-            f"[Debug] Consumer1#receive text_data={text_data}")  # ちゃんと動いているようなら消す
+            f"[Debug][TicTacToeV2ConsumerBase receive] text_data={text_data}")  # ちゃんと動いているようなら消す
 
         doc_received = json.loads(text_data)
 

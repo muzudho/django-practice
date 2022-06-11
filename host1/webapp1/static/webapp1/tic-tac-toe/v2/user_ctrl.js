@@ -51,6 +51,7 @@ class UserCtrl {
                     return false;
             }
 
+            console.log(`[UserCtrl doMove] sq=${sq} myPiece=${myPiece}`);
             this._onDoMove(sq, myPiece);
         }
 

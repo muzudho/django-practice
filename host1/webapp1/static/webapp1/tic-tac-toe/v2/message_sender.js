@@ -6,16 +6,15 @@
 class MessageSender {
     /**
      * どちらかのプレイヤーが石を置いたとき
-     * @param {string} roomName - 部屋名
      * @param {int} sq - 升番号
      * @param {string} myPiece - X か O
      * @returns メッセージ
      */
-    createDoMove(roomName, sq, myPiece) {
+    createDoMove(sq, myPiece) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
+        console.log(`[MessageSender createDoMove] sq=${sq} myPiece=${myPiece}`);
         return {
             c2s_event: "C2S_Move",
-            c2s_roomName: roomName,
             c2s_sq: sq,
             c2s_myPiece: myPiece,
         };
