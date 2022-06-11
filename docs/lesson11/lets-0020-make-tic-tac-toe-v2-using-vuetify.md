@@ -1085,8 +1085,9 @@ function packSetMessageFromServer() {
                     },
                     // 入場者
                     visitor: {
-                        value: "X",
-                        choices: ["X", "O"],
+                        // `dj_` は Djangoでレンダーするパラメーター名の目印
+                        value: "{{dj_visitor_value}}",
+                        choices: JSON.parse("{{dj_visitor_choices | escapejs}}"),
                     },
                 },
             });
@@ -1815,6 +1816,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
 ```
 
 ```py
+import json
 from django.http import Http404
 from django.shortcuts import render, redirect
 
@@ -1904,7 +1906,12 @@ def match_application_render(request, path_of_playing, path_of_html, on_sent, on
     on_visited(request)
 
     # `dj_` は Djangoでレンダーするパラメーター名の目印
-    context = {}
+    context = {
+        # 入場者データ
+        "dj_visitor_value": "X",
+        # Python と JavaScript 間で配列データを渡すために JSON 文字列形式にします
+        "dj_visitor_choices": json.dumps(["X", "O"]),
+    }
 
     return render(request, path_of_html, context)
 
@@ -2092,7 +2099,3 @@ websocket_urlpatterns = [
 ## Web socket 関連
 
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  
-
-## HTML render 関連
-
-📖 [【Django】renderで渡した配列をjavascript側で受け取る](https://www.tcom242242.net/entry/memo/django-js-array-memo/)  

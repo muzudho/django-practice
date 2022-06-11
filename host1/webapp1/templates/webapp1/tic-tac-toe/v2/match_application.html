@@ -52,8 +52,9 @@
                     },
                     // 入場者
                     visitor: {
-                        value: "X",
-                        choices: ["X", "O"],
+                        // `dj_` は Djangoでレンダーするパラメーター名の目印
+                        value: "{{dj_visitor_value}}",
+                        choices: JSON.parse("{{dj_visitor_choices | escapejs}}"),
                     },
                 },
             });
