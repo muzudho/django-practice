@@ -304,7 +304,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 5. ビュー編集 - v_tic_tac_toe_v3o1.py ファイル
+# Step 5. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -317,27 +317,28 @@ websocket_urlpatterns = [
             │           ├── consumer_custom.py
             │           └── message_converter.py
             ├── 📂views
-👉          │   └── v_tic_tac_toe_v3o1.py
+            │   └── 📂tic_tac_toe
+            │       └── 📂v3o1
+👉          │           └── resources.py
             └── routing1.py
 ```
 
 ```py
-import json
-from webapp1.views import v_tic_tac_toe_v2
-#                                        ^ two
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
-from webapp1.views import v_tic_tac_toe_v3
-#                                        ^ three
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 
 class MatchApplication():
@@ -360,21 +361,21 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
-        #                     ^ two
+        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        #                   ^ two
 
     @staticmethod
     def on_sent(request):
         """送信後"""
-        return v_tic_tac_toe_v3.match_application_on_sent(request)
+        return tic_tac_toe_v3.match_application_on_sent(request)
 
     @staticmethod
     def open(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
 
-        return v_tic_tac_toe_v2.match_application_open_context
-        #                     ^ two
+        return tic_tac_toe_v2.match_application_open_context
+        #                   ^ two
 
 
 class Playing():
@@ -396,8 +397,8 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return v_tic_tac_toe_v2.playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
-        #                     ^ two
+        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        #                   ^ two
 
     @staticmethod
     def on_update(request):
@@ -419,7 +420,9 @@ class Playing():
             │           ├── consumer_custom.py
             │           └── message_converter.py
             ├── 📂views
-            │   └── v_tic_tac_toe_v3o1.py
+            │   └── 📂tic_tac_toe
+            │       └── 📂v3o1
+            │           └── resources.py
             ├── routing1.py
 👉          └── urls.py
 ```
@@ -427,50 +430,49 @@ class Playing():
 👇追加する部分のみ抜粋
 
 ```py
-from webapp1.views import v_tic_tac_toe_v3o1
-#    ------- -----        ------------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v3o1 import resources as tic_tac_toe_v3o1
+#    ------- ----------------------        ---------    ----------------
+#    1       2                             3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
 
     # ...中略...
 
     # +----
-    # | 〇×ゲーム３
-
-    # ...中略...
+    # | 〇×ゲーム３．１
 
     # 対局申込
     path('tic-tac-toe/v3o1/match-application/',
          #             ^^^
          # ----------------------------------
          # 1
-         v_tic_tac_toe_v3o1.MatchApplication.render),
-    #                   ^^^
-    #    ------------------------------------------
+         tic_tac_toe_v3o1.MatchApplication.render),
+    #                 ^^^
+    #    ----------------------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v3o1/match-application/` のような URL のパスの部分
     #                              -----------------------------------
-    # 2. v_tic_tac_toe_v3o1.py ファイルの MatchApplication クラスの render メソッド
+    # 2. tic_tac_toe_v3o1 (別名)ファイルの MatchApplication クラスの render メソッド
 
     # 対局中
     path('tic-tac-toe/v3o1/playing/<str:kw_room_name>/',
          #             ^^^
          # -------------------------------------------
          # 1
-         v_tic_tac_toe_v3o1.Playing.render),
-    #                   ^^^
-    #    ---------------------------------
+         tic_tac_toe_v3o1.Playing.render),
+    #                 ^^^
+    #    -------------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v3o1/playing/<部屋名>/` のような URL のパスの部分。
     #                              ----------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v3o1.py ファイルの Playing クラスの render 静的メソッド
+    # 2. tic_tac_toe_v3o1 (別名)ファイルの Playing クラスの render 静的メソッド
 
-    # | 〇×ゲーム３
+    # | 〇×ゲーム３．１
     # +----
 ]
 ```
