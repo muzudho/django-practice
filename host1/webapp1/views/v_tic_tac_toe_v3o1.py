@@ -1,11 +1,10 @@
-import json
-from webapp1.views import v_tic_tac_toe_v2
-#                                        ^ two
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 from webapp1.views import v_tic_tac_toe_v3
 #                                        ^ three
@@ -36,8 +35,8 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
-        #                     ^ two
+        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        #                   ^ two
 
     @staticmethod
     def on_sent(request):
@@ -49,8 +48,8 @@ class MatchApplication():
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
 
-        return v_tic_tac_toe_v2.match_application_open_context
-        #                     ^ two
+        return tic_tac_toe_v2.match_application_open_context
+        #                   ^ two
 
 
 class Playing():
@@ -72,8 +71,8 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return v_tic_tac_toe_v2.playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
-        #                     ^ two
+        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        #                   ^ two
 
     @staticmethod
     def on_update(request):

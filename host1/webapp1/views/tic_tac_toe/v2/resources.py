@@ -39,7 +39,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        return render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
 
     @staticmethod
     def on_sent(request):
@@ -75,7 +75,7 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        return render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
 
     @staticmethod
     def on_update(request):
@@ -87,7 +87,7 @@ class Playing():
 # 以下、関数
 
 
-def match_application_render(request, path_of_playing, path_of_html, on_sent, open):
+def render_match_application(request, path_of_playing, path_of_html, on_sent, open):
     """対局申込 - 描画"""
     if request.method == "POST":
         # 送信後
@@ -107,7 +107,7 @@ def match_application_render(request, path_of_playing, path_of_html, on_sent, op
     return render(request, path_of_html, context)
 
 
-def playing_render(request, kw_room_name, path_of_playing, path_of_html, on_update):
+def render_playing(request, kw_room_name, path_of_playing, path_of_html, on_update):
     """対局中 - 描画"""
     my_piece = request.GET.get("mypiece")
     if my_piece not in ['X', 'O']:
