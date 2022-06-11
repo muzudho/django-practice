@@ -238,6 +238,10 @@ class MatchApplication():
 
 📖 [http://localhost:8000/admin](http://localhost:8000/admin)  
 
+# 次の記事
+
+📖 [Djangoでゲーム対局部屋をモニターしよう！](https://qiita.com/muzudho1/items/e5e6e6ba76da401c4c00)  
+
 # 参考にした記事
 
 📖 [Create Django model or update if exists](https://stackoverflow.com/questions/14115318/create-django-model-or-update-if-exists)  
