@@ -117,21 +117,25 @@ from webapp1.models.m_room import Room
 class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
     """サーバープロトコル"""
 
-    def on_end(self, doc_received):
+    def on_end(self, scope, doc_received):
         """対局終了時"""
         pass
 
-    async def on_move(self, doc_received, user):
+    async def on_move(self, scope, doc_received):
         """石を置いたとき"""
 
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] doc_received={doc_received}")
-        # [TicTacToeV3o1MessageConverter on_move] doc_received={'event': 'C2S_Move', 'sq': 2, 'myPiece': 'X'}
-
         # ログインしていなければ AnonymousUser
+        user = scope["user"]
+        print(
+            f"[TicTacToeV3o1MessageConverter on_move] user=[{user}] doc_received={doc_received}")
         if user.is_anonymous:
             # ログインしていないユーザーの操作は記録しません
             return
+
+        # 部屋名
+        #
+        # * URLのパスに含まれている
+        room_name = scope["url_route"]["kwargs"]["kw_room_name"]
 
         # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
         event = doc_received.get("c2s_event", None)
@@ -140,26 +144,17 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         # 自分の石
         my_piece = doc_received.get("c2s_myPiece", None)
         print(
-            f"[TicTacToeV3o1MessageConverter on_move] user=[{user}] event=[{event}] sq=[{sq}] my_piece=[{my_piece}]")
-        # [TicTacToeV3o1MessageConverter on_move] user=[muzudho] event=[C2S_Move] sq=[2] my_piece=[X]
+            f"[TicTacToeV3o1MessageConverter on_move] event=[{event}] room_name=[{room_name}] sq=[{sq}] my_piece=[{my_piece}]")
+        # [TicTacToeV3o1MessageConverter on_move] event=[C2S_Move] sq=[2] my_piece=[X]
 
-        # ユーザーに紐づく部屋を取得します
-        # FIXME `sync_to_async` を用いて、一時的に非同期スレッドにする必要があります
-        if my_piece == "X":
-            room = await get_room_by_sente_id(user.pk)
-        elif my_piece == "O":
-            room = await get_room_by_gote_id(user.pk)
-        else:
-            raise ValueError(f"Unexpected my_piece = [{my_piece}]")
-
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] room=[{room}]")
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] room name=[{room.name}]")
+        # 部屋取得
+        room = await get_room_by_name(room_name)
 
         # （デバッグ）現状を出力
         print(
-            f"[TicTacToeV3o1MessageConverter on_move] now room.board=[{room.board}] room.record=[{room.record}]")
+            f"[TicTacToeV3o1MessageConverter on_move] room=[{room}]")
+        print(
+            f"[TicTacToeV3o1MessageConverter on_move] now room.name=[{room.name}] room.board=[{room.board}] room.record=[{room.record}]")
 
         # 石を置きます
         #
@@ -186,24 +181,20 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         # 部屋を上書きします
         await save_room(room)
 
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] saved")
+        print(f"[TicTacToeV3o1MessageConverter on_move] saved")
 
-    def on_start(self, doc_received):
+    def on_start(self, scope, doc_received):
         """対局開始時"""
+
+        print(
+            f"[TicTacToeV3o1MessageConverter on_start] ignored. doc_received={doc_received}")
         pass
 
 
 @sync_to_async
-def get_room_by_sente_id(user_id):
-    # FIXME １人のユーザーが複数の部屋にいる（多面指し）することは可能。部屋を一意に取得するには？
-    return Room.objects.filter(sente_id=user_id)[0]
-
-
-@sync_to_async
-def get_room_by_gote_id(user_id):
-    # FIXME １人のユーザーが複数の部屋にいる（多面指し）することは可能。部屋を一意に取得するには？
-    return Room.objects.filter(sente_id=user_id)[0]
+def get_room_by_name(name):
+    # FIXME 部屋名はIDではないので、先頭の要素を取得
+    return Room.objects.filter(name=name)[0]
 
 
 @sync_to_async
@@ -251,7 +242,7 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
     def __init__(self):
         super().__init__()
         self._messageConverter = TicTacToeV3o1MessageConverter()
-        #                          ^^^ three o one
+        #                                  ^^^ three o one
 
     async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
@@ -261,10 +252,7 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
         response
         """
 
-        # ログインしていなければ AnonymousUser
-        user = self.scope["user"]
-        print(f"[TicTacToeV3o1ConsumerCustom on_receive] user=[{user}]")
-        return await self._messageConverter.on_receive(doc_received, user)
+        return await self._messageConverter.on_receive(self.scope, doc_received)
 ```
 
 # Step 4. ルート編集 - routing1.py ファイル
@@ -356,21 +344,22 @@ from webapp1.models.m_room import Room
 class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
     """サーバープロトコル"""
 
-    def on_end(self, doc_received):
+    def on_end(self, scope, doc_received):
         """対局終了時"""
         pass
 
-    async def on_move(self, doc_received, user):
+    async def on_move(self, scope, doc_received):
         """石を置いたとき"""
 
-        print(
-            f"[TicTacToeV3o1MessageConverter on_move] doc_received={doc_received}")
-        # [TicTacToeV3o1MessageConverter on_move] doc_received={'event': 'C2S_Move', 'sq': 2, 'myPiece': 'X'}
-
         # ログインしていなければ AnonymousUser
+        user = scope["user"]
+        print(
+            f"[TicTacToeV3o1MessageConverter on_move] user=[{user}] doc_received={doc_received}")
+        # [TicTacToeV3o1MessageConverter on_move] doc_received={'event': 'C2S_Move', 'sq': 2, 'myPiece': 'X'}
         if user.is_anonymous:
             # ログインしていないユーザーの操作は記録しません
             return
+
 
         event = doc_received.get("event", None)
         # 石を置いたマス番号
@@ -426,7 +415,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
 
         print(f"[TicTacToeV3o1MessageConverter on_move] saved")
 
-    def on_start(self, doc_received):
+    def on_start(self, scope, doc_received):
         """対局開始時"""
         print(f"[TicTacToeV3o1MessageConverter on_start] ignored")
         pass

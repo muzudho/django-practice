@@ -23,7 +23,7 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
     def __init__(self):
         super().__init__()
         self._messageConverter = TicTacToeV3o1MessageConverter()
-        #                          ^^^ three o one
+        #                                  ^^^ three o one
 
     async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
@@ -33,7 +33,4 @@ class TicTacToeV3o1ConsumerCustom(TicTacToeV2ConsumerBase):
         response
         """
 
-        # ログインしていなければ AnonymousUser
-        user = self.scope["user"]
-        print(f"[TicTacToeV3o1ConsumerCustom on_receive] user=[{user}]")
-        return await self._messageConverter.on_receive(doc_received, user)
+        return await self._messageConverter.on_receive(self.scope, doc_received)

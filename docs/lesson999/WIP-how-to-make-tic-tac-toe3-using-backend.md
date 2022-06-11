@@ -1274,10 +1274,7 @@ class TicTacToe2Consumer1(AsyncJsonWebsocketConsumer):
 
         doc_received = json.loads(text_data)
 
-        # ログインしていなければ AnonymousUser
-        user = self.scope["user"]
-        print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        response = await self._messageConverter.on_receive(doc_received, user)
+        response = await self._messageConverter.on_receive(self.scope, doc_received)
 
         # 部屋のメンバーに一斉送信します
         await self.channel_layer.group_send(self.room_group_name, response)
