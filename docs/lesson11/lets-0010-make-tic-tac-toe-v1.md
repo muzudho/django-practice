@@ -74,9 +74,21 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
 わたしの記事は単に **やってみた** ぐらいの位置づけだ。  
 
-# Step 1. プログラミング環境更新 - requirements.txt ファイル
+# Step 1. Dockerコンテナの起動
 
-（無ければ）ファイルの末尾にでも追加してほしい。  
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. プログラミング環境更新 - requirements.txt ファイル
+
+（無ければ）ファイルの末尾にでも追加してほしい  
 
 ```plaintext
     └── 📂host1
@@ -87,26 +99,21 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
 channels_redis>=3.2
 ```
 
-# Step 2. コマンド実行
+# Step 3. コマンド実行
 
-Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
+以下のコマンドを打鍵してほしい  
 
 ```shell
-cd host1
-
 # settings.py を編集したのでマイグレーションし直します
 docker-compose run --rm web python3 manage.py migrate
 #                       ---
 #                       1
 # 1. docker-compose.yml ファイルに書いてある services の子要素名
-
-# 起動
-docker-compose up
 ```
 
-# Step 3. Web ページのスタイル作成 - main.css ファイル
+# Step 4. Web ページのスタイル作成 - main.css ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -182,9 +189,9 @@ select {
 }
 ```
 
-# Step 4. play.js ファイルの作成
+# Step 5. 機能作成 - play.js ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -469,9 +476,9 @@ function connect() {
 connect();
 ```
 
-# Step 5. match_application.html ファイルの作成
+# Step 6. 対局申込画面作成 - match_application.html ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -523,9 +530,9 @@ connect();
 </html>
 ```
 
-# Step 6. playing.html ファイルの作成
+# Step 7. 対局画面作成 - playing.html ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -581,9 +588,9 @@ connect();
 </html>
 ```
 
-# Step 7. ビュー編集 - v_tic_tac_toe_v1.py ファイル
+# Step 8. ビュー作成 - resources.py ファイル
 
-以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -601,13 +608,19 @@ connect();
         │   │               ├── 📄match_application.html
         │   │               └── 📄playing.html
         │   └── 📂views
-👉      │       └── 📄v_tic_tac_toe_v1.py
+        │       └── 📂tic_tac_toe
+        │           └── 📂v1
+👉      │               └── 📄resources.py
         └── 📄requirements.txt
 ```
 
 ```py
+"""リソース"""
 from django.http import Http404
 from django.shortcuts import render, redirect
+
+
+# 以下、リソース
 
 
 class MatchApplication():
@@ -627,11 +640,11 @@ class MatchApplication():
 
     def render(request):
         """描画"""
-        return match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html)
+        return render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html)
 
 
 class Playing():
-    """対局画面"""
+    """対局"""
 
     _path_of_html = "webapp1/tic-tac-toe/v1/playing.html"
     #                -----------------------------------
@@ -641,13 +654,13 @@ class Playing():
 
     def render(request, room_name):
         """描画"""
-        return playing_render(request, room_name, Playing._path_of_html)
+        return render_playing(request, room_name, Playing._path_of_html)
 
 
 # 以下、関数
 
 
-def match_application_render(request, path_of_playing, path_of_html):
+def render_match_application(request, path_of_playing, path_of_html):
     """対局申込 - 描画"""
     if request.method == "POST":
         # 送信後
@@ -660,7 +673,9 @@ def match_application_render(request, path_of_playing, path_of_html):
     return render(request, path_of_html, {})
 
 
-def playing_render(request, room_name, path_of_html):
+def render_playing(request, room_name, path_of_html):
+    """対局 - 描画"""
+
     myPiece = request.GET.get("mypiece")
     if myPiece not in ['X', 'O']:
         raise Http404(f"My piece '{myPiece}' does not exists")
@@ -671,7 +686,7 @@ def playing_render(request, room_name, path_of_html):
     return render(request, path_of_html, context)
 ```
 
-# Step 8. ルート編集 - urls.py ファイル
+# Step 9. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
 
@@ -691,7 +706,9 @@ def playing_render(request, room_name, path_of_html):
         │   │               ├── 📄match_application.html
         │   │               └── 📄playing.html
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe_v1.py
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄resources.py
 👉      │   └── 📄urls.py
         └── 📄requirements.txt
 ```
@@ -699,44 +716,51 @@ def playing_render(request, room_name, path_of_html):
 ```py
 from django.urls import path
 
-from webapp1.views import v_tic_tac_toe_v1
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v1 import resources as tic_tac_toe_v1
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...略...
+
+    # +----
+    # | 〇×ゲーム１
 
     # 対局申込
     path('tic-tac-toe/v1/match-application/',
          # --------------------------------
          # 1
-         v_tic_tac_toe_v1.MatchApplication.render),
-    #    ----------------------------------------
+         tic_tac_toe_v1.MatchApplication.render),
+    #    --------------------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v1/match-application/` のような URL のパスの部分
-    #                              ----------------------------------
-    # 2. v_tic_tac_toe_v1.py ファイルの MatchApplication クラスの render 静的メソッド
+    #                              ---------------------------------
+    # 2. tic_tac_toe_v1 (別名)ファイルの MatchApplication クラスの render 静的メソッド
 
     # 対局中
     path('tic-tac-toe/v1/playing/<str:room_name>/',
          # --------------------------------------
          # 1
-         v_tic_tac_toe_v1.Playing.render),
-    #    -------------------------------
+         tic_tac_toe_v1.Playing.render),
+    #    -----------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/<部屋名>/` のような URL のパスの部分。
     #                              --------------------------------
     #    <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v1.py ファイルの Playing クラスの render 静的メソッド
+    # 2. tic_tac_toe_v1 (別名)ファイルの Playing クラスの render 静的メソッド
+
+    # | 〇×ゲーム１
+    # +----
 ]
 ```
 
-# Step 9. consumer.py ファイルの作成
+# Step 10. consumer.py ファイルの作成
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -758,7 +782,9 @@ urlpatterns = [
         │   │       └── 📂v1
 👉      │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe_v1.py
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄resources.py
         │   └── 📄urls.py
         └── 📄requirements.txt
 ```
@@ -831,7 +857,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 10. ルート編集 - routing1.py ファイル
+# Step 11. ルート編集 - routing1.py ファイル
 
 以下のファイルを無ければ作成、あればマージしてほしい。  
 
@@ -855,7 +881,9 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe_v1.py
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄resources.py
 👉      │   ├── 📄routing1.py
         │   └── 📄urls.py
         └── 📄requirements.txt
@@ -888,7 +916,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 11. 設定の編集 - asgi.py ファイル
+# Step 12. 設定の編集 - asgi.py ファイル
 
 無ければ以下のファイルを作成、あればマージしてほしい。  
 
@@ -912,7 +940,9 @@ websocket_urlpatterns = [
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
         │   ├── 📂views
-        │   │   └── 📄v_tic_tac_toe_v1.py
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄resources.py
 👉      │   ├── 📄asgi.py
         │   ├── 📄routing1.py
         │   └── 📄urls.py
@@ -951,23 +981,15 @@ application = ProtocolTypeRouter({ # 追加
 })
 ```
 
-# Step 12. Web画面へアクセス
+# Step 13. Web画面へアクセス
 
-（していなければ）Dockerコンテナの起動  
-
-```shell
-cd host1
-
-docker-compose up
-```
-
-このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
+このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
 📖 [http://localhost:8000/tic-tac-toe/v1/match-application/](http://localhost:8000/tic-tac-toe/v1/match-application/)  
 
 # 次の記事
 
-📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)
+📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)  
 
 # 参考にした記事
 
