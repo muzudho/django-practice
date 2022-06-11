@@ -802,7 +802,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'MOVE':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
+                'type': 'send_message', # type属性は必須
                 'message': message,
                 "event": "MOVE"
             })
@@ -810,7 +810,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'START':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
+                'type': 'send_message', # type属性は必須
                 'message': message,
                 'event': "START"
             })
@@ -818,7 +818,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'END':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message',
+                'type': 'send_message', # type属性は必須
                 'message': message,
                 'event': "END"
             })
