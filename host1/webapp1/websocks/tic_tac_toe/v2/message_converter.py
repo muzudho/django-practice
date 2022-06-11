@@ -33,6 +33,8 @@ class TicTacToeV2MessageConverter():
             print(
                 f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
 
+            print(
+                f"[TicTacToeV2MessageConverter on_receive] C2S_Move on_move呼出し")
             await self.on_move(scope, doc_received)
 
             return {

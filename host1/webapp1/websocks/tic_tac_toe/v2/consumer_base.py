@@ -39,8 +39,8 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         """クライアントからのメッセージの受信"""
 
-        print(
-            f"[Debug][TicTacToeV2ConsumerBase receive] text_data={text_data}")  # ちゃんと動いているようなら消す
+        # ちゃんと動いているようなら消す
+        print(f"[TicTacToeV2ConsumerBase receive] text_data={text_data}")
 
         doc_received = json.loads(text_data)
 

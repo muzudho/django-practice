@@ -24,10 +24,10 @@ class UserCtrl {
     /**
      * 石を置きます
      * @param {number} sq - 升番号; 0 <= sq
-     * @param {*} myPiece - X か O
+     * @param {*} piece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
-    doMove(sq, myPiece) {
+    doMove(sq, piece) {
         if (this._playeq.gameoverState != GAMEOVER_NONE) {
             // Warning of illegal move
             console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
@@ -39,7 +39,7 @@ class UserCtrl {
             this._playeq.incrementCountOfMove(); // 手数を１増やします
 
             // 石を置きます
-            switch (myPiece) {
+            switch (piece) {
                 case PC_X_LABEL:
                     this._playeq.setPiece(sq, PC_X);
                     break;
@@ -47,12 +47,12 @@ class UserCtrl {
                     this._playeq.setPiece(sq, PC_O);
                     break;
                 default:
-                    alert(`[Error] Invalid my piece = ${myPiece}`);
+                    alert(`[Error] Invalid piece = ${piece}`);
                     return false;
             }
 
-            console.log(`[UserCtrl doMove] sq=${sq} myPiece=${myPiece}`);
-            this._onDoMove(sq, myPiece);
+            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
+            this._onDoMove(sq, piece);
         }
 
         return true;

@@ -558,7 +558,7 @@ class PlaygroundEquipment {
 
 # Step 7. ユーザーコントロール作成 - user_ctrl.js ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -601,10 +601,10 @@ class UserCtrl {
     /**
      * 石を置きます
      * @param {number} sq - 升番号; 0 <= sq
-     * @param {*} myPiece - X か O
+     * @param {*} piece - X か O
      * @returns 石を置けたら真、それ以外は偽
      */
-    doMove(sq, myPiece) {
+    doMove(sq, piece) {
         if (this._playeq.gameoverState != GAMEOVER_NONE) {
             // Warning of illegal move
             console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
@@ -616,7 +616,7 @@ class UserCtrl {
             this._playeq.incrementCountOfMove(); // 手数を１増やします
 
             // 石を置きます
-            switch (myPiece) {
+            switch (piece) {
                 case PC_X_LABEL:
                     this._playeq.setPiece(sq, PC_X);
                     break;
@@ -624,12 +624,12 @@ class UserCtrl {
                     this._playeq.setPiece(sq, PC_O);
                     break;
                 default:
-                    alert(`[Error] Invalid my piece = ${myPiece}`);
+                    alert(`[Error] Invalid piece = ${piece}`);
                     return false;
             }
 
-            console.log(`[UserCtrl doMove] sq=${sq} myPiece=${myPiece}`);
-            this._onDoMove(sq, myPiece);
+            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
+            this._onDoMove(sq, piece);
         }
 
         return true;
@@ -801,6 +801,9 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
+        // 自分の駒
+        this._myPiece = myPiece;
+
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -834,12 +837,17 @@ class Engine {
 
     setup(setLabelOfButton) {
         // １手進めたとき
-        this._userCtrl.onDoMove = (sq, myPiece) => {
+        this._userCtrl.onDoMove = (sq, piece) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, myPiece);
+            setLabelOfButton(sq, piece);
 
-            let response = this.messageSender.createDoMove(sq, myPiece);
-            this._connection.webSock1.send(JSON.stringify(response));
+            console.log(`[onDoMove] this._myPiece=${this._myPiece} piece=${piece}`);
+
+            // 自分の指し手なら送信
+            if (this._myPiece == piece) {
+                let response = this.messageSender.createDoMove(sq, piece);
+                this._connection.webSock1.send(JSON.stringify(response));
+            }
         };
     }
 
@@ -943,11 +951,11 @@ function packSetMessageFromServer() {
         let turn = message["s2c_myPiece"];
         // 勝者
         let winner = message["s2c_winner"];
-        // console.log(`[Debug][setMessage] event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "S2C_Start":
-                console.log(`[Debug][setMessage] S2C_Start`);
+                console.log(`[setMessage] S2C_Start`);
                 // 対局開始の一斉通知
                 vue1.init(); // 画面を初期化
                 break;
@@ -967,7 +975,7 @@ function packSetMessageFromServer() {
                 break;
 
             case "S2C_Move":
-                console.log(`[setMessage] S2C_Move turn s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Move s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
 
                 // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
@@ -990,7 +998,7 @@ function packSetMessageFromServer() {
 
             default:
                 // Undefined behavior
-                console.log(`[Debug][setMessage] ignored. event=[${event}]`);
+                console.log(`[setMessage] ignored. event=[${event}]`);
         }
     };
 }
@@ -1307,6 +1315,7 @@ function packSetMessageFromServer() {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
 
+                                // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
                             }
                         }
@@ -1556,6 +1565,8 @@ class TicTacToeV2MessageConverter():
             print(
                 f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
 
+            print(
+                f"[TicTacToeV2MessageConverter on_receive] C2S_Move on_move呼出し")
             await self.on_move(scope, doc_received)
 
             return {
@@ -1669,8 +1680,8 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         """クライアントからのメッセージの受信"""
 
-        print(
-            f"[Debug][TicTacToeV2ConsumerBase receive] text_data={text_data}")  # ちゃんと動いているようなら消す
+        # ちゃんと動いているようなら消す
+        print(f"[TicTacToeV2ConsumerBase receive] text_data={text_data}")
 
         doc_received = json.loads(text_data)
 

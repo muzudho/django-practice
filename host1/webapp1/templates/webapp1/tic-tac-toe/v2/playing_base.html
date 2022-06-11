@@ -194,6 +194,7 @@
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.isMyTurn = false;
 
+                                // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
                             }
                         }

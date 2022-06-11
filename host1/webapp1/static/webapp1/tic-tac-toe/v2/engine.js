@@ -14,6 +14,9 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
+        // 自分の駒
+        this._myPiece = myPiece;
+
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -47,12 +50,17 @@ class Engine {
 
     setup(setLabelOfButton) {
         // １手進めたとき
-        this._userCtrl.onDoMove = (sq, myPiece) => {
+        this._userCtrl.onDoMove = (sq, piece) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, myPiece);
+            setLabelOfButton(sq, piece);
 
-            let response = this.messageSender.createDoMove(sq, myPiece);
-            this._connection.webSock1.send(JSON.stringify(response));
+            console.log(`[onDoMove] this._myPiece=${this._myPiece} piece=${piece}`);
+
+            // 自分の指し手なら送信
+            if (this._myPiece == piece) {
+                let response = this.messageSender.createDoMove(sq, piece);
+                this._connection.webSock1.send(JSON.stringify(response));
+            }
         };
     }
 

@@ -40,6 +40,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         #
         # * URLのパスに含まれている
         room_name = scope["url_route"]["kwargs"]["kw_room_name"]
+        # print(f"[TicTacToeV3o1MessageConverter on_move] scope={scope}")
 
         # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
         event = doc_received.get("c2s_event", None)
@@ -48,7 +49,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         # 自分の石
         my_piece = doc_received.get("c2s_myPiece", None)
         print(
-            f"[TicTacToeV3o1MessageConverter on_move] event=[{event}] room_name=[{room_name}] sq=[{sq}] my_piece=[{my_piece}]")
+            f"[TicTacToeV3o1MessageConverter on_move] クライアントからのメッセージを受信しました event=[{event}] room_name=[{room_name}] sq=[{sq}] my_piece=[{my_piece}]")
         # [TicTacToeV3o1MessageConverter on_move] event=[C2S_Move] sq=[2] my_piece=[X]
 
         # 部屋取得
