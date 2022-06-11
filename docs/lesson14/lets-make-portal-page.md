@@ -187,7 +187,7 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー編集 - v_tic_tac_toe_v2o1.py ファイル
+# Step 3. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -200,7 +200,9 @@ docker-compose up
             │           └── 📂v2
             │               └── 📄portal.html
             └── 📂views
-👉              └── 📄v_tic_tac_toe_v2o1.py
+                └── 📂tic_tac_toe
+                    └── 📂v2o1
+👉                      └── 📄resources.py
 ```
 
 ```py
@@ -333,69 +335,79 @@ def logging_out_render(request):
             │           └── 📂v2
             │               └── 📄portal.html
             ├── 📂views
-            │   └── 📄v_tic_tac_toe_v2o1.py
+            │   └── 📂tic_tac_toe
+            │       └── 📂v2o1
+            │           └── 📄resources.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_tic_tac_toe_v2o1
-#    ------- -----        ------------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v2o1 import resources as tic_tac_toe_v2o1
+#    ------- ----------------------        ---------    ----------------
+#    1       2                             3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
 
+    # +----
+    # | ポータル作成
+
     # 旧ポータル
-    path('tic-tac-toe2/', v_tic_tac_toe_v2o1.Portal.render,
-         # ------------   --------------------------------
+    path('tic-tac-toe2/', tic_tac_toe_v2o1.Portal.render,
+         # ------------   ------------------------------
          # 1              2
          name='ticTacToeV2_portal'),
     #          ------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe2/` のような URL のパスの部分
     #                              --------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの Portal クラスの render 静的メソッド
+    # 2. tic_tac_toe_v2o1 (別名)ファイルの Portal クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ポータル
-    path('tic-tac-toe/v2/', v_tic_tac_toe_v2o1.Portal.render,
-         # --------------   --------------------------------
+    path('tic-tac-toe/v2/', tic_tac_toe_v2o1.Portal.render,
+         # --------------   ------------------------------
          # 1                2
          name='ticTacToeV2_portal'),
     #          ------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/` のような URL のパスの部分
     #                              ----------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの Portal クラスの render 静的メソッド
+    # 2. tic_tac_toe_v2o1 (別名)ファイルの Portal クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2_portal' %} のような形でURLを取得するのに使える
 
     # ログイン
-    path('tic-tac-toe/v2/login/', v_tic_tac_toe_v2o1.LoggingIn.render,
-         # --------------------   -----------------------------------
+    path('tic-tac-toe/v2/login/', tic_tac_toe_v2o1.LoggingIn.render,
+         # --------------------   ---------------------------------
          # 1                      2
          name='ticTacToeV2o1_loginUser'),
     #          -----------------------
     #          3
-    # 1. URLの `tic-tac-toe/v2/login/` というパスにマッチする
-    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingIn クラス render 静的メソッド
+    # 1. 例えば `http://example.com/tic-tac-toe/v2/login/` のような URL のパスの部分
+    #                              ----------------------
+    # 2. tic_tac_toe_v2o1 (別名)ファイルの LoggingIn クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_loginUser' %} のような形でURLを取得するのに使える
 
     # ログアウト
-    path('tic-tac-toe/v2/logout/', v_tic_tac_toe_v2o1.LoggingOut.render,
-         # ---------------------   ------------------------------------
+    path('tic-tac-toe/v2/logout/', tic_tac_toe_v2o1.LoggingOut.render,
+         # ---------------------   ----------------------------------
          # 1                       2
          name='ticTacToeV2o1_logout'),
     #          --------------------
     #          3
     # 1. 例えば `http://example.com/tic-tac-toe/v2/logout/` のような URL のパスの部分
     #                              -----------------------
-    # 2. v_tic_tac_toe_v2o1.py ファイルの LoggingOut クラスの render 静的メソッド
+    # 2. tic_tac_toe_v2o1 (別名)ファイルの LoggingOut クラスの render 静的メソッド
     # 3. HTMLテンプレートの中で {% url 'ticTacToeV2o1_logout' %} のような形でURLを取得するのに使える
+
+    # | ポータル作成
+    # +----
 ]
 ```
 
