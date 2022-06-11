@@ -83,7 +83,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. プロトコル実装 - protocol_messages.js ファイル
+# Step 2. プロトコル実装 - message_sender.js ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -94,7 +94,7 @@ docker-compose up
                 └── 📂webapp1
                     └── 📂tic-tac-toe
                         └── 📂v3
-👉                          └── protocol_messages.js
+👉                          └── message_sender.js
 ```
 
 ```js
@@ -103,7 +103,7 @@ docker-compose up
  *
  * * クライアントからサーバーへ送る
  */
-class ProtocolMessagesV3 {
+class MessageSenderV3 {
     /**
      * プレイヤーが部屋に入ります
      * @param {*} roomName - 部屋名
@@ -112,11 +112,12 @@ class ProtocolMessagesV3 {
      * @returns メッセージ
      */
     checkin(roomName, myPiece, userId) {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            event: "CtoS_Checkin",
-            roomName: roomName,
-            myPiece: myPiece,
-            userId: userId,
+            c2s_event: "C2S_Checkin",
+            c2s_roomName: roomName,
+            c2s_myPiece: myPiece,
+            c2s_userId: userId,
         };
     }
 
@@ -128,11 +129,12 @@ class ProtocolMessagesV3 {
      * @returns メッセージ
      */
     checkout(roomName, myPiece, userId) {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            event: "CtoS_Checkout",
-            roomName: roomName,
-            myPiece: myPiece,
-            userId: userId,
+            c2s_event: "C2S_Checkout",
+            c2s_roomName: roomName,
+            c2s_myPiece: myPiece,
+            c2s_userId: userId,
         };
     }
 }
