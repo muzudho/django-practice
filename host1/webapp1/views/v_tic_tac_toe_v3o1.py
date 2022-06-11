@@ -45,7 +45,7 @@ class MatchApplication():
         return v_tic_tac_toe_v3.match_application_on_sent(request)
 
     @staticmethod
-    def on_visited(request):
+    def open(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
 
