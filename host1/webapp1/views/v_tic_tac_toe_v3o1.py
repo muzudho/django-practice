@@ -6,13 +6,13 @@ from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
 # 3. Python ファイル名。拡張子抜き
 # 4. `3.` の別名
 
-from webapp1.views import v_tic_tac_toe_v3
-#                                        ^ three
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 
 class MatchApplication():
@@ -41,7 +41,7 @@ class MatchApplication():
     @staticmethod
     def on_sent(request):
         """送信後"""
-        return v_tic_tac_toe_v3.match_application_on_sent(request)
+        return tic_tac_toe_v3.match_application_on_sent(request)
 
     @staticmethod
     def open(request):

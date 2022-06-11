@@ -115,7 +115,7 @@ docker-compose up
 {% endblock method_section1 %}
 ```
 
-# Step 3. ビュー作成 - v_tic_tac_toe_v3.py ファイル
+# Step 3. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -128,20 +128,21 @@ docker-compose up
             │           └── 📂v3
             │               └── playing.html.txt
             └── 📂views
-👉              └── v_tic_tac_toe_v3.py
+                └── 📂tic_tac_toe
+                    └── 📂v3
+👉                      └── resources.py
 ```
 
 ```py
 # from django.contrib.auth.models import User # デバッグ用
 
-import json
-from webapp1.views import v_tic_tac_toe_v2
-#                                        ^ two
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -180,8 +181,8 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
-        #                     ^ two
+        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        #                   ^ two
 
     @staticmethod
     def on_sent(request):
@@ -193,8 +194,8 @@ class MatchApplication():
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
 
-        return v_tic_tac_toe_v2.match_application_open_context
-        #                     ^ two
+        return tic_tac_toe_v2.match_application_open_context
+        #                   ^ two
 
 
 class Playing():
@@ -217,8 +218,8 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return v_tic_tac_toe_v2.playing_render(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
-        #                     ^ two
+        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        #                   ^ two
 
     @staticmethod
     def on_update(request):
@@ -343,6 +344,10 @@ def match_application_on_sent(request):
             │       └── 📂tic-tac-toe
             │           └── 📂v3
             │               └── playing.html.txt
+            ├── 📂views
+            │   └── 📂tic_tac_toe
+            │       └── 📂v3
+            │           └── resources.py
 👉          └── urls.py
 ```
 
@@ -351,48 +356,55 @@ def match_application_on_sent(request):
 ```py
 from django.urls import path
 
-from webapp1.views import v_tic_tac_toe_v3
-#    ------- -----        ----------------
-#    1       2            3
+from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
+#    ------- --------------------        ---------    --------------
+#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...略...
+
+    # +----
+    # | 〇×ゲーム３
 
     # 対局申込
     path('tic-tac-toe/v3/match-application/',
          #             ^
          # --------------------------------
          # 1
-         v_tic_tac_toe_v3.MatchApplication.render),
-    #                   ^
-    #    ----------------------------------------
+         tic_tac_toe_v3.MatchApplication.render),
+    #                 ^
+    #    --------------------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v3/match-application/` のような URL のパスの部分
     #                              ---------------------------------
-    # 2. v_tic_tac_toe_v3.py ファイルの MatchApplication クラスの render メソッド
+    # 2. tic_tac_toe_v3.py (別名)ファイルの MatchApplication クラスの render メソッド
 
     # 対局中
     path('tic-tac-toe/v3/playing/<str:kw_room_name>/',
          #             ^
          # -----------------------------------------
          # 1
-         v_tic_tac_toe_v3.Playing.render),
-    #                   ^
-    #    -------------------------------
+         tic_tac_toe_v3.Playing.render),
+    #                 ^
+    #    -----------------------------
     #    2
     # 1. 例えば `http://example.com/tic-tac-toe/v3/playing/<部屋名>/` のような URL のパスの部分。
     #                              --------------------------------
     #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
-    # 2. v_tic_tac_toe_v3.py ファイルの Playing クラスの render 静的メソッド
+    # 2. tic_tac_toe_v3.py (別名)ファイルの Playing クラスの render 静的メソッド
+
+    # | 〇×ゲーム３
+    # +----
 ]
 ```
 
 # Step 5. Web画面へアクセス
 
-このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
+このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
 📖 [http://localhost:8000/tic-tac-toe/v3/match-application/](http://localhost:8000/tic-tac-toe/v3/match-application/)  
 
