@@ -118,9 +118,9 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 以下略
 ```
 
-# Step 3. プロトコル実装 - protocol_messages.js ファイル
+# Step 3. プロトコル実装 - message_sender.js ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -129,7 +129,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
-👉              │           └── protocol_messages.js
+👉              │           └── message_sender.js
                 └── 🚀favicon.ico
 ```
 
@@ -139,20 +139,22 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
  *
  * * クライアントからサーバーへ送る
  */
-class ProtocolMessages {
-
+class MessageSender {
     /**
      * どちらかのプレイヤーが石を置いたとき
-     * @param {*} sq - 升番号
-     * @param {*} myPiece - X か O
+     * @param {string} roomName - 部屋名
+     * @param {int} sq - 升番号
+     * @param {string} myPiece - X か O
      * @returns メッセージ
      */
-    createDoMove(sq, myPiece) {
+    createDoMove(roomName, sq, myPiece) {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            "event": "CtoS_Move",
-            "sq": sq,
-            "myPiece": myPiece,
-        }
+            c2s_event: "C2S_Move",
+            c2s_roomName: roomName,
+            c2s_sq: sq,
+            c2s_myPiece: myPiece,
+        };
     }
 
     /**
@@ -160,10 +162,11 @@ class ProtocolMessages {
      * @returns メッセージ
      */
     createDraw() {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            "event": "CtoS_End",
-            "winner": PC_EMPTY_LABEL,
-        }
+            c2s_event: "C2S_End",
+            c2s_winner: PC_EMPTY_LABEL,
+        };
     }
 
     /**
@@ -171,9 +174,10 @@ class ProtocolMessages {
      * @returns メッセージ
      */
     createStart() {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            "event": "CtoS_Start",
-        }
+            c2s_event: "C2S_Start",
+        };
     }
 
     /**
@@ -182,10 +186,11 @@ class ProtocolMessages {
      * @returns メッセージ
      */
     createWon(myPiece) {
+        // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
-            "event": "CtoS_End",
-            "winner": myPiece,
-        }
+            c2s_event: "C2S_End",
+            c2s_winner: myPiece,
+        };
     }
 }
 ```
@@ -202,7 +207,7 @@ class ProtocolMessages {
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
 👉              │           ├── connection.js
-                │           └── protocol_messages.js
+                │           └── message_sender.js
                 └── 🚀favicon.ico
 ```
 
@@ -318,7 +323,7 @@ class Connection {
                 │       └── 📂v2
                 │           ├── connection.js
 👉              │           ├── game_rule.js
-                │           └── protocol_messages.js
+                │           └── message_sender.js
                 └── 🚀favicon.ico
 ```
 
@@ -443,7 +448,7 @@ WIN_PATTERN = [
                 │           ├── connection.js
                 │           ├── game_rule.js
 👉              │           ├── playground_equipment.js
-                │           └── protocol_messages.js
+                │           └── message_sender.js
                 └── 🚀favicon.ico
 ```
 
@@ -565,7 +570,7 @@ class PlaygroundEquipment {
                 │       └── 📂v2
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
-                │           ├── 📄protocol_messages.js
+                │           ├── 📄message_sender.js
 👉              │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -646,7 +651,7 @@ class UserCtrl {
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
 👉              │           ├── 📄judge_ctrl.js
-                │           ├── 📄protocol_messages.js
+                │           ├── 📄message_sender.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -761,7 +766,7 @@ class JudgeCtrl {
 
 # Step 9. ゲームエンジン作成 - engine.js ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -774,7 +779,7 @@ class JudgeCtrl {
 👉              │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
-                │           ├── 📄protocol_messages.js
+                │           ├── 📄message_sender.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -786,22 +791,25 @@ class JudgeCtrl {
 class Engine {
     /**
      * 生成
-     * @param {*} onSetMessageFromServer - サーバーからのメッセージをセットする関数
+     * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
      * @param {string} roomName - 部屋名
      * @param {string} myPiece - X か O
      * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
      */
-    constructor(onSetMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
-        this._onSetMessageFromServer = onSetMessageFromServer;
+    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
+        this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
+
+        // 部屋名
+        this._roomName = roomName;
 
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
 
         // メッセージ一覧
-        this._protocolMessages = new ProtocolMessages();
+        this._messageSender = new MessageSender();
 
         // 遊具
         this._playeq = new PlaygroundEquipment();
@@ -814,13 +822,13 @@ class Engine {
 
         // どちらかが勝ったとき
         this._judgeCtrl.onWon = (myPiece) => {
-            let response = this.protocolMessages.createWon(myPiece);
+            let response = this.messageSender.createWon(myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
 
         // 引き分けたとき
         this._judgeCtrl.onDraw = () => {
-            let response = this.protocolMessages.createDraw();
+            let response = this.messageSender.createDraw();
             this._connection.webSock1.send(JSON.stringify(response));
         };
 
@@ -833,7 +841,7 @@ class Engine {
             // ボタンのラベルを更新
             setLabelOfButton(sq, myPiece);
 
-            let response = this.protocolMessages.createDoMove(sq, myPiece);
+            let response = this.messageSender.createDoMove(this._roomName, sq, myPiece);
             this._connection.webSock1.send(JSON.stringify(response));
         };
     }
@@ -848,8 +856,8 @@ class Engine {
     /**
      * メッセージ一覧
      */
-    get protocolMessages() {
-        return this._protocolMessages;
+    get messageSender() {
+        return this._messageSender;
     }
 
     /**
@@ -881,7 +889,7 @@ class Engine {
             // Webソケットを開かれたとき
             () => {
                 console.log("WebSockets connection created.");
-                let response = this.protocolMessages.createStart();
+                let response = this.messageSender.createStart();
                 this._connection.webSock1.send(JSON.stringify(response));
             },
             // Webソケットが閉じられたとき
@@ -891,7 +899,7 @@ class Engine {
                 this._reconnect();
             },
             // サーバーからのメッセージを受信したとき
-            this._onSetMessageFromServer,
+            this._setMessageFromServer,
             // エラー時
             (e) => {
                 console.log(`Socket is error. ${e.reason}`);
@@ -901,9 +909,9 @@ class Engine {
 }
 ```
 
-# Step 10. 通信プロトコル作成 - protocol_main.js ファイル
+# Step 10. 通信プロトコル作成 - message_receiver.js ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -916,36 +924,37 @@ class Engine {
                 │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
-👉              │           ├── 📄protocol_main.js
-                │           ├── 📄protocol_messages.js
+👉              │           ├── 📄message_receiver.js
+                │           ├── 📄message_sender.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
 
 ```js
 /**
- * サーバーからのメッセージをセットする関数を返します
+ * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
  * @returns 関数
  */
-function createSetMessageFromServer() {
+function packSetMessageFromServer() {
     return (message) => {
+        // `s2c_` は サーバーからクライアントへ送られてきた変数の目印
         // イベント
-        let event = message["event"];
+        let event = message["s2c_event"];
         // 升番号
-        let sq = message["sq"];
+        let sq = message["s2c_sq"];
         // 手番。 X か O
-        let turn = message["myPiece"];
+        let turn = message["s2c_myPiece"];
         // 勝者
-        let winner = message["winner"];
-        // console.log(`[Debug][setMessage] event=${event} text=${text} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        let winner = message["s2c_winner"];
+        // console.log(`[Debug][setMessage] event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
-            case "StoC_Start":
+            case "S2C_Start":
                 // 対局開始の一斉通知
                 vue1.init(); // 画面を初期化
                 break;
 
-            case "StoC_End":
+            case "S2C_End":
                 // 対局終了の一斉通知
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
@@ -959,8 +968,8 @@ function createSetMessageFromServer() {
                 vue1.setGameIsOver(result);
                 break;
 
-            case "StoC_Move":
-                console.log(`[Debug][setMessage] StoC_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
+            case "S2C_Move":
+                console.log(`[Debug][setMessage] S2C_Move turn=${turn} vue1.engine.connection.myPiece=${vue1.engine.connection.myPiece}`);
 
                 // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
@@ -1003,8 +1012,8 @@ function createSetMessageFromServer() {
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
@@ -1077,7 +1086,7 @@ function createSetMessageFromServer() {
 
 # Step 12. 対局画面作成 - playing_base.html ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1090,8 +1099,8 @@ function createSetMessageFromServer() {
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
@@ -1181,8 +1190,8 @@ function createSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/playground_equipment.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_main.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/protocol_messages.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -1222,7 +1231,7 @@ function createSetMessageFromServer() {
                 vuetify: new Vuetify(),
                 data: {
                     engine: new Engine(
-                        createSetMessageFromServer(),
+                        packSetMessageFromServer(),
                         packReconnect(),
                         // `po_` は POST送信するパラメーター名の目印
                         // 部屋名
@@ -1239,7 +1248,7 @@ function createSetMessageFromServer() {
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            // console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
                         }
@@ -1427,8 +1436,8 @@ function createSetMessageFromServer() {
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
@@ -1481,7 +1490,7 @@ function createSetMessageFromServer() {
 {% endblock method_section1 %}
 ```
 
-# Step 14. 通信プロトコル作成 - protocol.py ファイル
+# Step 14. 通信プロトコル作成 - message_converter.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1496,8 +1505,8 @@ function createSetMessageFromServer() {
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -1509,69 +1518,75 @@ function createSetMessageFromServer() {
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      └── protocol.py
+👉                      └── message_converter.py
 ```
 
 ```py
-class TicTacToeV2Protocol():
+class TicTacToeV2MessageConverter():
     """サーバープロトコル"""
 
-    async def execute(self, doc_received, user):
-        """サーバーからクライアントへ送信するメッセージの作成"""
+    async def on_receive(self, doc_received, user):
+        """クライアントからサーバーへ送られてきた変数を解析し、
+        サーバーからクライアントへ送信するメッセージの作成"""
 
-        event = doc_received.get("event", None)
+        # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
+        event = doc_received.get("c2s_event", None)
 
         # ログインしていなければ AnonymousUser
-        print(f"[TicTacToeV2Protocol execute] user=[{user}] event=[{event}]")
+        print(
+            f"[TicTacToeV2MessageConverter on_receive] user=[{user}] event=[{event}]")
 
-        if event == 'CtoS_End':
+        if event == 'C2S_End':
             # 対局終了時
 
             self.on_end(doc_received)
 
+            # `s2c_` は サーバーからクライアントへ送る変数の目印
             return {
-                'type': 'send_message',
-                'event': "StoC_End",
-                'winner': doc_received.get("winner", None),
+                'type': 'send_message', # type属性は必須
+                's2c_event': "S2C_End",
+                's2c_winner': doc_received.get("c2s_winner", None),
             }
 
-        elif event == 'CtoS_Move':
+        elif event == 'C2S_Move':
             # 石を置いたとき
 
             await self.on_move(doc_received, user)
 
+            # `s2c_` は サーバーからクライアントへ送る変数の目印
             return {
-                'type': 'send_message',
-                "event": "StoC_Move",
-                'sq': doc_received.get("sq", None),
-                'myPiece': doc_received.get("myPiece", None),
+                'type': 'send_message', # type属性は必須
+                "s2c_event": "S2C_Move",
+                's2c_sq': doc_received.get("c2s_sq", None),
+                's2c_myPiece': doc_received.get("c2s_myPiece", None),
             }
 
-        elif event == 'CtoS_Start':
+        elif event == 'C2S_Start':
             # 対局開始時
 
             self.on_start(doc_received)
 
+            # `s2c_` は サーバーからクライアントへ送る変数の目印
             return {
-                'type': 'send_message',
-                'event': "StoC_Start",
+                'type': 'send_message', # type属性は必須
+                's2c_event': "S2C_Start",
             }
 
         raise ValueError(f"Unknown event: {event}")
 
     def on_end(self, doc_received):
         """対局終了時"""
-        print("[TicTacToeV2Protocol on_end] ignored")
+        print("[TicTacToeV2MessageConverter on_end] ignored")
         pass
 
     async def on_move(self, doc_received, user):
         """石を置いたとき"""
-        print("[TicTacToeV2Protocol on_end] on_move")
+        print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 
     def on_start(self, doc_received):
         """対局開始時"""
-        print("[TicTacToeV2Protocol on_end] on_start")
+        print("[TicTacToeV2MessageConverter on_start] ignored")
         pass
 ```
 
@@ -1590,8 +1605,8 @@ class TicTacToeV2Protocol():
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -1604,7 +1619,7 @@ class TicTacToeV2Protocol():
                 └── 📂tic-tac-toe
                     └── 📂v2
 👉                      ├── consumer_base.py
-                        └── protocol.py
+                        └── message_converter.py
 ```
 
 ```py
@@ -1690,8 +1705,8 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -1705,7 +1720,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
                     └── 📂v2
                         ├── consumer_base.py
 👉                      ├── consumer_custom.py
-                        └── protocol.py
+                        └── message_converter.py
 ```
 
 ```py
@@ -1718,10 +1733,10 @@ from webapp1.websocks.tic_tac_toe.v2.consumer_base import TicTacToeV2ConsumerBas
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-from webapp1.websocks.tic_tac_toe.v2.protocol import TicTacToeV2Protocol
-#                                  ^ two                       ^ two
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3               4
+from webapp1.websocks.tic_tac_toe.v2.message_converter import TicTacToeV2MessageConverter
+#                                  ^ two                                ^ two
+#    ------- ----------------------- -----------------        ---------------------------
+#    1       2                       3                        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -1733,7 +1748,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
 
     def __init__(self):
         super().__init__()
-        self._protocol = TicTacToeV2Protocol()
+        self._messageConverter = TicTacToeV2MessageConverter()
 
     async def on_receive(self, doc_received):
         """クライアントからメッセージを受信したとき
@@ -1746,7 +1761,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         # ログインしていなければ AnonymousUser
         user = self.scope["user"]
         print(f"[TicTacToeV2ConsumerCustom on_receive] user=[{user}]")
-        return await self._protocol.execute(doc_received, user)
+        return await self._messageConverter.on_receive(doc_received, user)
 ```
 
 # Step 17. ビュー編集 - v_tic_tac_toe_v2.py ファイル
@@ -1764,8 +1779,8 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -1781,7 +1796,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
                     └── 📂v2
                         ├── consumer_base.py
                         ├── consumer_custom.py
-                        └── protocol.py
+                        └── message_converter.py
 ```
 
 ```py
@@ -1907,8 +1922,8 @@ def playing_render(request, kw_room_name, path_of_playing, path_of_html, on_upda
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -1924,7 +1939,7 @@ def playing_render(request, kw_room_name, path_of_playing, path_of_html, on_upda
             │       └── 📂v2
             │           ├── consumer_base.py
             │           ├── consumer_custom.py
-            │           └── protocol.py
+            │           └── message_converter.py
 👉          └── urls.py
 ```
 
@@ -1987,8 +2002,8 @@ urlpatterns = [
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄protocol_main.js
-            │   │           ├── 📄protocol_messages.js
+            │   │           ├── 📄message_receiver.js
+            │   │           ├── 📄message_sender.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
@@ -2004,7 +2019,7 @@ urlpatterns = [
             │       └── 📂v2
             │           ├── consumer_base.py
             │           ├── consumer_custom.py
-            │           └── protocol.py
+            │           └── message_converter.py
 👉          ├── routing1.py
             └── urls.py
 ```
