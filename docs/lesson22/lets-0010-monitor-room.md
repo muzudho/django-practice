@@ -322,6 +322,7 @@ websocket_urlpatterns = [
 ```
 
 ```py
+import json
 from webapp1.views import v_tic_tac_toe_v2
 #                                        ^ two
 #    ------- -----        ----------------
@@ -359,7 +360,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.on_visited)
+        return v_tic_tac_toe_v2.match_application_render(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
         #                     ^ two
 
     @staticmethod
@@ -371,7 +372,9 @@ class MatchApplication():
     def on_visited(request):
         """訪問後"""
         # 拡張したい挙動があれば、ここに書く
-        pass
+
+        return v_tic_tac_toe_v2.match_application_open_context
+        #                     ^ two
 
 
 class Playing():
