@@ -73,6 +73,14 @@ from webapp1.views.tic_tac_toe.v3o1 import resources as tic_tac_toe_v3o1
 # 3. Python ファイル名。拡張子抜き
 # 4. `3.` の別名
 
+from webapp1.views.tic_tac_toe.v3o2 import resources as tic_tac_toe_v3o2
+#    ------- ----------------------        ---------    ----------------
+#    1       2                             3            4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
+
 urlpatterns = [
 
     # +----
@@ -518,6 +526,42 @@ urlpatterns = [
     # 2. tic_tac_toe_v3o1 (別名)ファイルの Playing クラスの render 静的メソッド
 
     # | 〇×ゲーム３．１
+    # +----
+
+
+
+
+    # +----
+    # | 〇×ゲーム３．２
+
+    # 対局申込
+    path('tic-tac-toe/v3o2/match-application/',
+         #             ^^^ three o two
+         # ----------------------------------
+         # 1
+         tic_tac_toe_v3o2.MatchApplication.render),
+    #                 ^^^ three o two
+    #    ----------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3o2/match-application/` のような URL のパスの部分
+    #                              -----------------------------------
+    # 2. tic_tac_toe_v3o2 (別名)ファイルの MatchApplication クラスの render メソッド
+
+    # 対局中
+    path('tic-tac-toe/v3o2/playing/<str:kw_room_name>/',
+         #             ^^^ three o two
+         # -------------------------------------------
+         # 1
+         tic_tac_toe_v3o2.Playing.render),
+    #                 ^^^
+    #    -------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v3o2/playing/<部屋名>/` のような URL のパスの部分。
+    #                              ----------------------------------
+    #    <部屋名> に入った文字列は kw_room_name 変数に渡されます
+    # 2. tic_tac_toe_v3o2 (別名)ファイルの Playing クラスの render 静的メソッド
+
+    # | 〇×ゲーム３．２
     # +----
 
 
