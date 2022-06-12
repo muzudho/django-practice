@@ -306,6 +306,7 @@ def logging_in_render(request, path_of_http_playing, path_of_match_application):
 
         # `po_` は POST送信するパラメーター名の目印
         room_name = request.POST.get("po_room_name")
+        # 自分の駒。 "X" か "O"。 機能拡張も想定
         my_piece = request.POST.get("po_my_piece")
 
         return redirect(path_of_http_playing.format(room_name, my_piece))

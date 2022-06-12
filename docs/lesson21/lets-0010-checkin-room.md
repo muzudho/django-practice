@@ -184,6 +184,7 @@ class MatchApplication():
             # print(
             #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
+            # 自分の駒。 "X" か "O"。 機能拡張も想定
             if po_my_piece == "X":
                 # X を取った方は先手とします
                 room.sente_id = user_pk

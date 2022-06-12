@@ -108,7 +108,7 @@ def match_application_on_sent(request):
     # `po_` は POST送信するパラメーター名の目印
     # 部屋名
     po_room_name = request.POST.get("po_room_name")
-    # 自分の駒。 X か O
+    # 自分の駒。 "X" か "O"。 機能拡張も想定
     po_my_piece = request.POST.get("po_my_piece")
 
     # 部屋の取得 または 新規作成

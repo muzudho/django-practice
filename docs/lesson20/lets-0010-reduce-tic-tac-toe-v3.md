@@ -244,7 +244,7 @@ def match_application_on_sent(request):
     # `po_` は POST送信するパラメーター名の目印
     # 部屋名
     po_room_name = request.POST.get("po_room_name")
-    # 自分の駒。 X か O
+    # 自分の駒。 "X" か "O"。 機能拡張も想定
     po_my_piece = request.POST.get("po_my_piece")
 
     # 部屋の取得 または 新規作成
@@ -292,6 +292,7 @@ def match_application_on_sent(request):
         # print(
         #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
+        # 自分の駒。 "X" か "O"。 機能拡張も想定
         if po_my_piece == "X":
             # X を取った方は先手とします
             room.sente_id = user_pk
