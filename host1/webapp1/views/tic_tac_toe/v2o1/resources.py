@@ -1,4 +1,4 @@
-"""〇×ゲームの練習２"""
+"""〇×ゲームの練習２．１"""
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -42,10 +42,10 @@ class Portal():
 class LoggingIn():
     """ログイン中"""
 
-    _path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
-    #                                 ^ two
-    #                   -----------------------------------------
-    #                   1
+    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    #                                      ^ two
+    #                        -----------------------------------------
+    #                        1
     # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -62,7 +62,7 @@ class LoggingIn():
     @login_required
     def render(request):
         """描画"""
-        return logging_in_render(request, LoggingIn._path_of_playing, LoggingIn._path_of_match_application)
+        return logging_in_render(request, LoggingIn._path_of_http_playing, LoggingIn._path_of_match_application)
 
 
 class LoggingOut():
@@ -91,7 +91,7 @@ def portal_render(request, path_of_html, path_of_match_application, path_of_sign
     return HttpResponse(template.render(context, request))
 
 
-def logging_in_render(request, path_of_playing, path_of_match_application):
+def logging_in_render(request, path_of_http_playing, path_of_match_application):
     """ログイン中 - 描画"""
     if request.method == "POST":
         # 送信後
@@ -100,7 +100,7 @@ def logging_in_render(request, path_of_playing, path_of_match_application):
         room_name = request.POST.get("po_room_name")
         my_piece = request.POST.get("po_my_piece")
 
-        return redirect(path_of_playing.format(room_name, my_piece))
+        return redirect(path_of_http_playing.format(room_name, my_piece))
 
     # 訪問後
     return render(request, path_of_match_application, {})
