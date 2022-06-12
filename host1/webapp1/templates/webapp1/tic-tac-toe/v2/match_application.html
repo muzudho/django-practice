@@ -22,8 +22,12 @@
                             <!-- 部屋名 -->
                             <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
-                            <!-- 自分の駒。 X か O -->
-                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.choices" item-text="visitor.value" item-value="visitor.value" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <!--
+                                自分の駒。 "X" か "O"。 機能拡張も想定
+
+                                * 戻り値をオブジェクトのまま受け取りたいときは、タグの属性として return-object を付ける
+                            -->
+                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.select" item-text="text" item-value="value" label="Your piece" persistent-hint single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -54,7 +58,7 @@
                     visitor: {
                         // `dj_` は Djangoでレンダーするパラメーター名の目印
                         value: "{{dj_visitor_value}}",
-                        choices: JSON.parse("{{dj_visitor_choices | escapejs}}"),
+                        select: JSON.parse("{{dj_visitor_select | escapejs}}"),
                     },
                 },
             });

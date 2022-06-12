@@ -1055,8 +1055,12 @@ function packSetMessageFromServer() {
                             <!-- 部屋名 -->
                             <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
-                            <!-- 自分の駒。 X か O -->
-                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.choices" item-text="visitor.value" item-value="visitor.value" label="Your piece" persistent-hint return-object single-line></v-select>
+                            <!--
+                                自分の駒。 "X" か "O"。 機能拡張も想定
+
+                                * 戻り値をオブジェクトのまま受け取りたいときは、タグの属性として return-object を付ける
+                            -->
+                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.select" item-text="text" item-value="value" label="Your piece" persistent-hint single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -1087,7 +1091,7 @@ function packSetMessageFromServer() {
                     visitor: {
                         // `dj_` は Djangoでレンダーするパラメーター名の目印
                         value: "{{dj_visitor_value}}",
-                        choices: JSON.parse("{{dj_visitor_choices | escapejs}}"),
+                        select: JSON.parse("{{dj_visitor_select | escapejs}}"),
                     },
                 },
             });
@@ -1248,7 +1252,7 @@ function packSetMessageFromServer() {
                         // `po_` は POST送信するパラメーター名の目印
                         // 部屋名
                         document.forms["form1"]["po_room_name"].value,
-                        // 自分の駒。 X か O
+                        // 自分の駒。 "X" か "O"。 機能拡張も想定
                         document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
@@ -1833,7 +1837,10 @@ match_application_open_context = {
     # 入場者データ
     "dj_visitor_value": "X",
     # Python と JavaScript 間で配列データを渡すために JSON 文字列形式にします
-    "dj_visitor_choices": json.dumps(["X", "O"]),
+    "dj_visitor_select": json.dumps([
+        {"text": "X", "value": "X"},
+        {"text": "O", "value": "O"},
+    ]),
 }
 
 
@@ -1916,6 +1923,7 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
         # `po_` は POST送信するパラメーター名の目印
         po_room_name = request.POST.get("po_room_name")
+        # 自分の駒。 "X" か "O"。 機能拡張も想定
         po_my_piece = request.POST.get("po_my_piece")
 
         # TODO バリデーションチェックしたい
@@ -2118,6 +2126,10 @@ websocket_urlpatterns = [
 * 📖 [Django さくらVPS 備忘録](https://qiita.com/muzudho1/items/1d3b4b5608716463184c)
 
 # 参考にした記事
+
+## Vuetify 関連
+
+📖 [Vuetifyのv-selectにてitemsのキーがtextとvalueじゃないときの対処法](https://qiita.com/akido_/items/96ced6cd5fd9929c666f)  
 
 ## Web socket 関連
 

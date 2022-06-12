@@ -13,7 +13,10 @@ match_application_open_context = {
     # 入場者データ
     "dj_visitor_value": "X",
     # Python と JavaScript 間で配列データを渡すために JSON 文字列形式にします
-    "dj_visitor_choices": json.dumps(["X", "O"]),
+    "dj_visitor_select": json.dumps([
+        {"text": "X", "value": "X"},
+        {"text": "O", "value": "O"},
+    ]),
 }
 
 
@@ -96,6 +99,7 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
         # `po_` は POST送信するパラメーター名の目印
         po_room_name = request.POST.get("po_room_name")
+        # 自分の駒。 "X" か "O"。 機能拡張も想定
         po_my_piece = request.POST.get("po_my_piece")
 
         # TODO バリデーションチェックしたい
