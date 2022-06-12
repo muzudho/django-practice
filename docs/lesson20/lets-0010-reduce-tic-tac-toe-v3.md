@@ -134,6 +134,7 @@ docker-compose up
 ```
 
 ```py
+"""〇×ゲームの練習３"""
 # from django.contrib.auth.models import User # デバッグ用
 
 from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
@@ -164,10 +165,10 @@ from webapp1.models.m_user_profile import Profile
 class MatchApplication():
     """対局申込ページ"""
 
-    _path_of_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
-    #                                 ^ three
-    #                   -----------------------------------------
-    #                   1
+    _path_of_http_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
+    #                                      ^ three
+    #                        -----------------------------------------
+    #                        1
     # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -181,7 +182,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_http_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
         #                   ^ two
 
     @staticmethod
@@ -201,12 +202,12 @@ class MatchApplication():
 class Playing():
     """対局ページ"""
 
-    _path_of_playing = "/tic-tac-toe/v2/playing/"
-    #                                 ^ two
-    #                   ------------------------
-    #                   1
-    # 1. http://example.com/tic-tac-toe/v2/playing/Elephant/
+    _path_of_ws_playing = "/tic-tac-toe/v2/playing/"
+    #                                    ^ two
     #                      ------------------------
+    #                      1
+    # 1. ws://example.com/tic-tac-toe/v2/playing/Elephant/
+    #                    ------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
     #                                     ^ three
@@ -218,7 +219,7 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
         #                   ^ two
 
     @staticmethod
@@ -229,6 +230,7 @@ class Playing():
 
 
 # 以下、関数
+
 
 def match_application_on_sent(request):
     """対局申込 - 送信後
