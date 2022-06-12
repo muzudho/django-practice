@@ -19,6 +19,9 @@ match_application_open_context = {
     ]),
 }
 
+# 対局中 - 駒
+playing_expected_pieces = ['X', 'O']
+
 
 # 以下、ロジック
 
@@ -79,7 +82,13 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
+        return render_playing(
+            request,
+            kw_room_name,
+            Playing._path_of_ws_playing,
+            Playing._path_of_html,
+            Playing.on_update,
+            playing_expected_pieces)
 
     @staticmethod
     def on_update(request):
@@ -112,10 +121,10 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
     return render(request, path_of_html, context)
 
 
-def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_update):
+def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_update, expected_pieces):
     """対局中 - 描画"""
     my_piece = request.GET.get("mypiece")
-    if my_piece not in ['X', 'O']:
+    if my_piece not in expected_pieces:
         raise Http404(f"My piece '{my_piece}' does not exists")
 
     on_update(request)
