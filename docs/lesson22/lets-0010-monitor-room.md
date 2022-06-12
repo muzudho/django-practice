@@ -400,8 +400,15 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
-        #                   ^ two
+        return tic_tac_toe_v2.render_playing(
+            #               ^ two
+            request,
+            kw_room_name,
+            Playing._path_of_ws_playing,
+            Playing._path_of_html,
+            Playing.on_update,
+            tic_tac_toe_v2.playing_expected_pieces)
+        #                ^ two
 
     @staticmethod
     def on_update(request):
