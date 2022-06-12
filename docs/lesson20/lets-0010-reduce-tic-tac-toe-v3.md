@@ -219,8 +219,15 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
-        #                   ^ two
+        return tic_tac_toe_v2.render_playing(
+            #               ^ two
+            request,
+            kw_room_name,
+            Playing._path_of_ws_playing,
+            Playing._path_of_html,
+            Playing.on_update,
+            tic_tac_toe_v2.playing_expected_pieces)
+        #                ^ two
 
     @staticmethod
     def on_update(request):
@@ -292,7 +299,6 @@ def match_application_on_sent(request):
         # print(
         #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
-        # 自分の駒。 "X" か "O"。 機能拡張も想定
         if po_my_piece == "X":
             # X を取った方は先手とします
             room.sente_id = user_pk
