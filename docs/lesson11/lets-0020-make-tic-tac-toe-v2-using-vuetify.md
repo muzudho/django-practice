@@ -1254,8 +1254,8 @@ function packSetMessageFromServer() {
                         (roomName, myPiece) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
-                            const connectionString = `ws://${window.location.host}{{dj_path_of_playing}}${roomName}/`;
-                            //                        ----]----------------------]----------------------------------
+                            const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
+                            //                        ----]----------------------]-------------------------------------
                             //                        1    2                      3
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
@@ -1818,6 +1818,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
 ```
 
 ```py
+"""〇×ゲームの練習２"""
 import json
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -1842,10 +1843,10 @@ match_application_open_context = {
 class MatchApplication():
     """対局申込"""
 
-    _path_of_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
-    #                                 ^ two
-    #                   -----------------------------------------
-    #                   1
+    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    #                                      ^ two
+    #                        -----------------------------------------
+    #                        1
     # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
     #                           --------------------------------------------
 
@@ -1859,7 +1860,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        return render_match_application(request, MatchApplication._path_of_http_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
 
     @staticmethod
     def on_sent(request):
@@ -1878,12 +1879,12 @@ class MatchApplication():
 class Playing():
     """対局中"""
 
-    _path_of_playing = "/tic-tac-toe/v2/playing/"
-    #                                 ^ two
-    #                   ------------------------
-    #                   1
-    # 1. http://example.com:8000/tic-tac-toe/v2/playing/
-    #                           ------------------------
+    _path_of_ws_playing = "/tic-tac-toe/v2/playing/"
+    #                                    ^ two
+    #                      ------------------------
+    #                      1
+    # 1. ws://example.com:8000/tic-tac-toe/v2/playing/
+    #                         ------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/playing.html.txt"
     #                                     ^ two
@@ -1895,7 +1896,7 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        return render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
 
     @staticmethod
     def on_update(request):
@@ -1907,7 +1908,7 @@ class Playing():
 # 以下、関数
 
 
-def render_match_application(request, path_of_playing, path_of_html, on_sent, open):
+def render_match_application(request, path_of_http_playing, path_of_html, on_sent, open):
     """対局申込 - 描画"""
     if request.method == "POST":
         # 送信後
@@ -1919,7 +1920,7 @@ def render_match_application(request, path_of_playing, path_of_html, on_sent, op
 
         # TODO バリデーションチェックしたい
 
-        return redirect(path_of_playing.format(po_room_name, po_my_piece))
+        return redirect(path_of_http_playing.format(po_room_name, po_my_piece))
 
     # 訪問後
     context = open(request)
@@ -1927,7 +1928,7 @@ def render_match_application(request, path_of_playing, path_of_html, on_sent, op
     return render(request, path_of_html, context)
 
 
-def render_playing(request, kw_room_name, path_of_playing, path_of_html, on_update):
+def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_update):
     """対局中 - 描画"""
     my_piece = request.GET.get("mypiece")
     if my_piece not in ['X', 'O']:
@@ -1939,7 +1940,7 @@ def render_playing(request, kw_room_name, path_of_playing, path_of_html, on_upda
     context = {
         "dj_room_name": kw_room_name,
         "dj_my_piece": my_piece,
-        "dj_path_of_playing": path_of_playing,
+        "dj_path_of_ws_playing": path_of_ws_playing,
     }
     return render(request, path_of_html, context)
 ```

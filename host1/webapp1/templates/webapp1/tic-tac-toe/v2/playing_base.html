@@ -128,8 +128,8 @@
                         (roomName, myPiece) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
-                            const connectionString = `ws://${window.location.host}{{dj_path_of_playing}}${roomName}/`;
-                            //                        ----]----------------------]----------------------------------
+                            const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
+                            //                        ----]----------------------]-------------------------------------
                             //                        1    2                      3
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
