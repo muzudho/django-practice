@@ -324,7 +324,9 @@ websocket_urlpatterns = [
 ```
 
 ```py
+"""〇×ゲームの練習３．１"""
 from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
+#                               ^ two                              ^ two
 #    ------- --------------------        ---------    --------------
 #    1       2                           3            4
 # 1. アプリケーション フォルダー名
@@ -333,6 +335,7 @@ from webapp1.views.tic_tac_toe.v2 import resources as tic_tac_toe_v2
 # 4. `3.` の別名
 
 from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
+#                               ^ three                            ^ three
 #    ------- --------------------        ---------    --------------
 #    1       2                           3            4
 # 1. アプリケーション フォルダー名
@@ -344,10 +347,10 @@ from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
 class MatchApplication():
     """対局申込ページ"""
 
-    _path_of_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
-    #                                 ^^^ three o one
-    #                   -------------------------------------------
-    #                   1
+    _path_of_http_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
+    #                                      ^^^ three o one
+    #                        -------------------------------------------
+    #                        1
     # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
     #                           ----------------------------------------------
 
@@ -361,7 +364,7 @@ class MatchApplication():
     @staticmethod
     def render(request):
         """描画"""
-        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
+        return tic_tac_toe_v2.render_match_application(request, MatchApplication._path_of_http_playing, MatchApplication._path_of_html, MatchApplication.on_sent, MatchApplication.open)
         #                   ^ two
 
     @staticmethod
@@ -380,12 +383,12 @@ class MatchApplication():
 
 class Playing():
 
-    _path_of_playing = "/tic-tac-toe/v3o1/playing/"
-    #                                 ^^^ three o one
-    #                   --------------------------
-    #                   1
-    # 1. http://example.com/tic-tac-toe/v3o1/playing/Elephant/
+    _path_of_ws_playing = "/tic-tac-toe/v3o1/playing/"
+    #                                    ^^^ three o one
     #                      --------------------------
+    #                      1
+    # 1. ws://example.com/tic-tac-toe/v3o1/playing/Elephant/
+    #                    --------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
     #                                     ^ three
@@ -397,7 +400,7 @@ class Playing():
     @staticmethod
     def render(request, kw_room_name):
         """描画"""
-        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_playing, Playing._path_of_html, Playing.on_update)
+        return tic_tac_toe_v2.render_playing(request, kw_room_name, Playing._path_of_ws_playing, Playing._path_of_html, Playing.on_update)
         #                   ^ two
 
     @staticmethod
