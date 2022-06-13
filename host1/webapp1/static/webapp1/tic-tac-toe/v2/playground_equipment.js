@@ -8,6 +8,8 @@ class PlaygroundEquipment {
 
     /**
      * 対局開始時
+     *
+     * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
         // 盤面
@@ -16,7 +18,7 @@ class PlaygroundEquipment {
         // 何手目
         this._countOfMove = 0;
 
-        // 自分の手番か
+        // 自分の手番か（初回は先手）
         this._isMyTurn = myPiece == PC_X_LABEL;
 
         // 「相手の手番に着手しないでください」というアラートの可視性

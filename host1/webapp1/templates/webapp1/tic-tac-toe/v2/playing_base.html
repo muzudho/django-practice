@@ -60,7 +60,7 @@
                     <!-- あれば、ここにボタンを置く -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isAlertYourMoveShow()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
@@ -277,10 +277,12 @@
                         }
                     },
                     /**
-                     * 対局中で、自分の手番ならアラートを常時表示
+                     * (1) "X" か "O" かのどちらかのプレイヤーで
+                     * (2) 対局中で
+                     * (3) 自分の手番か
                      */
-                    isAlertYourMoveShow() {
-                        return this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
+                    isYourTurn() {
+                        return (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O') && this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
                     },
                     // 複雑だと動かないみたい
                     // isAlertWaitForOther() {
