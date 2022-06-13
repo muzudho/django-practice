@@ -230,9 +230,9 @@ function startReloadingAutomatically(intervalMilliseconds) {
 </html>
 ```
 
-# Step 5. ビュー編集 - v_practice.py ファイル
+# Step 5. ビュー編集 - pages.py ファイル
 
-以下のファイルを無ければ新規作成、有れば編集してほしい。  
+以下の既存ファイルに、ソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -247,7 +247,8 @@ function startReloadingAutomatically(intervalMilliseconds) {
             │       └── 📂practice
             │           └── 📄waiting-for-match-v1.html
             └── 📂views
-👉              └── 📄v_practice.py
+                └── 📂practice
+👉                  └── 📄pages.py
 ```
 
 ```py
@@ -278,28 +279,30 @@ def render_waiting_for_match(request):
             ├── 📂models_helper
             │   └── 📄mh_user.py
             ├── 📂static
-        │   │   ├── 📂allauth-customized
+            │   ├── 📂allauth-customized
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
             │           ├── 📄clock.js
             │           └── 📄waiting-for-match.js
             ├── 📂templates
-        │   │   ├── 📂allauth-customized
+            │   ├── 📂allauth-customized
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂practice
             │           └── 📄waiting-for-match-v1.html
             ├── 📂views
-            │   └── 📄v_practice.py
+            │   └── 📂practice
+            │       └── 📄pages.py
 👉          └── 📄urls.py
 ```
 
 ```py
-from webapp1.views import v_practice
-#    ------- -----        ----------
-#    1       2            3
+from webapp1.views.practice import pages as practice_pages
+#    ------- --------------        -----    --------------
+#    1       2                     3        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
@@ -308,13 +311,13 @@ urlpatterns = [
     path('practice/waiting-for-match/',
          # --------------------------
          # 1
-         v_practice.render_waiting_for_match, name='practice_waitingForMatch'),
-    #    -----------------------------------        ------------------------
-    #    2                                          3
+         practice_pages.render_waiting_for_match, name='practice_waitingForMatch'),
+    #    ---------------------------------------        ------------------------
+    #    2                                              3
     #
     # 1. 例えば `http://example.com/waiting-for-match/` のような URL のパスの部分
     #                              -------------------
-    # 2. v_practice.py ファイルの render_waiting_for_match メソッド
+    # 2. practice_pages (別名)ファイルの render_waiting_for_match メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatch' %} のような形でURLを取得するのに使える
 ]
 ```

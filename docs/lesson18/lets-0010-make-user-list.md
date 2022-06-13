@@ -48,7 +48,8 @@
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📂websocks
         │   │   └── 📂tic_tac_toe
         │   │       ├── 📂v1
@@ -210,9 +211,9 @@ class MhUser():
         return user_dic
 ```
 
-# Step 4. ビュー編集 - v_practice.py ファイル
+# Step 4. ビュー編集 - pages.py ファイル
 
-以下のファイルを無ければ新規作成、有れば編集してほしい  
+以下の既存ファイルに、ソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -224,7 +225,8 @@ class MhUser():
             │       └── 📂practice
             │           └── 📄user-list.html
             └── 📂views
-👉              └── 📄v_practice.py
+                └── 📂practice
+👉                  └── 📄pages.py
 ```
 
 ```py
@@ -270,17 +272,19 @@ def render_user_list(request):
             │       └── 📂practice
             │           └── 📄user-list.html
             ├── 📂views
-            │   └── 📄v_practice.py
+            │   └── 📂practice
+            │       └── 📄pages.py
 👉          └── 📄urls.py
 ```
 
 ```py
-from webapp1.views import v_practice
-#    ------- -----        ----------
-#    1       2            3
+from webapp1.views.practice import pages as practice_pages
+#    ------- --------------        -----    --------------
+#    1       2                     3        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
@@ -289,13 +293,13 @@ urlpatterns = [
     path('practice/user-list/',
          # ------------------
          # 1
-         v_practice.render_user_list, name='practice_userList'),
-    #    ---------------------------        -----------------
-    #    2                                  3
+         practice_pages.render_user_list, name='practice_userList'),
+    #    -------------------------------        -----------------
+    #    2                                      3
     #
     # 1. 例えば `http://example.com/practice/user-list/` のような URL のパスの部分
     #                              --------------------
-    # 2. v_practice.py ファイルの render_user_list メソッド
+    # 2. practice_pages (別名)ファイルの render_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
 ]
 ```

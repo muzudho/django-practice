@@ -31,7 +31,7 @@ from webapp1.views import v_index
 
 from webapp1.views import v_login_user, v_member, v_practice_of_vuetify, \
     v_practice_of_json, \
-    v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1, v_practice
+    v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1
 
 from webapp1.views.practice import pages as practice_pages
 #    ------- --------------        -----    --------------
@@ -772,52 +772,52 @@ urlpatterns = [
     path('practice/user-list/',
          # ------------------
          # 1
-         v_practice.render_user_list, name='practice_userList'),
-    #    ---------------------------        -----------------
-    #    2                                  3
+         practice_pages.render_user_list, name='practice_userList'),
+    #    -------------------------------        -----------------
+    #    2                                      3
     #
     # 1. 例えば `http://example.com/practice/user-list/` のような URL のパスの部分
     #                              --------------------
-    # 2. v_practice.py ファイルの render_user_list メソッド
+    # 2. practice_pages (別名)ファイルの render_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
 
     # 会員登録ユーザー一覧 v2
     path('practice/user-list/v2/',
          # ---------------------
          # 1
-         v_practice.render_user_list_v2, name='practice_userListV2'),
-    #    ------------------------------        -------------------
-    #    2                                     3
+         practice_pages.render_user_list_v2, name='practice_userListV2'),
+    #    ----------------------------------        -------------------
+    #    2                                         3
     #
     # 1. 例えば `http://example.com/practice/user-list/v2/` のような URL のパスの部分
     #                              -----------------------
-    # 2. v_practice.py ファイルの render_user_list_v2 メソッド
+    # 2. practice_pages (別名)ファイルの render_user_list_v2 メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_userListV2' %} のような形でURLを取得するのに使える
 
     # 対局待合室
     path('practice/waiting-for-match/',
          # --------------------------
          # 1
-         v_practice.render_waiting_for_match, name='practice_waitingForMatch'),
-    #    -----------------------------------        ------------------------
-    #    2                                          3
+         practice_pages.render_waiting_for_match, name='practice_waitingForMatch'),
+    #    ---------------------------------------        ------------------------
+    #    2                                              3
     #
     # 1. 例えば `http://example.com/waiting-for-match/` のような URL のパスの部分
     #                              -------------------
-    # 2. v_practice.py ファイルの render_waiting_for_match メソッド
+    # 2. practice_pages (別名)ファイルの render_waiting_for_match メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatch' %} のような形でURLを取得するのに使える
 
     # 対局待合室 v2
     path('practice/waiting-for-match/v2/',
          # -----------------------------
          # 1
-         v_practice.render_waiting_for_match_v2, name='practice_waitingForMatchV2'),
-    #    --------------------------------------        --------------------------
-    #    2                                             3
+         practice_pages.render_waiting_for_match_v2, name='practice_waitingForMatchV2'),
+    #    ------------------------------------------        --------------------------
+    #    2                                                 3
     #
     # 1. 例えば `http://example.com/waiting-for-match/v2/` のような URL のパスの部分
     #                              ----------------------
-    # 2. v_practice.py ファイルの render_waiting_for_match_v2 メソッド
+    # 2. practice_pages (別名)ファイルの render_waiting_for_match_v2 メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatchV2' %} のような形でURLを取得するのに使える
 
     # | 練習
