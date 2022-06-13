@@ -3,13 +3,13 @@
  */
 class PlaygroundEquipment {
     constructor() {
-        // あとで init(...) を呼出してください
+        // あとで onStart(...) を呼出してください
     }
 
     /**
-     * 初期化
+     * 対局開始時
      */
-    init(myPiece) {
+    onStart(myPiece) {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 

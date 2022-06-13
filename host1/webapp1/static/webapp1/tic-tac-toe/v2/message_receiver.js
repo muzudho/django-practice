@@ -17,13 +17,13 @@ function packSetMessageFromServer() {
 
         switch (event) {
             case "S2C_Start":
+                // 対局開始時
                 console.log(`[setMessage] S2C_Start`);
-                // 対局開始の一斉通知
-                vue1.init(); // 画面を初期化
+                vue1.onStart();
                 break;
 
             case "S2C_End":
-                // 対局終了の一斉通知
+                // 対局終了時
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
                     result = RESULT_DRAW;
@@ -37,9 +37,9 @@ function packSetMessageFromServer() {
                 break;
 
             case "S2C_Move":
+                // 指し手受信時
                 console.log(`[setMessage] S2C_Move s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
 
-                // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
                     vue1.engine.userCtrl.doMove(parseInt(sq), turn);

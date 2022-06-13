@@ -20,7 +20,9 @@
                      */
                     clickPlayAgain() {
                         console.log(`Play Again`);
-                        this.init();
+
+                        // 対局開始時
+                        this.onStart();
                     },
                     /**
                      * Play again ボタンは非表示か

@@ -457,13 +457,13 @@ WIN_PATTERN = [
  */
 class PlaygroundEquipment {
     constructor() {
-        // あとで init(...) を呼出してください
+        // あとで onStart(...) を呼出してください
     }
 
     /**
-     * 初期化
+     * 対局開始時
      */
-    init(myPiece) {
+    onStart(myPiece) {
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
@@ -955,13 +955,13 @@ function packSetMessageFromServer() {
 
         switch (event) {
             case "S2C_Start":
+                // 対局開始時
                 console.log(`[setMessage] S2C_Start`);
-                // 対局開始の一斉通知
-                vue1.init(); // 画面を初期化
+                vue1.onStart();
                 break;
 
             case "S2C_End":
-                // 対局終了の一斉通知
+                // 対局終了時
                 let result;
                 if (winner == PC_EMPTY_LABEL) {
                     result = RESULT_DRAW;
@@ -975,9 +975,9 @@ function packSetMessageFromServer() {
                 break;
 
             case "S2C_Move":
+                // 指し手受信時
                 console.log(`[setMessage] S2C_Move s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
 
-                // 指し手の一斉通知
                 if (turn != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
                     vue1.engine.userCtrl.doMove(parseInt(sq), turn);
@@ -1252,7 +1252,7 @@ function packSetMessageFromServer() {
                         // `po_` は POST送信するパラメーター名の目印
                         // 部屋名
                         document.forms["form1"]["po_room_name"].value,
-                        // 自分の駒。 "X" か "O"。 機能拡張も想定
+                        // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         (roomName, myPiece) => {
@@ -1288,13 +1288,13 @@ function packSetMessageFromServer() {
                     // ただし、まだ this は初期化されてない
                 },
                 methods: {
-                    // 画面を初期化
-                    init() {
+                    // 対局開始時
+                    onStart() {
                         this.engine.setup(this.packSetLabelOfButton());
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.playeq.init(this.engine.connection.myPiece);
+                        this.engine.playeq.onStart(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -1440,7 +1440,7 @@ function packSetMessageFromServer() {
 
 # Step 13. 対局画面作成 - playing.html.txt ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1491,7 +1491,9 @@ function packSetMessageFromServer() {
                      */
                     clickPlayAgain() {
                         console.log(`Play Again`);
-                        this.init();
+
+                        // 対局開始時
+                        this.onStart();
                     },
                     /**
                      * Play again ボタンは非表示か

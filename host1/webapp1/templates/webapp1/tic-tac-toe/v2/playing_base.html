@@ -158,13 +158,13 @@
                     // ただし、まだ this は初期化されてない
                 },
                 methods: {
-                    // 画面を初期化
-                    init() {
+                    // 対局開始時
+                    onStart() {
                         this.engine.setup(this.packSetLabelOfButton());
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.playeq.init(this.engine.connection.myPiece);
+                        this.engine.playeq.onStart(this.engine.connection.myPiece);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
