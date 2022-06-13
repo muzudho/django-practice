@@ -1,0 +1,15 @@
+{% extends "practice/page2_patch1.html.txt" %}
+<!-- -->
+{#          ------------------------------
+            1
+1. host1/webapp1/templates/webapp1/practice/page2_patch1.html.txt
+                                   ------------------------------
+#}
+
+<!-- -->
+{% block section2o1 %}
+<td>1</td>
+<td>松</td>
+<td>竹</td>
+<td>梅</td>
+{% endblock section2o1 %}

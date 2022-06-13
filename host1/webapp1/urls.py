@@ -255,7 +255,7 @@ urlpatterns = [
 
 
     # +----
-    # | 練習１
+    # | 練習
 
     # ページ１
     path('practice/page1', v_practice_of_pages.render_page1, name='page1'),
@@ -266,16 +266,29 @@ urlpatterns = [
     # 2. v_practice_of_pages.py ファイルの render_page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 
-    # ページ２の第１，２区画
-    path('practice/page2_1o2',
-         # -----------------
+    # ページ２のパッチ１
+    path('practice/page2_patch1',
+         # --------------------
          # 1
-         v_practice_of_pages.render_page2_section1o2, name='page1'),
-    #    -------------------------------------------        -----
-    #    2                                                  3
-    # 1. URLの `practice/page2_1o2` というパスにマッチする
-    # 2. v_practice_of_pages.py ファイルの render_page2_section1o2 メソッド
-    # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
+         v_practice_of_pages.render_page2_patch1, name='page2_patch1'),
+    #    ---------------------------------------        ------------
+    #    2                                              3
+    # 1. 例えば `http://example.com/practice/page2_patch1` のような URL のパスの部分
+    #                              ----------------------
+    # 2. v_practice_of_pages.py ファイルの render_page2_patch1 メソッド
+    # 3. HTMLテンプレートの中で {% url 'page2_patch1' %} のような形でURLを取得するのに使える
+
+    # ページ２のパッチ２
+    path('practice/page2_patch2',
+         # --------------------
+         # 1
+         v_practice_of_pages.render_page2_patch2, name='page2_patch2'),
+    #    ---------------------------------------        ------------
+    #    2                                              3
+    # 1. 例えば `http://example.com/practice/page2_patch2` のような URL のパスの部分
+    #                              ----------------------
+    # 2. v_practice_of_pages.py ファイルの render_page2_patch2 メソッド
+    # 3. HTMLテンプレートの中で {% url 'page2_patch2' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
     path('practice/vuetify-hello1',
