@@ -12,9 +12,17 @@
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <form method="POST" action="data-table2o2">
-                            <!-- form要素の中に csrf_token を入れてください -->
+                        <form method="POST" action="vuetify-data-table2o2">
+                            <!--                    =====================
+                                                    1
+                            1. 宛先を間違えないように
+                            -->
                             {% csrf_token %}
+                            <!--
+                               ==========
+                               2
+                            2. form要素の中に csrf_token を入れてください
+                            -->
                             <v-textarea counter name="textarea1" label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
                             <v-btn type="submit" class="mr-4">送信</v-btn>
                         </form>

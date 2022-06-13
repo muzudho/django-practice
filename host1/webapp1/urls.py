@@ -29,7 +29,7 @@ from webapp1.views import v_index
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
-from webapp1.views import v_login_user, v_member, v_practice_of_vuetify, \
+from webapp1.views import v_login_user, v_member, \
     v_room, v_home, v_lobby_v1, v_accounts_v1
 
 from webapp1.views.practice import pages as practice_pages
@@ -49,6 +49,14 @@ from webapp1.views.practice import json as practice_json
 # 4. `3.` の別名
 
 from webapp1.views.practice import session as practice_session
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
+
+from webapp1.views.practice import vuetify as practice_vuetify
 #    ------- --------------        -------    ----------------
 #    1       2                     3          4
 # 1. アプリケーション フォルダー名
@@ -317,72 +325,72 @@ urlpatterns = [
     path('practice/vuetify-hello1',
          # ----------------------
          # 1
-         v_practice_of_vuetify.readHello, name='readHello'),
-    #    -------------------------------        ---------
-    #    2                                      3
+         practice_vuetify.readHello, name='readHello'),
+    #    --------------------------        ---------
+    #    2                                 3
     # 1. 例えば `http://example.com/practice/vuetify-hello1` のような URL のパスの部分
     #                              ------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readHello メソッド
+    # 2. practice_vuetify (別名)ファイルの readHello メソッド
     # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice/vuetify-data-table1', v_practice_of_vuetify.readDataTable1,
-         # ---------------------------   ------------------------------------
+    path('practice/vuetify-data-table1', practice_vuetify.readDataTable1,
+         # ---------------------------   -------------------------------
          # 1                             2
          name='readDataTable1'),
     #          --------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-data-table1` のような URL のパスの部分
     #                              -----------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable1 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice/vuetify-data-table2', v_practice_of_vuetify.readDataTable2,
-         # ---------------------------   ------------------------------------
+    path('practice/vuetify-data-table2', practice_vuetify.readDataTable2,
+         # ---------------------------   -------------------------------
          # 1                             2
          name='readDataTable2'),
     #          --------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-data-table2` のような URL のパスの部分
     #                              -----------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable2 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 
     # Vuetifyのテキストフィールドのバリデーションの練習
-    path('practice/vuetify-text-field-validation1', v_practice_of_vuetify.render_practice_text_field_validation1,
-         # --------------------------------------   ------------------------------------------------------------
+    path('practice/vuetify-text-field-validation1', practice_vuetify.render_practice_text_field_validation1,
+         # --------------------------------------   -------------------------------------------------------
          # 1                                        2
          name='practice_text_field_validation1'),
     #          -------------------------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-text-field-validation1` のような URL のパスの部分
     #                              ---------------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの render_practice_text_field_validation1 メソッド
+    # 2. practice_vuetify (別名)ファイルの render_practice_text_field_validation1 メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_text_field_validation1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice/vuetify-json-textarea1', v_practice_of_vuetify.readJsonTextarea1,
-         # ------------------------------   ---------------------------------------
+    path('practice/vuetify-json-textarea1', practice_vuetify.readJsonTextarea1,
+         # ------------------------------   ----------------------------------
          # 1                                2
          name='readJsonTextarea1'),
     #          -----------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-json-textarea1` のような URL のパスの部分
     #                              -------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readJsonTextarea1 メソッド
+    # 2. practice_vuetify (別名)ファイルの readJsonTextarea1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice/vuetify-data-table2o2', v_practice_of_vuetify.readDataTable2o2,
-         # -----------------------------   --------------------------------------
+    path('practice/vuetify-data-table2o2', practice_vuetify.readDataTable2o2,
+         # -----------------------------   ---------------------------------
          # 1                               2
          name='readDataTable2o2'),
     #          ----------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-data-table2o2` のような URL のパスの部分
     #                              -------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable2o2 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 
     # Vuetify練習

@@ -32,7 +32,8 @@ Vuetify の テキストフィールド の バリデーション を練習し�
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -138,7 +139,7 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー編集 - v_practice_of_vuetify.py ファイル
+# Step 3. ビュー編集 - vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -150,7 +151,8 @@ docker-compose up
             │       └── 📂practice
             │           └── 📄vuetify-text-field-validation1.html
             └── 📂views
-👉              └── v_practice_of_vuetify.py
+                └── 📂practice
+👉                  └── 📄vuetify.py
 ```
 
 ```py
@@ -186,33 +188,35 @@ def render_practice_text_field_validation1(request):
             │       └── 📂practice
             │           └── 📄vuetify-text-field-validation1.html
             ├── 📂views
-            │   └── 📄v_practice_of_vuetify.py
+            │   └── 📂practice
+            │       └── 📄vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_vuetify
-#    ------- -----        ---------------------
-#    1       2            3
+from webapp1.views.practice import vuetify as practice_vuetify
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
 
     # Vuetifyのテキストフィールドのバリデーションの練習
-    path('practice/vuetify-text-field-validation1', v_practice_of_vuetify.render_practice_text_field_validation1,
-         # --------------------------------------   ------------------------------------------------------------
+    path('practice/vuetify-text-field-validation1', practice_vuetify.render_practice_text_field_validation1,
+         # --------------------------------------   -------------------------------------------------------
          # 1                                        2
          name='practice_text_field_validation1'),
     #          -------------------------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-text-field-validation1` のような URL のパスの部分
     #                              ---------------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの render_practice_text_field_validation1 メソッド
+    # 2. practice_vuetify (別名)ファイルの render_practice_text_field_validation1 メソッド
     # 3. HTMLテンプレートの中で {% url 'practice_text_field_validation1' %} のような形でURLを取得するのに使える
 ]
 ```

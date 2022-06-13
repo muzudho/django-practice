@@ -35,7 +35,8 @@ HTML の中の JavaScript に JSON を動的に埋め込もう
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -226,7 +227,7 @@ docker-compose up
 </html>
 ```
 
-# Step 4. ビュー編集 - v_practice_of_vuetify.py ファイル
+# Step 4. ビュー編集 - vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -242,7 +243,8 @@ docker-compose up
             │       └── 📂practice
             │           └── 📄vuetify-data-table2.html
             └── 📂views
-👉              └── 📄v_practice_of_vuetify.py
+                └── 📂practice
+👉                  └── 📄vuetify.py
 ```
 
 ```py
@@ -284,33 +286,35 @@ def readDataTable2(request):
             │       └── 📂practice
             │           └── 📄vuetify-data-table2.html
             ├── 📂views
-            │   └── 📄v_practice_of_vuetify.py
+            │   └── 📂practice
+            │       └── 📄vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_vuetify
-#    ------- -----        ---------------------
-#    1       2            3
+from webapp1.views.practice import vuetify as practice_vuetify
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('practice/vuetify-data-table2', v_practice_of_vuetify.readDataTable2,
-         # ---------------------------   ------------------------------------
+    path('practice/vuetify-data-table2', practice_vuetify.readDataTable2,
+         # ---------------------------   -------------------------------
          # 1                             2
          name='readDataTable2'),
     #          --------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-data-table2` のような URL のパスの部分
     #                              -----------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable2 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
 ]
 ```

@@ -34,7 +34,8 @@ Data table を作れば上がる。だから説明する。
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -192,7 +193,7 @@ Data table を作れば上がる。だから説明する。
 
 👆 `<v-data-table>` の説明は 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
 
-# Step 2. ビュー編集 - v_practice_of_vuetify.py ファイル
+# Step 2. ビュー編集 - vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -204,7 +205,8 @@ Data table を作れば上がる。だから説明する。
             │       └── 📂practice
             │           └── 📄vuetify-data-table1.html
             └── 📂views
-👉              └── v_practice_of_vuetify.py
+                └── 📂practice
+👉                  └── vuetify.py
 ```
 
 ```py
@@ -239,32 +241,34 @@ def readDataTable1(request, id=id):
             │       └── 📂practice
             │           └── 📄vuetify-data-table1.html
             ├── 📂views
-            │   └── 📄v_practice_of_vuetify.py
+            │   └── 📂practice
+            │       └── 📄vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_vuetify
-#    ------- -----        ---------------------
-#    1       2            3
+from webapp1.views.practice import vuetify as practice_vuetify
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('practice/vuetify-data-table1', v_practice_of_vuetify.readDataTable1,
-         # ---------------------------   ------------------------------------
+    path('practice/vuetify-data-table1', practice_vuetify.readDataTable1,
+         # ---------------------------   -------------------------------
          # 1                             2
          name='readDataTable1'),
     #          --------------
     #          3
     # 1. `practice/vuetify-data-table1` というURLにマッチ
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable1 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
 ]
 ```

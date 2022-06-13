@@ -40,7 +40,8 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -103,9 +104,17 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <form method="POST" action="data-table2o2">
-                            <!-- form要素の中に csrf_token を入れてください -->
+                        <form method="POST" action="vuetify-data-table2o2">
+                            <!--                    =====================
+                                                    1
+                            1. 宛先を間違えないように
+                            -->
                             {% csrf_token %}
+                            <!--
+                               ==========
+                               2
+                            2. form要素の中に csrf_token を入れてください
+                            -->
                             <v-textarea counter name="textarea1" label="JSONを入力してください" :rules="rules" :value="value"></v-textarea>
                             <v-btn type="submit" class="mr-4">送信</v-btn>
                         </form>
@@ -153,7 +162,7 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
 👉                      └── 📄vuetify-data-table2.html
 ```
 
-# Step 4. ビュー編集 - v_practice_of_vuetify.py ファイル
+# Step 4. ビュー編集 - vuetify.py ファイル
 
 以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
 
@@ -170,7 +179,8 @@ Web ページで表示する内容を、JSON形式のテキストで渡したい
             │           ├── 📄vuetify-json-textarea1.html
             │           └── 📄vuetify-data-table2.html
             └── 📂views
-👉              └── 📄v_practice_of_vuetify.py
+                └── 📂practice
+👉                  └── 📄vuetify.py
 ```
 
 ```py
@@ -230,45 +240,47 @@ def readDataTable2o2(request):
             │           ├── 📄vuetify-json-textarea1.html
             │           └── 📄vuetify-data-table2.html
             ├── 📂views
-            │   └── 📄v_practice_of_vuetify.py
+            │   └── 📂practice
+            │       └── 📄vuetify.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_vuetify
-#    ------- -----        ---------------------
-#    1       2            3
+from webapp1.views.practice import vuetify as practice_vuetify
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
 
     # Vuetify練習
-    path('practice/vuetify-json-textarea1', v_practice_of_vuetify.readJsonTextarea1,
-         # ------------------------------   ---------------------------------------
+    path('practice/vuetify-json-textarea1', practice_vuetify.readJsonTextarea1,
+         # ------------------------------   ----------------------------------
          # 1                                2
          name='readJsonTextarea1'),
     #          -----------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-json-textarea1` のような URL のパスの部分
     #                              --------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readJsonTextarea1 メソッド
+    # 2. practice_vuetify (別名)ファイルの readJsonTextarea1 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
 
     # Vuetify練習
-    path('practice/vuetify-data-table2o2', v_practice_of_vuetify.readDataTable2o2,
-         # -----------------------------   --------------------------------------
+    path('practice/vuetify-data-table2o2', practice_vuetify.readDataTable2o2,
+         # -----------------------------   ---------------------------------
          # 1                               2
          name='readDataTable2o2'),
     #          ----------------
     #          3
     # 1. 例えば `http://example.com/practice/vuetify-data-table2o2` のような URL のパスの部分
     #                              -------------------------------
-    # 2. v_practice_of_vuetify.py ファイルの readDataTable2o2 メソッド
+    # 2. practice_vuetify (別名)ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readDataTable2o2' %} のような形でURLを取得するのに使える
 ]
 ```
