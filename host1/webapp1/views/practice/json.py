@@ -26,10 +26,14 @@ def readJsonTextarea2(request):
     template = loader.get_template('practice/json-textarea2.html')
     #                               ----------------------------
     #                               1
-    # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます。
+    # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます
     #                            ----------------------------
 
-    with open('webapp1/static/practice/webapp1/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+    with open('webapp1/static/webapp1/practice/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+        #      -----------------------------------------------------------------
+        #      1
+        # 1. host1/webapp1/static/webapp1/practice/vuetify-desserts-placeholder.json を取ってきます
+        #          -----------------------------------------------------------------
         doc = json.load(f)
 
     context = {

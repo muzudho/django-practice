@@ -40,7 +40,8 @@
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -71,9 +72,9 @@
 
 👆 この JSON データは 📖[Vuetify - Data tables - Usage](https://vuetifyjs.com/en/components/data-tables/#dense) のページにある。  
 
-# Step 2. ビュー編集 - v_practice_of_json.py ファイル
+# Step 2. ビュー編集 - json.py ファイル
 
-以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -83,7 +84,8 @@
             │       └── 📂practice
             │           └── 📄vuetify-desserts.json
             └── 📂views
-👉              └── 📄v_practice_of_json.py
+                └── 📂practice
+👉                  └── 📄json.py
 ```
 
 ```py
@@ -101,7 +103,7 @@ def readJsonResponse1(request):
 
 # Step 3. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+以下の既存ファイルに、ソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -111,19 +113,21 @@ def readJsonResponse1(request):
             │       └── 📂practice
             │           └── 📄vuetify-desserts.json
             ├── 📂views
-            │   └── 📄v_practice_of_json.py
+            │   └── 📂practice
+            │       └── 📄json.py
 👉          └── 📄urls.py
 ```
 
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_json
-#    ------- -----        ------------------
-#    1       2            3
+from webapp1.views.practice import json as practice_json
+#    ------- --------------        ----    -------------
+#    1       2                     3       4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
@@ -132,12 +136,12 @@ urlpatterns = [
     path('practice/json-response1',
          # ----------------------
          # 1
-         v_practice_of_json.readJsonResponse1, name='readJsonResponse1'),
-    #    ------------------------------------        -----------------
-    #    2                                           3
+         practice_json.readJsonResponse1, name='readJsonResponse1'),
+    #    -------------------------------        -----------------
+    #    2                                      3
     # 1. 例えば `http://example.com/practice/json-response1` のような URL のパスの部分
     #                              ------------------------
-    # 2. v_practice_of_json.py ファイルの readDataTable2o2 メソッド
+    # 2. practice_json (別名)ファイルの readDataTable2o2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonResponse1' %} のような形でURLを取得するのに使える
 ]
 ```

@@ -40,7 +40,8 @@
         │   │       └── 📂practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄settings.py
         │   ├── 📄urls.py
@@ -289,8 +290,8 @@ Iron (%):
             <v-app>
                 <v-main>
                     <v-container fluid>
-                        <form method="POST" action="data-table2o3">
-                            <!--                    =============
+                        <form method="POST" action="json-data-table2o3">
+                            <!--                    ==================
                                                     1
                             1. 宛先を間違えないように
                             -->
@@ -326,9 +327,9 @@ Iron (%):
 </html>
 ```
 
-# Step 10. ビュー編集 - v_practice_of_json.py ファイル
+# Step 10. ビュー編集 - json.py ファイル
 
-以下のファイルが既存なら編集を、無ければ新規作成してほしい。  
+以下の既存ファイルに、ソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -348,7 +349,8 @@ Iron (%):
             │       └── 📂practice
             │           └── 📄json-textarea2.html
             ├── 📂views
-👉          │   └── 📄v_practice_of_json.py
+            │   └── 📂practice
+👉          │       └── 📄json.py
             └── 📄admin.py
 ```
 
@@ -371,10 +373,14 @@ def readJsonTextarea2(request):
     template = loader.get_template('practice/json-textarea2.html')
     #                               ----------------------------
     #                               1
-    # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます。
+    # 1. host1/webapp1/templates/practice/json-textarea2.html を取ってきます
     #                            ----------------------------
 
     with open('webapp1/static/webapp1/practice/vuetify-desserts-placeholder.json', mode='r', encoding='utf-8') as f:
+        #      -----------------------------------------------------------------
+        #      1
+        # 1. host1/webapp1/static/webapp1/practice/vuetify-desserts-placeholder.json を取ってきます
+        #          -----------------------------------------------------------------
         doc = json.load(f)
 
     context = {
@@ -425,7 +431,8 @@ def readDataTable2o3(request):
             │       └── 📂practice
             │           └── 📄json-textarea2.html
             ├── 📂views
-            │   └── 📄v_practice_of_json.py
+            │   └── 📂practice
+            │       └── 📄json.py
             ├── 📄admin.py
 👉          └── 📄urls.py
 ```
@@ -433,12 +440,13 @@ def readDataTable2o3(request):
 ```py
 from django.urls import path
 
-from webapp1.views import v_practice_of_json
-#    ------- -----        ------------------
-#    1       2            3
+from webapp1.views.practice import json as practice_json
+#    ------- --------------        ----    -------------
+#    1       2                     3       4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
@@ -447,24 +455,24 @@ urlpatterns = [
     path('practice/json-textarea2',
          # ----------------------
          # 1
-         v_practice_of_json.readJsonTextarea2, name='readJsonTextarea2'),
-    #    ------------------------------------        -----------------
-    #    2                                           3
+         practice_json.readJsonTextarea2, name='readJsonTextarea2'),
+    #    -------------------------------        -----------------
+    #    2                                      3
     # 1. 例えば `http://example.com/practice/json-textarea2` のような URL のパスの部分
     #                              ------------------------
-    # 2. v_practice_of_json.py ファイルの readJsonTextarea2 メソッド
+    # 2. practice_json (別名)ファイルの readJsonTextarea2 メソッド
     # 3. HTMLテンプレートの中で {% url 'readJsonTextarea2' %} のような形でURLを取得するのに使える
 
     # JSONでの応答練習
     path('practice/json-data-table2o3',
          # --------------------------
          # 1
-         v_practice_of_json.readDataTable2o3, name='readDataTable2o3'),
-    #    -----------------------------------        ----------------
-    #    2                                          3
+         practice_json.readDataTable2o3, name='readDataTable2o3'),
+    #    ------------------------------        ----------------
+    #    2                                     3
     # 1. 例えば `http://example.com/practice/json-data-table2o3` のような URL のパスの部分
     #                              ---------------------------
-    # 2. v_practice_of_json.py ファイルの readDataTable2o3 メソッド
+    # 2. practice_json (別名)ファイルの readDataTable2o3 メソッド
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 ]
 ```
