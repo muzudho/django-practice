@@ -30,7 +30,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_member, v_practice_of_vuetify, \
-    v_room, v_home, v_lobby_v1, v_practice_of_session, v_accounts_v1
+    v_room, v_home, v_lobby_v1, v_accounts_v1
 
 from webapp1.views.practice import pages as practice_pages
 #    ------- --------------        -----    --------------
@@ -43,6 +43,14 @@ from webapp1.views.practice import pages as practice_pages
 from webapp1.views.practice import json as practice_json
 #    ------- --------------        ----    -------------
 #    1       2                     3       4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
+
+from webapp1.views.practice import session as practice_session
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -738,13 +746,13 @@ urlpatterns = [
     path('practice/session-active-user-list/',
          # ------------------------------------
          # 1
-         v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
-    #    ---------------------------------------------        --------------------------------
-    #    2                                                    3
+         practice_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
+    #    ----------------------------------------        --------------------------------
+    #    2                                               3
     #
     # 1. 例えば `http://example.com/practice/session-active-user-list/` のような URL のパスの部分
     #                              --------------------------------------
-    # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
+    # 2. practice_session (別名)ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 
     # | セッション練習

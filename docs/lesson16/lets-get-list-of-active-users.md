@@ -251,7 +251,7 @@ web_1  | ]
         return user_dic
 ```
 
-# Step 3. ビュー編集 - v_practice_of_session.py ファイル
+# Step 3. ビュー編集 - session.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -265,7 +265,8 @@ web_1  | ]
             ├── 📂models_helper
             │   └── 📄mh_session.py
             └── 📂views
-👉              └── 📄v_practice_of_session.py
+                └── 📂practice
+👉                  └── 📄session.py
 ```
 
 ```py
@@ -310,17 +311,19 @@ def render_active_user_list(request):
             │       └── 📂practice
             │           └── session-active-user-list.html
             ├── 📂views
-            │   └── 📄v_practice_of_session.py
+            │   └── 📂practice
+            │       └── 📄session.py
 👉          └── 📄urls.py
 ```
 
 ```py
-from webapp1.views import v_practice_of_session
-#    ------- -----        ---------------------
-#    1       2            3
+from webapp1.views.practice import session as practice_session
+#    ------- --------------        -------    ----------------
+#    1       2                     3          4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 urlpatterns = [
     # ...中略...
@@ -329,12 +332,12 @@ urlpatterns = [
     path('practice/session-active-user-list/',
          # ---------------------------------
          # 1
-         v_practice_of_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
-    #    ---------------------------------------------        --------------------------------
-    #    2                                                    3
+         practice_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
+    #    ----------------------------------------        --------------------------------
+    #    2                                               3
     #
     # 1. URLの `practice/session-active-user-list/` というパスにマッチする
-    # 2. v_practice_of_session.py ファイルの render_active_user_list メソッド
+    # 2. practice_session (別名)ファイルの render_active_user_list メソッド
     # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
 ]
 ```
