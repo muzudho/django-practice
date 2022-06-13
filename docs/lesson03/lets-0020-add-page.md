@@ -85,7 +85,7 @@ docker-compose up
 </html>
 ```
 
-# Step 3. ビュー作成 - v_practice_of_pages.py ファイル
+# Step 3. ビュー作成 - pages.py ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -97,7 +97,8 @@ docker-compose up
             │       └── 📂practice
             │           └── 📄page1.html
             └── 📂views
-👉              └── 📄v_practice_of_pages.py
+                └── 📂practice
+👉                  └── 📄pages.py
 ```
 
 ```py
@@ -129,7 +130,8 @@ def render_page1(request):
             │       └── 📂practice
             │           └── 📄page1.html
             ├── 📂views
-            │   └── 📄v_practice_of_pages.py
+            │   └── 📂practice
+            │       └── 📄pages.py
 👉          └── 📄urls.py
 ```
 
@@ -137,22 +139,23 @@ def render_page1(request):
 # 冒頭
 from django.urls import path
 
-from webapp1.views import v_practice_of_pages
-#    ------- -----        -------------------
-#    1       2            3
+from webapp1.views.practice import pages as practice_pages
+#    ------- --------------        -----    --------------
+#    1       2                     3        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 # 追記
 urlpatterns = [
     # ...中略...
 
-    path('practice/page1', v_practice_of_pages.render_page1, name='page1'),
-    #     --------------   --------------------------------        -----
-    #     1                2                                       3
+    path('practice/page1', practice_pages.render_page1, name='page1'),
+    #     --------------   ---------------------------        -----
+    #     1                2                                  3
     # 1. URLの `practice/page1` というパスにマッチする
-    # 2. v_practice_of_pages.py ファイルの render_page1 メソッド
+    # 2. practice_pages (別名)ファイルの render_page1 メソッド
     # 3. HTMLテンプレートの中で {% url 'page1' %} のような形でURLを取得するのに使える
 ]
 ```

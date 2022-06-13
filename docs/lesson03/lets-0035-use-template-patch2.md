@@ -86,7 +86,7 @@ docker-compose up
 {% endblock section2o1 %}
 ```
 
-# Step 3. ビュー作成 - v_practice_of_pages.py ファイル
+# Step 3. ビュー作成 - pages.py ファイル
 
 以下の既存のファイルに、ソースをマージしてほしい  
 
@@ -98,7 +98,8 @@ docker-compose up
             │       └── 📂practice
             │           └── 📄page2_patch2.html.txt
             └── 📂views
-👉              └── 📄v_practice_of_pages.py
+                └── 📂practice
+👉                  └── 📄pages.py
 ```
 
 ```py
@@ -133,7 +134,8 @@ def render_page2_patch2(request):
             │       └── 📂practice
             │           └── 📄page2_patch2.html.txt
             ├── 📂views
-            │   └── 📄v_practice_of_pages.py
+            │   └── 📂practice
+            │       └── 📄pages.py
 👉          └── 📄urls.py
 ```
 
@@ -141,12 +143,13 @@ def render_page2_patch2(request):
 # 冒頭
 from django.urls import path
 
-from webapp1.views import v_practice_of_pages
-#    ------- -----        -------------------
-#    1       2            3
+from webapp1.views.practice import pages as practice_pages
+#    ------- --------------        -----    --------------
+#    1       2                     3        4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. `3.` の別名
 
 # 追記
 urlpatterns = [
@@ -162,12 +165,12 @@ urlpatterns = [
     path('practice/page2_patch2',
          # --------------------
          # 1
-         v_practice_of_pages.render_page2_patch2, name='page2_patch2'),
-    #    ---------------------------------------        ------------
-    #    2                                              3
+         practice_pages.render_page2_patch2, name='page2_patch2'),
+    #    ----------------------------------        ------------
+    #    2                                         3
     # 1. 例えば `http://example.com/practice/page2_patch2` のような URL のパスの部分
     #                              ----------------------
-    # 2. v_practice_of_pages.py ファイルの render_page2_patch2 メソッド
+    # 2. practice_pages (別名)ファイルの render_page2_patch2 メソッド
     # 3. HTMLテンプレートの中で {% url 'page2_patch2' %} のような形でURLを取得するのに使える
 
     # | 練習
