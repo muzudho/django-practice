@@ -1242,7 +1242,7 @@ function packSetMessageFromServer() {
                         <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isGameover()">{{result_message}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isGameover()">{{gameover_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
@@ -1325,11 +1325,14 @@ function packSetMessageFromServer() {
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
                     isVisibleAlertWaitForOtherFlag: false,
-                    result_message : "",
+                    gameover_message : "",
                     messages: {
                         draw: "It's a draw.",
-                        lose: "You lose.",
-                        win: "You win!",
+                        youLose: "You lose.",
+                        youWin: "You win!",
+                        {% block appendix_message %}
+                        // メッセージを追加したければ、ここに挿しこめる
+                        {% endblock appendix_message %}
                     }
                 },
                 // page loaded
@@ -1442,24 +1445,30 @@ function packSetMessageFromServer() {
                         this.engine.winner = winner;
                         this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
 
+                        this.gameover_message = this.createGameoverMessage();
+                    },
+                    /**
+                     * ゲームオーバー時のメッセージ作成
+                     */
+                    createGameoverMessage() {
+                        {% block create_gameover_message %}
+                        // 返却値を変えたいなら、ここに挿しこめる
+                        {% endblock create_gameover_message %}
+
                         // サーバーから勝者が送られてきているので、勝敗に変換
                         let gameover_state = this.engine.getGameoverState();
                         // console.log(`[Debug][onGameover] gameover_state=${gameover_state}`);
 
                         switch (gameover_state) {
                             case GAMEOVER_DRAW:
-                                this.result_message = this.messages.draw;
-                                break;
+                                return this.messages.draw;
                             case GAMEOVER_WIN:
-                                this.result_message = this.messages.win;
-                                break;
+                                return this.messages.youWin;
                             case GAMEOVER_LOSE:
-                                this.result_message = this.messages.lose;
-                                break;
+                                return this.messages.youLose;
                             case GAMEOVER_NONE:
                                 // ここに来るのはおかしい
-                                this.result_message = "";
-                                break;
+                                return "";
                             default:
                                 throw `unknown gameover_state = ${gameover_state}`;
                         }
