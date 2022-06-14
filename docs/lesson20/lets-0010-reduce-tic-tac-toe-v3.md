@@ -106,12 +106,14 @@ docker-compose up
     Do not auto fomatting
 #}
 
+
 {% block footer_section1 %}
-                    <!-- フッターにボタンを置きません -->
+    <!-- フッターにボタンを置きません -->
 {% endblock footer_section1 %}
 
+
 {% block method_section1 %}
-                    // フッターのボタンは除きました
+    // フッターのボタンは除きました
 {% endblock method_section1 %}
 ```
 
