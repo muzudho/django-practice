@@ -1189,7 +1189,7 @@ function packSetMessageFromServer() {
                         <input type="hidden" name="po_my_piece" value="{{dj_my_piece}}" />
                     </form>
                     {% block footer_section1 %}
-                    <!-- あれば、ここにボタンを置く -->
+                    <!-- ボタン等を追加したいなら、ここに挿しこめる -->
                     {% endblock footer_section1 %}
                     <v-container>
                         <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
@@ -1409,12 +1409,17 @@ function packSetMessageFromServer() {
                         }
                     },
                     /**
-                     * (1) "X" か "O" かのどちらかのプレイヤーで
-                     * (2) 対局中で
-                     * (3) 自分の手番か
+                     * (1) 対局中か
+                     * (2) 自分の手番か
                      */
                     isYourTurn() {
-                        return (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O') && this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
+                        let isYourTurn = this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
+
+                        {% block isYourTurn_patch1 %}
+                        // 条件を追加したいなら、ここに挿しこめる
+                        {% endblock isYourTurn_patch1 %}
+
+                        return isYourTurn;
                     },
                     // 複雑だと動かないみたい
                     // isAlertWaitForOther() {
@@ -1433,7 +1438,7 @@ function packSetMessageFromServer() {
                         return this.engine.connection.isReconnectingDisplay;
                     },
                     {% block method_section1 %}
-                    // あれば、ここにメソッドを置く
+                    // メソッドを追加したければ、ここに挿しこめる
                     {% endblock method_section1 %}
                 },
             });
