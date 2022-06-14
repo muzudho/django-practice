@@ -77,17 +77,57 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. ビュー作成 - resources.py ファイル
+# Step 2. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂templates
+                └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+                    └── 📂tic-tac-toe
+                        └── 📂v3o2
+👉                          └── playing.html.txt
+```
+
+👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
+
+```html
+{% extends "tic-tac-toe/v3/playing.html.txt" %}
+{#                       ^ three
+            -------------------------------
+            1
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
+                                   -------------------------------
+
+    自動フォーマットしないでください
+    Do not auto fomatting
+#}
+
+
+{% block isYourTurn_patch1 %}
+    // "X" か "O" かのどちらかのプレイヤーか
+    isYourTurn = isYourTurn && (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O');
+{% endblock isYourTurn_patch1 %}
+```
+
+# Step 3. ビュー作成 - resources.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v3o2
+            │               └── playing.html.txt
             └── 📂views
                 └── 📂tic_tac_toe
                     └── 📂v3o2
-                        └── resources.py
+👉                      └── resources.py
 ```
 
 ```py
@@ -183,12 +223,12 @@ class Playing():
     # 1. ws://example.com/tic-tac-toe/v3o1/playing/Elephant/
     #                    --------------------------
 
-    _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
-    #                                     ^ three
-    #                ---------------------------------------
+    _path_of_html = "webapp1/tic-tac-toe/v3o2/playing.html.txt"
+    #                                     ^ three o two
+    #                -----------------------------------------
     #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
-    #                            ---------------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3o2/playing.html.txt
+    #                            -----------------------------------------
 
     @staticmethod
     def render(request, kw_room_name):
@@ -210,13 +250,18 @@ class Playing():
         pass
 ```
 
-# Step 3. ルート編集 - urls.py ファイル
+# Step 4. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
         └── 📂webapp1                       # アプリケーション フォルダー
+            ├── 📂templates
+            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+            │       └── 📂tic-tac-toe
+            │           └── 📂v3o2
+            │               └── playing.html.txt
             ├── 📂views
             │   └── 📂tic_tac_toe
             │       └── 📂v3o2
@@ -274,7 +319,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 4. Web画面へアクセス
+# Step 5. Web画面へアクセス
 
 * このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください
 * テストするためには `サインアップ` してアカウントを作ってから、 `ログイン` してください
