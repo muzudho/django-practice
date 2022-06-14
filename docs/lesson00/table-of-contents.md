@@ -133,3 +133,6 @@ Lesson 22. Monitor
 
 * 📖 [Djangoでゲーム対局部屋をモニターしよう！](https://qiita.com/muzudho1/items/e5e6e6ba76da401c4c00)
 
+Lesson 23. Watching game
+
+* 📖 [Djangoで観戦モードを作ろう！](https://qiita.com/muzudho1/items/9e4a7dd1ccfac6ac8d66)

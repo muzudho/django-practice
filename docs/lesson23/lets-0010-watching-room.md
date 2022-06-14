@@ -38,14 +38,13 @@
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       ├── 📂tic-tac-toe
-        │   │       │   ├── 📂v1
-        │   │       │   └── 📂v2
-        │   │       │       └── 📄<いろいろ>.html
-        │   │       └── 📂<いろいろ>-practice
-        │   │           └── 📄<いろいろ>.html
+        │   │       └── 📂tic-tac-toe
+        │   │           ├── 📂v1
+        │   │           └── 📂v2
+        │   │               └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📄<いろいろ>.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📂websocks
         │   │   └── 📂tic_tac_toe
         │   │       ├── 📂v1
@@ -110,6 +109,29 @@ docker-compose up
     // "X" か "O" かのどちらかのプレイヤーか
     isYourTurn = isYourTurn && (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O');
 {% endblock isYourTurn_patch1 %}
+
+
+{% block appendix_message %}
+    xWin: "X win!",
+    oWin: "O win!",
+{% endblock appendix_message %}
+
+
+{% block create_gameover_message %}
+    // 観戦者のケース
+    if (this.engine.connection.myPiece == '_') {
+        switch (this.engine.winner) {
+            case PC_X_LABEL:
+                return this.messages.xWin;
+            case PC_O_LABEL:
+                return this.messages.oWin;
+            case PC_EMPTY_LABEL:
+                return this.messages.draw;
+            default:
+                throw `unknown gameover_state = ${gameover_state}`;
+        }
+    }
+{% endblock create_gameover_message %}
 ```
 
 # Step 3. ビュー作成 - resources.py ファイル

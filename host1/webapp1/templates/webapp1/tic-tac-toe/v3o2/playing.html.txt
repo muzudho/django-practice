@@ -14,3 +14,26 @@
     // "X" か "O" かのどちらかのプレイヤーか
     isYourTurn = isYourTurn && (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O');
 {% endblock isYourTurn_patch1 %}
+
+
+{% block appendix_message %}
+    xWin: "X win!",
+    oWin: "O win!",
+{% endblock appendix_message %}
+
+
+{% block create_gameover_message %}
+    // 観戦者のケース
+    if (this.engine.connection.myPiece == '_') {
+        switch (this.engine.winner) {
+            case PC_X_LABEL:
+                return this.messages.xWin;
+            case PC_O_LABEL:
+                return this.messages.oWin;
+            case PC_EMPTY_LABEL:
+                return this.messages.draw;
+            default:
+                throw `unknown gameover_state = ${gameover_state}`;
+        }
+    }
+{% endblock create_gameover_message %}
