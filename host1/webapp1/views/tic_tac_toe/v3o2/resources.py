@@ -90,12 +90,12 @@ class Playing():
     # 1. ws://example.com/tic-tac-toe/v3o1/playing/Elephant/
     #                    --------------------------
 
-    _path_of_html = "webapp1/tic-tac-toe/v3/playing.html.txt"
-    #                                     ^ three
-    #                ---------------------------------------
+    _path_of_html = "webapp1/tic-tac-toe/v3o2/playing.html.txt"
+    #                                     ^ three o two
+    #                -----------------------------------------
     #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
-    #                            ---------------------------------------
+    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v3o2/playing.html.txt
+    #                            -----------------------------------------
 
     @staticmethod
     def render(request, kw_room_name):

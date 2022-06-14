@@ -1,0 +1,16 @@
+{% extends "tic-tac-toe/v3/playing.html.txt" %}
+{#                       ^ three
+            -------------------------------
+            1
+1. host1/webapp1/templates/webapp1/tic-tac-toe/v3/playing.html.txt
+                                   -------------------------------
+
+    自動フォーマットしないでください
+    Do not auto fomatting
+#}
+
+
+{% block isYourTurn_patch1 %}
+    // "X" か "O" かのどちらかのプレイヤーか
+    isYourTurn = isYourTurn && (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O');
+{% endblock isYourTurn_patch1 %}
