@@ -22,6 +22,7 @@ class TicTacToeV2MessageConverter():
             return {
                 'type': 'send_message',  # type属性は必須
                 's2c_event': "S2C_End",
+                # TODO 現状、クライアント側から勝者を送ってきているが、勝敗判定のロジックはサーバー側に置きたい
                 's2c_winner': doc_received.get("c2s_winner", None),
             }
 

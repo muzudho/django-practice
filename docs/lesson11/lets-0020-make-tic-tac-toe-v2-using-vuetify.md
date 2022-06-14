@@ -431,6 +431,22 @@ WIN_PATTERN = [
     // +---------+
     [SQ_2, SQ_4, SQ_6],
 ];
+
+/**
+ * 手番反転
+ *
+ * @param {*} piece
+ * @returns
+ */
+function flipTurn(piece) {
+    if (piece == PC_X_LABEL) {
+        return PC_O_LABEL;
+    } else if (piece == PC_O_LABEL) {
+        return PC_X_LABEL;
+    }
+
+    return piece;
+}
 ```
 
 # Step 6. 遊具作成 - playground_equipment.js ファイル
@@ -806,6 +822,9 @@ class Engine {
         // 自分の駒
         this._myPiece = myPiece;
 
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -889,6 +908,34 @@ class Engine {
     }
 
     /**
+     * 勝者
+     */
+    get winner() {
+        return this._winner;
+    }
+
+    set winner(value) {
+        this._winner = value;
+    }
+
+    /**
+     * 対局結果
+     */
+    getGameoverState() {
+        // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
+
+        if (this._winner == PC_EMPTY_LABEL) {
+            return GAMEOVER_DRAW;
+        } else if (this._winner == vue1.engine.connection.myPiece) {
+            return GAMEOVER_WIN;
+        } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
+            return GAMEOVER_LOSE;
+        }
+
+        return GAMEOVER_NONE;
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -912,6 +959,15 @@ class Engine {
                 console.log(`Socket is error. ${e.reason}`);
             }
         );
+    }
+
+    /**
+     * 開始時
+     */
+    onStart() {
+        this._winner = "";
+
+        this._playeq.onStart(this._connection.myPiece);
     }
 }
 ```
@@ -964,16 +1020,7 @@ function packSetMessageFromServer() {
 
             case "S2C_End":
                 // 対局終了時
-                let result;
-                if (winner == PC_EMPTY_LABEL) {
-                    result = RESULT_DRAW;
-                } else if (winner == vue1.engine.connection.myPiece) {
-                    result = RESULT_WON;
-                } else {
-                    result = RESULT_LOST;
-                }
-
-                vue1.setGameIsOver(result);
+                vue1.onGameover(winner);
                 break;
 
             case "S2C_Move":
@@ -1195,7 +1242,7 @@ function packSetMessageFromServer() {
                         <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isGameover()">{{result_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
@@ -1217,10 +1264,6 @@ function packSetMessageFromServer() {
         <script>
             const STATE_DURING_GAME = "DuringGame";
             const STATE_GAME_IS_OVER = "GameIsOver";
-
-            const RESULT_WON = "Won";
-            const RESULT_LOST = "Lost";
-            const RESULT_DRAW = "Draw";
 
             /**
              * 再接続関数の作成
@@ -1272,7 +1315,6 @@ function packSetMessageFromServer() {
                         }
                     ),
                     state: STATE_DURING_GAME,
-                    result: "",
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
                     label2: PC_EMPTY_LABEL,
@@ -1283,6 +1325,12 @@ function packSetMessageFromServer() {
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
                     isVisibleAlertWaitForOtherFlag: false,
+                    result_message : "",
+                    messages: {
+                        draw: "It's a draw.",
+                        lose: "You lose.",
+                        win: "You win!",
+                    }
                 },
                 // page loaded
                 mounted: () => {
@@ -1296,7 +1344,7 @@ function packSetMessageFromServer() {
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.playeq.onStart(this.engine.connection.myPiece);
+                        this.engine.onStart();
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -1389,23 +1437,31 @@ function packSetMessageFromServer() {
                     /**
                      * 対局は終了しました
                      */
-                    setGameIsOver(result) {
-                        // console.log(`[Debug][setGameIsOver] result=${result}`);
+                    onGameover(winner) {
 
+                        this.engine.winner = winner;
                         this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
 
-                        switch (result) {
-                            case RESULT_DRAW:
-                                this.result = "It's a draw.";
+                        // サーバーから勝者が送られてきているので、勝敗に変換
+                        let gameover_state = this.engine.getGameoverState();
+                        // console.log(`[Debug][onGameover] gameover_state=${gameover_state}`);
+
+                        switch (gameover_state) {
+                            case GAMEOVER_DRAW:
+                                this.result_message = this.messages.draw;
                                 break;
-                            case RESULT_WON:
-                                this.result = "You win!";
+                            case GAMEOVER_WIN:
+                                this.result_message = this.messages.win;
                                 break;
-                            case RESULT_LOST:
-                                this.result = "You lose.";
+                            case GAMEOVER_LOSE:
+                                this.result_message = this.messages.lose;
+                                break;
+                            case GAMEOVER_NONE:
+                                // ここに来るのはおかしい
+                                this.result_message = "";
                                 break;
                             default:
-                                throw `unknown result = ${result}`;
+                                throw `unknown gameover_state = ${gameover_state}`;
                         }
                     },
                     /**
@@ -1428,7 +1484,7 @@ function packSetMessageFromServer() {
                     /**
                      * 対局が終了していたら、結果を常時表示
                      */
-                    isAlertResultShow() {
+                    isGameover() {
                         return this.state == STATE_GAME_IS_OVER;
                     },
                     /**

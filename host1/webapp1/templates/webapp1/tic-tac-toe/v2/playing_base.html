@@ -63,7 +63,7 @@
                         <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isAlertResultShow()">{{result}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isGameover()">{{result_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
@@ -85,10 +85,6 @@
         <script>
             const STATE_DURING_GAME = "DuringGame";
             const STATE_GAME_IS_OVER = "GameIsOver";
-
-            const RESULT_WON = "Won";
-            const RESULT_LOST = "Lost";
-            const RESULT_DRAW = "Draw";
 
             /**
              * 再接続関数の作成
@@ -140,7 +136,6 @@
                         }
                     ),
                     state: STATE_DURING_GAME,
-                    result: "",
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
                     label2: PC_EMPTY_LABEL,
@@ -151,6 +146,12 @@
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
                     isVisibleAlertWaitForOtherFlag: false,
+                    result_message : "",
+                    messages: {
+                        draw: "It's a draw.",
+                        lose: "You lose.",
+                        win: "You win!",
+                    }
                 },
                 // page loaded
                 mounted: () => {
@@ -164,7 +165,7 @@
 
                         this.setState(STATE_DURING_GAME);
 
-                        this.engine.playeq.onStart(this.engine.connection.myPiece);
+                        this.engine.onStart();
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -257,23 +258,31 @@
                     /**
                      * 対局は終了しました
                      */
-                    setGameIsOver(result) {
-                        // console.log(`[Debug][setGameIsOver] result=${result}`);
+                    onGameover(winner) {
 
+                        this.engine.winner = winner;
                         this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
 
-                        switch (result) {
-                            case RESULT_DRAW:
-                                this.result = "It's a draw.";
+                        // サーバーから勝者が送られてきているので、勝敗に変換
+                        let gameover_state = this.engine.getGameoverState();
+                        // console.log(`[Debug][onGameover] gameover_state=${gameover_state}`);
+
+                        switch (gameover_state) {
+                            case GAMEOVER_DRAW:
+                                this.result_message = this.messages.draw;
                                 break;
-                            case RESULT_WON:
-                                this.result = "You win!";
+                            case GAMEOVER_WIN:
+                                this.result_message = this.messages.win;
                                 break;
-                            case RESULT_LOST:
-                                this.result = "You lose.";
+                            case GAMEOVER_LOSE:
+                                this.result_message = this.messages.lose;
+                                break;
+                            case GAMEOVER_NONE:
+                                // ここに来るのはおかしい
+                                this.result_message = "";
                                 break;
                             default:
-                                throw `unknown result = ${result}`;
+                                throw `unknown gameover_state = ${gameover_state}`;
                         }
                     },
                     /**
@@ -296,7 +305,7 @@
                     /**
                      * 対局が終了していたら、結果を常時表示
                      */
-                    isAlertResultShow() {
+                    isGameover() {
                         return this.state == STATE_GAME_IS_OVER;
                     },
                     /**

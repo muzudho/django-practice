@@ -24,16 +24,7 @@ function packSetMessageFromServer() {
 
             case "S2C_End":
                 // 対局終了時
-                let result;
-                if (winner == PC_EMPTY_LABEL) {
-                    result = RESULT_DRAW;
-                } else if (winner == vue1.engine.connection.myPiece) {
-                    result = RESULT_WON;
-                } else {
-                    result = RESULT_LOST;
-                }
-
-                vue1.setGameIsOver(result);
+                vue1.onGameover(winner);
                 break;
 
             case "S2C_Move":

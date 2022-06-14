@@ -17,6 +17,9 @@ class Engine {
         // 自分の駒
         this._myPiece = myPiece;
 
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -100,6 +103,34 @@ class Engine {
     }
 
     /**
+     * 勝者
+     */
+    get winner() {
+        return this._winner;
+    }
+
+    set winner(value) {
+        this._winner = value;
+    }
+
+    /**
+     * 対局結果
+     */
+    getGameoverState() {
+        // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
+
+        if (this._winner == PC_EMPTY_LABEL) {
+            return GAMEOVER_DRAW;
+        } else if (this._winner == vue1.engine.connection.myPiece) {
+            return GAMEOVER_WIN;
+        } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
+            return GAMEOVER_LOSE;
+        }
+
+        return GAMEOVER_NONE;
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -123,5 +154,14 @@ class Engine {
                 console.log(`Socket is error. ${e.reason}`);
             }
         );
+    }
+
+    /**
+     * 開始時
+     */
+    onStart() {
+        this._winner = "";
+
+        this._playeq.onStart(this._connection.myPiece);
     }
 }

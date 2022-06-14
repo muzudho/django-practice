@@ -102,3 +102,19 @@ WIN_PATTERN = [
     // +---------+
     [SQ_2, SQ_4, SQ_6],
 ];
+
+/**
+ * 手番反転
+ *
+ * @param {*} piece
+ * @returns
+ */
+function flipTurn(piece) {
+    if (piece == PC_X_LABEL) {
+        return PC_O_LABEL;
+    } else if (piece == PC_O_LABEL) {
+        return PC_X_LABEL;
+    }
+
+    return piece;
+}
