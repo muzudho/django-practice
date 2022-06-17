@@ -12,6 +12,8 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
+        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
+
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
@@ -26,8 +28,6 @@ class PlaygroundEquipment {
 
         // ゲームオーバーしてません
         this._gameoverState = GAMEOVER_NONE;
-
-        // イベントハンドラはそのまま
     }
 
     /**
@@ -78,6 +78,7 @@ class PlaygroundEquipment {
 
     set isMyTurn(value) {
         this._isMyTurn = value;
+        vue1.raiseMyTurnChanged();
     }
 
     /**

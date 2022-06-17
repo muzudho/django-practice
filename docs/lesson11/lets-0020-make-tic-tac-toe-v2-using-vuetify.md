@@ -118,7 +118,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 以下略
 ```
 
-# Step 3. プロトコル実装 - message_sender.js ファイル
+# Step 3. 物の定義 - things.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -129,7 +129,188 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
-👉              │           └── message_sender.js
+👉              │           └── things.js
+                └── 🚀favicon.ico
+```
+
+```js
+// +--------
+// | 石
+// |
+
+/**
+ * PC は Piece （駒，石 などの意味）の略です
+ * @type {number}
+ */
+const PC_EMPTY = 0; // Pieceがないことを表します
+const PC_X = 1;
+const PC_O = 2;
+
+/**
+ * ラベル
+ * @type {string}
+ */
+const PC_EMPTY_LABEL = "";
+const PC_X_LABEL = "X";
+const PC_O_LABEL = "O";
+
+// |
+// | 石
+// +--------
+
+// +--------
+// | 盤
+// |
+
+/**
+ * 盤上の升の数
+ * @type {number}
+ */
+const BOARD_AREA = 9;
+
+/**
+ * SQ は Square （マス）の略です
+ * +---------+
+ * | 0  1  2 |
+ * | 3  4  5 |
+ * | 6  7  8 |
+ * +---------+
+ * @type {number}
+ */
+const SQ_0 = 0;
+const SQ_1 = 1;
+const SQ_2 = 2;
+const SQ_3 = 3;
+const SQ_4 = 4;
+const SQ_5 = 5;
+const SQ_6 = 6;
+const SQ_7 = 7;
+const SQ_8 = 8;
+
+// | 盤
+// |
+// +--------
+```
+
+# Step 4. ゲームルール定義 - game_rule.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── connection.js
+👉              │           ├── game_rule.js
+                │           ├── message_sender.js
+                │           └── things.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * ゲーム状態
+ */
+const GAME_STATE_DURING = "DuringGame";
+const GAME_STATE_IS_OVER = "GameIsOver";
+
+/**
+ * ゲームオーバー判定
+ *
+ * * 自分視点
+ */
+const GAMEOVER_NONE = 0; // ゲームオーバーしてません
+const GAMEOVER_WIN = 1; // 勝ち
+const GAMEOVER_DRAW = 2; // 引き分け
+const GAMEOVER_LOSE = 3; // 負け
+
+/**
+ * 石が３つ並んでいるパターン
+ */
+WIN_PATTERN = [
+    // +---------+
+    // | *  *  * |
+    // | .  .  . |
+    // | .  .  . |
+    // +---------+
+    [SQ_0, SQ_1, SQ_2],
+    // +---------+
+    // | .  .  . |
+    // | *  *  * |
+    // | .  .  . |
+    // +---------+
+    [SQ_3, SQ_4, SQ_5],
+    // +---------+
+    // | .  .  . |
+    // | .  .  . |
+    // | *  *  * |
+    // +---------+
+    [SQ_6, SQ_7, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | *  .  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_0, SQ_3, SQ_6],
+    // +---------+
+    // | .  *  . |
+    // | .  *  . |
+    // | .  *  . |
+    // +---------+
+    [SQ_1, SQ_4, SQ_7],
+    // +---------+
+    // | .  .  * |
+    // | .  .  * |
+    // | .  .  * |
+    // +---------+
+    [SQ_2, SQ_5, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | .  *  . |
+    // | .  .  * |
+    // +---------+
+    [SQ_0, SQ_4, SQ_8],
+    // +---------+
+    // | .  .  * |
+    // | .  *  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_2, SQ_4, SQ_6],
+];
+
+/**
+ * 手番反転
+ *
+ * @param {*} piece
+ * @returns
+ */
+function flipTurn(piece) {
+    if (piece == PC_X_LABEL) {
+        return PC_O_LABEL;
+    } else if (piece == PC_O_LABEL) {
+        return PC_X_LABEL;
+    }
+
+    return piece;
+}
+```
+
+# Step 5. プロトコル実装 - message_sender.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+👉              │           ├── message_sender.js
+                │           └── things.js
                 └── 🚀favicon.ico
 ```
 
@@ -194,9 +375,9 @@ class MessageSender {
 }
 ```
 
-# Step 4. 通信接続の作成 - connection.js ファイル
+# Step 6. 通信接続の作成 - connection.js ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -206,7 +387,8 @@ class MessageSender {
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
 👉              │           ├── connection.js
-                │           └── message_sender.js
+                │           ├── message_sender.js
+                │           └── things.js
                 └── 🚀favicon.ico
 ```
 
@@ -309,149 +491,9 @@ class Connection {
 }
 ```
 
-# Step 5. ゲームルール定義 - game_rule.js ファイル
+# Step 7. 遊具作成 - playground_equipment.js ファイル
 
-以下のファイルを作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── connection.js
-👉              │           ├── game_rule.js
-                │           └── message_sender.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * ゲームオーバー判定
- *
- * * 自分視点
- */
-const GAMEOVER_NONE = 0; // ゲームオーバーしてません
-const GAMEOVER_WIN = 1; // 勝ち
-const GAMEOVER_DRAW = 2; // 引き分け
-const GAMEOVER_LOSE = 3; // 負け
-
-/**
- * PC は Piece （駒、石、などの意味）の略です。
- * @type {number}
- */
-const PC_EMPTY = 0; // Pieceがないことを表します
-const PC_X = 1;
-const PC_O = 2;
-
-/**
- * ラベル
- * @type {string}
- */
-const PC_EMPTY_LABEL = "";
-const PC_X_LABEL = "X";
-const PC_O_LABEL = "O";
-
-/**
- * 盤上の升の数
- * @type {number}
- */
-const BOARD_AREA = 9;
-
-/**
- * SQ is square
- * +---------+
- * | 0  1  2 |
- * | 3  4  5 |
- * | 6  7  8 |
- * +---------+
- * @type {number}
- */
-const SQ_0 = 0;
-const SQ_1 = 1;
-const SQ_2 = 2;
-const SQ_3 = 3;
-const SQ_4 = 4;
-const SQ_5 = 5;
-const SQ_6 = 6;
-const SQ_7 = 7;
-const SQ_8 = 8;
-
-/**
- * 石が３つ並んでいるパターン
- */
-WIN_PATTERN = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6],
-];
-
-/**
- * 手番反転
- *
- * @param {*} piece
- * @returns
- */
-function flipTurn(piece) {
-    if (piece == PC_X_LABEL) {
-        return PC_O_LABEL;
-    } else if (piece == PC_O_LABEL) {
-        return PC_X_LABEL;
-    }
-
-    return piece;
-}
-```
-
-# Step 6. 遊具作成 - playground_equipment.js ファイル
-
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -463,7 +505,8 @@ function flipTurn(piece) {
                 │           ├── connection.js
                 │           ├── game_rule.js
 👉              │           ├── playground_equipment.js
-                │           └── message_sender.js
+                │           ├── message_sender.js
+                │           └── things.js
                 └── 🚀favicon.ico
 ```
 
@@ -482,6 +525,8 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
+        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
+
         // 盤面
         this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
@@ -496,8 +541,6 @@ class PlaygroundEquipment {
 
         // ゲームオーバーしてません
         this._gameoverState = GAMEOVER_NONE;
-
-        // イベントハンドラはそのまま
     }
 
     /**
@@ -548,6 +591,7 @@ class PlaygroundEquipment {
 
     set isMyTurn(value) {
         this._isMyTurn = value;
+        vue1.raiseMyTurnChanged();
     }
 
     /**
@@ -574,7 +618,7 @@ class PlaygroundEquipment {
 }
 ```
 
-# Step 7. ユーザーコントロール作成 - user_ctrl.js ファイル
+# Step 8. ユーザーコントロール作成 - user_ctrl.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -588,6 +632,7 @@ class PlaygroundEquipment {
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄message_sender.js
+                │           ├── things.js
 👉              │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -655,7 +700,7 @@ class UserCtrl {
 }
 ```
 
-# Step 8. 審判作成 - judge_ctrl.js ファイル
+# Step 9. 審判作成 - judge_ctrl.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -670,6 +715,7 @@ class UserCtrl {
                 │           ├── 📄game_rule.js
 👉              │           ├── 📄judge_ctrl.js
                 │           ├── 📄message_sender.js
+                │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -782,7 +828,7 @@ class JudgeCtrl {
 }
 ```
 
-# Step 9. ゲームエンジン作成 - engine.js ファイル
+# Step 10. ゲームエンジン作成 - engine.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -798,6 +844,7 @@ class JudgeCtrl {
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
                 │           ├── 📄message_sender.js
+                │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -965,6 +1012,7 @@ class Engine {
      * 開始時
      */
     onStart() {
+        console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
         this._winner = "";
 
         this._playeq.onStart(this._connection.myPiece);
@@ -972,7 +1020,7 @@ class Engine {
 }
 ```
 
-# Step 10. 通信プロトコル作成 - message_receiver.js ファイル
+# Step 11. 通信プロトコル作成 - message_receiver.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -989,6 +1037,7 @@ class Engine {
                 │           ├── 📄judge_ctrl.js
 👉              │           ├── 📄message_receiver.js
                 │           ├── 📄message_sender.js
+                │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -1053,7 +1102,7 @@ function packSetMessageFromServer() {
 }
 ```
 
-# Step 11. 対局申込画面作成 - match_application.html ファイル
+# Step 12. 対局申込画面作成 - match_application.html ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1070,13 +1119,14 @@ function packSetMessageFromServer() {
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-👉                          └── match_application.html
+👉                          └── 📄match_application.html
 ```
 
 ```html
@@ -1149,7 +1199,7 @@ function packSetMessageFromServer() {
 </html>
 ```
 
-# Step 12. 対局画面作成 - playing_base.html ファイル
+# Step 13. 対局画面作成 - playing_base.html ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1166,14 +1216,15 @@ function packSetMessageFromServer() {
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-                            ├── match_application.html
-👉                          └── playing_base.html
+                            ├── 📄match_application.html
+👉                          └── 📄playing_base.html
 ```
 
 ```html
@@ -1239,7 +1290,7 @@ function packSetMessageFromServer() {
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isGameover()">{{gameover_message}}</v-alert>
@@ -1250,6 +1301,7 @@ function packSetMessageFromServer() {
             </v-app>
         </div>
 
+        <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
@@ -1258,13 +1310,15 @@ function packSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
+        <!--                    ===================================
+                                1
+        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/user_ctrl.js
+                 =================================================
+        -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            const STATE_DURING_GAME = "DuringGame";
-            const STATE_GAME_IS_OVER = "GameIsOver";
-
             /**
              * 再接続関数の作成
              * @return ラムダ関数
@@ -1314,7 +1368,7 @@ function packSetMessageFromServer() {
                             return connectionString;
                         }
                     ),
-                    state: STATE_DURING_GAME,
+                    state: GAME_STATE_DURING,
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
                     label2: PC_EMPTY_LABEL,
@@ -1324,6 +1378,7 @@ function packSetMessageFromServer() {
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isYourTurn: false,
                     isVisibleAlertWaitForOtherFlag: false,
                     gameover_message : "",
                     messages: {
@@ -1343,11 +1398,12 @@ function packSetMessageFromServer() {
                 methods: {
                     // 対局開始時
                     onStart() {
+                        console.log("[methods onStart]");
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        this.setState(STATE_DURING_GAME);
-
                         this.engine.onStart();
+
+                        this.setGameState(GAME_STATE_DURING);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -1359,7 +1415,7 @@ function packSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
+                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
                         if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
                             // Ban on illegal move
                             console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
@@ -1388,7 +1444,7 @@ function packSetMessageFromServer() {
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
-                        // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        // console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece}`);
 
                         switch (sq) {
                             case 0:
@@ -1434,16 +1490,17 @@ function packSetMessageFromServer() {
                     /**
                      *
                      */
-                    setState(state) {
-                        this.state = state;
+                    setGameState(state) {
+                        console.log(`[methods setGameState] state=${state}`);
+                        this.gameState = state;
+                        this.raiseGameStateChanged();
                     },
                     /**
                      * 対局は終了しました
                      */
                     onGameover(winner) {
-
                         this.engine.winner = winner;
-                        this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
+                        this.setGameState(GAME_STATE_IS_OVER); // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
                     },
@@ -1477,24 +1534,29 @@ function packSetMessageFromServer() {
                      * (1) 対局中か
                      * (2) 自分の手番か
                      */
-                    isYourTurn() {
-                        let isYourTurn = this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
+                    updateYourTurn(){
+                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.isMyTurn=${this.engine.playeq.isMyTurn}`);
+                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.isMyTurn;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
                         {% endblock isYourTurn_patch1 %}
 
-                        return isYourTurn;
+                        console.log(`[methods updateYourTurn 2] isYourTurn=${isYourTurn}`);
+
+                        // v-show="" は複雑なメソッドを指定すると動かないようなので、プロパティにします
+                        this.isYourTurn = isYourTurn;
                     },
-                    // 複雑だと動かないみたい
-                    // isAlertWaitForOther() {
-                    //    return this.engine.playeq.isVisibleAlertWaitForOther;
-                    // },
-                    /**
-                     * 対局が終了していたら、結果を常時表示
-                     */
+                    raiseGameStateChanged() {
+                        console.log(`[methods raiseGameStateChanged]`);
+                        this.updateYourTurn();
+                    },
+                    raiseMyTurnChanged() {
+                        console.log(`[methods raiseMyTurnChanged]`);
+                        this.updateYourTurn();
+                    },
                     isGameover() {
-                        return this.state == STATE_GAME_IS_OVER;
+                        return this.gameState == GAME_STATE_IS_OVER;
                     },
                     /**
                      * 再接続中表示中なら、アラートを常時表示
@@ -1502,9 +1564,9 @@ function packSetMessageFromServer() {
                     isAlertReconnectingShow() {
                         return this.engine.connection.isReconnectingDisplay;
                     },
-                    {% block method_section1 %}
+                    {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
-                    {% endblock method_section1 %}
+                    {% endblock methods_footer %}
                 },
             });
         </script>
@@ -1512,7 +1574,7 @@ function packSetMessageFromServer() {
 </html>
 ```
 
-# Step 13. 対局画面作成 - playing.html.txt ファイル
+# Step 14. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1529,15 +1591,16 @@ function packSetMessageFromServer() {
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             └── 📂templates
                 └── 📂webapp1               # アプリケーション フォルダーと同じ名前
                     └── 📂tic-tac-toe
                         └── 📂v2
-                            ├── match_application.html
-                            ├── playing_base.html
-👉                          └── playing.html.txt
+                            ├── 📄match_application.html
+                            ├── 📄playing_base.html
+👉                          └── 📄playing.html.txt
 ```
 
 👇 自動フォーマットされてくないので、拡張子をテキストファイルにしておく  
@@ -1554,36 +1617,36 @@ function packSetMessageFromServer() {
 #}
 
 {% block footer_section1 %}
-                    <v-container>
-                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
-                    </v-container>
+    <v-container>
+        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+    </v-container>
 {% endblock footer_section1 %}
 
-{% block method_section1 %}
-                    /**
-                     *
-                     */
-                    clickPlayAgain() {
-                        console.log(`Play Again`);
+{% block methods_footer %}
+    /**
+     *
+     */
+    clickPlayAgain() {
+        console.log(`Play Again`);
 
-                        // 対局開始時
-                        this.onStart();
-                    },
-                    /**
-                     * Play again ボタンは非表示か
-                     */
-                    isDisabledPlayAgainButton() {
-                        switch (this.state) {
-                            case STATE_GAME_IS_OVER:
-                                return false; // Enable
-                            default:
-                                return true; // Disable
-                        }
-                    },
-{% endblock method_section1 %}
+        // 対局開始時
+        this.onStart();
+    },
+    /**
+     * Play again ボタンは非表示か
+     */
+    isDisabledPlayAgainButton() {
+        switch (this.gameState) {
+            case GAME_STATE_IS_OVER:
+                return false; // Enable
+            default:
+                return true; // Disable
+        }
+    },
+{% endblock methods_footer %}
 ```
 
-# Step 14. 通信プロトコル作成 - message_converter.py ファイル
+# Step 15. 通信プロトコル作成 - message_converter.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1600,18 +1663,20 @@ function packSetMessageFromServer() {
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      └── message_converter.py
+👉                      └── 📄message_converter.py
 ```
 
 ```py
@@ -1689,7 +1754,7 @@ class TicTacToeV2MessageConverter():
         pass
 ```
 
-# Step 15. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
+# Step 16. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1706,19 +1771,21 @@ class TicTacToeV2MessageConverter():
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      ├── consumer_base.py
-                        └── message_converter.py
+👉                      ├── 📄consumer_base.py
+                        └── 📄message_converter.py
 ```
 
 ```py
@@ -1789,7 +1856,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 16. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
+# Step 17. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1806,20 +1873,22 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── consumer_base.py
-👉                      ├── consumer_custom.py
-                        └── message_converter.py
+                        ├── 📄consumer_base.py
+👉                      ├── 📄consumer_custom.py
+                        └── 📄message_converter.py
 ```
 
 ```py
@@ -1860,7 +1929,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         return await self._messageConverter.on_receive(self.scope, doc_received)
 ```
 
-# Step 17. ビュー作成 - resources.py ファイル
+# Step 18. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1877,14 +1946,16 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             ├── 📂views
             │   └── 📂tic_tac_toe
             │       └── 📂v2
@@ -1892,9 +1963,9 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             └── 📂websocks
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── consumer_base.py
-                        ├── consumer_custom.py
-                        └── message_converter.py
+                        ├── 📄consumer_base.py
+                        ├── 📄consumer_custom.py
+                        └── 📄message_converter.py
 ```
 
 ```py
@@ -2038,9 +2109,9 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
     return render(request, path_of_html, context)
 ```
 
-# Step 18. ルート編集 - urls.py ファイル
+# Step 19. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -2055,14 +2126,16 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             ├── 📂views
             │   └── 📂tic_tac_toe
             │       └── 📂v2
@@ -2070,10 +2143,10 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             ├── 📂websocks
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── consumer_base.py
-            │           ├── consumer_custom.py
-            │           └── message_converter.py
-👉          └── urls.py
+            │           ├── 📄consumer_base.py
+            │           ├── 📄consumer_custom.py
+            │           └── 📄message_converter.py
+👉          └── 📄urls.py
 ```
 
 👇追加する部分のみ抜粋
@@ -2127,7 +2200,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 19. ルート編集 - routing1.py ファイル
+# Step 20. ルート編集 - routing1.py ファイル
 
 以下の既存のファイルを編集してほしい  
 
@@ -2144,14 +2217,16 @@ urlpatterns = [
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
             │   │           ├── 📄message_sender.js
+            │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
             ├── 📂templates
             │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
             │       └── 📂tic-tac-toe
             │           └── 📂v2
-            │               ├── match_application.html
-            │               └── playing.html
+            │               ├── 📄match_application.html
+            │               ├── 📄playing_base.html
+            │               └── 📄playing.html.txt
             ├── 📂views
             │   └── 📂tic_tac_toe
             │       └── 📂v2
@@ -2159,11 +2234,11 @@ urlpatterns = [
             ├── 📂websocks
             │   └── 📂tic-tac-toe
             │       └── 📂v2
-            │           ├── consumer_base.py
-            │           ├── consumer_custom.py
-            │           └── message_converter.py
-👉          ├── routing1.py
-            └── urls.py
+            │           ├── 📄consumer_base.py
+            │           ├── 📄consumer_custom.py
+            │           └── 📄message_converter.py
+👉          ├── 📄routing1.py
+            └── 📄urls.py
 ```
 
 👇追加する部分のみ抜粋
@@ -2200,9 +2275,9 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 20. Web画面へアクセス
+# Step 21. Web画面へアクセス
 
-このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください。  
+このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
 📖 [http://localhost:8000/tic-tac-toe/v2/match-application/](http://localhost:8000/tic-tac-toe/v2/match-application/)  
 

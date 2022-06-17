@@ -60,7 +60,7 @@
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isYourTurn()">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isGameover()">{{gameover_message}}</v-alert>
@@ -71,6 +71,7 @@
             </v-app>
         </div>
 
+        <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
@@ -79,13 +80,15 @@
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
+        <!--                    ===================================
+                                1
+        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/user_ctrl.js
+                 =================================================
+        -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            const STATE_DURING_GAME = "DuringGame";
-            const STATE_GAME_IS_OVER = "GameIsOver";
-
             /**
              * 再接続関数の作成
              * @return ラムダ関数
@@ -135,7 +138,7 @@
                             return connectionString;
                         }
                     ),
-                    state: STATE_DURING_GAME,
+                    state: GAME_STATE_DURING,
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
                     label2: PC_EMPTY_LABEL,
@@ -145,6 +148,7 @@
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isYourTurn: false,
                     isVisibleAlertWaitForOtherFlag: false,
                     gameover_message : "",
                     messages: {
@@ -164,11 +168,12 @@
                 methods: {
                     // 対局開始時
                     onStart() {
+                        console.log("[methods onStart]");
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        this.setState(STATE_DURING_GAME);
-
                         this.engine.onStart();
+
+                        this.setGameState(GAME_STATE_DURING);
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -180,7 +185,7 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
+                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
                         if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
                             // Ban on illegal move
                             console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
@@ -209,7 +214,7 @@
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
-                        // console.log(`[Debug] Vue#setLabelOfButton sq=${sq} piece=${piece}`);
+                        // console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece}`);
 
                         switch (sq) {
                             case 0:
@@ -255,16 +260,17 @@
                     /**
                      *
                      */
-                    setState(state) {
-                        this.state = state;
+                    setGameState(state) {
+                        console.log(`[methods setGameState] state=${state}`);
+                        this.gameState = state;
+                        this.raiseGameStateChanged();
                     },
                     /**
                      * 対局は終了しました
                      */
                     onGameover(winner) {
-
                         this.engine.winner = winner;
-                        this.setState(STATE_GAME_IS_OVER); // 画面を対局終了状態へ
+                        this.setGameState(GAME_STATE_IS_OVER); // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
                     },
@@ -298,24 +304,29 @@
                      * (1) 対局中か
                      * (2) 自分の手番か
                      */
-                    isYourTurn() {
-                        let isYourTurn = this.state == STATE_DURING_GAME && this.engine.playeq.isMyTurn;
+                    updateYourTurn(){
+                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.isMyTurn=${this.engine.playeq.isMyTurn}`);
+                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.isMyTurn;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
                         {% endblock isYourTurn_patch1 %}
 
-                        return isYourTurn;
+                        console.log(`[methods updateYourTurn 2] isYourTurn=${isYourTurn}`);
+
+                        // v-show="" は複雑なメソッドを指定すると動かないようなので、プロパティにします
+                        this.isYourTurn = isYourTurn;
                     },
-                    // 複雑だと動かないみたい
-                    // isAlertWaitForOther() {
-                    //    return this.engine.playeq.isVisibleAlertWaitForOther;
-                    // },
-                    /**
-                     * 対局が終了していたら、結果を常時表示
-                     */
+                    raiseGameStateChanged() {
+                        console.log(`[methods raiseGameStateChanged]`);
+                        this.updateYourTurn();
+                    },
+                    raiseMyTurnChanged() {
+                        console.log(`[methods raiseMyTurnChanged]`);
+                        this.updateYourTurn();
+                    },
                     isGameover() {
-                        return this.state == STATE_GAME_IS_OVER;
+                        return this.gameState == GAME_STATE_IS_OVER;
                     },
                     /**
                      * 再接続中表示中なら、アラートを常時表示
@@ -323,9 +334,9 @@
                     isAlertReconnectingShow() {
                         return this.engine.connection.isReconnectingDisplay;
                     },
-                    {% block method_section1 %}
+                    {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
-                    {% endblock method_section1 %}
+                    {% endblock methods_footer %}
                 },
             });
         </script>

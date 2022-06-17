@@ -160,6 +160,7 @@ class Engine {
      * 開始時
      */
     onStart() {
+        console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
         this._winner = "";
 
         this._playeq.onStart(this._connection.myPiece);

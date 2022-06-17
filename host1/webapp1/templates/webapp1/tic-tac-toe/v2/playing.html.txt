@@ -9,30 +9,30 @@
 #}
 
 {% block footer_section1 %}
-                    <v-container>
-                        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
-                    </v-container>
+    <v-container>
+        <v-btn block elevation="2" v-on:click="clickPlayAgain()" :disabled="isDisabledPlayAgainButton()"> Play again </v-btn>
+    </v-container>
 {% endblock footer_section1 %}
 
-{% block method_section1 %}
-                    /**
-                     *
-                     */
-                    clickPlayAgain() {
-                        console.log(`Play Again`);
+{% block methods_footer %}
+    /**
+     *
+     */
+    clickPlayAgain() {
+        console.log(`Play Again`);
 
-                        // 対局開始時
-                        this.onStart();
-                    },
-                    /**
-                     * Play again ボタンは非表示か
-                     */
-                    isDisabledPlayAgainButton() {
-                        switch (this.state) {
-                            case STATE_GAME_IS_OVER:
-                                return false; // Enable
-                            default:
-                                return true; // Disable
-                        }
-                    },
-{% endblock method_section1 %}
+        // 対局開始時
+        this.onStart();
+    },
+    /**
+     * Play again ボタンは非表示か
+     */
+    isDisabledPlayAgainButton() {
+        switch (this.gameState) {
+            case GAME_STATE_IS_OVER:
+                return false; // Enable
+            default:
+                return true; // Disable
+        }
+    },
+{% endblock methods_footer %}

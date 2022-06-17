@@ -15,6 +15,6 @@
 {% endblock footer_section1 %}
 
 
-{% block method_section1 %}
+{% block methods_footer %}
     // フッターのボタンは除きました
-{% endblock method_section1 %}
+{% endblock methods_footer %}
