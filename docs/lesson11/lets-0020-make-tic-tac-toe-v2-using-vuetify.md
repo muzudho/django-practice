@@ -218,6 +218,39 @@ class Board {
 // | 盤
 // |
 // +--------
+
+// +--------
+// | 棋譜
+// |
+
+/**
+ * 棋譜
+ */
+class Record {
+    constructor() {
+        this._squares = [];
+    }
+
+    /**
+     *
+     * @param {*} sq - 駒を置いた場所
+     */
+    push(sq) {
+        this._squares.push(sq);
+    }
+
+    pop() {
+        this._squares.pop();
+    }
+
+    get length() {
+        return this._squares.length;
+    }
+}
+
+// | 棋譜
+// |
+// +--------
 ```
 
 # Step 4. 概念の定義 - concepts.js ファイル
@@ -700,8 +733,8 @@ class PlaygroundEquipment {
         // 盤面
         this._board = new Board();
 
-        // 何手目
-        this._countOfMove = 0;
+        // 棋譜
+        this._record = new Record();
 
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
@@ -709,7 +742,7 @@ class PlaygroundEquipment {
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
 
-        // ゲームオーバーしてません
+        // ゲームオーバー状態
         this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
@@ -718,6 +751,13 @@ class PlaygroundEquipment {
      */
     get board() {
         return this._board;
+    }
+
+    /**
+     * 棋譜
+     */
+    get record() {
+        return this._record;
     }
 
     /**
@@ -735,24 +775,17 @@ class PlaygroundEquipment {
     }
 
     /**
-     * 手数を１増やします
-     */
-    incrementCountOfMove() {
-        this._countOfMove++;
-    }
-
-    /**
      * マスがすべて埋まっていますか
      */
     isBoardFill() {
-        return this._countOfMove == 9;
+        return this.record.length == 9;
     }
 
     /**
      * 同じ駒が３個ありますか
      */
     isThere3SamePieces() {
-        return 5 <= this._countOfMove;
+        return 5 <= this.record.length;
     }
 
     /**
@@ -820,14 +853,14 @@ class UserCtrl {
      */
     doMove(sq, piece) {
         if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // Warning of illegal move
-            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
+            // イリーガルムーブなら何もしません
+            console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
-            // 空升なら
+            // 空升なら駒を置きます
 
-            this._playeq.incrementCountOfMove(); // 手数を１増やします
+            this._playeq.record.push(sq); // 棋譜に追加
 
             // 石を置きます
             switch (piece) {

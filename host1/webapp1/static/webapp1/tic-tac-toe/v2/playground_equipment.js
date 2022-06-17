@@ -17,8 +17,8 @@ class PlaygroundEquipment {
         // 盤面
         this._board = new Board();
 
-        // 何手目
-        this._countOfMove = 0;
+        // 棋譜
+        this._record = new Record();
 
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
@@ -26,7 +26,7 @@ class PlaygroundEquipment {
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
 
-        // ゲームオーバーしてません
+        // ゲームオーバー状態
         this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
@@ -35,6 +35,13 @@ class PlaygroundEquipment {
      */
     get board() {
         return this._board;
+    }
+
+    /**
+     * 棋譜
+     */
+    get record() {
+        return this._record;
     }
 
     /**
@@ -52,24 +59,17 @@ class PlaygroundEquipment {
     }
 
     /**
-     * 手数を１増やします
-     */
-    incrementCountOfMove() {
-        this._countOfMove++;
-    }
-
-    /**
      * マスがすべて埋まっていますか
      */
     isBoardFill() {
-        return this._countOfMove == 9;
+        return this.record.length == 9;
     }
 
     /**
      * 同じ駒が３個ありますか
      */
     isThere3SamePieces() {
-        return 5 <= this._countOfMove;
+        return 5 <= this.record.length;
     }
 
     /**

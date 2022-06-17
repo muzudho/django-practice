@@ -29,14 +29,14 @@ class UserCtrl {
      */
     doMove(sq, piece) {
         if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // Warning of illegal move
-            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
+            // イリーガルムーブなら何もしません
+            console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
-            // 空升なら
+            // 空升なら駒を置きます
 
-            this._playeq.incrementCountOfMove(); // 手数を１増やします
+            this._playeq.record.push(sq); // 棋譜に追加
 
             // 石を置きます
             switch (piece) {

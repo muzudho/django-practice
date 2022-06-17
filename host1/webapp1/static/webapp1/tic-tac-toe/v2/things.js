@@ -82,3 +82,36 @@ class Board {
 // | 盤
 // |
 // +--------
+
+// +--------
+// | 棋譜
+// |
+
+/**
+ * 棋譜
+ */
+class Record {
+    constructor() {
+        this._squares = [];
+    }
+
+    /**
+     *
+     * @param {*} sq - 駒を置いた場所
+     */
+    push(sq) {
+        this._squares.push(sq);
+    }
+
+    pop() {
+        this._squares.pop();
+    }
+
+    get length() {
+        return this._squares.length;
+    }
+}
+
+// | 棋譜
+// |
+// +--------
