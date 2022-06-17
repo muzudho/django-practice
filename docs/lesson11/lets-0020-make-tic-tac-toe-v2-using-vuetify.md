@@ -693,7 +693,7 @@ class Connection {
 }
 ```
 
-# Step 8. 遊具作成 - playground_equipment.js ファイル
+# Step 8. 遊具作成 - position.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -707,7 +707,7 @@ class Connection {
                 │           ├── concepts.js
                 │           ├── connection.js
                 │           ├── game_rule.js
-👉              │           ├── playground_equipment.js
+👉              │           ├── position.js
                 │           ├── message_sender.js
                 │           └── things.js
                 └── 🚀favicon.ico
@@ -715,9 +715,9 @@ class Connection {
 
 ```js
 /**
- * 遊具
+ * 局面
  */
-class PlaygroundEquipment {
+class Position {
     constructor() {
         // あとで onStart(...) を呼出してください
     }
@@ -728,7 +728,7 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
-        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+        console.log(`[Position onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -804,11 +804,11 @@ class PlaygroundEquipment {
 class UserCtrl {
     /**
      *
-     * @param {*} playeq - 遊具
+     * @param {*} position - 局面
      */
-    constructor(playeq) {
-        // 遊具
-        this._playeq = playeq;
+    constructor(position) {
+        // 局面
+        this._position = position;
 
         // イベントリスナー
         this._onDoMove = () => {};
@@ -828,18 +828,18 @@ class UserCtrl {
      * @returns 駒を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
-        if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
+        if (this._position.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
 
-            this._playeq.record.push(sq); // 棋譜に追加
+            this._position.record.push(sq); // 棋譜に追加
 
             // 駒を置きます
             switch (piece) {
                 case PC_X_LABEL:
-                    this._playeq.board.setPiece(sq, PC_X);
+                    this._position.board.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this._playeq.board.setPiece(sq, PC_O);
+                    this._position.board.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid piece = ${piece}`);
@@ -883,12 +883,12 @@ class UserCtrl {
 class JudgeCtrl {
     /**
      *
-     * @param {*} playeq - 遊具
+     * @param {*} position - 局面
      * @param {*} userCtrl - ユーザーコントロール
      */
-    constructor(playeq, userCtrl) {
-        // 遊具
-        this._playeq = playeq;
+    constructor(position, userCtrl) {
+        // 局面
+        this._position = position;
 
         // ユーザーコントロール
         this._userCtrl = userCtrl;
@@ -921,16 +921,16 @@ class JudgeCtrl {
      * @returns ゲームオーバー状態
      */
     #makeGameoverSetValue() {
-        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
-        if (this._playeq.isThere3SamePieces()) {
+        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._position.isThere3SamePieces()}`);
+        if (this._position.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 // 勝ちパターンの１つについて
                 console.log(`[#makeGameoverSetValue] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     // 当てはまるなら
-                    console.log(`[#makeGameoverSetValue] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
-                    if (this._playeq.myTurn.isTrue) {
+                    console.log(`[#makeGameoverSetValue] this._position.myTurn.isTrue=${this._position.myTurn.isTrue}`);
+                    if (this._position.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
                     } else {
@@ -942,7 +942,7 @@ class JudgeCtrl {
         }
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (this._playeq.isBoardFill()) {
+        if (this._position.isBoardFill()) {
             return GameoverSet.draw;
         }
 
@@ -957,9 +957,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[2])
+            this._position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
@@ -1017,14 +1017,14 @@ class Engine {
         // メッセージ一覧
         this._messageSender = new MessageSender();
 
-        // 遊具
-        this._playeq = new PlaygroundEquipment();
+        // 局面
+        this._position = new Position();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl(this._playeq);
+        this._userCtrl = new UserCtrl(this._position);
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl(this._position, this._userCtrl);
 
         // 判断したとき
         this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
@@ -1087,10 +1087,10 @@ class Engine {
     }
 
     /**
-     * 遊具
+     * 局面
      */
-    get playeq() {
-        return this._playeq;
+    get position() {
+        return this._position;
     }
 
     /**
@@ -1178,7 +1178,7 @@ class Engine {
         // ゲームオーバー状態
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
-        this._playeq.onStart(this._connection.myPiece);
+        this._position.onStart(this._connection.myPiece);
     }
 }
 ```
@@ -1245,7 +1245,7 @@ function packSetMessageFromServer() {
                     vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
 
                     // 自分の手番に変更
-                    vue1.engine.playeq.myTurn.isTrue = true;
+                    vue1.engine.position.myTurn.isTrue = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
@@ -1471,7 +1471,7 @@ function packSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/playground_equipment.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
@@ -1598,14 +1598,14 @@ function packSetMessageFromServer() {
                             return;
                         }
 
-                        if (this.engine.playeq.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.playeq.myTurn.isTrue) {
+                        if (this.engine.position.board.getPieceBySq(sq) == PC_EMPTY) {
+                            if (!this.engine.position.myTurn.isTrue) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.engine.playeq.myTurn.isTrue = false;
+                                this.engine.position.myTurn.isTrue = false;
 
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
@@ -1708,8 +1708,8 @@ function packSetMessageFromServer() {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
-                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.playeq.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.engine.position.myTurn.isTrue=${this.engine.position.myTurn.isTrue}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.position.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる

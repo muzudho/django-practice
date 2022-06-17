@@ -1,7 +1,7 @@
 /**
- * 遊具
+ * 局面
  */
-class PlaygroundEquipment {
+class Position {
     constructor() {
         // あとで onStart(...) を呼出してください
     }
@@ -12,7 +12,7 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
-        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+        console.log(`[Position onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();

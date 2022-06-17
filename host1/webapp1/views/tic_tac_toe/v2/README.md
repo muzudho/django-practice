@@ -8,7 +8,7 @@
                                             -------------------------
                                             📄user_ctrl.js
                                             -------------------------
-                                            📄playground_equipment.js
+                                            📄position.js
                                             -------------------------
                                             📄game_rule.js
 ```

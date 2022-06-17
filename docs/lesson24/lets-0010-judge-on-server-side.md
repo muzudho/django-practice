@@ -277,8 +277,8 @@ from webapp1.views.tic_tac_toe.v2 import game_rule
 # 3. Python ファイル名。拡張子抜き
 
 
-class PlaygroundEquipment():
-    """遊具"""
+class Position():
+    """局面"""
 
     def __init__(self):
         # あとで onStart(...) を呼出してください
@@ -411,11 +411,11 @@ class UserCtrl ():
         Parameters
         ----------
         playeq : _type_
-            遊具
+            局面
         """
 
         self._playeq = playeq
-        """遊具"""
+        """局面"""
 
         def doNothing():
             pass
@@ -507,13 +507,13 @@ class JudgeCtrl():
         Parameters
         ----------
         playeq:
-            遊具
+            局面
         userCtrl:
             ユーザーコントロール
         """
 
         self._playeq = playeq
-        """遊具"""
+        """局面"""
 
         self._userCtrl = userCtrl
         """ユーザーコントロール"""
@@ -665,13 +665,13 @@ class Engine():
         self._messageSender = MessageSender()
         """メッセージ一覧"""
 
-        self._playeq = PlaygroundEquipment()
-        """遊具"""
+        self._position = Position()
+        """局面"""
 
-        self._userCtrl = UserCtrl(self._playeq)
+        self._userCtrl = UserCtrl(self._position)
         """ユーザーコントロール"""
 
-        self._judgeCtrl = JudgeCtrl(self._playeq, self._userCtrl)
+        self._judgeCtrl = JudgeCtrl(self._position, self._userCtrl)
         """審判コントロール"""
 
         def onWon():
@@ -717,8 +717,8 @@ class Engine():
 
     @property
     def playeq(self):
-        """遊具"""
-        return self._playeq
+        """局面"""
+        return self._position
 
     @property
     def userCtrl(self):
@@ -784,5 +784,5 @@ class Engine():
         """開始時"""
         self._winner = ""
 
-        self._playeq.onStart(self._connection.myPiece)
+        self._position.onStart(self._connection.myPiece)
 ```

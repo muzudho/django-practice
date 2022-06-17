@@ -27,14 +27,14 @@ class Engine {
         // メッセージ一覧
         this._messageSender = new MessageSender();
 
-        // 遊具
-        this._playeq = new PlaygroundEquipment();
+        // 局面
+        this._position = new Position();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl(this._playeq);
+        this._userCtrl = new UserCtrl(this._position);
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl(this._position, this._userCtrl);
 
         // 判断したとき
         this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
@@ -97,10 +97,10 @@ class Engine {
     }
 
     /**
-     * 遊具
+     * 局面
      */
-    get playeq() {
-        return this._playeq;
+    get position() {
+        return this._position;
     }
 
     /**
@@ -188,6 +188,6 @@ class Engine {
         // ゲームオーバー状態
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
-        this._playeq.onStart(this._connection.myPiece);
+        this._position.onStart(this._connection.myPiece);
     }
 }
