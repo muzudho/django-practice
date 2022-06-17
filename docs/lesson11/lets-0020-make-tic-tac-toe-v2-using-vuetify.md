@@ -739,9 +739,6 @@ class PlaygroundEquipment {
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
 
-        // 「相手の手番に着手しないでください」というアラートの可視性
-        this._isVisibleAlertWaitForOther = false;
-
         // ゲームオーバー状態
         this._gameoverState = new GameoverSet(GameoverSet.none);
     }
@@ -786,17 +783,6 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this.record.length;
-    }
-
-    /**
-     * 「相手の手番に着手しないでください」というアラートの可視性
-     */
-    get isVisibleAlertWaitForOther() {
-        return this._isVisibleAlertWaitForOther;
-    }
-
-    set isVisibleAlertWaitForOther(value) {
-        this._isVisibleAlertWaitForOther = value;
     }
 }
 ```
@@ -1269,10 +1255,8 @@ function packSetMessageFromServer() {
                     // 自分の手番に変更
                     vue1.engine.playeq.myTurn.isTrue = true;
 
-                    // クリアー
-                    vue1.engine.playeq.isVisibleAlertWaitForOther = false;
-                    // v-showが働かなかったので、シンプルな変数に写す
-                    vue1.isVisibleAlertWaitForOtherFlag = vue1.engine.playeq.isVisibleAlertWaitForOther;
+                    // アラートの非表示
+                    vue1.isVisibleAlertWaitForOther = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
@@ -1290,7 +1274,7 @@ function packSetMessageFromServer() {
 
 # Step 13. 対局申込画面作成 - match_application.html ファイル
 
-以下のファイルを作成してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -1479,7 +1463,7 @@ function packSetMessageFromServer() {
                     {% endblock footer_section1 %}
                     <v-container>
                         <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
-                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
+                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="success" color="blue" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
@@ -1569,7 +1553,8 @@ function packSetMessageFromServer() {
                     label8: PC_EMPTY_LABEL,
                     isYourTurn: false,
                     isGameover: false,
-                    isVisibleAlertWaitForOtherFlag: false,
+                    // 「相手の手番に着手しないでください」というアラートの可視性
+                    isVisibleAlertWaitForOther: false,
                     roomState: new RoomState(RoomState.none,(oldValue, newValue)=>{
                         // changeRoomState
                         console.log(`[data roomState changeRoomState] state old=${oldValue} new=${newValue}`);
@@ -1594,6 +1579,10 @@ function packSetMessageFromServer() {
                     // 対局開始時
                     onStart() {
                         console.log("[methods onStart]");
+
+                        // 「相手の手番に着手しないでください」というアラートの非表示
+                        this.isVisibleAlertWaitForOther = false;
+
                         this.engine.setup(this.packSetLabelOfButton());
 
                         this.engine.onStart();
@@ -1621,9 +1610,7 @@ function packSetMessageFromServer() {
                             if (!this.engine.playeq.myTurn.isTrue) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
-                                this.engine.playeq.isVisibleAlertWaitForOther = true;
-                                // v-showが働かなかったので、シンプルな変数に写す
-                                this.isVisibleAlertWaitForOtherFlag = this.engine.playeq.isVisibleAlertWaitForOther;
+                                this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.myTurn.isTrue = false;

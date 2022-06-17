@@ -38,10 +38,8 @@ function packSetMessageFromServer() {
                     // 自分の手番に変更
                     vue1.engine.playeq.myTurn.isTrue = true;
 
-                    // クリアー
-                    vue1.engine.playeq.isVisibleAlertWaitForOther = false;
-                    // v-showが働かなかったので、シンプルな変数に写す
-                    vue1.isVisibleAlertWaitForOtherFlag = vue1.engine.playeq.isVisibleAlertWaitForOther;
+                    // アラートの非表示
+                    vue1.isVisibleAlertWaitForOther = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います

@@ -23,9 +23,6 @@ class PlaygroundEquipment {
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
 
-        // 「相手の手番に着手しないでください」というアラートの可視性
-        this._isVisibleAlertWaitForOther = false;
-
         // ゲームオーバー状態
         this._gameoverState = new GameoverSet(GameoverSet.none);
     }
@@ -70,16 +67,5 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this.record.length;
-    }
-
-    /**
-     * 「相手の手番に着手しないでください」というアラートの可視性
-     */
-    get isVisibleAlertWaitForOther() {
-        return this._isVisibleAlertWaitForOther;
-    }
-
-    set isVisibleAlertWaitForOther(value) {
-        this._isVisibleAlertWaitForOther = value;
     }
 }
