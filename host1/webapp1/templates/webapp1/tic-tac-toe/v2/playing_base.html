@@ -63,7 +63,7 @@
                         <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isGameover()">{{gameover_message}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
@@ -150,6 +150,7 @@
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
                     isYourTurn: false,
+                    isGameover: false,
                     isVisibleAlertWaitForOtherFlag: false,
                     gameover_message : "",
                     messages: {
@@ -186,10 +187,10 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
-                        if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
+                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState.value}`);
+                        if (this.engine.playeq.gameoverState.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
+                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState.value}`);
                             return;
                         }
 
@@ -262,8 +263,8 @@
                      *
                      */
                     setGameState(state) {
-                        console.log(`[methods setGameState] state=${state}`);
                         this.gameState = state;
+                        console.log(`[methods setGameState] state old=${this.gameState} new=${state}`);
                         this.raiseGameStateChanged();
                     },
                     /**
@@ -284,21 +285,21 @@
                         {% endblock create_gameover_message %}
 
                         // サーバーから勝者が送られてきているので、勝敗に変換
-                        let gameover_state = this.engine.getGameoverState();
-                        // console.log(`[Debug][onGameover] gameover_state=${gameover_state}`);
+                        let gameover_set = this.engine.getGameoverSet();
+                        // console.log(`[Debug][onGameover] gameover_set=${gameover_set}`);
 
-                        switch (gameover_state) {
-                            case GAMEOVER_DRAW:
+                        switch (gameover_set) {
+                            case GameoverSet.draw:
                                 return this.messages.draw;
-                            case GAMEOVER_WIN:
+                            case GameoverSet.win:
                                 return this.messages.youWin;
-                            case GAMEOVER_LOSE:
+                            case GameoverSet.lose:
                                 return this.messages.youLose;
-                            case GAMEOVER_NONE:
+                            case GameoverSet.none:
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown gameover_state = ${gameover_state}`;
+                                throw `unknown gameover_set = ${gameover_set}`;
                         }
                     },
                     /**
@@ -319,15 +320,14 @@
                         this.isYourTurn = isYourTurn;
                     },
                     raiseGameStateChanged() {
-                        console.log(`[methods raiseGameStateChanged]`);
+                        console.log(`[methods raiseGameStateChanged] gameState=${this.gameState}`);
+                        this.isGameover = this.gameState == GAME_STATE_IS_OVER;
+
                         this.updateYourTurn();
                     },
                     raiseMyTurnChanged() {
                         console.log(`[methods raiseMyTurnChanged]`);
                         this.updateYourTurn();
-                    },
-                    isGameover() {
-                        return this.gameState == GAME_STATE_IS_OVER;
                     },
                     /**
                      * 再接続中表示中なら、アラートを常時表示

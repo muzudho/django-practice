@@ -116,18 +116,18 @@ class Engine {
     /**
      * 対局結果
      */
-    getGameoverState() {
+    getGameoverSet() {
         // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
 
         if (this._winner == PC_EMPTY_LABEL) {
-            return GAMEOVER_DRAW;
+            return GameoverSet.draw;
         } else if (this._winner == vue1.engine.connection.myPiece) {
-            return GAMEOVER_WIN;
+            return GameoverSet.win;
         } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
-            return GAMEOVER_LOSE;
+            return GameoverSet.lose;
         }
 
-        return GAMEOVER_NONE;
+        return GameoverSet.none;
     }
 
     /**

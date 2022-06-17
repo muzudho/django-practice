@@ -12,7 +12,7 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
-        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
+        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -27,7 +27,7 @@ class PlaygroundEquipment {
         this._isVisibleAlertWaitForOther = false;
 
         // ゲームオーバーしてません
-        this._gameoverState = GAMEOVER_NONE;
+        this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
     /**
@@ -42,6 +42,13 @@ class PlaygroundEquipment {
      */
     get myTurn() {
         return this._myTurn;
+    }
+
+    /**
+     * ゲームオーバー状態
+     */
+    get gameoverState() {
+        return this._gameoverState;
     }
 
     /**
@@ -74,16 +81,5 @@ class PlaygroundEquipment {
 
     set isVisibleAlertWaitForOther(value) {
         this._isVisibleAlertWaitForOther = value;
-    }
-
-    /**
-     * ゲームオーバー状態
-     */
-    get gameoverState() {
-        return this._gameoverState;
-    }
-
-    set gameoverState(value) {
-        this._gameoverState = value;
     }
 }

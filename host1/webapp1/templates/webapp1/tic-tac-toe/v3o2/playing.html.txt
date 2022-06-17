@@ -33,7 +33,7 @@
             case PC_EMPTY_LABEL:
                 return this.messages.draw;
             default:
-                throw `unknown gameover_state = ${gameover_state}`;
+                throw `unknown gameover_set = ${gameover_set}`;
         }
     }
 {% endblock create_gameover_message %}

@@ -28,9 +28,9 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
-        if (this._playeq.gameoverState != GAMEOVER_NONE) {
+        if (this._playeq.gameoverState.value != GameoverSet.none) {
             // Warning of illegal move
-            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
+            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {

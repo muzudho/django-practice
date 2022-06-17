@@ -23,3 +23,53 @@ class MyTurn {
         vue1.raiseMyTurnChanged();
     }
 }
+
+/**
+ * ゲームオーバー状態
+ *
+ * * 自分視点
+ */
+class GameoverSet {
+    /**
+     * ゲームオーバーしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * 勝ち
+     */
+    static get win() {
+        return 1;
+    }
+
+    /**
+     * 引き分け
+     */
+    static get draw() {
+        return 2;
+    }
+
+    /**
+     * 負け
+     */
+    static get lose() {
+        return 3;
+    }
+
+    constructor(value) {
+        this._value = value;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+    }
+}

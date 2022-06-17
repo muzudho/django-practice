@@ -262,6 +262,56 @@ class MyTurn {
         vue1.raiseMyTurnChanged();
     }
 }
+
+/**
+ * ゲームオーバー状態
+ *
+ * * 自分視点
+ */
+class GameoverSet {
+    /**
+     * ゲームオーバーしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * 勝ち
+     */
+    static get win() {
+        return 1;
+    }
+
+    /**
+     * 引き分け
+     */
+    static get draw() {
+        return 2;
+    }
+
+    /**
+     * 負け
+     */
+    static get lose() {
+        return 3;
+    }
+
+    constructor(value) {
+        this._value = value;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+    }
+}
 ```
 
 # Step 5. ゲームルール定義 - game_rule.js ファイル
@@ -289,16 +339,6 @@ class MyTurn {
  */
 const GAME_STATE_DURING = "DuringGame";
 const GAME_STATE_IS_OVER = "GameIsOver";
-
-/**
- * ゲームオーバー判定
- *
- * * 自分視点
- */
-const GAMEOVER_NONE = 0; // ゲームオーバーしてません
-const GAMEOVER_WIN = 1; // 勝ち
-const GAMEOVER_DRAW = 2; // 引き分け
-const GAMEOVER_LOSE = 3; // 負け
 
 /**
  * 駒が３つ並んでいるパターン
@@ -601,7 +641,7 @@ class PlaygroundEquipment {
      * @param {string} myPiece - "X", "O", "_"
      */
     onStart(myPiece) {
-        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
+        console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -616,7 +656,7 @@ class PlaygroundEquipment {
         this._isVisibleAlertWaitForOther = false;
 
         // ゲームオーバーしてません
-        this._gameoverState = GAMEOVER_NONE;
+        this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
     /**
@@ -631,6 +671,13 @@ class PlaygroundEquipment {
      */
     get myTurn() {
         return this._myTurn;
+    }
+
+    /**
+     * ゲームオーバー状態
+     */
+    get gameoverState() {
+        return this._gameoverState;
     }
 
     /**
@@ -663,17 +710,6 @@ class PlaygroundEquipment {
 
     set isVisibleAlertWaitForOther(value) {
         this._isVisibleAlertWaitForOther = value;
-    }
-
-    /**
-     * ゲームオーバー状態
-     */
-    get gameoverState() {
-        return this._gameoverState;
-    }
-
-    set gameoverState(value) {
-        this._gameoverState = value;
     }
 }
 ```
@@ -729,9 +765,9 @@ class UserCtrl {
      * @returns 石を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
-        if (this._playeq.gameoverState != GAMEOVER_NONE) {
+        if (this._playeq.gameoverState.value != GameoverSet.none) {
             // Warning of illegal move
-            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
+            console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
@@ -822,22 +858,21 @@ class JudgeCtrl {
      * ゲームオーバー判定
      */
     doJudge(myPiece) {
-        this._playeq.gameoverState = this.#makeGameoverState();
-        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState}`);
+        this._playeq.gameoverState.value = this.#makeGameoverSet();
+        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState.value}`);
 
-        switch (this._playeq.gameoverState) {
-            case GAMEOVER_WIN:
+        switch (this._playeq.gameoverState.value) {
+            case GameoverSet.win:
                 this._onWon(myPiece);
                 break;
-            case GAMEOVER_DRAW:
+            case GameoverSet.draw:
                 this._onDraw();
                 break;
-            case GAMEOVER_LOSE:
-                break;
-            case GAMEOVER_NONE:
+            case GameoverSet.lose: // thru
+            case GameoverSet.none:
                 break;
             default:
-                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState}`);
+                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState.value}`);
         }
     }
 
@@ -848,19 +883,19 @@ class JudgeCtrl {
      *
      * @returns ゲームオーバー状態
      */
-    #makeGameoverState() {
-        console.log(`[#makeGameoverState] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
+    #makeGameoverSet() {
+        console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
-                console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
+                console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    console.log(`[#makeGameoverState] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GAMEOVER_LOSE;
+                        return GameoverSet.lose;
                     } else {
                         // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GAMEOVER_WIN;
+                        return GameoverSet.win;
                     }
                 }
             }
@@ -868,11 +903,11 @@ class JudgeCtrl {
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
         if (this._playeq.isBoardFill()) {
-            return GAMEOVER_DRAW;
+            return GameoverSet.draw;
         }
 
         // ゲームオーバーしてません
-        return GAMEOVER_NONE;
+        return GameoverSet.none;
     }
 
     /**
@@ -1031,18 +1066,18 @@ class Engine {
     /**
      * 対局結果
      */
-    getGameoverState() {
+    getGameoverSet() {
         // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
 
         if (this._winner == PC_EMPTY_LABEL) {
-            return GAMEOVER_DRAW;
+            return GameoverSet.draw;
         } else if (this._winner == vue1.engine.connection.myPiece) {
-            return GAMEOVER_WIN;
+            return GameoverSet.win;
         } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
-            return GAMEOVER_LOSE;
+            return GameoverSet.lose;
         }
 
-        return GAMEOVER_NONE;
+        return GameoverSet.none;
     }
 
     /**
@@ -1359,7 +1394,7 @@ function packSetMessageFromServer() {
                         <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
                         <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOtherFlag">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isGameover()">{{gameover_message}}</v-alert>
+                        <v-alert type="success" color="blue" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
                     </v-container>
@@ -1446,6 +1481,7 @@ function packSetMessageFromServer() {
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
                     isYourTurn: false,
+                    isGameover: false,
                     isVisibleAlertWaitForOtherFlag: false,
                     gameover_message : "",
                     messages: {
@@ -1482,10 +1518,10 @@ function packSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState}`);
-                        if (this.engine.playeq.gameoverState != GAMEOVER_NONE) {
+                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState.value}`);
+                        if (this.engine.playeq.gameoverState.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState}`);
+                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState.value}`);
                             return;
                         }
 
@@ -1558,8 +1594,8 @@ function packSetMessageFromServer() {
                      *
                      */
                     setGameState(state) {
-                        console.log(`[methods setGameState] state=${state}`);
                         this.gameState = state;
+                        console.log(`[methods setGameState] state old=${this.gameState} new=${state}`);
                         this.raiseGameStateChanged();
                     },
                     /**
@@ -1580,21 +1616,21 @@ function packSetMessageFromServer() {
                         {% endblock create_gameover_message %}
 
                         // サーバーから勝者が送られてきているので、勝敗に変換
-                        let gameover_state = this.engine.getGameoverState();
-                        // console.log(`[Debug][onGameover] gameover_state=${gameover_state}`);
+                        let gameover_set = this.engine.getGameoverSet();
+                        // console.log(`[Debug][onGameover] gameover_set=${gameover_set}`);
 
-                        switch (gameover_state) {
-                            case GAMEOVER_DRAW:
+                        switch (gameover_set) {
+                            case GameoverSet.draw:
                                 return this.messages.draw;
-                            case GAMEOVER_WIN:
+                            case GameoverSet.win:
                                 return this.messages.youWin;
-                            case GAMEOVER_LOSE:
+                            case GameoverSet.lose:
                                 return this.messages.youLose;
-                            case GAMEOVER_NONE:
+                            case GameoverSet.none:
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown gameover_state = ${gameover_state}`;
+                                throw `unknown gameover_set = ${gameover_set}`;
                         }
                     },
                     /**
@@ -1615,15 +1651,14 @@ function packSetMessageFromServer() {
                         this.isYourTurn = isYourTurn;
                     },
                     raiseGameStateChanged() {
-                        console.log(`[methods raiseGameStateChanged]`);
+                        console.log(`[methods raiseGameStateChanged] gameState=${this.gameState}`);
+                        this.isGameover = this.gameState == GAME_STATE_IS_OVER;
+
                         this.updateYourTurn();
                     },
                     raiseMyTurnChanged() {
                         console.log(`[methods raiseMyTurnChanged]`);
                         this.updateYourTurn();
-                    },
-                    isGameover() {
-                        return this.gameState == GAME_STATE_IS_OVER;
                     },
                     /**
                      * 再接続中表示中なら、アラートを常時表示

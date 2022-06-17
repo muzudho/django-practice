@@ -37,22 +37,21 @@ class JudgeCtrl {
      * ゲームオーバー判定
      */
     doJudge(myPiece) {
-        this._playeq.gameoverState = this.#makeGameoverState();
-        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState}`);
+        this._playeq.gameoverState.value = this.#makeGameoverSet();
+        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState.value}`);
 
-        switch (this._playeq.gameoverState) {
-            case GAMEOVER_WIN:
+        switch (this._playeq.gameoverState.value) {
+            case GameoverSet.win:
                 this._onWon(myPiece);
                 break;
-            case GAMEOVER_DRAW:
+            case GameoverSet.draw:
                 this._onDraw();
                 break;
-            case GAMEOVER_LOSE:
-                break;
-            case GAMEOVER_NONE:
+            case GameoverSet.lose: // thru
+            case GameoverSet.none:
                 break;
             default:
-                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState}`);
+                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState.value}`);
         }
     }
 
@@ -63,19 +62,19 @@ class JudgeCtrl {
      *
      * @returns ゲームオーバー状態
      */
-    #makeGameoverState() {
-        console.log(`[#makeGameoverState] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
+    #makeGameoverSet() {
+        console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             for (let squaresOfWinPattern of WIN_PATTERN) {
-                console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
+                console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    console.log(`[#makeGameoverState] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GAMEOVER_LOSE;
+                        return GameoverSet.lose;
                     } else {
                         // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GAMEOVER_WIN;
+                        return GameoverSet.win;
                     }
                 }
             }
@@ -83,11 +82,11 @@ class JudgeCtrl {
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
         if (this._playeq.isBoardFill()) {
-            return GAMEOVER_DRAW;
+            return GameoverSet.draw;
         }
 
         // ゲームオーバーしてません
-        return GAMEOVER_NONE;
+        return GameoverSet.none;
     }
 
     /**
