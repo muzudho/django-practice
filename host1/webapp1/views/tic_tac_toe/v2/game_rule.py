@@ -13,7 +13,7 @@ GAMEOVER_DRAW = 2
 GAMEOVER_LOSE = 3
 """負け"""
 
-# PC は Piece （駒、石、などの意味）の略です。
+# PC は Piece （駒）の略です。
 PC_EMPTY = 0
 """Pieceがないことを表します"""
 

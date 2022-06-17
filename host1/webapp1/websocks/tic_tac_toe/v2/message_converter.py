@@ -27,7 +27,7 @@ class TicTacToeV2MessageConverter():
             }
 
         elif event == 'C2S_Moved':
-            # 石を置いたとき
+            # 駒を置いたとき
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             c2s_sq = doc_received.get("c2s_sq", None)
             piece_moved = doc_received.get("c2s_pieceMoved", None)
@@ -63,7 +63,7 @@ class TicTacToeV2MessageConverter():
         pass
 
     async def on_move(self, scope, doc_received):
-        """石を置いたとき"""
+        """駒を置いたとき"""
         # print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 

@@ -139,7 +139,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 // |
 
 /**
- * PC は Piece （駒，石 などの意味）の略です
+ * PC は Piece （駒）の略です
  * @type {number}
  */
 const PC_EMPTY = 0; // Pieceがないことを表します
@@ -539,7 +539,7 @@ class MessageSender {
     }
 
     /**
-     * 引き分けたとき
+     * 引き分けたとき、とりあえず両方のプレイヤーが、サーバーへ対局終了メッセージを送ります
      * @returns メッセージ
      */
     createDraw() {
@@ -562,7 +562,7 @@ class MessageSender {
     }
 
     /**
-     * どちらかのプレイヤーが勝ったとき
+     * 勝った方のプレイヤーが、サーバーに対局終了メッセージを送ります
      * @param {*} pieceMoved - 駒を置いた方の X か O
      * @returns メッセージ
      */
@@ -825,22 +825,23 @@ class UserCtrl {
     }
 
     /**
-     * 石を置いたとき
+     * 駒を置いたとき
      */
     set onDoMove(func) {
         this._onDoMove = func;
     }
 
     /**
-     * 石を置きます
+     * 駒を置きます
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} piece - X か O
-     * @returns 石を置けたら真、それ以外は偽
+     * @returns 駒を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
         if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // イリーガルムーブなら何もしません
+            // ゲームオーバー後に駒を置いてはいけません
             console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
+            return false;
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
@@ -848,7 +849,7 @@ class UserCtrl {
 
             this._playeq.record.push(sq); // 棋譜に追加
 
-            // 石を置きます
+            // 駒を置きます
             switch (piece) {
                 case PC_X_LABEL:
                     this._playeq.board.setPiece(sq, PC_X);
@@ -908,45 +909,24 @@ class JudgeCtrl {
         // ユーザーコントロール
         this._userCtrl = userCtrl;
 
-        // イベントリスナー
-        this._onWon = () => {};
-        this._onDraw = () => {};
+        // 判断したとき
+        this._onJudged = (pieceMoved, gameoverSet) => {};
     }
 
     /**
-     * 勝ったとき
+     * 判断したとき
      */
-    set onWon(func) {
-        this._onWon = func;
-    }
-
-    /**
-     * 引き分けたとき
-     */
-    set onDraw(func) {
-        this._onDraw = func;
+    set onJudged(func) {
+        this._onJudged = func;
     }
 
     /**
      * ゲームオーバー判定
      */
-    doJudge(myPiece) {
-        this._playeq.gameoverState.value = this.#makeGameoverSet();
-        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState.value}`);
-
-        switch (this._playeq.gameoverState.value) {
-            case GameoverSet.win:
-                this._onWon(myPiece);
-                break;
-            case GameoverSet.draw:
-                this._onDraw();
-                break;
-            case GameoverSet.lose: // thru
-            case GameoverSet.none:
-                break;
-            default:
-                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState.value}`);
-        }
+    doJudge(piece_moved) {
+        let gameoverSet = this.#makeGameoverSet();
+        console.log(`[doJudge] gameoverSet=${gameoverSet}`);
+        this._onJudged(piece_moved, gameoverSet);
     }
 
     /**
@@ -959,9 +939,12 @@ class JudgeCtrl {
     #makeGameoverSet() {
         console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
+            // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
+                // 勝ちパターンの１つについて
                 console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
+                    // 当てはまるなら
                     console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
@@ -984,7 +967,7 @@ class JudgeCtrl {
     }
 
     /**
-     * 石が３つ並んでいるか？
+     * 駒が３つ並んでいるか？
      * @param {*} squaresOfWinPattern - 勝ちパターン
      * @returns 並んでいれば真、それ以外は偽
      */
@@ -1059,16 +1042,31 @@ class Engine {
         // 審判コントロール
         this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
-        // どちらかが勝ったとき
-        this._judgeCtrl.onWon = (myPiece) => {
-            let response = this.messageSender.createWon(myPiece);
-            this._connection.webSock1.send(JSON.stringify(response));
-        };
+        // 判断したとき
+        this._judgeCtrl.onJudged = (pieceMoved, gameoverSet) => {
+            this._playeq.gameoverState.value = gameoverSet;
+            let response;
 
-        // 引き分けたとき
-        this._judgeCtrl.onDraw = () => {
-            let response = this.messageSender.createDraw();
-            this._connection.webSock1.send(JSON.stringify(response));
+            switch (gameoverSet) {
+                case GameoverSet.win:
+                    // 勝ったとき
+                    response = this.messageSender.createWon(pieceMoved);
+                    this._connection.webSock1.send(JSON.stringify(response));
+                    break;
+                case GameoverSet.draw:
+                    // 引き分けたとき
+                    response = this.messageSender.createDraw();
+                    this._connection.webSock1.send(JSON.stringify(response));
+                    break;
+                case GameoverSet.lose:
+                    // 負けたとき
+                    break;
+                case GameoverSet.none:
+                    // なんでもなかったとき
+                    break;
+                default:
+                    throw new Error(`Unexpected gameoverSet=${gameoverSet}`);
+            }
         };
 
         this.connect();
@@ -1885,7 +1883,7 @@ class TicTacToeV2MessageConverter():
             }
 
         elif event == 'C2S_Moved':
-            # 石を置いたとき
+            # 駒を置いたとき
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             c2s_sq = doc_received.get("c2s_sq", None)
             piece_moved = doc_received.get("c2s_pieceMoved", None)
@@ -1921,7 +1919,7 @@ class TicTacToeV2MessageConverter():
         pass
 
     async def on_move(self, scope, doc_received):
-        """石を置いたとき"""
+        """駒を置いたとき"""
         # print("[TicTacToeV2MessageConverter on_move] ignored")
         pass
 

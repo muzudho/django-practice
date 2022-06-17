@@ -36,16 +36,31 @@ class Engine {
         // 審判コントロール
         this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
-        // どちらかが勝ったとき
-        this._judgeCtrl.onWon = (myPiece) => {
-            let response = this.messageSender.createWon(myPiece);
-            this._connection.webSock1.send(JSON.stringify(response));
-        };
+        // 判断したとき
+        this._judgeCtrl.onJudged = (pieceMoved, gameoverSet) => {
+            this._playeq.gameoverState.value = gameoverSet;
+            let response;
 
-        // 引き分けたとき
-        this._judgeCtrl.onDraw = () => {
-            let response = this.messageSender.createDraw();
-            this._connection.webSock1.send(JSON.stringify(response));
+            switch (gameoverSet) {
+                case GameoverSet.win:
+                    // 勝ったとき
+                    response = this.messageSender.createWon(pieceMoved);
+                    this._connection.webSock1.send(JSON.stringify(response));
+                    break;
+                case GameoverSet.draw:
+                    // 引き分けたとき
+                    response = this.messageSender.createDraw();
+                    this._connection.webSock1.send(JSON.stringify(response));
+                    break;
+                case GameoverSet.lose:
+                    // 負けたとき
+                    break;
+                case GameoverSet.none:
+                    // なんでもなかったとき
+                    break;
+                default:
+                    throw new Error(`Unexpected gameoverSet=${gameoverSet}`);
+            }
         };
 
         this.connect();

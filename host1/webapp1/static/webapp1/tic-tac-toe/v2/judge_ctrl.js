@@ -14,45 +14,24 @@ class JudgeCtrl {
         // ユーザーコントロール
         this._userCtrl = userCtrl;
 
-        // イベントリスナー
-        this._onWon = () => {};
-        this._onDraw = () => {};
+        // 判断したとき
+        this._onJudged = (pieceMoved, gameoverSet) => {};
     }
 
     /**
-     * 勝ったとき
+     * 判断したとき
      */
-    set onWon(func) {
-        this._onWon = func;
-    }
-
-    /**
-     * 引き分けたとき
-     */
-    set onDraw(func) {
-        this._onDraw = func;
+    set onJudged(func) {
+        this._onJudged = func;
     }
 
     /**
      * ゲームオーバー判定
      */
-    doJudge(myPiece) {
-        this._playeq.gameoverState.value = this.#makeGameoverSet();
-        console.log(`[doJudge] gameoverState=${this._playeq.gameoverState.value}`);
-
-        switch (this._playeq.gameoverState.value) {
-            case GameoverSet.win:
-                this._onWon(myPiece);
-                break;
-            case GameoverSet.draw:
-                this._onDraw();
-                break;
-            case GameoverSet.lose: // thru
-            case GameoverSet.none:
-                break;
-            default:
-                throw new Error(`Unexpected gameoverState=${this._playeq.gameoverState.value}`);
-        }
+    doJudge(piece_moved) {
+        let gameoverSet = this.#makeGameoverSet();
+        console.log(`[doJudge] gameoverSet=${gameoverSet}`);
+        this._onJudged(piece_moved, gameoverSet);
     }
 
     /**
@@ -65,9 +44,12 @@ class JudgeCtrl {
     #makeGameoverSet() {
         console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
+            // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
+                // 勝ちパターンの１つについて
                 console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
+                    // 当てはまるなら
                     console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
@@ -90,7 +72,7 @@ class JudgeCtrl {
     }
 
     /**
-     * 石が３つ並んでいるか？
+     * 駒が３つ並んでいるか？
      * @param {*} squaresOfWinPattern - 勝ちパターン
      * @returns 並んでいれば真、それ以外は偽
      */

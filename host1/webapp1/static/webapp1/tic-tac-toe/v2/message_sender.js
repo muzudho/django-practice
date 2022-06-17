@@ -21,7 +21,7 @@ class MessageSender {
     }
 
     /**
-     * 引き分けたとき
+     * 引き分けたとき、とりあえず両方のプレイヤーが、サーバーへ対局終了メッセージを送ります
      * @returns メッセージ
      */
     createDraw() {
@@ -44,7 +44,7 @@ class MessageSender {
     }
 
     /**
-     * どちらかのプレイヤーが勝ったとき
+     * 勝った方のプレイヤーが、サーバーに対局終了メッセージを送ります
      * @param {*} pieceMoved - 駒を置いた方の X か O
      * @returns メッセージ
      */

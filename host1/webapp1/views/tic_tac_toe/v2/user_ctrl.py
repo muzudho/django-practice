@@ -33,11 +33,11 @@ class UserCtrl ():
 
     @onDoMove.setter
     def onDoMove(self, value):
-        """石を置いたとき"""
+        """駒を置いたとき"""
         self._onDoMove = value
 
     def doMove(self, sq, piece):
-        """石を置きます
+        """駒を置きます
 
         Parameters
         ----------
@@ -49,7 +49,7 @@ class UserCtrl ():
         Returns
         -------
         _type_
-            石を置けたら真、それ以外は偽
+            駒を置けたら真、それ以外は偽
         """
         if self._playeq.gameoverState != game_rule.GAMEOVER_NONE:
             # Warning of illegal move
@@ -62,7 +62,7 @@ class UserCtrl ():
             self._playeq.incrementCountOfMove()
             # 手数を１増やします
 
-            # 石を置きます
+            # 駒を置きます
             if piece == game_rule.PC_X_LABEL:
                 self._playeq.setPiece(sq, game_rule.PC_X)
             elif piece == game_rule.PC_O_LABEL:

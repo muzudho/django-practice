@@ -26,7 +26,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         pass
 
     async def on_move(self, scope, doc_received):
-        """石を置いたとき"""
+        """駒を置いたとき"""
 
         # ログインしていなければ AnonymousUser
         user = scope["user"]
@@ -44,9 +44,9 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
 
         # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
         event = doc_received.get("c2s_event", None)
-        # 石を置いたマス番号
+        # 駒を置いたマス番号
         sq = doc_received.get("c2s_sq", None)
-        # 石を置いた方の X か O
+        # 駒を置いた方の X か O
         piece_moved = doc_received.get("c2s_pieceMoved", None)
         print(
             f"[TicTacToeV3o1MessageConverter on_move] クライアントからのメッセージを受信しました event=[{event}] room_name=[{room_name}] sq=[{sq}] piece_moved=[{piece_moved}]")
@@ -61,7 +61,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         print(
             f"[TicTacToeV3o1MessageConverter on_move] now room.name=[{room.name}] room.board=[{room.board}] room.record=[{room.record}]")
 
-        # 石を置きます
+        # 駒を置きます
         #
         # * 盤が9マスになるように右を '.' で埋めます
         room.board = room.board.ljust(9, '.')

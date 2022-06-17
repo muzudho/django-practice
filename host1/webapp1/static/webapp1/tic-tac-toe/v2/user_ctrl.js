@@ -15,22 +15,23 @@ class UserCtrl {
     }
 
     /**
-     * 石を置いたとき
+     * 駒を置いたとき
      */
     set onDoMove(func) {
         this._onDoMove = func;
     }
 
     /**
-     * 石を置きます
+     * 駒を置きます
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} piece - X か O
-     * @returns 石を置けたら真、それ以外は偽
+     * @returns 駒を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
         if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // イリーガルムーブなら何もしません
+            // ゲームオーバー後に駒を置いてはいけません
             console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
+            return false;
         }
 
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
@@ -38,7 +39,7 @@ class UserCtrl {
 
             this._playeq.record.push(sq); // 棋譜に追加
 
-            // 石を置きます
+            // 駒を置きます
             switch (piece) {
                 case PC_X_LABEL:
                     this._playeq.board.setPiece(sq, PC_X);

@@ -3,7 +3,7 @@
 // |
 
 /**
- * PC は Piece （駒，石 などの意味）の略です
+ * PC は Piece （駒）の略です
  * @type {number}
  */
 const PC_EMPTY = 0; // Pieceがないことを表します
