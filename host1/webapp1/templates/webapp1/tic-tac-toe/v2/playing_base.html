@@ -152,6 +152,11 @@
                     isYourTurn: false,
                     isGameover: false,
                     isVisibleAlertWaitForOtherFlag: false,
+                    roomState: new RoomState(RoomState.none,(oldValue, newValue)=>{
+                        // changeRoomState
+                        console.log(`[data roomState changeRoomState] state old=${oldValue} new=${newValue}`);
+                        vue1.raiseRoomStateChanged();
+                    }),
                     gameover_message : "",
                     messages: {
                         draw: "It's a draw.",
@@ -175,7 +180,7 @@
 
                         this.engine.onStart();
 
-                        this.setGameState(GAME_STATE_DURING);
+                        this.roomState.value = RoomState.playing;
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -260,19 +265,12 @@
                         };
                     },
                     /**
-                     *
-                     */
-                    setGameState(state) {
-                        this.gameState = state;
-                        console.log(`[methods setGameState] state old=${this.gameState} new=${state}`);
-                        this.raiseGameStateChanged();
-                    },
-                    /**
                      * 対局は終了しました
                      */
                     onGameover(winner) {
+                        console.log(`[methods onGameover] winner=${winner}`);
                         this.engine.winner = winner;
-                        this.setGameState(GAME_STATE_IS_OVER); // 画面を対局終了状態へ
+                        this.roomState.value = RoomState.none; // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
                     },
@@ -307,8 +305,8 @@
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
-                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.playeq.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
@@ -319,9 +317,9 @@
                         // v-show="" は複雑なメソッドを指定すると動かないようなので、プロパティにします
                         this.isYourTurn = isYourTurn;
                     },
-                    raiseGameStateChanged() {
-                        console.log(`[methods raiseGameStateChanged] gameState=${this.gameState}`);
-                        this.isGameover = this.gameState == GAME_STATE_IS_OVER;
+                    raiseRoomStateChanged() {
+                        console.log(`[methods raiseRoomStateChanged] roomState=${this.roomState.value}`);
+                        this.isGameover = this.roomState.value == RoomState.none;
 
                         this.updateYourTurn();
                     },

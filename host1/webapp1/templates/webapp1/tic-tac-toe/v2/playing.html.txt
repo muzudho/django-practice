@@ -28,8 +28,8 @@
      * Play again ボタンは非表示か
      */
     isDisabledPlayAgainButton() {
-        switch (this.gameState) {
-            case GAME_STATE_IS_OVER:
+        switch (this.roomState.value) {
+            case RoomState.none: // ゲームオーバー状態
                 return false; // Enable
             default:
                 return true; // Disable

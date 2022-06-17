@@ -1,9 +1,59 @@
 /**
+ * 部屋の状態
+ */
+class RoomState {
+    /**
+     * ゲームしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * ゲーム中
+     */
+    static get playing() {
+        return 1;
+    }
+
+    /**
+     * 生成
+     * @param {int} value
+     * @param {function} changeValue - 値の変更
+     */
+    constructor(value, changeValue) {
+        console.log(`[RoomState constructor]`);
+
+        this._value = value;
+        this._changeValue = changeValue;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        console.log(`[RoomState set value]`);
+
+        if (this._value === value) {
+            return;
+        }
+
+        let oldValue = this._value;
+        this._value = value;
+        this._changeValue(oldValue, this._value);
+    }
+}
+
+/**
  * 自分のターン
  */
 class MyTurn {
     /**
-     *
+     * 生成
      * @param {*} myPiece - 自分の駒。 "X", "O", "_"
      */
     constructor(myPiece) {
@@ -58,6 +108,10 @@ class GameoverSet {
         return 3;
     }
 
+    /**
+     * 生成
+     * @param {int} value
+     */
     constructor(value) {
         this._value = value;
     }

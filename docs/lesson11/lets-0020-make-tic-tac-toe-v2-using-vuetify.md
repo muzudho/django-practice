@@ -238,11 +238,61 @@ class Board {
 
 ```js
 /**
+ * 部屋の状態
+ */
+class RoomState {
+    /**
+     * ゲームしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * ゲーム中
+     */
+    static get playing() {
+        return 1;
+    }
+
+    /**
+     * 生成
+     * @param {int} value
+     * @param {function} changeValue - 値の変更
+     */
+    constructor(value, changeValue) {
+        console.log(`[RoomState constructor]`);
+
+        this._value = value;
+        this._changeValue = changeValue;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        console.log(`[RoomState set value]`);
+
+        if (this._value === value) {
+            return;
+        }
+
+        let oldValue = this._value;
+        this._value = value;
+        this._changeValue(oldValue, this._value);
+    }
+}
+
+/**
  * 自分のターン
  */
 class MyTurn {
     /**
-     *
+     * 生成
      * @param {*} myPiece - 自分の駒。 "X", "O", "_"
      */
     constructor(myPiece) {
@@ -297,6 +347,10 @@ class GameoverSet {
         return 3;
     }
 
+    /**
+     * 生成
+     * @param {int} value
+     */
     constructor(value) {
         this._value = value;
     }
@@ -1310,7 +1364,7 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-                │           ├── 📄concepts.js
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1483,6 +1537,11 @@ function packSetMessageFromServer() {
                     isYourTurn: false,
                     isGameover: false,
                     isVisibleAlertWaitForOtherFlag: false,
+                    roomState: new RoomState(RoomState.none,(oldValue, newValue)=>{
+                        // changeRoomState
+                        console.log(`[data roomState changeRoomState] state old=${oldValue} new=${newValue}`);
+                        vue1.raiseRoomStateChanged();
+                    }),
                     gameover_message : "",
                     messages: {
                         draw: "It's a draw.",
@@ -1506,7 +1565,7 @@ function packSetMessageFromServer() {
 
                         this.engine.onStart();
 
-                        this.setGameState(GAME_STATE_DURING);
+                        this.roomState.value = RoomState.playing;
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
@@ -1591,19 +1650,12 @@ function packSetMessageFromServer() {
                         };
                     },
                     /**
-                     *
-                     */
-                    setGameState(state) {
-                        this.gameState = state;
-                        console.log(`[methods setGameState] state old=${this.gameState} new=${state}`);
-                        this.raiseGameStateChanged();
-                    },
-                    /**
                      * 対局は終了しました
                      */
                     onGameover(winner) {
+                        console.log(`[methods onGameover] winner=${winner}`);
                         this.engine.winner = winner;
-                        this.setGameState(GAME_STATE_IS_OVER); // 画面を対局終了状態へ
+                        this.roomState.value = RoomState.none; // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
                     },
@@ -1638,8 +1690,8 @@ function packSetMessageFromServer() {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
-                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.playeq.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
@@ -1650,9 +1702,9 @@ function packSetMessageFromServer() {
                         // v-show="" は複雑なメソッドを指定すると動かないようなので、プロパティにします
                         this.isYourTurn = isYourTurn;
                     },
-                    raiseGameStateChanged() {
-                        console.log(`[methods raiseGameStateChanged] gameState=${this.gameState}`);
-                        this.isGameover = this.gameState == GAME_STATE_IS_OVER;
+                    raiseRoomStateChanged() {
+                        console.log(`[methods raiseRoomStateChanged] roomState=${this.roomState.value}`);
+                        this.isGameover = this.roomState.value == RoomState.none;
 
                         this.updateYourTurn();
                     },
@@ -1739,8 +1791,8 @@ function packSetMessageFromServer() {
      * Play again ボタンは非表示か
      */
     isDisabledPlayAgainButton() {
-        switch (this.gameState) {
-            case GAME_STATE_IS_OVER:
+        switch (this.roomState.value) {
+            case RoomState.none: // ゲームオーバー状態
                 return false; // Enable
             default:
                 return true; // Disable
