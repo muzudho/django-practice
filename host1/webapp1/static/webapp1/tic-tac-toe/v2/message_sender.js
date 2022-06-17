@@ -5,18 +5,18 @@
  */
 class MessageSender {
     /**
-     * どちらかのプレイヤーが石を置いたとき
+     * どちらかのプレイヤーが駒を置いたとき
      * @param {int} sq - 升番号
-     * @param {string} myPiece - X か O
+     * @param {string} pieceMoved - 駒を置いたプレイヤー。 X か O
      * @returns メッセージ
      */
-    createDoMove(sq, myPiece) {
+    createDoMove(sq, pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
-        console.log(`[MessageSender createDoMove] sq=${sq} myPiece=${myPiece}`);
+        console.log(`[MessageSender createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
         return {
-            c2s_event: "C2S_Move",
+            c2s_event: "C2S_Moved",
             c2s_sq: sq,
-            c2s_myPiece: myPiece,
+            c2s_pieceMoved: pieceMoved,
         };
     }
 
@@ -45,14 +45,14 @@ class MessageSender {
 
     /**
      * どちらかのプレイヤーが勝ったとき
-     * @param {*} myPiece - X か O
+     * @param {*} pieceMoved - 駒を置いた方の X か O
      * @returns メッセージ
      */
-    createWon(myPiece) {
+    createWon(pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
             c2s_event: "C2S_End",
-            c2s_winner: myPiece,
+            c2s_winner: pieceMoved,
         };
     }
 }

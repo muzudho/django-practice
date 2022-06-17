@@ -53,15 +53,15 @@ class Engine {
 
     setup(setLabelOfButton) {
         // １手進めたとき
-        this._userCtrl.onDoMove = (sq, piece) => {
+        this._userCtrl.onDoMove = (sq, pieceMoved) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, piece);
+            setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[onDoMove] this._myPiece=${this._myPiece} piece=${piece}`);
+            console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
-            if (this._myPiece == piece) {
-                let response = this.messageSender.createDoMove(sq, piece);
+            if (this._myPiece == pieceMoved) {
+                let response = this.messageSender.createDoMove(sq, pieceMoved);
                 this._connection.webSock1.send(JSON.stringify(response));
             }
         };

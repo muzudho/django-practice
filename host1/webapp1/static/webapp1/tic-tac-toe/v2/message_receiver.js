@@ -10,10 +10,10 @@ function packSetMessageFromServer() {
         // 升番号
         let sq = message["s2c_sq"];
         // 手番。 "X" か "O"
-        let turn = message["s2c_myPiece"];
+        let piece_moved = message["s2c_pieceMoved"];
         // 勝者
         let winner = message["s2c_winner"];
-        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} piece_moved=${piece_moved} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "S2C_Start":
@@ -27,13 +27,13 @@ function packSetMessageFromServer() {
                 vue1.onGameover(winner);
                 break;
 
-            case "S2C_Move":
+            case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Move s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.engine.connection.myPiece}`);
 
-                if (turn != vue1.engine.connection.myPiece) {
+                if (piece_moved != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), turn);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
@@ -45,7 +45,7 @@ function packSetMessageFromServer() {
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(turn);
+                vue1.engine.judgeCtrl.doJudge(piece_moved);
 
                 break;
 

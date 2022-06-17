@@ -136,16 +136,17 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         #
         # * URLのパスに含まれている
         room_name = scope["url_route"]["kwargs"]["kw_room_name"]
+        # print(f"[TicTacToeV3o1MessageConverter on_move] scope={scope}")
 
         # `c2s_` は クライアントからサーバーへ送られてきた変数の目印
         event = doc_received.get("c2s_event", None)
         # 石を置いたマス番号
         sq = doc_received.get("c2s_sq", None)
-        # 自分の石
-        my_piece = doc_received.get("c2s_myPiece", None)
+        # 石を置いた方の X か O
+        piece_moved = doc_received.get("c2s_pieceMoved", None)
         print(
-            f"[TicTacToeV3o1MessageConverter on_move] event=[{event}] room_name=[{room_name}] sq=[{sq}] my_piece=[{my_piece}]")
-        # [TicTacToeV3o1MessageConverter on_move] event=[C2S_Move] sq=[2] my_piece=[X]
+            f"[TicTacToeV3o1MessageConverter on_move] クライアントからのメッセージを受信しました event=[{event}] room_name=[{room_name}] sq=[{sq}] piece_moved=[{piece_moved}]")
+        # [TicTacToeV3o1MessageConverter on_move] event=[C2S_Moved] sq=[2] piece_moved=[X]
 
         # 部屋取得
         room = await get_room_by_name(room_name)
@@ -163,7 +164,7 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         print(
             f"[TicTacToeV3o1MessageConverter on_move] now2 room.board=[{room.board}]")
 
-        room.board = f"{room.board[:sq]}{my_piece}{room.board[sq+1:]}"
+        room.board = f"{room.board[:sq]}{piece_moved}{room.board[sq+1:]}"
         print(
             f"[TicTacToeV3o1MessageConverter on_move] now3 room.board=[{room.board}]")
 

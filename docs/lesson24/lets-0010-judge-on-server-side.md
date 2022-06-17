@@ -585,7 +585,7 @@ class JudgeCtrl():
         return game_rule.GAMEOVER_NONE
 
     def isPieceInLine(self, squaresOfWinPattern):
-        """石が３つ並んでいるか？
+        """駒が３つ並んでいるか？
 
         Parameters
         ----------

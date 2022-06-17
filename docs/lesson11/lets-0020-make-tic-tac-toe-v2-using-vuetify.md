@@ -135,7 +135,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 
 ```js
 // +--------
-// | 石
+// | 駒
 // |
 
 /**
@@ -155,7 +155,7 @@ const PC_X_LABEL = "X";
 const PC_O_LABEL = "O";
 
 // |
-// | 石
+// | 駒
 // +--------
 
 // +--------
@@ -256,7 +256,7 @@ const GAMEOVER_DRAW = 2; // 引き分け
 const GAMEOVER_LOSE = 3; // 負け
 
 /**
- * 石が３つ並んでいるパターン
+ * 駒が３つ並んでいるパターン
  */
 WIN_PATTERN = [
     // +---------+
@@ -350,18 +350,18 @@ function flipTurn(piece) {
  */
 class MessageSender {
     /**
-     * どちらかのプレイヤーが石を置いたとき
+     * どちらかのプレイヤーが駒を置いたとき
      * @param {int} sq - 升番号
-     * @param {string} myPiece - X か O
+     * @param {string} pieceMoved - 駒を置いたプレイヤー。 X か O
      * @returns メッセージ
      */
-    createDoMove(sq, myPiece) {
+    createDoMove(sq, pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
-        console.log(`[MessageSender createDoMove] sq=${sq} myPiece=${myPiece}`);
+        console.log(`[MessageSender createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
         return {
-            c2s_event: "C2S_Move",
+            c2s_event: "C2S_Moved",
             c2s_sq: sq,
-            c2s_myPiece: myPiece,
+            c2s_pieceMoved: pieceMoved,
         };
     }
 
@@ -390,14 +390,14 @@ class MessageSender {
 
     /**
      * どちらかのプレイヤーが勝ったとき
-     * @param {*} myPiece - X か O
+     * @param {*} pieceMoved - 駒を置いた方の X か O
      * @returns メッセージ
      */
-    createWon(myPiece) {
+    createWon(pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
             c2s_event: "C2S_End",
-            c2s_winner: myPiece,
+            c2s_winner: pieceMoved,
         };
     }
 }
@@ -922,15 +922,15 @@ class Engine {
 
     setup(setLabelOfButton) {
         // １手進めたとき
-        this._userCtrl.onDoMove = (sq, piece) => {
+        this._userCtrl.onDoMove = (sq, pieceMoved) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, piece);
+            setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[onDoMove] this._myPiece=${this._myPiece} piece=${piece}`);
+            console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
-            if (this._myPiece == piece) {
-                let response = this.messageSender.createDoMove(sq, piece);
+            if (this._myPiece == pieceMoved) {
+                let response = this.messageSender.createDoMove(sq, pieceMoved);
                 this._connection.webSock1.send(JSON.stringify(response));
             }
         };
@@ -1072,10 +1072,10 @@ function packSetMessageFromServer() {
         // 升番号
         let sq = message["s2c_sq"];
         // 手番。 "X" か "O"
-        let turn = message["s2c_myPiece"];
+        let piece_moved = message["s2c_pieceMoved"];
         // 勝者
         let winner = message["s2c_winner"];
-        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} turn=${turn} winner=${winner}`); // ちゃんと動いているようなら消す
+        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} piece_moved=${piece_moved} winner=${winner}`); // ちゃんと動いているようなら消す
 
         switch (event) {
             case "S2C_Start":
@@ -1089,13 +1089,13 @@ function packSetMessageFromServer() {
                 vue1.onGameover(winner);
                 break;
 
-            case "S2C_Move":
+            case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Move s2c_myPiece=${turn} myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.engine.connection.myPiece}`);
 
-                if (turn != vue1.engine.connection.myPiece) {
+                if (piece_moved != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), turn);
+                    vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
 
                     // 自分の手番に変更
                     vue1.engine.playeq.isMyTurn = true;
@@ -1107,7 +1107,7 @@ function packSetMessageFromServer() {
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(turn);
+                vue1.engine.judgeCtrl.doJudge(piece_moved);
 
                 break;
 
@@ -1721,24 +1721,25 @@ class TicTacToeV2MessageConverter():
             return {
                 'type': 'send_message',  # type属性は必須
                 's2c_event': "S2C_End",
+                # TODO 現状、クライアント側から勝者を送ってきているが、勝敗判定のロジックはサーバー側に置きたい
                 's2c_winner': doc_received.get("c2s_winner", None),
             }
 
-        elif event == 'C2S_Move':
+        elif event == 'C2S_Moved':
             # 石を置いたとき
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             c2s_sq = doc_received.get("c2s_sq", None)
-            c2s_myPiece = doc_received.get("c2s_myPiece", None)
+            piece_moved = doc_received.get("c2s_pieceMoved", None)
             print(
-                f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
+                f"[TicTacToeV2MessageConverter on_receive] C2S_Moved c2s_sq=[{c2s_sq}] piece_moved=[{piece_moved}]")
 
             await self.on_move(scope, doc_received)
 
             return {
                 'type': 'send_message',  # type属性は必須
-                's2c_event': 'S2C_Move',
+                's2c_event': 'S2C_Moved',
                 's2c_sq': c2s_sq,
-                's2c_myPiece': c2s_myPiece,
+                's2c_pieceMoved': piece_moved,
             }
 
         elif event == 'C2S_Start':

@@ -26,21 +26,21 @@ class TicTacToeV2MessageConverter():
                 's2c_winner': doc_received.get("c2s_winner", None),
             }
 
-        elif event == 'C2S_Move':
+        elif event == 'C2S_Moved':
             # 石を置いたとき
             # `s2c_` は サーバーからクライアントへ送る変数の目印
             c2s_sq = doc_received.get("c2s_sq", None)
-            c2s_myPiece = doc_received.get("c2s_myPiece", None)
+            piece_moved = doc_received.get("c2s_pieceMoved", None)
             print(
-                f"[TicTacToeV2MessageConverter on_receive] C2S_Move c2s_sq=[{c2s_sq}] c2s_myPiece=[{c2s_myPiece}]")
+                f"[TicTacToeV2MessageConverter on_receive] C2S_Moved c2s_sq=[{c2s_sq}] piece_moved=[{piece_moved}]")
 
             await self.on_move(scope, doc_received)
 
             return {
                 'type': 'send_message',  # type属性は必須
-                's2c_event': 'S2C_Move',
+                's2c_event': 'S2C_Moved',
                 's2c_sq': c2s_sq,
-                's2c_myPiece': c2s_myPiece,
+                's2c_pieceMoved': piece_moved,
             }
 
         elif event == 'C2S_Start':

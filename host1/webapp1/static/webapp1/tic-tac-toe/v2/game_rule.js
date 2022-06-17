@@ -15,7 +15,7 @@ const GAMEOVER_DRAW = 2; // 引き分け
 const GAMEOVER_LOSE = 3; // 負け
 
 /**
- * 石が３つ並んでいるパターン
+ * 駒が３つ並んでいるパターン
  */
 WIN_PATTERN = [
     // +---------+
