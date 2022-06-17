@@ -20,8 +20,8 @@ class PlaygroundEquipment {
         // 何手目
         this._countOfMove = 0;
 
-        // 自分の手番か（初回は先手）
-        this._isMyTurn = myPiece == PC_X_LABEL;
+        // 自分の手番
+        this._myTurn = new MyTurn(myPiece);
 
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
@@ -35,6 +35,13 @@ class PlaygroundEquipment {
      */
     get board() {
         return this._board;
+    }
+
+    /**
+     * 自分のターン
+     */
+    get myTurn() {
+        return this._myTurn;
     }
 
     /**
@@ -56,18 +63,6 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this._countOfMove;
-    }
-
-    /**
-     * 私のターンですか
-     */
-    get isMyTurn() {
-        return this._isMyTurn;
-    }
-
-    set isMyTurn(value) {
-        this._isMyTurn = value;
-        vue1.raiseMyTurnChanged();
     }
 
     /**

@@ -569,8 +569,8 @@ class JudgeCtrl():
                     f"[makeGameoverState] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
                 if self.isPieceInLine(squaresOfWinPattern):
                     print(
-                        f"[makeGameoverState] self._playeq.isMyTurn={self._playeq.isMyTurn}")
-                    if self._playeq.isMyTurn:
+                        f"[makeGameoverState] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
+                    if self._playeq.myTurn.isTrue:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return game_rule.GAMEOVER_LOSE
                     else:

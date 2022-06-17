@@ -72,6 +72,7 @@
         </div>
 
         <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/concepts.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
@@ -193,7 +194,7 @@
                         }
 
                         if (this.engine.playeq.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.playeq.isMyTurn) {
+                            if (!this.engine.playeq.myTurn.isTrue) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
@@ -201,7 +202,7 @@
                                 this.isVisibleAlertWaitForOtherFlag = this.engine.playeq.isVisibleAlertWaitForOther;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.engine.playeq.isMyTurn = false;
+                                this.engine.playeq.myTurn.isTrue = false;
 
                                 // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
@@ -305,8 +306,8 @@
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.isMyTurn=${this.engine.playeq.isMyTurn}`);
-                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.isMyTurn;
+                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
+                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる

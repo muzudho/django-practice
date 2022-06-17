@@ -69,8 +69,8 @@ class JudgeCtrl {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    console.log(`[#makeGameoverState] this._playeq.isMyTurn=${this._playeq.isMyTurn}`);
-                    if (this._playeq.isMyTurn) {
+                    console.log(`[#makeGameoverState] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GAMEOVER_LOSE;
                     } else {

@@ -36,7 +36,7 @@ function packSetMessageFromServer() {
                     vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
 
                     // 自分の手番に変更
-                    vue1.engine.playeq.isMyTurn = true;
+                    vue1.engine.playeq.myTurn.isTrue = true;
 
                     // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;

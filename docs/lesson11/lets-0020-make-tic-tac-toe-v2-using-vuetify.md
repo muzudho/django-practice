@@ -220,7 +220,7 @@ class Board {
 // +--------
 ```
 
-# Step 4. ゲームルール定義 - game_rule.js ファイル
+# Step 4. 概念の定義 - concepts.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -231,6 +231,51 @@ class Board {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+👉              │           ├── concepts.js
+                │           └── things.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 自分のターン
+ */
+class MyTurn {
+    /**
+     *
+     * @param {*} myPiece - 自分の駒。 "X", "O", "_"
+     */
+    constructor(myPiece) {
+        // 自分の手番か（初回は先手）
+        this._isTrue = myPiece == PC_X_LABEL;
+    }
+
+    /**
+     * 真実か？
+     */
+    get isTrue() {
+        return this._isTrue;
+    }
+
+    set isTrue(value) {
+        this._isTrue = value;
+        vue1.raiseMyTurnChanged();
+    }
+}
+```
+
+# Step 5. ゲームルール定義 - game_rule.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── concepts.js
                 │           ├── connection.js
 👉              │           ├── game_rule.js
                 │           ├── message_sender.js
@@ -326,7 +371,7 @@ function flipTurn(piece) {
 }
 ```
 
-# Step 5. プロトコル実装 - message_sender.js ファイル
+# Step 6. プロトコル実装 - message_sender.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -337,6 +382,7 @@ function flipTurn(piece) {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── concepts.js
 👉              │           ├── message_sender.js
                 │           └── things.js
                 └── 🚀favicon.ico
@@ -403,7 +449,7 @@ class MessageSender {
 }
 ```
 
-# Step 6. 通信接続の作成 - connection.js ファイル
+# Step 7. 通信接続の作成 - connection.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -414,6 +460,7 @@ class MessageSender {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── concepts.js
 👉              │           ├── connection.js
                 │           ├── message_sender.js
                 │           └── things.js
@@ -519,7 +566,7 @@ class Connection {
 }
 ```
 
-# Step 7. 遊具作成 - playground_equipment.js ファイル
+# Step 8. 遊具作成 - playground_equipment.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -530,6 +577,7 @@ class Connection {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── concepts.js
                 │           ├── connection.js
                 │           ├── game_rule.js
 👉              │           ├── playground_equipment.js
@@ -561,8 +609,8 @@ class PlaygroundEquipment {
         // 何手目
         this._countOfMove = 0;
 
-        // 自分の手番か（初回は先手）
-        this._isMyTurn = myPiece == PC_X_LABEL;
+        // 自分の手番
+        this._myTurn = new MyTurn(myPiece);
 
         // 「相手の手番に着手しないでください」というアラートの可視性
         this._isVisibleAlertWaitForOther = false;
@@ -576,6 +624,13 @@ class PlaygroundEquipment {
      */
     get board() {
         return this._board;
+    }
+
+    /**
+     * 自分のターン
+     */
+    get myTurn() {
+        return this._myTurn;
     }
 
     /**
@@ -597,18 +652,6 @@ class PlaygroundEquipment {
      */
     isThere3SamePieces() {
         return 5 <= this._countOfMove;
-    }
-
-    /**
-     * 私のターンですか
-     */
-    get isMyTurn() {
-        return this._isMyTurn;
-    }
-
-    set isMyTurn(value) {
-        this._isMyTurn = value;
-        vue1.raiseMyTurnChanged();
     }
 
     /**
@@ -635,7 +678,7 @@ class PlaygroundEquipment {
 }
 ```
 
-# Step 8. ユーザーコントロール作成 - user_ctrl.js ファイル
+# Step 9. ユーザーコントロール作成 - user_ctrl.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -646,10 +689,11 @@ class PlaygroundEquipment {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── 📄concepts.js
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄message_sender.js
-                │           ├── things.js
+                │           ├── 📄things.js
 👉              │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
@@ -717,7 +761,7 @@ class UserCtrl {
 }
 ```
 
-# Step 9. 審判作成 - judge_ctrl.js ファイル
+# Step 10. 審判作成 - judge_ctrl.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -728,6 +772,7 @@ class UserCtrl {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── 📄concepts.js
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
 👉              │           ├── 📄judge_ctrl.js
@@ -809,8 +854,8 @@ class JudgeCtrl {
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 console.log(`[#makeGameoverState] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
-                    console.log(`[#makeGameoverState] this._playeq.isMyTurn=${this._playeq.isMyTurn}`);
-                    if (this._playeq.isMyTurn) {
+                    console.log(`[#makeGameoverState] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GAMEOVER_LOSE;
                     } else {
@@ -845,7 +890,7 @@ class JudgeCtrl {
 }
 ```
 
-# Step 10. ゲームエンジン作成 - engine.js ファイル
+# Step 11. ゲームエンジン作成 - engine.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -856,6 +901,7 @@ class JudgeCtrl {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── 📄concepts.js
                 │           ├── 📄connection.js
 👉              │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
@@ -1037,7 +1083,7 @@ class Engine {
 }
 ```
 
-# Step 11. 通信プロトコル作成 - message_receiver.js ファイル
+# Step 12. 通信プロトコル作成 - message_receiver.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1048,6 +1094,7 @@ class Engine {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── 📄concepts.js
                 │           ├── 📄connection.js
                 │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
@@ -1098,7 +1145,7 @@ function packSetMessageFromServer() {
                     vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
 
                     // 自分の手番に変更
-                    vue1.engine.playeq.isMyTurn = true;
+                    vue1.engine.playeq.myTurn.isTrue = true;
 
                     // クリアー
                     vue1.engine.playeq.isVisibleAlertWaitForOther = false;
@@ -1119,7 +1166,7 @@ function packSetMessageFromServer() {
 }
 ```
 
-# Step 12. 対局申込画面作成 - match_application.html ファイル
+# Step 13. 対局申込画面作成 - match_application.html ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1130,6 +1177,7 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+                │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1216,7 +1264,7 @@ function packSetMessageFromServer() {
 </html>
 ```
 
-# Step 13. 対局画面作成 - playing_base.html ファイル
+# Step 14. 対局画面作成 - playing_base.html ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1227,6 +1275,7 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+                │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1319,6 +1368,7 @@ function packSetMessageFromServer() {
         </div>
 
         <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/concepts.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/game_rule.js' %}"></script>
@@ -1440,7 +1490,7 @@ function packSetMessageFromServer() {
                         }
 
                         if (this.engine.playeq.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.playeq.isMyTurn) {
+                            if (!this.engine.playeq.myTurn.isTrue) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.engine.playeq.isVisibleAlertWaitForOther = true;
@@ -1448,7 +1498,7 @@ function packSetMessageFromServer() {
                                 this.isVisibleAlertWaitForOtherFlag = this.engine.playeq.isVisibleAlertWaitForOther;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.engine.playeq.isMyTurn = false;
+                                this.engine.playeq.myTurn.isTrue = false;
 
                                 // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
@@ -1552,8 +1602,8 @@ function packSetMessageFromServer() {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.isMyTurn=${this.engine.playeq.isMyTurn}`);
-                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.isMyTurn;
+                        console.log(`[methods updateYourTurn 1] this.gameState=${this.gameState} GAME_STATE_DURING=${GAME_STATE_DURING} this.engine.playeq.myTurn.isTrue=${this.engine.playeq.myTurn.isTrue}`);
+                        let isYourTurn = this.gameState == GAME_STATE_DURING && this.engine.playeq.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
@@ -1591,7 +1641,7 @@ function packSetMessageFromServer() {
 </html>
 ```
 
-# Step 14. 対局画面作成 - playing.html.txt ファイル
+# Step 15. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1602,6 +1652,7 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1663,7 +1714,7 @@ function packSetMessageFromServer() {
 {% endblock methods_footer %}
 ```
 
-# Step 15. 通信プロトコル作成 - message_converter.py ファイル
+# Step 16. 通信プロトコル作成 - message_converter.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1674,6 +1725,7 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1772,7 +1824,7 @@ class TicTacToeV2MessageConverter():
         pass
 ```
 
-# Step 16. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
+# Step 17. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1783,6 +1835,7 @@ class TicTacToeV2MessageConverter():
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1874,7 +1927,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 17. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
+# Step 18. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1885,6 +1938,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -1947,7 +2001,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         return await self._messageConverter.on_receive(self.scope, doc_received)
 ```
 
-# Step 18. ビュー作成 - resources.py ファイル
+# Step 19. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1958,6 +2012,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -2127,7 +2182,7 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
     return render(request, path_of_html, context)
 ```
 
-# Step 19. ルート編集 - urls.py ファイル
+# Step 20. ルート編集 - urls.py ファイル
 
 📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
 
@@ -2138,6 +2193,7 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -2218,7 +2274,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 20. ルート編集 - routing1.py ファイル
+# Step 21. ルート編集 - routing1.py ファイル
 
 以下の既存のファイルを編集してほしい  
 
@@ -2229,6 +2285,7 @@ urlpatterns = [
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
@@ -2293,7 +2350,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 21. Web画面へアクセス
+# Step 22. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
