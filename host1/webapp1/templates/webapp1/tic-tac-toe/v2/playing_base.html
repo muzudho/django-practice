@@ -192,7 +192,7 @@
                             return;
                         }
 
-                        if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
+                        if (this.engine.playeq.board.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");

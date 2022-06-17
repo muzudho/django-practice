@@ -97,9 +97,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[2])
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }

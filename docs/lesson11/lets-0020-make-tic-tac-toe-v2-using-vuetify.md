@@ -187,6 +187,34 @@ const SQ_6 = 6;
 const SQ_7 = 7;
 const SQ_8 = 8;
 
+/**
+ * 盤
+ */
+class Board {
+    constructor() {
+        // 各マス
+        this._squares = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+    }
+
+    /**
+     * 盤上のマス番号で示して、駒を取得
+     * @param {number} sq - マス番号
+     */
+    getPieceBySq(sq) {
+        return this._squares[sq];
+    }
+
+    /**
+     * 盤上のマスに駒を上書きします
+     *
+     * @param {*} sq - マス番号
+     * @param {*} piece - 駒
+     */
+    setPiece(sq, piece) {
+        this._squares[sq] = piece;
+    }
+}
+
 // | 盤
 // |
 // +--------
@@ -528,7 +556,7 @@ class PlaygroundEquipment {
         console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
 
         // 盤面
-        this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+        this._board = new Board();
 
         // 何手目
         this._countOfMove = 0;
@@ -544,21 +572,10 @@ class PlaygroundEquipment {
     }
 
     /**
-     * 盤上のマス番号で示して、駒を取得
-     * @param {number} sq - マス番号
+     * 盤
      */
-    getPieceBySq(sq) {
-        return this._board[sq];
-    }
-
-    /**
-     * 盤上のマスに駒を上書きします
-     *
-     * @param {*} sq - マス番号
-     * @param {*} piece - 駒
-     */
-    setPiece(sq, piece) {
-        this._board[sq] = piece;
+    get board() {
+        return this._board;
     }
 
     /**
@@ -673,7 +690,7 @@ class UserCtrl {
             console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
         }
 
-        if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
+        if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
             this._playeq.incrementCountOfMove(); // 手数を１増やします
@@ -681,10 +698,10 @@ class UserCtrl {
             // 石を置きます
             switch (piece) {
                 case PC_X_LABEL:
-                    this._playeq.setPiece(sq, PC_X);
+                    this._playeq.board.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this._playeq.setPiece(sq, PC_O);
+                    this._playeq.board.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid piece = ${piece}`);
@@ -820,9 +837,9 @@ class JudgeCtrl {
      */
     #isPieceInLine(squaresOfWinPattern) {
         return (
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._playeq.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.getPieceBySq(squaresOfWinPattern[2])
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            this._playeq.board.getPieceBySq(squaresOfWinPattern[0]) === this._playeq.board.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
@@ -1422,7 +1439,7 @@ function packSetMessageFromServer() {
                             return;
                         }
 
-                        if (this.engine.playeq.getPieceBySq(sq) == PC_EMPTY) {
+                        if (this.engine.playeq.board.getPieceBySq(sq) == PC_EMPTY) {
                             if (!this.engine.playeq.isMyTurn) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");

@@ -33,7 +33,7 @@ class UserCtrl {
             console.log(`Warning of illegal move. gameoverState=${this._playeq.gameoverState}`);
         }
 
-        if (this._playeq.getPieceBySq(sq) == PC_EMPTY) {
+        if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら
 
             this._playeq.incrementCountOfMove(); // 手数を１増やします
@@ -41,10 +41,10 @@ class UserCtrl {
             // 石を置きます
             switch (piece) {
                 case PC_X_LABEL:
-                    this._playeq.setPiece(sq, PC_X);
+                    this._playeq.board.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this._playeq.setPiece(sq, PC_O);
+                    this._playeq.board.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid piece = ${piece}`);

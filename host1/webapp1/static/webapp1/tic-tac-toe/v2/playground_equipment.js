@@ -15,7 +15,7 @@ class PlaygroundEquipment {
         console.log(`[PlaygroundEquipment onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL} GAMEOVER_NONE=${GAMEOVER_NONE}`);
 
         // 盤面
-        this._board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+        this._board = new Board();
 
         // 何手目
         this._countOfMove = 0;
@@ -31,21 +31,10 @@ class PlaygroundEquipment {
     }
 
     /**
-     * 盤上のマス番号で示して、駒を取得
-     * @param {number} sq - マス番号
+     * 盤
      */
-    getPieceBySq(sq) {
-        return this._board[sq];
-    }
-
-    /**
-     * 盤上のマスに駒を上書きします
-     *
-     * @param {*} sq - マス番号
-     * @param {*} piece - 駒
-     */
-    setPiece(sq, piece) {
-        this._board[sq] = piece;
+    get board() {
+        return this._board;
     }
 
     /**

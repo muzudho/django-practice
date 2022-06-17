@@ -51,6 +51,34 @@ const SQ_6 = 6;
 const SQ_7 = 7;
 const SQ_8 = 8;
 
+/**
+ * 盤
+ */
+class Board {
+    constructor() {
+        // 各マス
+        this._squares = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+    }
+
+    /**
+     * 盤上のマス番号で示して、駒を取得
+     * @param {number} sq - マス番号
+     */
+    getPieceBySq(sq) {
+        return this._squares[sq];
+    }
+
+    /**
+     * 盤上のマスに駒を上書きします
+     *
+     * @param {*} sq - マス番号
+     * @param {*} piece - 駒
+     */
+    setPiece(sq, piece) {
+        this._squares[sq] = piece;
+    }
+}
+
 // | 盤
 // |
 // +--------
