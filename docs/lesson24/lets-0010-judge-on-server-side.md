@@ -537,7 +537,7 @@ class JudgeCtrl():
     def doJudge(self, myPiece):
         """ゲームオーバー判定"""
 
-        self._playeq.gameoverState = self.makeGameoverState()
+        self._playeq.gameoverState = self.makeGameoverSet()
         print(f"[doJudge] gameoverState={self._playeq.gameoverState}")
 
         if self._playeq.gameoverState == game_rule.GAMEOVER_WIN:
@@ -552,7 +552,7 @@ class JudgeCtrl():
             raise ValueError(
                 f"Unexpected gameoverState={self._playeq.gameoverState}")
 
-    def makeGameoverState(self):
+    def makeGameoverSet(self):
         """ゲームオーバー判定
 
         * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
@@ -562,14 +562,14 @@ class JudgeCtrl():
         ゲームオーバー状態
         """
         print(
-            f"[makeGameoverState] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
+            f"[makeGameoverSet] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
         if self._playeq.isThere3SamePieces():
             for squaresOfWinPattern in game_rule.WIN_PATTERN:
                 print(
-                    f"[makeGameoverState] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
+                    f"[makeGameoverSet] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
                 if self.isPieceInLine(squaresOfWinPattern):
                     print(
-                        f"[makeGameoverState] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
+                        f"[makeGameoverSet] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
                     if self._playeq.myTurn.isTrue:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return game_rule.GAMEOVER_LOSE
@@ -739,20 +739,20 @@ class Engine():
     def winner(self, value):
         self._winner = value
 
-    def getGameoverState(self):
+    def getGameoverSet(self):
         """対局結果
 
         勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
         """
 
         if self._winner == game_rule.PC_EMPTY_LABEL:
-            return game_rule.GAMEOVER_DRAW
+            return GameoverSet.draw
         elif self._winner == vue1.engine.connection.myPiece:
-            return game_rule.GAMEOVER_WIN
+            return GameoverSet.win
         elif self._winner == self.flipTurn(vue1.engine.connection.myPiece):
-            return game_rule.GAMEOVER_LOSE
+            return GameoverSet.lose
 
-        return game_rule.GAMEOVER_NONE
+        return GameoverSet.none
 
     def connect(self):
         """接続"""
