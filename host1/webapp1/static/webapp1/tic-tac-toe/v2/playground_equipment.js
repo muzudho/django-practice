@@ -22,9 +22,6 @@ class PlaygroundEquipment {
 
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
-
-        // ゲームオーバー状態
-        this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
     /**
@@ -46,13 +43,6 @@ class PlaygroundEquipment {
      */
     get myTurn() {
         return this._myTurn;
-    }
-
-    /**
-     * ゲームオーバー状態
-     */
-    get gameoverState() {
-        return this._gameoverState;
     }
 
     /**

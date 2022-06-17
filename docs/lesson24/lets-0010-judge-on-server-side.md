@@ -537,7 +537,7 @@ class JudgeCtrl():
     def doJudge(self, myPiece):
         """ゲームオーバー判定"""
 
-        self._playeq.gameoverState = self.makeGameoverSet()
+        self._playeq.gameoverState = self.makeGameoverSetValue()
         print(f"[doJudge] gameoverState={self._playeq.gameoverState}")
 
         if self._playeq.gameoverState == game_rule.GAMEOVER_WIN:
@@ -552,7 +552,7 @@ class JudgeCtrl():
             raise ValueError(
                 f"Unexpected gameoverState={self._playeq.gameoverState}")
 
-    def makeGameoverSet(self):
+    def makeGameoverSetValue(self):
         """ゲームオーバー判定
 
         * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
@@ -562,14 +562,14 @@ class JudgeCtrl():
         ゲームオーバー状態
         """
         print(
-            f"[makeGameoverSet] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
+            f"[makeGameoverSetValue] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
         if self._playeq.isThere3SamePieces():
             for squaresOfWinPattern in game_rule.WIN_PATTERN:
                 print(
-                    f"[makeGameoverSet] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
+                    f"[makeGameoverSetValue] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
                 if self.isPieceInLine(squaresOfWinPattern):
                     print(
-                        f"[makeGameoverSet] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
+                        f"[makeGameoverSetValue] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
                     if self._playeq.myTurn.isTrue:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return game_rule.GAMEOVER_LOSE

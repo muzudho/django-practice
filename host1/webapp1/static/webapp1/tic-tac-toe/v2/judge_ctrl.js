@@ -15,7 +15,7 @@ class JudgeCtrl {
         this._userCtrl = userCtrl;
 
         // 判断したとき
-        this._onJudged = (pieceMoved, gameoverSet) => {};
+        this._onJudged = (pieceMoved, gameoverSetValue) => {};
     }
 
     /**
@@ -29,9 +29,9 @@ class JudgeCtrl {
      * ゲームオーバー判定
      */
     doJudge(piece_moved) {
-        let gameoverSet = this.#makeGameoverSet();
-        console.log(`[doJudge] gameoverSet=${gameoverSet}`);
-        this._onJudged(piece_moved, gameoverSet);
+        let gameoverSetValue = this.#makeGameoverSetValue();
+        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
+        this._onJudged(piece_moved, gameoverSetValue);
     }
 
     /**
@@ -41,16 +41,16 @@ class JudgeCtrl {
      *
      * @returns ゲームオーバー状態
      */
-    #makeGameoverSet() {
-        console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
+    #makeGameoverSetValue() {
+        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 // 勝ちパターンの１つについて
-                console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
+                console.log(`[#makeGameoverSetValue] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     // 当てはまるなら
-                    console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    console.log(`[#makeGameoverSetValue] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;

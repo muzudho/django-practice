@@ -37,11 +37,11 @@ class Engine {
         this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
         // 判断したとき
-        this._judgeCtrl.onJudged = (pieceMoved, gameoverSet) => {
-            this._playeq.gameoverState.value = gameoverSet;
+        this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
+            this.gameoverSet.value = gameoverSetValue;
             let response;
 
-            switch (gameoverSet) {
+            switch (gameoverSetValue) {
                 case GameoverSet.win:
                     // 勝ったとき
                     response = this.messageSender.createWon(pieceMoved);
@@ -59,7 +59,7 @@ class Engine {
                     // なんでもなかったとき
                     break;
                 default:
-                    throw new Error(`Unexpected gameoverSet=${gameoverSet}`);
+                    throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
             }
         };
 
@@ -129,6 +129,13 @@ class Engine {
     }
 
     /**
+     * ゲームオーバー状態
+     */
+    get gameoverSet() {
+        return this._gameoverSet;
+    }
+
+    /**
      * 対局結果
      */
     getGameoverSet() {
@@ -177,6 +184,9 @@ class Engine {
     onStart() {
         console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
         this._winner = "";
+
+        // ゲームオーバー状態
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         this._playeq.onStart(this._connection.myPiece);
     }

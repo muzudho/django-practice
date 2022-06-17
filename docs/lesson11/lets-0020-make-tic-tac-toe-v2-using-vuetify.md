@@ -738,9 +738,6 @@ class PlaygroundEquipment {
 
         // 自分の手番
         this._myTurn = new MyTurn(myPiece);
-
-        // ゲームオーバー状態
-        this._gameoverState = new GameoverSet(GameoverSet.none);
     }
 
     /**
@@ -762,13 +759,6 @@ class PlaygroundEquipment {
      */
     get myTurn() {
         return this._myTurn;
-    }
-
-    /**
-     * ゲームオーバー状態
-     */
-    get gameoverState() {
-        return this._gameoverState;
     }
 
     /**
@@ -838,12 +828,6 @@ class UserCtrl {
      * @returns 駒を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
-        if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // ゲームオーバー後に駒を置いてはいけません
-            console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
-            return false;
-        }
-
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
 
@@ -910,7 +894,7 @@ class JudgeCtrl {
         this._userCtrl = userCtrl;
 
         // 判断したとき
-        this._onJudged = (pieceMoved, gameoverSet) => {};
+        this._onJudged = (pieceMoved, gameoverSetValue) => {};
     }
 
     /**
@@ -924,9 +908,9 @@ class JudgeCtrl {
      * ゲームオーバー判定
      */
     doJudge(piece_moved) {
-        let gameoverSet = this.#makeGameoverSet();
-        console.log(`[doJudge] gameoverSet=${gameoverSet}`);
-        this._onJudged(piece_moved, gameoverSet);
+        let gameoverSetValue = this.#makeGameoverSetValue();
+        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
+        this._onJudged(piece_moved, gameoverSetValue);
     }
 
     /**
@@ -936,16 +920,16 @@ class JudgeCtrl {
      *
      * @returns ゲームオーバー状態
      */
-    #makeGameoverSet() {
-        console.log(`[#makeGameoverSet] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
+    #makeGameoverSetValue() {
+        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._playeq.isThere3SamePieces()}`);
         if (this._playeq.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 // 勝ちパターンの１つについて
-                console.log(`[#makeGameoverSet] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
+                console.log(`[#makeGameoverSetValue] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
                 if (this.#isPieceInLine(squaresOfWinPattern)) {
                     // 当てはまるなら
-                    console.log(`[#makeGameoverSet] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
+                    console.log(`[#makeGameoverSetValue] this._playeq.myTurn.isTrue=${this._playeq.myTurn.isTrue}`);
                     if (this._playeq.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
@@ -1043,11 +1027,11 @@ class Engine {
         this._judgeCtrl = new JudgeCtrl(this._playeq, this._userCtrl);
 
         // 判断したとき
-        this._judgeCtrl.onJudged = (pieceMoved, gameoverSet) => {
-            this._playeq.gameoverState.value = gameoverSet;
+        this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
+            this.gameoverSet.value = gameoverSetValue;
             let response;
 
-            switch (gameoverSet) {
+            switch (gameoverSetValue) {
                 case GameoverSet.win:
                     // 勝ったとき
                     response = this.messageSender.createWon(pieceMoved);
@@ -1065,7 +1049,7 @@ class Engine {
                     // なんでもなかったとき
                     break;
                 default:
-                    throw new Error(`Unexpected gameoverSet=${gameoverSet}`);
+                    throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
             }
         };
 
@@ -1135,6 +1119,13 @@ class Engine {
     }
 
     /**
+     * ゲームオーバー状態
+     */
+    get gameoverSet() {
+        return this._gameoverSet;
+    }
+
+    /**
      * 対局結果
      */
     getGameoverSet() {
@@ -1183,6 +1174,9 @@ class Engine {
     onStart() {
         console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
         this._winner = "";
+
+        // ゲームオーバー状態
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         this._playeq.onStart(this._connection.myPiece);
     }
@@ -1597,10 +1591,10 @@ function packSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState.value}`);
-                        if (this.engine.playeq.gameoverState.value != GameoverSet.none) {
+                        console.log(`[methods clickSquare] gameoverSet=${this.engine.gameoverSet.value}`);
+                        if (this.engine.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState.value}`);
+                            console.log(`Ban on illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
                             return;
                         }
 
@@ -1612,6 +1606,12 @@ function packSetMessageFromServer() {
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.myTurn.isTrue = false;
+
+                                if (this.engine.gameoverSet.value != GameoverSet.none) {
+                                    // ゲームオーバー後に駒を置いてはいけません
+                                    console.log(`warning of illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                                    return;
+                                }
 
                                 // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);

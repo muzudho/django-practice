@@ -197,10 +197,10 @@
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverState=${this.engine.playeq.gameoverState.value}`);
-                        if (this.engine.playeq.gameoverState.value != GameoverSet.none) {
+                        console.log(`[methods clickSquare] gameoverSet=${this.engine.gameoverSet.value}`);
+                        if (this.engine.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverState=${this.engine.playeq.gameoverState.value}`);
+                            console.log(`Ban on illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
                             return;
                         }
 
@@ -212,6 +212,12 @@
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.playeq.myTurn.isTrue = false;
+
+                                if (this.engine.gameoverSet.value != GameoverSet.none) {
+                                    // ゲームオーバー後に駒を置いてはいけません
+                                    console.log(`warning of illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                                    return;
+                                }
 
                                 // 自分の一手
                                 this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);

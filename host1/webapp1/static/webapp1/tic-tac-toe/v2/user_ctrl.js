@@ -28,12 +28,6 @@ class UserCtrl {
      * @returns 駒を置けたら真、それ以外は偽
      */
     doMove(sq, piece) {
-        if (this._playeq.gameoverState.value != GameoverSet.none) {
-            // ゲームオーバー後に駒を置いてはいけません
-            console.log(`warning of illegal move. gameoverState=${this._playeq.gameoverState.value}`);
-            return false;
-        }
-
         if (this._playeq.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
 
