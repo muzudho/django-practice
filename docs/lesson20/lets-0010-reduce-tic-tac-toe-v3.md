@@ -80,7 +80,7 @@ docker-compose up
 
 # Step 2. 対局画面作成 - playing.html.txt ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
@@ -112,9 +112,9 @@ docker-compose up
 {% endblock footer_section1 %}
 
 
-{% block method_section1 %}
+{% block methods_footer %}
     // フッターのボタンは除きました
-{% endblock method_section1 %}
+{% endblock methods_footer %}
 ```
 
 # Step 3. ビュー作成 - resources.py ファイル
