@@ -16,8 +16,7 @@ class Building {
         this._reconnect = reconnect;
 
         // 接続
-        this._connection = new Connection();
-        this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
+        this._connection = new Connection(roomName, myPiece, convertPartsToConnectionString(roomName, myPiece));
 
         // メッセージ一覧
         this._messageSender = new MessageSender();

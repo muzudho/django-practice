@@ -6,15 +6,24 @@
  * 接続
  */
 class Connection {
-    constructor() {
+    /**
+     * 生成
+     *
+     * @param {string} roomName - 部屋名
+     * @param {string} myPiece - 自分の手番。 "X" か "O"
+     * @param {strint} connectionString - Webソケット接続文字列
+     */
+    constructor(roomName, myPiece, connectionString) {
+        // console.log(`[Connection constructor] roomName=[${roomName}] myPiece=[${myPiece}] connectionString=[${connectionString}]`);
+
         // 部屋名
-        this._roomName = "";
+        this._roomName = roomName;
 
         // X か O か
-        this._myPiece = "";
+        this._myPiece = myPiece;
 
-        // 接続文字列（初期値はダミー文字列）
-        this._connectionString = `ws://example.com/this/is/a/path/room_name/`;
+        // 接続文字列
+        this._connectionString = connectionString;
 
         // 再接続中表示フラグ
         this.isReconnectingDisplay = false;
@@ -28,20 +37,6 @@ class Connection {
     }
 
     /**
-     * セットアップ
-     *
-     * @param {string} roomName - 部屋名
-     * @param {string} myPiece - X か O
-     * @param {function} convertPartsToConnectionString - (roomName, myPiece) return connectionString
-     */
-    setup(roomName, myPiece, convertPartsToConnectionString) {
-        // console.log(`[Debug][Connection#setup] roomName=[${roomName}] myPiece=[${myPiece}]`);
-        this._roomName = roomName;
-        this._myPiece = myPiece;
-        this._connectionString = convertPartsToConnectionString(this._roomName, this._myPiece);
-    }
-
-    /**
      * 設定
      *
      * @param {*} onOpenWebSocket - Webソケットを開かれたとき
@@ -49,7 +44,7 @@ class Connection {
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      */
     connect(onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
-        // console.log(`[Debug][Connection#connect] Start this._connectionString=[${this._connectionString}]`);
+        // console.log(`[Connection#connect] Start this._connectionString=[${this._connectionString}]`);
 
         // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
         try {
