@@ -18,11 +18,11 @@ class Connection {
      * @param {strint} connectionString - Webソケット接続文字列
      * @param {*} onOpenWebSocket - Webソケットを開かれたとき
      * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
-     * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
+     * @param {*} incommingMessages - 受信メッセージ一覧
      * @param {*} onWebSocketError - Webソケットエラー時のメッセージ
      * @param {*} onRetryWaiting - 再接続のためのインターバルの定期的なメッセージ
      */
-    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError, onRetryWaiting) {
+    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, incommingMessages, onWebSocketError, onRetryWaiting) {
         // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
@@ -39,7 +39,7 @@ class Connection {
         // 再接続のために記憶しておきます
         this._onOpenWebSocket = onOpenWebSocket;
         this._onCloseWebSocket = onCloseWebSocket;
-        this._setMessageFromServer = setMessageFromServer;
+        this._incommingMessages = incommingMessages;
         this._onWebSocketError = onWebSocketError;
         this._onRetryWaiting = onRetryWaiting;
     }
@@ -75,7 +75,7 @@ class Connection {
                 // JSON を解析、メッセージだけ抽出
                 let data1 = JSON.parse(e.data);
                 let message = data1["message"];
-                this._setMessageFromServer(message);
+                this._incommingMessages.setMessageFromServer(message);
             };
 
             // this.#webSock1.onerror = onWebSocketError;

@@ -673,11 +673,11 @@ class Connection {
      * @param {strint} connectionString - Webソケット接続文字列
      * @param {*} onOpenWebSocket - Webソケットを開かれたとき
      * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
-     * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
+     * @param {*} incommingMessages - 受信メッセージ一覧
      * @param {*} onWebSocketError - Webソケットエラー時のメッセージ
      * @param {*} onRetryWaiting - 再接続のためのインターバルの定期的なメッセージ
      */
-    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError, onRetryWaiting) {
+    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, incommingMessages, onWebSocketError, onRetryWaiting) {
         // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
@@ -694,7 +694,7 @@ class Connection {
         // 再接続のために記憶しておきます
         this._onOpenWebSocket = onOpenWebSocket;
         this._onCloseWebSocket = onCloseWebSocket;
-        this._setMessageFromServer = setMessageFromServer;
+        this._incommingMessages = incommingMessages;
         this._onWebSocketError = onWebSocketError;
         this._onRetryWaiting = onRetryWaiting;
     }
@@ -730,7 +730,7 @@ class Connection {
                 // JSON を解析、メッセージだけ抽出
                 let data1 = JSON.parse(e.data);
                 let message = data1["message"];
-                this._setMessageFromServer(message);
+                this._incommingMessages.setMessageFromServer(message);
             };
 
             // this.#webSock1.onerror = onWebSocketError;
@@ -1173,7 +1173,7 @@ ${indent}${this._position.dump(indent + "    ")}`;
 }
 ```
 
-# Step 11. 通信プロトコル作成 - message_receiver.js ファイル
+# Step 11. 通信プロトコル作成 - incoming_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1188,8 +1188,8 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
+👉              │           ├── 📄incoming_messages.js
                 │           ├── 📄judge_ctrl.js
-👉              │           ├── 📄message_receiver.js
                 │           ├── 📄outgoing_messages.js
                 │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
@@ -1198,59 +1198,99 @@ ${indent}${this._position.dump(indent + "    ")}`;
 
 ```js
 /**
- * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
- * @returns 関数
+ * 受信メッセージ一覧
  */
-function packSetMessageFromServer() {
-    return (message) => {
+class IncomingMessages {
+    /**
+     * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
+     * @returns 関数
+     */
+    setMessageFromServer(message) {
         // `s2c_` は サーバーからクライアントへ送られてきた変数の目印
         // イベント
         let event = message["s2c_event"];
-        // 升番号
-        let sq = message["s2c_sq"];
-        // 手番。 "X" か "O"
-        let piece_moved = message["s2c_pieceMoved"];
-        // 勝者
-        let winner = message["s2c_winner"];
-        console.log(`[setMessage] サーバーからのメッセージを受信しました event=${event} sq=${sq} piece_moved=${piece_moved} winner=${winner}`); // ちゃんと動いているようなら消す
+        console.log(`[IncomingMessages setMessageFromServer] サーバーからのメッセージを受信しました event:${event}`);
 
         switch (event) {
             case "S2C_Start":
-                // 対局開始時
-                console.log(`[setMessage] S2C_Start`);
-                vue1.onStart();
+                this.start(message);
                 break;
 
             case "S2C_End":
-                // 対局終了時
-                vue1.onGameover(winner);
+                this.end(message);
                 break;
 
             case "S2C_Moved":
-                // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.position.turn.me}`);
-
-                if (piece_moved != vue1.building.position.turn.me) {
-                    // 相手の手番なら、自動で動かします
-                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
-
-                    // 自分の手番に変更
-                    vue1.building.position.turn.isMe = true;
-
-                    // アラートの非表示
-                    vue1.isVisibleAlertWaitForOther = false;
-                }
-
-                // どちらの手番でもゲームオーバー判定は行います
-                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
-
+                this.moved(message);
                 break;
 
             default:
                 // Undefined behavior
-                console.log(`[setMessage] ignored. event=[${event}]`);
+                console.log(`[IncomingMessages setMessageFromServer] ignored. event=[${event}]`);
         }
-    };
+    }
+
+    set onStart(value) {
+        this._onStart = value;
+    }
+
+    set onEnd(value) {
+        this._onEnd = value;
+    }
+
+    set onMoved(value) {
+        this._onMoved = value;
+    }
+
+    /**
+     * 対局開始時
+     *
+     * @param {*} message
+     */
+    start(message) {
+        if (this._onStart == null) {
+            // undefined も null も弾きます
+            return;
+        }
+
+        console.log(`[IncomingMessages start]`);
+        this._onStart(message);
+    }
+
+    /**
+     * 対局終了時
+     *
+     * @param {*} message
+     */
+    end(message) {
+        if (this._onEnd == null) {
+            return;
+        }
+
+        // 勝者
+        let winner = message["s2c_winner"];
+        console.log(`[IncomingMessages end] winner:${winner}`);
+        this._onEnd(message, winner);
+    }
+
+    /**
+     * 指し手受信時
+     *
+     * @param {*} message
+     */
+    moved(message) {
+        if (this._onMoved == null) {
+            return;
+        }
+
+        // 升番号
+        let sq = message["s2c_sq"];
+        // 手番。 "X" か "O"
+        let piece_moved = message["s2c_pieceMoved"];
+        console.log(`[IncomingMessages onMoved] sq:${sq} piece_moved:${piece_moved}`);
+
+        this._onMoved(message, parseInt(sq), piece_moved);
+    }
 }
 ```
 
@@ -1269,8 +1309,8 @@ function packSetMessageFromServer() {
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -1367,8 +1407,8 @@ function packSetMessageFromServer() {
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -1463,7 +1503,7 @@ function packSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/incoming_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/outgoing_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
@@ -1488,6 +1528,32 @@ function packSetMessageFromServer() {
             // 3. パス
             console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
+            // 受信メッセージ作成者
+            const incomingMessages = new IncomingMessages();
+            incomingMessages.onStart = (message)=>{
+                vue1.onStart();
+            }
+            incomingMessages.onEnd = (message, winner)=>{
+                vue1.onGameover(winner);
+            }
+            incomingMessages.onMoved = (message, sq, piece_moved)=>{
+                console.log(`[HTML onMoved] 自分の手番:${vue1.building.position.turn.me}`);
+
+                if (piece_moved != vue1.building.position.turn.me) {
+                    // 相手の手番なら、自動で動かします
+                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, sq);
+
+                    // 自分の手番に変更
+                    vue1.building.position.turn.isMe = true;
+
+                    // アラートの非表示
+                    vue1.isVisibleAlertWaitForOther = false;
+                }
+
+                // どちらの手番でもゲームオーバー判定は行います
+                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
+            }
+
             // 送信メッセージ作成者
             const outgoingMessages = new OutgoingMessages();
 
@@ -1508,7 +1574,7 @@ function packSetMessageFromServer() {
                     connection.reconnect();
                 },
                 // サーバーからのメッセージを受信したとき
-                packSetMessageFromServer(),
+                incomingMessages,
                 // エラー時
                 (exception) => {
                     console.log(`Socket is error. ${exception.reason}`);
@@ -1825,8 +1891,8 @@ function packSetMessageFromServer() {
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -1898,8 +1964,8 @@ function packSetMessageFromServer() {
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -2008,8 +2074,8 @@ class TicTacToeV2MessageConverter():
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -2111,8 +2177,8 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -2185,8 +2251,8 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -2366,8 +2432,8 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
@@ -2458,8 +2524,8 @@ urlpatterns = [
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄game_rule.js
+            │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
-            │   │           ├── 📄message_receiver.js
             │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js

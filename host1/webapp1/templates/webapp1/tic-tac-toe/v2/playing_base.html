@@ -79,7 +79,7 @@
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/incoming_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/outgoing_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
@@ -104,6 +104,32 @@
             // 3. パス
             console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
+            // 受信メッセージ作成者
+            const incomingMessages = new IncomingMessages();
+            incomingMessages.onStart = (message)=>{
+                vue1.onStart();
+            }
+            incomingMessages.onEnd = (message, winner)=>{
+                vue1.onGameover(winner);
+            }
+            incomingMessages.onMoved = (message, sq, piece_moved)=>{
+                console.log(`[HTML onMoved] 自分の手番:${vue1.building.position.turn.me}`);
+
+                if (piece_moved != vue1.building.position.turn.me) {
+                    // 相手の手番なら、自動で動かします
+                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, sq);
+
+                    // 自分の手番に変更
+                    vue1.building.position.turn.isMe = true;
+
+                    // アラートの非表示
+                    vue1.isVisibleAlertWaitForOther = false;
+                }
+
+                // どちらの手番でもゲームオーバー判定は行います
+                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
+            }
+
             // 送信メッセージ作成者
             const outgoingMessages = new OutgoingMessages();
 
@@ -124,7 +150,7 @@
                     connection.reconnect();
                 },
                 // サーバーからのメッセージを受信したとき
-                packSetMessageFromServer(),
+                incomingMessages,
                 // エラー時
                 (exception) => {
                     console.log(`Socket is error. ${exception.reason}`);
