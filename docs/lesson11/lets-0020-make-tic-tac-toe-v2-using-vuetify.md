@@ -556,7 +556,7 @@ function flipTurn(piece) {
 }
 ```
 
-# Step 5. プロトコル実装 - outgoing_messages.js ファイル
+# Step 5. 送信メッセージ実装 - outgoing_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -634,7 +634,128 @@ class OutgoingMessages {
 }
 ```
 
-# Step 6. 通信接続の作成 - connection.js ファイル
+# Step 6. 受信メッセージ実装 - incoming_messages.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── 📄concepts.js
+                │           ├── 📄connection.js
+                │           ├── 📄engine.js
+                │           ├── 📄game_rule.js
+👉              │           ├── 📄incoming_messages.js
+                │           ├── 📄judge_ctrl.js
+                │           ├── 📄outgoing_messages.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 受信メッセージ一覧
+ */
+class IncomingMessages {
+    /**
+     * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
+     * @returns 関数
+     */
+    setMessageFromServer(message) {
+        // `s2c_` は サーバーからクライアントへ送られてきた変数の目印
+        // イベント
+        let event = message["s2c_event"];
+        console.log(`[IncomingMessages setMessageFromServer] サーバーからのメッセージを受信しました event:${event}`);
+
+        switch (event) {
+            case "S2C_Start":
+                this.start(message);
+                break;
+
+            case "S2C_End":
+                this.end(message);
+                break;
+
+            case "S2C_Moved":
+                this.moved(message);
+                break;
+
+            default:
+                // Undefined behavior
+                console.log(`[IncomingMessages setMessageFromServer] ignored. event=[${event}]`);
+        }
+    }
+
+    set onStart(value) {
+        this._onStart = value;
+    }
+
+    set onEnd(value) {
+        this._onEnd = value;
+    }
+
+    set onMoved(value) {
+        this._onMoved = value;
+    }
+
+    /**
+     * 対局開始時
+     *
+     * @param {*} message
+     */
+    start(message) {
+        if (this._onStart == null) {
+            // undefined も null も弾きます
+            return;
+        }
+
+        console.log(`[IncomingMessages start]`);
+        this._onStart(message);
+    }
+
+    /**
+     * 対局終了時
+     *
+     * @param {*} message
+     */
+    end(message) {
+        if (this._onEnd == null) {
+            return;
+        }
+
+        // 勝者
+        let winner = message["s2c_winner"];
+        console.log(`[IncomingMessages end] winner:${winner}`);
+        this._onEnd(message, winner);
+    }
+
+    /**
+     * 指し手受信時
+     *
+     * @param {*} message
+     */
+    moved(message) {
+        if (this._onMoved == null) {
+            return;
+        }
+
+        // 升番号
+        let sq = message["s2c_sq"];
+        // 手番。 "X" か "O"
+        let piece_moved = message["s2c_pieceMoved"];
+        console.log(`[IncomingMessages onMoved] sq:${sq} piece_moved:${piece_moved}`);
+
+        this._onMoved(message, parseInt(sq), piece_moved);
+    }
+}
+```
+
+# Step 7. Webソケット接続の実装 - connection.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -794,7 +915,7 @@ class Connection {
 }
 ```
 
-# Step 7. 遊具作成 - position.js ファイル
+# Step 8. 局面作成 - position.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -887,7 +1008,7 @@ ${indent}${this._turn.dump(indent + "    ")}`;
 }
 ```
 
-# Step 8. ユーザーコントロール作成 - user_ctrl.js ファイル
+# Step 9. ユーザーコントロール作成 - user_ctrl.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -955,7 +1076,7 @@ class UserCtrl {
 }
 ```
 
-# Step 9. 審判作成 - judge_ctrl.js ファイル
+# Step 10. 審判作成 - judge_ctrl.js ファイル
 
 以下のファイルを作成してほしい  
 
@@ -1054,7 +1175,7 @@ class JudgeCtrl {
 }
 ```
 
-# Step 10. 建物作成 - engine.js ファイル
+# Step 11. 思考エンジン作成 - engine.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1169,127 +1290,6 @@ ${indent}------
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
 ${indent}${this._position.dump(indent + "    ")}`;
-    }
-}
-```
-
-# Step 11. 通信プロトコル作成 - incoming_messages.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄connection.js
-                │           ├── 📄engine.js
-                │           ├── 📄game_rule.js
-👉              │           ├── 📄incoming_messages.js
-                │           ├── 📄judge_ctrl.js
-                │           ├── 📄outgoing_messages.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 受信メッセージ一覧
- */
-class IncomingMessages {
-    /**
-     * サーバーからクライアントへ送られてきたメッセージをセットする関数を返します
-     * @returns 関数
-     */
-    setMessageFromServer(message) {
-        // `s2c_` は サーバーからクライアントへ送られてきた変数の目印
-        // イベント
-        let event = message["s2c_event"];
-        console.log(`[IncomingMessages setMessageFromServer] サーバーからのメッセージを受信しました event:${event}`);
-
-        switch (event) {
-            case "S2C_Start":
-                this.start(message);
-                break;
-
-            case "S2C_End":
-                this.end(message);
-                break;
-
-            case "S2C_Moved":
-                this.moved(message);
-                break;
-
-            default:
-                // Undefined behavior
-                console.log(`[IncomingMessages setMessageFromServer] ignored. event=[${event}]`);
-        }
-    }
-
-    set onStart(value) {
-        this._onStart = value;
-    }
-
-    set onEnd(value) {
-        this._onEnd = value;
-    }
-
-    set onMoved(value) {
-        this._onMoved = value;
-    }
-
-    /**
-     * 対局開始時
-     *
-     * @param {*} message
-     */
-    start(message) {
-        if (this._onStart == null) {
-            // undefined も null も弾きます
-            return;
-        }
-
-        console.log(`[IncomingMessages start]`);
-        this._onStart(message);
-    }
-
-    /**
-     * 対局終了時
-     *
-     * @param {*} message
-     */
-    end(message) {
-        if (this._onEnd == null) {
-            return;
-        }
-
-        // 勝者
-        let winner = message["s2c_winner"];
-        console.log(`[IncomingMessages end] winner:${winner}`);
-        this._onEnd(message, winner);
-    }
-
-    /**
-     * 指し手受信時
-     *
-     * @param {*} message
-     */
-    moved(message) {
-        if (this._onMoved == null) {
-            return;
-        }
-
-        // 升番号
-        let sq = message["s2c_sq"];
-        // 手番。 "X" か "O"
-        let piece_moved = message["s2c_pieceMoved"];
-        console.log(`[IncomingMessages onMoved] sq:${sq} piece_moved:${piece_moved}`);
-
-        this._onMoved(message, parseInt(sq), piece_moved);
     }
 }
 ```
