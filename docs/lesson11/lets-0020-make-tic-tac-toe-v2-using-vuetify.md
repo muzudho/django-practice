@@ -1804,35 +1804,34 @@ class Connection {
                      * @param {*} piece - text
                      */
                     setLabelOfButton(sq, piece) {
-                        console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece} this=${this}`);
+                        console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece}`);
                         switch (sq) {
                             case 0:
-                                // * ここでは this はWindowを指しているので、グローバル変数を使います
-                                vue1.label0 = piece;
+                                this.label0 = piece;
                                 break;
                             case 1:
-                                vue1.label1 = piece;
+                                this.label1 = piece;
                                 break;
                             case 2:
-                                vue1.label2 = piece;
+                                this.label2 = piece;
                                 break;
                             case 3:
-                                vue1.label3 = piece;
+                                this.label3 = piece;
                                 break;
                             case 4:
-                                vue1.label4 = piece;
+                                this.label4 = piece;
                                 break;
                             case 5:
-                                vue1.label5 = piece;
+                                this.label5 = piece;
                                 break;
                             case 6:
-                                vue1.label6 = piece;
+                                this.label6 = piece;
                                 break;
                             case 7:
-                                vue1.label7 = piece;
+                                this.label7 = piece;
                                 break;
                             case 8:
-                                vue1.label8 = piece;
+                                this.label8 = piece;
                                 break;
                             default:
                                 alert(`[Error] sq=${sq}`);
