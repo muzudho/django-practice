@@ -6,8 +6,8 @@ from webapp1.views.tic_tac_toe.v2 import game_rule
 # 3. Python ファイル名。拡張子抜き
 
 
-class Engine():
-    """ゲームエンジン"""
+class Building():
+    """建物"""
 
     def __init__(self, setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString):
         """生成

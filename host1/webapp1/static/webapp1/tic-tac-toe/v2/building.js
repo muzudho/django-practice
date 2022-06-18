@@ -1,7 +1,7 @@
 /**
- * ゲームエンジン
+ * 建物
  */
-class Engine {
+class Building {
     /**
      * 生成
      * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
@@ -74,7 +74,7 @@ class Engine {
             // ボタンのラベルを更新
             this._setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
+            console.log(`[Building onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
             if (this._myPiece == pieceMoved) {
@@ -176,7 +176,7 @@ class Engine {
      * 対局開始時
      */
     start() {
-        console.log(`[Engine start] myPiece=${this._connection.myPiece}`);
+        console.log(`[Building start] myPiece=${this._connection.myPiece}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -191,8 +191,8 @@ class Engine {
 
     dump(indent) {
         return `
-${indent}Engine
-${indent}------
+${indent}Building
+${indent}--------
 ${indent}_myPiece:${this._myPiece}
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}

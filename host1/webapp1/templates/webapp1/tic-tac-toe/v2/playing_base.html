@@ -74,16 +74,16 @@
         <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/concepts.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
-        <!--                    ===================================
+        <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
+        <!--                    ==================================
                                 1
-        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/user_ctrl.js
-                 =================================================
+        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/building.js
+                 ================================================
         -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -115,7 +115,7 @@
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(
+                    engine: new Building(
                         packSetMessageFromServer(),
                         packReconnect(),
                         // `po_` は POST送信するパラメーター名の目印
@@ -124,6 +124,9 @@
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+                        /**
+                         * 接続文字列へ変換
+                         */
                         (roomName, myPiece) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
@@ -133,7 +136,7 @@
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
                         },

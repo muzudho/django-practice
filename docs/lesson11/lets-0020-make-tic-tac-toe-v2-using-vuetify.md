@@ -1011,7 +1011,7 @@ class JudgeCtrl {
 }
 ```
 
-# Step 10. ゲームエンジン作成 - engine.js ファイル
+# Step 10. 建物作成 - building.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1022,9 +1022,9 @@ class JudgeCtrl {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+👉              │           ├── 📄building.js
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
-👉              │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
                 │           ├── 📄message_sender.js
@@ -1035,9 +1035,9 @@ class JudgeCtrl {
 
 ```js
 /**
- * ゲームエンジン
+ * 建物
  */
-class Engine {
+class Building {
     /**
      * 生成
      * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
@@ -1110,7 +1110,7 @@ class Engine {
             // ボタンのラベルを更新
             this._setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
+            console.log(`[Building onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
             if (this._myPiece == pieceMoved) {
@@ -1212,7 +1212,7 @@ class Engine {
      * 対局開始時
      */
     start() {
-        console.log(`[Engine start] myPiece=${this._connection.myPiece}`);
+        console.log(`[Building start] myPiece=${this._connection.myPiece}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -1227,8 +1227,8 @@ class Engine {
 
     dump(indent) {
         return `
-${indent}Engine
-${indent}------
+${indent}Building
+${indent}--------
 ${indent}_myPiece:${this._myPiece}
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
@@ -1248,9 +1248,9 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
+                │           ├── 📄building.js
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
-                │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
 👉              │           ├── 📄message_receiver.js
@@ -1329,9 +1329,9 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -1427,9 +1427,9 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -1522,16 +1522,16 @@ function packSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/concepts.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
-        <!--                    ===================================
+        <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
+        <!--                    ==================================
                                 1
-        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/user_ctrl.js
-                 =================================================
+        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/building.js
+                 ================================================
         -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -1563,7 +1563,7 @@ function packSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Engine(
+                    engine: new Building(
                         packSetMessageFromServer(),
                         packReconnect(),
                         // `po_` は POST送信するパラメーター名の目印
@@ -1572,6 +1572,9 @@ function packSetMessageFromServer() {
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
                         // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+                        /**
+                         * 接続文字列へ変換
+                         */
                         (roomName, myPiece) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
@@ -1581,7 +1584,7 @@ function packSetMessageFromServer() {
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
                         },
@@ -1810,9 +1813,9 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -1883,9 +1886,9 @@ function packSetMessageFromServer() {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -1993,9 +1996,9 @@ class TicTacToeV2MessageConverter():
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -2096,9 +2099,9 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -2170,9 +2173,9 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -2351,9 +2354,9 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
@@ -2443,9 +2446,9 @@ urlpatterns = [
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
+            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
-            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
