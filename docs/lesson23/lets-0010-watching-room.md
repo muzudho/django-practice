@@ -107,7 +107,7 @@ docker-compose up
 
 {% block isYourTurn_patch1 %}
     // "X" か "O" かのどちらかのプレイヤーか
-    isYourTurn = isYourTurn && (this.engine.connection.myPiece == 'X' || this.engine.connection.myPiece == 'O');
+    isYourTurn = isYourTurn && (this.building.connection.myPiece == 'X' || this.building.connection.myPiece == 'O');
 {% endblock isYourTurn_patch1 %}
 
 
@@ -119,8 +119,8 @@ docker-compose up
 
 {% block create_gameover_message %}
     // 観戦者のケース
-    if (this.engine.connection.myPiece == '_') {
-        switch (this.engine.winner) {
+    if (this.building.connection.myPiece == '_') {
+        switch (this.building.winner) {
             case PC_X_LABEL:
                 return this.messages.xWin;
             case PC_O_LABEL:
@@ -128,7 +128,7 @@ docker-compose up
             case PC_EMPTY_LABEL:
                 return this.messages.draw;
             default:
-                throw `unknown this.engine.winner = ${this.engine.winner}`;
+                throw `unknown this.building.winner = ${this.building.winner}`;
         }
     }
 {% endblock create_gameover_message %}

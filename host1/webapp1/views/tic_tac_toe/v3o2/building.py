@@ -125,9 +125,9 @@ class Building():
 
         if self._winner == game_rule.PC_EMPTY_LABEL:
             return game_rule.GAMEOVER_DRAW
-        elif self._winner == vue1.engine.connection.myPiece:
+        elif self._winner == vue1.building.connection.myPiece:
             return game_rule.GAMEOVER_WIN
-        elif self._winner == self.flipTurn(vue1.engine.connection.myPiece):
+        elif self._winner == self.flipTurn(vue1.building.connection.myPiece):
             return game_rule.GAMEOVER_LOSE
 
         return game_rule.GAMEOVER_NONE

@@ -831,7 +831,7 @@ class JudgeCtrl():
                 squaresOfWinPattern[0]) == position.board.getPieceBySq(squaresOfWinPattern[2])
 ```
 
-# Step 7. エンジン作成 - engine.py ファイル
+# Step 7. エンジン作成 - building.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -842,7 +842,7 @@ class JudgeCtrl():
                 └── 📂tic-tac-toe
                     └── 📂v2
                         ├── 📄concepts.py
-👉                      ├── 📄engine.py
+👉                      ├── 📄building.py
                         ├── 📄judge_ctrl.py
                         ├── 📄positions.py
                         ├── 📄things.py
@@ -977,9 +977,9 @@ class Engine():
 
         if self._winner == game_rule.PC_EMPTY_LABEL:
             return GameoverSet.draw
-        elif self._winner == vue1.engine.connection.myPiece:
+        elif self._winner == vue1.building.connection.myPiece:
             return GameoverSet.win
-        elif self._winner == self.flipTurn(vue1.engine.connection.myPiece):
+        elif self._winner == self.flipTurn(vue1.building.connection.myPiece):
             return GameoverSet.lose
 
         return GameoverSet.none

@@ -1292,21 +1292,21 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.building.connection.myPiece}`);
 
-                if (piece_moved != vue1.engine.connection.myPiece) {
+                if (piece_moved != vue1.building.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, parseInt(sq));
+                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
-                    vue1.engine.position.myTurn.isTrue = true;
+                    vue1.building.position.myTurn.isTrue = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
+                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
 
                 break;
 
@@ -1546,14 +1546,14 @@ function packSetMessageFromServer() {
                 // そのあと接続が切れれば また再接続が呼び出されるので連続します
                 return () => {
                     console.log("[Reconnect] Start...");
-                    vue1.engine.connection.isReconnectingDisplay = true;
+                    vue1.building.connection.isReconnectingDisplay = true;
 
                     setTimeout(() => {
                         // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
                         console.log("[Reconnect] Try...");
-                        vue1.engine.connect();
+                        vue1.building.connect();
 
-                        vue1.engine.connection.isReconnectingDisplay = false;
+                        vue1.building.connection.isReconnectingDisplay = false;
                         console.log("[Reconnect] End");
                     }, 5000);
                 };
@@ -1563,7 +1563,7 @@ function packSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    engine: new Building(
+                    building: new Building(
                         packSetMessageFromServer(),
                         packReconnect(),
                         // `po_` は POST送信するパラメーター名の目印
@@ -1674,12 +1674,12 @@ function packSetMessageFromServer() {
 
                         // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
-                        this.engine.start();
+                        this.building.start();
 
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.engine.setLabelOfButton(sq, PC_EMPTY_LABEL);
+                            this.building.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
 
                         // ダンプ
@@ -1690,30 +1690,30 @@ function packSetMessageFromServer() {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverSet:${this.engine.gameoverSet.value}`);
-                        if (this.engine.gameoverSet.value != GameoverSet.none) {
+                        console.log(`[methods clickSquare] gameoverSet:${this.building.gameoverSet.value}`);
+                        if (this.building.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
+                            console.log(`Ban on illegal move. gameoverSet:${this.building.gameoverSet.value}`);
                             return;
                         }
 
-                        if (this.engine.position.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.engine.position.myTurn.isTrue) {
+                        if (this.building.position.board.getPieceBySq(sq) == PC_EMPTY) {
+                            if (!this.building.position.myTurn.isTrue) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.engine.position.myTurn.isTrue = false;
+                                this.building.position.myTurn.isTrue = false;
 
-                                if (this.engine.gameoverSet.value != GameoverSet.none) {
+                                if (this.building.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
-                                    console.log(`warning of illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
+                                    console.log(`warning of illegal move. gameoverSet:${this.building.gameoverSet.value}`);
                                     return;
                                 }
 
                                 // 自分の一手
-                                this.engine.userCtrl.doMove(this.engine.position, this.engine.connection.myPiece, parseInt(sq));
+                                this.building.userCtrl.doMove(this.building.position, this.building.connection.myPiece, parseInt(sq));
                             }
                         }
                     },
@@ -1722,7 +1722,7 @@ function packSetMessageFromServer() {
                      */
                     onGameover(winner) {
                         console.log(`[methods onGameover] winner=${winner}`);
-                        this.engine.winner = winner;
+                        this.building.winner = winner;
                         this.roomState.value = RoomState.none; // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
@@ -1735,7 +1735,7 @@ function packSetMessageFromServer() {
                         // 返却値を変えたいなら、ここに挿しこめる
                         {% endblock create_gameover_message %}
 
-                        switch (this.engine.gameoverSet.value) {
+                        switch (this.building.gameoverSet.value) {
                             case GameoverSet.draw:
                                 return this.messages.draw;
                             case GameoverSet.win:
@@ -1746,7 +1746,7 @@ function packSetMessageFromServer() {
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown this.engine.gameoverSet.value = ${this.engine.gameoverSet.value}`;
+                                throw `unknown this.building.gameoverSet.value = ${this.building.gameoverSet.value}`;
                         }
                     },
                     /**
@@ -1754,8 +1754,8 @@ function packSetMessageFromServer() {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.engine.position.myTurn.isTrue=${this.engine.position.myTurn.isTrue}`);
-                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.position.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.building.position.myTurn.isTrue=${this.building.position.myTurn.isTrue}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.myTurn.isTrue;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
@@ -1784,7 +1784,7 @@ function packSetMessageFromServer() {
                      * 再接続中表示中なら、アラートを常時表示
                      */
                     isAlertReconnectingShow() {
-                        return this.engine.connection.isReconnectingDisplay;
+                        return this.building.connection.isReconnectingDisplay;
                     },
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
@@ -1793,7 +1793,7 @@ function packSetMessageFromServer() {
                      * ダンプ
                      */
                     dump() {
-                        console.log(`[DUMP] vue1\n${this.engine.dump("")}`)
+                        console.log(`[DUMP] vue1\n${this.building.dump("")}`)
                     },
                 },
             });

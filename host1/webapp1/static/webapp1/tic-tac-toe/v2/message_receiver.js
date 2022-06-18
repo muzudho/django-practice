@@ -29,21 +29,21 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.engine.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.building.connection.myPiece}`);
 
-                if (piece_moved != vue1.engine.connection.myPiece) {
+                if (piece_moved != vue1.building.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, parseInt(sq));
+                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
-                    vue1.engine.position.myTurn.isTrue = true;
+                    vue1.building.position.myTurn.isTrue = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
+                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
 
                 break;
 
