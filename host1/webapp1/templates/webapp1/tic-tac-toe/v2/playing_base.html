@@ -64,7 +64,7 @@
                         <v-alert type="success" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
                         <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
-                        <v-alert type="warning" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
+                        <v-alert type="warning" v-show="isItOpponentsTurnToMove">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="warning" v-show="isReconnecting">Reconnecting... {{reconnectionCount}}/{{reconnectionMax}}</v-alert>
                         {% endverbatim %}
@@ -120,7 +120,7 @@
                     vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, sq);
 
                     // アラートの非表示
-                    vue1.isVisibleAlertWaitForOther = false;
+                    vue1.isItOpponentsTurnToMove = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
@@ -261,7 +261,7 @@
                     isYourTurn: false,
                     isGameover: false,
                     // 「相手の手番に着手しないでください」というアラートの可視性
-                    isVisibleAlertWaitForOther: false,
+                    isItOpponentsTurnToMove: false,
                     roomState: new RoomState(RoomState.none,(oldValue, newValue)=>{
                         // changeRoomState
                         console.log(`[data roomState changeRoomState] state old=${oldValue} new=${newValue}`);
@@ -291,7 +291,7 @@
                         console.log("[methods onStart]");
 
                         // 「相手の手番に着手しないでください」というアラートの非表示
-                        this.isVisibleAlertWaitForOther = false;
+                        this.isItOpponentsTurnToMove = false;
 
                         // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
@@ -323,7 +323,7 @@
                             if (!this.engine.position.turn.isMe) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
-                                this.isVisibleAlertWaitForOther = true;
+                                this.isItOpponentsTurnToMove = true;
                             } else {
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
