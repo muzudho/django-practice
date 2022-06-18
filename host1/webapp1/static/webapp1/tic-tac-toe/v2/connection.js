@@ -14,26 +14,16 @@ class Connection {
      * @param {strint} connectionString - Webソケット接続文字列
      */
     constructor(roomName, myPiece, connectionString) {
-        // console.log(`[Connection constructor] roomName=[${roomName}] myPiece=[${myPiece}] connectionString=[${connectionString}]`);
+        // console.log(`[Connection constructor] roomName=[${roomName}] 自分の手番=[${myPiece}] connectionString=[${connectionString}]`);
 
         // 部屋名
         this._roomName = roomName;
-
-        // X か O か
-        this._myPiece = myPiece;
 
         // 接続文字列
         this._connectionString = connectionString;
 
         // 再接続中表示フラグ
         this.isReconnectingDisplay = false;
-    }
-
-    /**
-     * X か O
-     */
-    get myPiece() {
-        return this._myPiece;
     }
 
     /**

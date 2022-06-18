@@ -146,6 +146,13 @@ class Building {
     }
 
     /**
+     * 自分の手番。 "X" か "O"
+     */
+    get myPiece() {
+        return this._myPiece;
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -175,7 +182,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] myPiece=${this._connection.myPiece}`);
+        console.log(`[Building start] 自分の手番=${this._myPiece}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -184,7 +191,7 @@ class Building {
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // 局面の初期化
-        this._position = new Position(this._connection.myPiece);
+        this._position = new Position(this._myPiece);
         vue1.raisePositionChanged();
     }
 

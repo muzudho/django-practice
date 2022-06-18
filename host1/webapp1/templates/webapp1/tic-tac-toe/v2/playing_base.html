@@ -136,7 +136,7 @@
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} 自分の手番=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
                         },
@@ -265,7 +265,7 @@
                                 }
 
                                 // 自分の一手
-                                this.building.userCtrl.doMove(this.building.position, this.building.connection.myPiece, parseInt(sq));
+                                this.building.userCtrl.doMove(this.building.position, this.building.myPiece, parseInt(sq));
                             }
                         }
                     },

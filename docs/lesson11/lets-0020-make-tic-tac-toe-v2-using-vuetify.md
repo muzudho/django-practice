@@ -658,26 +658,16 @@ class Connection {
      * @param {strint} connectionString - Webソケット接続文字列
      */
     constructor(roomName, myPiece, connectionString) {
-        // console.log(`[Connection constructor] roomName=[${roomName}] myPiece=[${myPiece}] connectionString=[${connectionString}]`);
+        // console.log(`[Connection constructor] roomName=[${roomName}] 自分の手番=[${myPiece}] connectionString=[${connectionString}]`);
 
         // 部屋名
         this._roomName = roomName;
-
-        // X か O か
-        this._myPiece = myPiece;
 
         // 接続文字列
         this._connectionString = connectionString;
 
         // 再接続中表示フラグ
         this.isReconnectingDisplay = false;
-    }
-
-    /**
-     * X か O
-     */
-    get myPiece() {
-        return this._myPiece;
     }
 
     /**
@@ -764,10 +754,10 @@ class Position {
      *
      * * 対局開始時
      *
-     * @param {string} myPiece - "X", "O", "_"
+     * @param {string} myTurn - 自分の手番。 "X", "O"
      */
-    constructor(myPiece) {
-        console.log(`[Position constructor] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+    constructor(myTurn) {
+        console.log(`[Position constructor] 自分の手番=${myTurn} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -776,7 +766,7 @@ class Position {
         this._record = new Record();
 
         // 自分の手番
-        this._myTurn = new MyTurn(myPiece);
+        this._myTurn = new MyTurn(myTurn);
     }
 
     /**
@@ -1177,6 +1167,13 @@ class Building {
     }
 
     /**
+     * 自分の手番。 "X" か "O"
+     */
+    get myPiece() {
+        return this._myPiece;
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -1206,7 +1203,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] myPiece=${this._connection.myPiece}`);
+        console.log(`[Building start] 自分の手番=${this._myPiece}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -1215,7 +1212,7 @@ class Building {
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // 局面の初期化
-        this._position = new Position(this._connection.myPiece);
+        this._position = new Position(this._myPiece);
         vue1.raisePositionChanged();
     }
 
@@ -1286,9 +1283,9 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.building.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.myPiece}`);
 
-                if (piece_moved != vue1.building.connection.myPiece) {
+                if (piece_moved != vue1.building.myPiece) {
                     // 相手の手番なら、自動で動かします
                     vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
@@ -1578,7 +1575,7 @@ function packSetMessageFromServer() {
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} 自分の手番=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
                         },
@@ -1707,7 +1704,7 @@ function packSetMessageFromServer() {
                                 }
 
                                 // 自分の一手
-                                this.building.userCtrl.doMove(this.building.position, this.building.connection.myPiece, parseInt(sq));
+                                this.building.userCtrl.doMove(this.building.position, this.building.myPiece, parseInt(sq));
                             }
                         }
                     },

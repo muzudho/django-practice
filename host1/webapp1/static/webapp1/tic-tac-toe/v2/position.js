@@ -7,10 +7,10 @@ class Position {
      *
      * * 対局開始時
      *
-     * @param {string} myPiece - "X", "O", "_"
+     * @param {string} myTurn - 自分の手番。 "X", "O"
      */
-    constructor(myPiece) {
-        console.log(`[Position constructor] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+    constructor(myTurn) {
+        console.log(`[Position constructor] 自分の手番=${myTurn} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -19,7 +19,7 @@ class Position {
         this._record = new Record();
 
         // 自分の手番
-        this._myTurn = new MyTurn(myPiece);
+        this._myTurn = new MyTurn(myTurn);
     }
 
     /**

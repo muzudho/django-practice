@@ -29,9 +29,9 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} myPiece=${vue1.building.connection.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.myPiece}`);
 
-                if (piece_moved != vue1.building.connection.myPiece) {
+                if (piece_moved != vue1.building.myPiece) {
                     // 相手の手番なら、自動で動かします
                     vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
