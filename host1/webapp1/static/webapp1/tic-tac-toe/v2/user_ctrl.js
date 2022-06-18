@@ -13,6 +13,7 @@ class UserCtrl {
 
     /**
      * 駒を置きます
+     *
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} piece - X か O
      * @returns 駒を置けたら真、それ以外は偽
@@ -32,14 +33,17 @@ class UserCtrl {
                     position.board.setPiece(sq, PC_O);
                     break;
                 default:
-                    alert(`[Error] Invalid piece = ${piece}`);
+                    console.log(`[UserCtrl doMove] illegal move. invalid piece = ${piece}`);
                     return false;
             }
 
             console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
             this._onDoMove(sq, piece);
+            return true;
         }
 
-        return true;
+        // 駒が置いてあるマスに駒は置けません
+        console.log(`[UserCtrl doMove] illegal move. not empty square. sq=${sq}`);
+        return false;
     }
 }
