@@ -123,11 +123,10 @@
                         document.forms["form1"]["po_room_name"].value,
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
-                        // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         /**
                          * 接続文字列へ変換
                          */
-                        (roomName, myPiece) => {
+                        (roomName) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
                             const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
@@ -136,7 +135,7 @@
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} 自分の手番=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
                             return connectionString;
                         },
@@ -250,13 +249,13 @@
                         }
 
                         if (this.building.position.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.building.position.myTurn.isTrue) {
+                            if (!this.building.position.turn.isMe) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.building.position.myTurn.isTrue = false;
+                                this.building.position.turn.isMe = false;
 
                                 if (this.building.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
@@ -265,7 +264,7 @@
                                 }
 
                                 // 自分の一手
-                                this.building.userCtrl.doMove(this.building.position, this.building.myPiece, parseInt(sq));
+                                this.building.userCtrl.doMove(this.building.position, this.building.position.turn.me, parseInt(sq));
                             }
                         }
                     },
@@ -306,8 +305,8 @@
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.building.position.myTurn.isTrue=${this.building.position.myTurn.isTrue}`);
-                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} 私の番か:${this.building.position.turn.isMe}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.turn.isMe;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる

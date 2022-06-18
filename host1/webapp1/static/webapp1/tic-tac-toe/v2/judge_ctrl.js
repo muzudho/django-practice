@@ -43,7 +43,7 @@ class JudgeCtrl {
                 // 勝ちパターンの１つについて
                 if (this.#isPieceInLine(position, squaresOfWinPattern)) {
                     // 当てはまるなら
-                    if (position.myTurn.isTrue) {
+                    if (position.turn.isMe) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
                     } else {

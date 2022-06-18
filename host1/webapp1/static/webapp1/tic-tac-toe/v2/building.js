@@ -7,28 +7,27 @@ class Building {
      * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
      * @param {string} roomName - 部屋名
-     * @param {string} myPiece - X か O
-     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
+     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myTurn)=>{return connectionString;}
      * @param {function} setLabelOfButton - 升ボタンのラベルの設定
      */
-    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString, setLabelOfButton) {
+    constructor(setMessageFromServer, reconnect, roomName, myTurn, convertPartsToConnectionString, setLabelOfButton) {
+        console.log(`[Building constructor] 自分の手番=${myTurn}`);
+
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
         // 接続
-        this._connection = new Connection(roomName, myPiece, convertPartsToConnectionString(roomName, myPiece));
+        this._connection = new Connection(roomName, convertPartsToConnectionString(roomName));
 
         // メッセージ一覧
         this._messageSender = new MessageSender();
-
-        // 自分の駒
-        this._myPiece = myPiece;
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
 
         // 局面
-        this._position = new Position(this._myPiece);
+        this._position = new Position(myTurn);
 
         // ゲームオーバー集合
         this._gameoverSet = new GameoverSet();
@@ -73,10 +72,10 @@ class Building {
             // ボタンのラベルを更新
             this._setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[Building onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
+            console.log(`[Building onDoMove] 自分の手番=${this._position.turn.me} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
-            if (this._myPiece == pieceMoved) {
+            if (this._position.turn.me == pieceMoved) {
                 let response = this.messageSender.createDoMove(sq, pieceMoved);
                 this._connection.webSock1.send(JSON.stringify(response));
             }
@@ -146,13 +145,6 @@ class Building {
     }
 
     /**
-     * 自分の手番。 "X" か "O"
-     */
-    get myPiece() {
-        return this._myPiece;
-    }
-
-    /**
      * 接続
      */
     connect() {
@@ -182,7 +174,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] 自分の手番=${this._myPiece}`);
+        console.log(`[Building start] 自分の手番=${this._position.turn.me}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -191,7 +183,7 @@ class Building {
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // 局面の初期化
-        this._position = new Position(this._myPiece);
+        this._position = new Position(this._position.turn.me);
         vue1.raisePositionChanged();
     }
 
@@ -199,7 +191,6 @@ class Building {
         return `
 ${indent}Building
 ${indent}--------
-${indent}_myPiece:${this._myPiece}
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
 ${indent}${this._position.dump(indent + "    ")}`;

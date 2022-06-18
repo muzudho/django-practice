@@ -10,11 +10,10 @@ class Connection {
      * 生成
      *
      * @param {string} roomName - 部屋名
-     * @param {string} myPiece - 自分の手番。 "X" か "O"
      * @param {strint} connectionString - Webソケット接続文字列
      */
-    constructor(roomName, myPiece, connectionString) {
-        // console.log(`[Connection constructor] roomName=[${roomName}] 自分の手番=[${myPiece}] connectionString=[${connectionString}]`);
+    constructor(roomName, connectionString) {
+        // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
         this._roomName = roomName;

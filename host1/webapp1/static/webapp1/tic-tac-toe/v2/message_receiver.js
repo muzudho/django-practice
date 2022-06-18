@@ -29,14 +29,14 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.position.turn.me}`);
 
-                if (piece_moved != vue1.building.myPiece) {
+                if (piece_moved != vue1.building.position.turn.me) {
                     // 相手の手番なら、自動で動かします
                     vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
-                    vue1.building.position.myTurn.isTrue = true;
+                    vue1.building.position.turn.isMe = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;

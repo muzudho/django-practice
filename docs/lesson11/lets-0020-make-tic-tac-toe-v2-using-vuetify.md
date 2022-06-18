@@ -311,7 +311,7 @@ class RoomState {
     /**
      * 生成
      * @param {int} value
-     * @param {function} onChangeValue - 値の変更
+     * @param {function} onChangeValue - 値の変更時
      */
     constructor(value, onChangeValue) {
         console.log(`[RoomState constructor]`);
@@ -353,27 +353,37 @@ ${indent}_value:${this._value}`;
 }
 
 /**
- * 自分のターン
+ * 番
  */
-class MyTurn {
+class Turn {
     /**
      * 生成
-     * @param {*} myPiece - 自分の駒。 "X", "O", "_"
+     * @param {*} myTurn - 自分の手番。 "X", "O"
      */
-    constructor(myPiece) {
-        // 自分の手番か（初回は先手）
-        this._isTrue = myPiece == PC_X_LABEL;
+    constructor(myTurn) {
+        // 自分の手番
+        this._me = myTurn;
+
+        // 自分の手番か（初回はXが先手）
+        this._isMe = this._me == PC_X_LABEL;
     }
 
     /**
-     * 真実か？
+     * 自分の手番
      */
-    get isTrue() {
-        return this._isTrue;
+    get me() {
+        return this._me;
     }
 
-    set isTrue(value) {
-        this._isTrue = value;
+    /**
+     * 私の番か？
+     */
+    get isMe() {
+        return this._isMe;
+    }
+
+    set isMe(value) {
+        this._isMe = value;
         vue1.raiseMyTurnChanged();
     }
 
@@ -384,9 +394,10 @@ class MyTurn {
      */
     dump(indent) {
         return `
-${indent}MyTurn
-${indent}------
-${indent}_isTrue:${this._isTrue}`;
+${indent}Turn
+${indent}----
+${indent}_me:${this._me}
+${indent}_isMe:${this._isMe}`;
     }
 }
 
@@ -654,11 +665,10 @@ class Connection {
      * 生成
      *
      * @param {string} roomName - 部屋名
-     * @param {string} myPiece - 自分の手番。 "X" か "O"
      * @param {strint} connectionString - Webソケット接続文字列
      */
-    constructor(roomName, myPiece, connectionString) {
-        // console.log(`[Connection constructor] roomName=[${roomName}] 自分の手番=[${myPiece}] connectionString=[${connectionString}]`);
+    constructor(roomName, connectionString) {
+        // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
         this._roomName = roomName;
@@ -757,7 +767,7 @@ class Position {
      * @param {string} myTurn - 自分の手番。 "X", "O"
      */
     constructor(myTurn) {
-        console.log(`[Position constructor] 自分の手番=${myTurn} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+        console.log(`[Position constructor] 自分の手番=${myTurn}`);
 
         // 盤面
         this._board = new Board();
@@ -765,8 +775,8 @@ class Position {
         // 棋譜
         this._record = new Record();
 
-        // 自分の手番
-        this._myTurn = new MyTurn(myTurn);
+        // 番
+        this._turn = new Turn(myTurn);
     }
 
     /**
@@ -784,10 +794,10 @@ class Position {
     }
 
     /**
-     * 自分のターン
+     * 番
      */
-    get myTurn() {
-        return this._myTurn;
+    get turn() {
+        return this._turn;
     }
 
     /**
@@ -813,7 +823,7 @@ ${indent}Position
 ${indent}--------
 ${indent}${this._board.dump(indent + "    ")}
 ${indent}${this._record.dump(indent + "    ")}
-${indent}${this._myTurn.dump(indent + "    ")}`;
+${indent}${this._turn.dump(indent + "    ")}`;
     }
 }
 ```
@@ -959,7 +969,7 @@ class JudgeCtrl {
                 // 勝ちパターンの１つについて
                 if (this.#isPieceInLine(position, squaresOfWinPattern)) {
                     // 当てはまるなら
-                    if (position.myTurn.isTrue) {
+                    if (position.turn.isMe) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
                     } else {
@@ -1028,28 +1038,27 @@ class Building {
      * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
      * @param {*} reconnect - 再接続ラムダ関数
      * @param {string} roomName - 部屋名
-     * @param {string} myPiece - X か O
-     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
+     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myTurn)=>{return connectionString;}
      * @param {function} setLabelOfButton - 升ボタンのラベルの設定
      */
-    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString, setLabelOfButton) {
+    constructor(setMessageFromServer, reconnect, roomName, myTurn, convertPartsToConnectionString, setLabelOfButton) {
+        console.log(`[Building constructor] 自分の手番=${myTurn}`);
+
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
         // 接続
-        this._connection = new Connection(roomName, myPiece, convertPartsToConnectionString(roomName, myPiece));
+        this._connection = new Connection(roomName, convertPartsToConnectionString(roomName));
 
         // メッセージ一覧
         this._messageSender = new MessageSender();
-
-        // 自分の駒
-        this._myPiece = myPiece;
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
 
         // 局面
-        this._position = new Position(this._myPiece);
+        this._position = new Position(myTurn);
 
         // ゲームオーバー集合
         this._gameoverSet = new GameoverSet();
@@ -1094,10 +1103,10 @@ class Building {
             // ボタンのラベルを更新
             this._setLabelOfButton(sq, pieceMoved);
 
-            console.log(`[Building onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
+            console.log(`[Building onDoMove] 自分の手番=${this._position.turn.me} pieceMoved=${pieceMoved}`);
 
             // 自分の指し手なら送信
-            if (this._myPiece == pieceMoved) {
+            if (this._position.turn.me == pieceMoved) {
                 let response = this.messageSender.createDoMove(sq, pieceMoved);
                 this._connection.webSock1.send(JSON.stringify(response));
             }
@@ -1167,13 +1176,6 @@ class Building {
     }
 
     /**
-     * 自分の手番。 "X" か "O"
-     */
-    get myPiece() {
-        return this._myPiece;
-    }
-
-    /**
      * 接続
      */
     connect() {
@@ -1203,7 +1205,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] 自分の手番=${this._myPiece}`);
+        console.log(`[Building start] 自分の手番=${this._position.turn.me}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -1212,7 +1214,7 @@ class Building {
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // 局面の初期化
-        this._position = new Position(this._myPiece);
+        this._position = new Position(this._position.turn.me);
         vue1.raisePositionChanged();
     }
 
@@ -1220,7 +1222,6 @@ class Building {
         return `
 ${indent}Building
 ${indent}--------
-${indent}_myPiece:${this._myPiece}
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
 ${indent}${this._position.dump(indent + "    ")}`;
@@ -1283,14 +1284,14 @@ function packSetMessageFromServer() {
 
             case "S2C_Moved":
                 // 指し手受信時
-                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.myPiece}`);
+                console.log(`[setMessage] S2C_Moved piece_moved=${piece_moved} 自分の手番=${vue1.building.position.turn.me}`);
 
-                if (piece_moved != vue1.building.myPiece) {
+                if (piece_moved != vue1.building.position.turn.me) {
                     // 相手の手番なら、自動で動かします
                     vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
-                    vue1.building.position.myTurn.isTrue = true;
+                    vue1.building.position.turn.isMe = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
@@ -1562,11 +1563,10 @@ function packSetMessageFromServer() {
                         document.forms["form1"]["po_room_name"].value,
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
-                        // 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
                         /**
                          * 接続文字列へ変換
                          */
-                        (roomName, myPiece) => {
+                        (roomName) => {
                             // 接続文字列
                             // `dj_` は Djangoでレンダーするパラメーター名の目印
                             const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
@@ -1575,7 +1575,7 @@ function packSetMessageFromServer() {
                             // 1. プロトコル（Web socket）
                             // 2. ホスト アドレス
                             // 3. パス
-                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} 自分の手番=${myPiece} connectionString=${connectionString}`);
+                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
                             return connectionString;
                         },
@@ -1689,13 +1689,13 @@ function packSetMessageFromServer() {
                         }
 
                         if (this.building.position.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.building.position.myTurn.isTrue) {
+                            if (!this.building.position.turn.isMe) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.building.position.myTurn.isTrue = false;
+                                this.building.position.turn.isMe = false;
 
                                 if (this.building.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
@@ -1704,7 +1704,7 @@ function packSetMessageFromServer() {
                                 }
 
                                 // 自分の一手
-                                this.building.userCtrl.doMove(this.building.position, this.building.myPiece, parseInt(sq));
+                                this.building.userCtrl.doMove(this.building.position, this.building.position.turn.me, parseInt(sq));
                             }
                         }
                     },
@@ -1745,8 +1745,8 @@ function packSetMessageFromServer() {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} this.building.position.myTurn.isTrue=${this.building.position.myTurn.isTrue}`);
-                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.myTurn.isTrue;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} 私の番か:${this.building.position.turn.isMe}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.turn.isMe;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる

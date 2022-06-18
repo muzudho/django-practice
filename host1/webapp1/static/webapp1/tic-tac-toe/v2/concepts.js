@@ -61,27 +61,37 @@ ${indent}_value:${this._value}`;
 }
 
 /**
- * 自分のターン
+ * 番
  */
-class MyTurn {
+class Turn {
     /**
      * 生成
-     * @param {*} myPiece - 自分の駒。 "X", "O", "_"
+     * @param {*} myTurn - 自分の手番。 "X", "O"
      */
-    constructor(myPiece) {
-        // 自分の手番か（初回は先手）
-        this._isTrue = myPiece == PC_X_LABEL;
+    constructor(myTurn) {
+        // 自分の手番
+        this._me = myTurn;
+
+        // 自分の手番か（初回はXが先手）
+        this._isMe = this._me == PC_X_LABEL;
     }
 
     /**
-     * 真実か？
+     * 自分の手番
      */
-    get isTrue() {
-        return this._isTrue;
+    get me() {
+        return this._me;
     }
 
-    set isTrue(value) {
-        this._isTrue = value;
+    /**
+     * 私の番か？
+     */
+    get isMe() {
+        return this._isMe;
+    }
+
+    set isMe(value) {
+        this._isMe = value;
         vue1.raiseMyTurnChanged();
     }
 
@@ -92,9 +102,10 @@ class MyTurn {
      */
     dump(indent) {
         return `
-${indent}MyTurn
-${indent}------
-${indent}_isTrue:${this._isTrue}`;
+${indent}Turn
+${indent}----
+${indent}_me:${this._me}
+${indent}_isMe:${this._isMe}`;
     }
 }
 

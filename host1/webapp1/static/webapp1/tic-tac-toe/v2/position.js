@@ -10,7 +10,7 @@ class Position {
      * @param {string} myTurn - 自分の手番。 "X", "O"
      */
     constructor(myTurn) {
-        console.log(`[Position constructor] 自分の手番=${myTurn} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+        console.log(`[Position constructor] 自分の手番=${myTurn}`);
 
         // 盤面
         this._board = new Board();
@@ -18,8 +18,8 @@ class Position {
         // 棋譜
         this._record = new Record();
 
-        // 自分の手番
-        this._myTurn = new MyTurn(myTurn);
+        // 番
+        this._turn = new Turn(myTurn);
     }
 
     /**
@@ -37,10 +37,10 @@ class Position {
     }
 
     /**
-     * 自分のターン
+     * 番
      */
-    get myTurn() {
-        return this._myTurn;
+    get turn() {
+        return this._turn;
     }
 
     /**
@@ -66,6 +66,6 @@ ${indent}Position
 ${indent}--------
 ${indent}${this._board.dump(indent + "    ")}
 ${indent}${this._record.dump(indent + "    ")}
-${indent}${this._myTurn.dump(indent + "    ")}`;
+${indent}${this._turn.dump(indent + "    ")}`;
     }
 }
