@@ -1353,11 +1353,11 @@ class Connection {
                             <v-text-field name="po_room_name" required v-model="roomName.value" :rules="roomName.rules" counter="25" hint="A-Z, a-z, 0-9, No number at the beginning. Max 25 characters" label="Room name"></v-text-field>
 
                             <!--
-                                自分の駒。 "X" か "O"。 機能拡張も想定
+                                自分の番。 "X" か "O"。 機能拡張も想定
 
                                 * 戻り値をオブジェクトのまま受け取りたいときは、タグの属性として return-object を付ける
                             -->
-                            <v-select name="po_my_piece" v-model="visitor.value" :items="visitor.select" item-text="text" item-value="value" label="Your piece" persistent-hint single-line></v-select>
+                            <v-select name="po_my_turn" v-model="visitor.value" :items="visitor.select" item-text="text" item-value="value" label="Your turn" persistent-hint single-line></v-select>
 
                             <v-btn block elevation="2" type="submit"> Start Game </v-btn>
                         </v-form>
@@ -1483,7 +1483,7 @@ class Connection {
 
                         <!-- `po_` は POST送信するパラメーター名の目印 -->
                         <input type="hidden" name="po_room_name" value="{{dj_room_name}}" />
-                        <input type="hidden" name="po_my_piece" value="{{dj_my_piece}}" />
+                        <input type="hidden" name="po_my_turn" value="{{dj_my_turn}}" />
                     </form>
                     {% block footer_section1 %}
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
@@ -1492,7 +1492,7 @@ class Connection {
                         {% verbatim %}
                         <v-alert type="success" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
-                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_turn}}</strong></v-alert>
                         <v-alert type="warning" v-show="isItOpponentsTurnToMove">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="warning" v-show="isReconnecting">Reconnecting... {{reconnectionCount}}/{{reconnectionMax}}</v-alert>
@@ -1548,11 +1548,11 @@ class Connection {
                     // 相手の手番なら、自動で動かします
                     vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, sq);
 
-                    // アラートの非表示
+                    // 「相手の手番で動かした」アラートの取りさげ
                     vue1.isItOpponentsTurnToMove = false;
                 }
 
-                // どちらの手番でもゲームオーバー判定は行います
+                // ゲームオーバー判定
                 vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
             }
 
@@ -1610,8 +1610,8 @@ class Connection {
                     // 思考エンジン
                     engine: new Engine(
                         // `po_` は POST送信するパラメーター名の目印
-                        // 自分の駒。 X か O
-                        document.forms["form1"]["po_my_piece"].value,
+                        // 自分の番。 X か O
+                        document.forms["form1"]["po_my_turn"].value,
                         // ユーザーコントロール
                         new UserCtrl(
                             /**
@@ -2321,12 +2321,12 @@ playing_expected_pieces = ['X', 'O']
 class MatchApplication():
     """対局申込"""
 
-    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&myturn={1}"
     #                                      ^ two
-    #                        -----------------------------------------
+    #                        ----------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&myturn=X
+    #                           -------------------------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                     ^ two
@@ -2400,12 +2400,12 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
         # `po_` は POST送信するパラメーター名の目印
         po_room_name = request.POST.get("po_room_name")
-        # 自分の駒。 "X" か "O"。 機能拡張も想定
-        po_my_piece = request.POST.get("po_my_piece")
+        # 自分の番。 "X" か "O"。 機能拡張も想定
+        my_turn = request.POST.get("po_my_turn")
 
         # TODO バリデーションチェックしたい
 
-        return redirect(path_of_http_playing.format(po_room_name, po_my_piece))
+        return redirect(path_of_http_playing.format(po_room_name, my_turn))
 
     # 訪問後
     context = open(request)
@@ -2415,16 +2415,16 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
 def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_update, expected_pieces):
     """対局中 - 描画"""
-    my_piece = request.GET.get("mypiece")
-    if my_piece not in expected_pieces:
-        raise Http404(f"My piece '{my_piece}' does not exists")
+    my_turn = request.GET.get("myturn")
+    if my_turn not in expected_pieces:
+        raise Http404(f"My piece '{my_turn}' does not exists")
 
     on_update(request)
 
     # `dj_` は Djangoでレンダーするパラメーター名の目印
     context = {
         "dj_room_name": kw_room_name,
-        "dj_my_piece": my_piece,
+        "dj_my_turn": my_turn,
         "dj_path_of_ws_playing": path_of_ws_playing,
     }
     return render(request, path_of_html, context)
