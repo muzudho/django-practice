@@ -340,17 +340,17 @@ class MyTurn ():
             自分の駒。 "X", "O", "_"
         """
 
-        self._isTrue = myPiece == things.PC_X_LABEL
+        self._isMe = myPiece == things.PC_X_LABEL
         """自分の手番か（初回は先手）"""
 
     @property
     def isTrue(self):
         """真実か？"""
-        return self._isTrue
+        return self._isMe
 
     @property.isTrue
     def isTrue(self, value):
-        self._isTrue = value
+        self._isMe = value
         # vue1.raiseMyTurnChanged()
 
     def dump(self, indent):
@@ -369,7 +369,7 @@ class MyTurn ():
         return f"""
 {indent}MyTurn
 {indent}------
-{indent}_isTrue: ${self._isTrue}"""
+{indent}_isMe: ${self._isMe}"""
 
 
 class GameoverSet():
@@ -796,7 +796,7 @@ class JudgeCtrl():
         if self._playeq.isThere3SamePieces():
             for squaresOfWinPattern in WIN_PATTERN:
                 if self.isPieceInLine(position, squaresOfWinPattern):
-                    if position.myTurn.isTrue:
+                    if position.turn.isMe:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose
                     else:
