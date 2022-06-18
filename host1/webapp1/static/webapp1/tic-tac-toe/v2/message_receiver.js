@@ -33,7 +33,7 @@ function packSetMessageFromServer() {
 
                 if (piece_moved != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
+                    vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
                     vue1.engine.position.myTurn.isTrue = true;
@@ -43,7 +43,7 @@ function packSetMessageFromServer() {
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(piece_moved);
+                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
 
                 break;
 

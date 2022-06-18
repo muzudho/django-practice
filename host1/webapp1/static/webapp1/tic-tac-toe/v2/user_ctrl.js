@@ -3,13 +3,9 @@
  */
 class UserCtrl {
     /**
-     *
-     * @param {*} position - 局面
+     * 初期化
      */
-    constructor(position) {
-        // 局面
-        this._position = position;
-
+    constructor() {
         // イベントリスナー
         this._onDoMove = () => {};
     }
@@ -27,19 +23,19 @@ class UserCtrl {
      * @param {*} piece - X か O
      * @returns 駒を置けたら真、それ以外は偽
      */
-    doMove(sq, piece) {
-        if (this._position.board.getPieceBySq(sq) == PC_EMPTY) {
+    doMove(position, piece, sq) {
+        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
 
-            this._position.record.push(sq); // 棋譜に追加
+            position.record.push(sq); // 棋譜に追加
 
             // 駒を置きます
             switch (piece) {
                 case PC_X_LABEL:
-                    this._position.board.setPiece(sq, PC_X);
+                    position.board.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this._position.board.setPiece(sq, PC_O);
+                    position.board.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid piece = ${piece}`);

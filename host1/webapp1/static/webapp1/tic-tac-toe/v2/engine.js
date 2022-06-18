@@ -14,12 +14,6 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
-        // 自分の駒
-        this._myPiece = myPiece;
-
-        // あれば勝者 "X", "O" なければ空文字列
-        this._winner = "";
-
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -27,14 +21,23 @@ class Engine {
         // メッセージ一覧
         this._messageSender = new MessageSender();
 
+        // 自分の駒
+        this._myPiece = myPiece;
+
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
         // 局面
-        this._position = new Position();
+        this._position = new Position(this._myPiece);
+
+        // ゲームオーバー集合
+        this._gameoverSet = new GameoverSet();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl(this._position);
+        this._userCtrl = new UserCtrl();
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._position, this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl();
 
         // 判断したとき
         this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
@@ -129,27 +132,10 @@ class Engine {
     }
 
     /**
-     * ゲームオーバー状態
+     * ゲームオーバー集合
      */
     get gameoverSet() {
         return this._gameoverSet;
-    }
-
-    /**
-     * 対局結果
-     */
-    getGameoverSet() {
-        // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
-
-        if (this._winner == PC_EMPTY_LABEL) {
-            return GameoverSet.draw;
-        } else if (this._winner == vue1.engine.connection.myPiece) {
-            return GameoverSet.win;
-        } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
-            return GameoverSet.lose;
-        }
-
-        return GameoverSet.none;
     }
 
     /**
@@ -179,15 +165,29 @@ class Engine {
     }
 
     /**
-     * 開始時
+     * 対局開始時
      */
-    onStart() {
-        console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
+    start() {
+        console.log(`[Engine start] myPiece=${this._connection.myPiece}`);
+
+        // 勝者のクリアー
         this._winner = "";
 
-        // ゲームオーバー状態
+        // ゲームオーバー状態のクリアー
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
-        this._position.onStart(this._connection.myPiece);
+        // 局面の初期化
+        this._position = new Position(this._connection.myPiece);
+        vue1.raisePositionChanged();
+    }
+
+    dump(indent) {
+        return `
+${indent}Engine
+${indent}------
+${indent}_myPiece:${this._myPiece}
+${indent}_winner:${this._winner}
+${indent}${this._gameoverSet.dump(indent + "    ")}
+${indent}${this._position.dump(indent + "    ")}`;
     }
 }

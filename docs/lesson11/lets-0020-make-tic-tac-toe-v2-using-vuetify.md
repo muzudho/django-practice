@@ -213,6 +213,16 @@ class Board {
     setPiece(sq, piece) {
         this._squares[sq] = piece;
     }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Board
+${indent}-----
+${indent}_squares:${this._squares}`;
+    }
 }
 
 // | 盤
@@ -245,6 +255,16 @@ class Record {
 
     get length() {
         return this._squares.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Record
+${indent}------
+${indent}_squares:${this._squares}`;
     }
 }
 
@@ -318,6 +338,18 @@ class RoomState {
         this._value = value;
         this._changeValue(oldValue, this._value);
     }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}RoomState
+${indent}---------
+${indent}_value:${this._value}`;
+    }
 }
 
 /**
@@ -344,10 +376,22 @@ class MyTurn {
         this._isTrue = value;
         vue1.raiseMyTurnChanged();
     }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}MyTurn
+${indent}------
+${indent}_isTrue:${this._isTrue}`;
+    }
 }
 
 /**
- * ゲームオーバー状態
+ * ゲームオーバー集合
  *
  * * 自分視点
  */
@@ -397,6 +441,36 @@ class GameoverSet {
 
     set value(value) {
         this._value = value;
+    }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        let text;
+        switch (this._value) {
+            case GameoverSet.none:
+                text = "none";
+                break;
+            case GameoverSet.win:
+                text = "win";
+                break;
+            case GameoverSet.draw:
+                text = "draw";
+                break;
+            case GameoverSet.lose:
+                text = "lose";
+                break;
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
+
+        return `
+${indent}GameoverSet
+${indent}-----------
+${indent}_value:${text}`;
     }
 }
 
@@ -690,17 +764,15 @@ class Connection {
  * 局面
  */
 class Position {
-    constructor() {
-        // あとで onStart(...) を呼出してください
-    }
-
     /**
-     * 対局開始時
+     * 初期化
+     *
+     * * 対局開始時
      *
      * @param {string} myPiece - "X", "O", "_"
      */
-    onStart(myPiece) {
-        console.log(`[Position onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+    constructor(myPiece) {
+        console.log(`[Position constructor] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -746,6 +818,18 @@ class Position {
     isThere3SamePieces() {
         return 5 <= this.record.length;
     }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Position
+${indent}--------
+${indent}${this._board.dump(indent + "    ")}
+${indent}${this._record.dump(indent + "    ")}
+${indent}${this._myTurn.dump(indent + "    ")}`;
+    }
 }
 ```
 
@@ -775,13 +859,9 @@ class Position {
  */
 class UserCtrl {
     /**
-     *
-     * @param {*} position - 局面
+     * 初期化
      */
-    constructor(position) {
-        // 局面
-        this._position = position;
-
+    constructor() {
         // イベントリスナー
         this._onDoMove = () => {};
     }
@@ -799,19 +879,19 @@ class UserCtrl {
      * @param {*} piece - X か O
      * @returns 駒を置けたら真、それ以外は偽
      */
-    doMove(sq, piece) {
-        if (this._position.board.getPieceBySq(sq) == PC_EMPTY) {
+    doMove(position, piece, sq) {
+        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
 
-            this._position.record.push(sq); // 棋譜に追加
+            position.record.push(sq); // 棋譜に追加
 
             // 駒を置きます
             switch (piece) {
                 case PC_X_LABEL:
-                    this._position.board.setPiece(sq, PC_X);
+                    position.board.setPiece(sq, PC_X);
                     break;
                 case PC_O_LABEL:
-                    this._position.board.setPiece(sq, PC_O);
+                    position.board.setPiece(sq, PC_O);
                     break;
                 default:
                     alert(`[Error] Invalid piece = ${piece}`);
@@ -854,17 +934,9 @@ class UserCtrl {
  */
 class JudgeCtrl {
     /**
-     *
-     * @param {*} position - 局面
-     * @param {*} userCtrl - ユーザーコントロール
+     * 初期化
      */
-    constructor(position, userCtrl) {
-        // 局面
-        this._position = position;
-
-        // ユーザーコントロール
-        this._userCtrl = userCtrl;
-
+    constructor() {
         // 判断したとき
         this._onJudged = (pieceMoved, gameoverSetValue) => {};
     }
@@ -878,9 +950,13 @@ class JudgeCtrl {
 
     /**
      * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @param {Position} position - 局面
      */
-    doJudge(piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue();
+    doJudge(position, piece_moved) {
+        let gameoverSetValue = this.#makeGameoverSetValue(position);
         console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
         this._onJudged(piece_moved, gameoverSetValue);
     }
@@ -888,21 +964,17 @@ class JudgeCtrl {
     /**
      * ゲームオーバー判定
      *
-     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
-     *
-     * @returns ゲームオーバー状態
+     * @param {Position} position - 局面
+     * @returns ゲームオーバー元
      */
-    #makeGameoverSetValue() {
-        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._position.isThere3SamePieces()}`);
-        if (this._position.isThere3SamePieces()) {
+    #makeGameoverSetValue(position) {
+        if (position.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 // 勝ちパターンの１つについて
-                console.log(`[#makeGameoverSetValue] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
-                if (this.#isPieceInLine(squaresOfWinPattern)) {
+                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
                     // 当てはまるなら
-                    console.log(`[#makeGameoverSetValue] this._position.myTurn.isTrue=${this._position.myTurn.isTrue}`);
-                    if (this._position.myTurn.isTrue) {
+                    if (position.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
                     } else {
@@ -914,7 +986,7 @@ class JudgeCtrl {
         }
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (this._position.isBoardFill()) {
+        if (position.isBoardFill()) {
             return GameoverSet.draw;
         }
 
@@ -924,14 +996,16 @@ class JudgeCtrl {
 
     /**
      * 駒が３つ並んでいるか？
+     *
+     * @param {Position} position - 局面
      * @param {*} squaresOfWinPattern - 勝ちパターン
      * @returns 並んでいれば真、それ以外は偽
      */
-    #isPieceInLine(squaresOfWinPattern) {
+    #isPieceInLine(position, squaresOfWinPattern) {
         return (
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[2])
+            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }
@@ -976,12 +1050,6 @@ class Engine {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
-        // 自分の駒
-        this._myPiece = myPiece;
-
-        // あれば勝者 "X", "O" なければ空文字列
-        this._winner = "";
-
         // 接続
         this._connection = new Connection();
         this._connection.setup(roomName, myPiece, convertPartsToConnectionString);
@@ -989,14 +1057,23 @@ class Engine {
         // メッセージ一覧
         this._messageSender = new MessageSender();
 
+        // 自分の駒
+        this._myPiece = myPiece;
+
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
         // 局面
-        this._position = new Position();
+        this._position = new Position(this._myPiece);
+
+        // ゲームオーバー集合
+        this._gameoverSet = new GameoverSet();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl(this._position);
+        this._userCtrl = new UserCtrl();
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl(this._position, this._userCtrl);
+        this._judgeCtrl = new JudgeCtrl();
 
         // 判断したとき
         this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
@@ -1091,27 +1168,10 @@ class Engine {
     }
 
     /**
-     * ゲームオーバー状態
+     * ゲームオーバー集合
      */
     get gameoverSet() {
         return this._gameoverSet;
-    }
-
-    /**
-     * 対局結果
-     */
-    getGameoverSet() {
-        // 勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
-
-        if (this._winner == PC_EMPTY_LABEL) {
-            return GameoverSet.draw;
-        } else if (this._winner == vue1.engine.connection.myPiece) {
-            return GameoverSet.win;
-        } else if (this._winner == flipTurn(vue1.engine.connection.myPiece)) {
-            return GameoverSet.lose;
-        }
-
-        return GameoverSet.none;
     }
 
     /**
@@ -1141,16 +1201,30 @@ class Engine {
     }
 
     /**
-     * 開始時
+     * 対局開始時
      */
-    onStart() {
-        console.log(`[Engine onStart] myPiece=${this._connection.myPiece}`);
+    start() {
+        console.log(`[Engine start] myPiece=${this._connection.myPiece}`);
+
+        // 勝者のクリアー
         this._winner = "";
 
-        // ゲームオーバー状態
+        // ゲームオーバー状態のクリアー
         this._gameoverSet = new GameoverSet(GameoverSet.none);
 
-        this._position.onStart(this._connection.myPiece);
+        // 局面の初期化
+        this._position = new Position(this._connection.myPiece);
+        vue1.raisePositionChanged();
+    }
+
+    dump(indent) {
+        return `
+${indent}Engine
+${indent}------
+${indent}_myPiece:${this._myPiece}
+${indent}_winner:${this._winner}
+${indent}${this._gameoverSet.dump(indent + "    ")}
+${indent}${this._position.dump(indent + "    ")}`;
     }
 }
 ```
@@ -1214,7 +1288,7 @@ function packSetMessageFromServer() {
 
                 if (piece_moved != vue1.engine.connection.myPiece) {
                     // 相手の手番なら、自動で動かします
-                    vue1.engine.userCtrl.doMove(parseInt(sq), piece_moved);
+                    vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, parseInt(sq));
 
                     // 自分の手番に変更
                     vue1.engine.position.myTurn.isTrue = true;
@@ -1224,7 +1298,7 @@ function packSetMessageFromServer() {
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.engine.judgeCtrl.doJudge(piece_moved);
+                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
 
                 break;
 
@@ -1547,24 +1621,28 @@ function packSetMessageFromServer() {
 
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        this.engine.onStart();
-
+                        // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
+                        this.engine.start();
+
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
                             this.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
+
+                        // ダンプ
+                        this.dump();
                     },
                     /**
                      * 升ボタンをクリックしたとき
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverSet=${this.engine.gameoverSet.value}`);
+                        console.log(`[methods clickSquare] gameoverSet:${this.engine.gameoverSet.value}`);
                         if (this.engine.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                            console.log(`Ban on illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                             return;
                         }
 
@@ -1579,12 +1657,12 @@ function packSetMessageFromServer() {
 
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
-                                    console.log(`warning of illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                                    console.log(`warning of illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                                     return;
                                 }
 
                                 // 自分の一手
-                                this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
+                                this.engine.userCtrl.doMove(this.engine.position, this.engine.connection.myPiece, parseInt(sq));
                             }
                         }
                     },
@@ -1655,11 +1733,7 @@ function packSetMessageFromServer() {
                         // 返却値を変えたいなら、ここに挿しこめる
                         {% endblock create_gameover_message %}
 
-                        // サーバーから勝者が送られてきているので、勝敗に変換
-                        let gameover_set = this.engine.getGameoverSet();
-                        // console.log(`[Debug][onGameover] gameover_set=${gameover_set}`);
-
-                        switch (gameover_set) {
+                        switch (this.engine.gameoverSet.value) {
                             case GameoverSet.draw:
                                 return this.messages.draw;
                             case GameoverSet.win:
@@ -1670,7 +1744,7 @@ function packSetMessageFromServer() {
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown gameover_set = ${gameover_set}`;
+                                throw `unknown this.engine.gameoverSet.value = ${this.engine.gameoverSet.value}`;
                         }
                     },
                     /**
@@ -1700,6 +1774,10 @@ function packSetMessageFromServer() {
                         console.log(`[methods raiseMyTurnChanged]`);
                         this.updateYourTurn();
                     },
+                    raisePositionChanged() {
+                        console.log(`[methods raisePositionChanged]`);
+                        this.raiseMyTurnChanged();
+                    },
                     /**
                      * 再接続中表示中なら、アラートを常時表示
                      */
@@ -1709,6 +1787,12 @@ function packSetMessageFromServer() {
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
                     {% endblock methods_footer %}
+                    /**
+                     * ダンプ
+                     */
+                    dump() {
+                        console.log(`[DUMP] vue1\n${this.engine.dump("")}`)
+                    },
                 },
             });
         </script>
@@ -1780,7 +1864,7 @@ function packSetMessageFromServer() {
      */
     isDisabledPlayAgainButton() {
         switch (this.roomState.value) {
-            case RoomState.none: // ゲームオーバー状態
+            case RoomState.none: // ゲームオーバー中
                 return false; // Enable
             default:
                 return true; // Disable
@@ -2444,3 +2528,7 @@ websocket_urlpatterns = [
 ## Web socket 関連
 
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  
+
+## メモリ関連
+
+📖 [メモリ管理](https://developer.mozilla.org/ja/docs/Web/JavaScript/Memory_Management)  

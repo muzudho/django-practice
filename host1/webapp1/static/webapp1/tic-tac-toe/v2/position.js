@@ -2,17 +2,15 @@
  * 局面
  */
 class Position {
-    constructor() {
-        // あとで onStart(...) を呼出してください
-    }
-
     /**
-     * 対局開始時
+     * 初期化
+     *
+     * * 対局開始時
      *
      * @param {string} myPiece - "X", "O", "_"
      */
-    onStart(myPiece) {
-        console.log(`[Position onStart] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
+    constructor(myPiece) {
+        console.log(`[Position constructor] myPiece=${myPiece} PC_EMPTY=${PC_EMPTY} PC_X_LABEL=${PC_X_LABEL}`);
 
         // 盤面
         this._board = new Board();
@@ -57,5 +55,17 @@ class Position {
      */
     isThere3SamePieces() {
         return 5 <= this.record.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Position
+${indent}--------
+${indent}${this._board.dump(indent + "    ")}
+${indent}${this._record.dump(indent + "    ")}
+${indent}${this._myTurn.dump(indent + "    ")}`;
     }
 }

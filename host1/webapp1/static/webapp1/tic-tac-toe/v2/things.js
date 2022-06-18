@@ -77,6 +77,16 @@ class Board {
     setPiece(sq, piece) {
         this._squares[sq] = piece;
     }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Board
+${indent}-----
+${indent}_squares:${this._squares}`;
+    }
 }
 
 // | 盤
@@ -109,6 +119,16 @@ class Record {
 
     get length() {
         return this._squares.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Record
+${indent}------
+${indent}_squares:${this._squares}`;
     }
 }
 

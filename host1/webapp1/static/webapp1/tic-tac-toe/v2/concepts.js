@@ -46,6 +46,18 @@ class RoomState {
         this._value = value;
         this._changeValue(oldValue, this._value);
     }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}RoomState
+${indent}---------
+${indent}_value:${this._value}`;
+    }
 }
 
 /**
@@ -72,10 +84,22 @@ class MyTurn {
         this._isTrue = value;
         vue1.raiseMyTurnChanged();
     }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}MyTurn
+${indent}------
+${indent}_isTrue:${this._isTrue}`;
+    }
 }
 
 /**
- * ゲームオーバー状態
+ * ゲームオーバー集合
  *
  * * 自分視点
  */
@@ -125,6 +149,36 @@ class GameoverSet {
 
     set value(value) {
         this._value = value;
+    }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        let text;
+        switch (this._value) {
+            case GameoverSet.none:
+                text = "none";
+                break;
+            case GameoverSet.win:
+                text = "win";
+                break;
+            case GameoverSet.draw:
+                text = "draw";
+                break;
+            case GameoverSet.lose:
+                text = "lose";
+                break;
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
+
+        return `
+${indent}GameoverSet
+${indent}-----------
+${indent}_value:${text}`;
     }
 }
 

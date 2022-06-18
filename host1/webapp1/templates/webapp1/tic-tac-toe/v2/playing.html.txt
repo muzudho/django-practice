@@ -29,7 +29,7 @@
      */
     isDisabledPlayAgainButton() {
         switch (this.roomState.value) {
-            case RoomState.none: // ゲームオーバー状態
+            case RoomState.none: // ゲームオーバー中
                 return false; // Enable
             default:
                 return true; // Disable

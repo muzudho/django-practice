@@ -3,17 +3,9 @@
  */
 class JudgeCtrl {
     /**
-     *
-     * @param {*} position - 局面
-     * @param {*} userCtrl - ユーザーコントロール
+     * 初期化
      */
-    constructor(position, userCtrl) {
-        // 局面
-        this._position = position;
-
-        // ユーザーコントロール
-        this._userCtrl = userCtrl;
-
+    constructor() {
         // 判断したとき
         this._onJudged = (pieceMoved, gameoverSetValue) => {};
     }
@@ -29,9 +21,11 @@ class JudgeCtrl {
      * ゲームオーバー判定
      *
      * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @param {Position} position - 局面
      */
-    doJudge(piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue();
+    doJudge(position, piece_moved) {
+        let gameoverSetValue = this.#makeGameoverSetValue(position);
         console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
         this._onJudged(piece_moved, gameoverSetValue);
     }
@@ -39,19 +33,17 @@ class JudgeCtrl {
     /**
      * ゲームオーバー判定
      *
-     * @returns ゲームオーバー状態
+     * @param {Position} position - 局面
+     * @returns ゲームオーバー元
      */
-    #makeGameoverSetValue() {
-        console.log(`[#makeGameoverSetValue] isThere3SamePieces=${this._position.isThere3SamePieces()}`);
-        if (this._position.isThere3SamePieces()) {
+    #makeGameoverSetValue(position) {
+        if (position.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
                 // 勝ちパターンの１つについて
-                console.log(`[#makeGameoverSetValue] this.#isPieceInLine(squaresOfWinPattern)=${this.#isPieceInLine(squaresOfWinPattern)}`);
-                if (this.#isPieceInLine(squaresOfWinPattern)) {
+                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
                     // 当てはまるなら
-                    console.log(`[#makeGameoverSetValue] this._position.myTurn.isTrue=${this._position.myTurn.isTrue}`);
-                    if (this._position.myTurn.isTrue) {
+                    if (position.myTurn.isTrue) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
                         return GameoverSet.lose;
                     } else {
@@ -63,7 +55,7 @@ class JudgeCtrl {
         }
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (this._position.isBoardFill()) {
+        if (position.isBoardFill()) {
             return GameoverSet.draw;
         }
 
@@ -73,14 +65,16 @@ class JudgeCtrl {
 
     /**
      * 駒が３つ並んでいるか？
+     *
+     * @param {Position} position - 局面
      * @param {*} squaresOfWinPattern - 勝ちパターン
      * @returns 並んでいれば真、それ以外は偽
      */
-    #isPieceInLine(squaresOfWinPattern) {
+    #isPieceInLine(position, squaresOfWinPattern) {
         return (
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            this._position.board.getPieceBySq(squaresOfWinPattern[0]) === this._position.board.getPieceBySq(squaresOfWinPattern[2])
+            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
         );
     }
 }

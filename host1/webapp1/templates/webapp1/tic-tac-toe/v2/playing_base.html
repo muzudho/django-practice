@@ -181,24 +181,28 @@
 
                         this.engine.setup(this.packSetLabelOfButton());
 
-                        this.engine.onStart();
-
+                        // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
+                        this.engine.start();
+
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
                             this.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
+
+                        // ダンプ
+                        this.dump();
                     },
                     /**
                      * 升ボタンをクリックしたとき
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverSet=${this.engine.gameoverSet.value}`);
+                        console.log(`[methods clickSquare] gameoverSet:${this.engine.gameoverSet.value}`);
                         if (this.engine.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                            console.log(`Ban on illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                             return;
                         }
 
@@ -213,12 +217,12 @@
 
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
-                                    console.log(`warning of illegal move. gameoverSet=${this.engine.gameoverSet.value}`);
+                                    console.log(`warning of illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                                     return;
                                 }
 
                                 // 自分の一手
-                                this.engine.userCtrl.doMove(parseInt(sq), this.engine.connection.myPiece);
+                                this.engine.userCtrl.doMove(this.engine.position, this.engine.connection.myPiece, parseInt(sq));
                             }
                         }
                     },
@@ -289,11 +293,7 @@
                         // 返却値を変えたいなら、ここに挿しこめる
                         {% endblock create_gameover_message %}
 
-                        // サーバーから勝者が送られてきているので、勝敗に変換
-                        let gameover_set = this.engine.getGameoverSet();
-                        // console.log(`[Debug][onGameover] gameover_set=${gameover_set}`);
-
-                        switch (gameover_set) {
+                        switch (this.engine.gameoverSet.value) {
                             case GameoverSet.draw:
                                 return this.messages.draw;
                             case GameoverSet.win:
@@ -304,7 +304,7 @@
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown gameover_set = ${gameover_set}`;
+                                throw `unknown this.engine.gameoverSet.value = ${this.engine.gameoverSet.value}`;
                         }
                     },
                     /**
@@ -334,6 +334,10 @@
                         console.log(`[methods raiseMyTurnChanged]`);
                         this.updateYourTurn();
                     },
+                    raisePositionChanged() {
+                        console.log(`[methods raisePositionChanged]`);
+                        this.raiseMyTurnChanged();
+                    },
                     /**
                      * 再接続中表示中なら、アラートを常時表示
                      */
@@ -343,6 +347,12 @@
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
                     {% endblock methods_footer %}
+                    /**
+                     * ダンプ
+                     */
+                    dump() {
+                        console.log(`[DUMP] vue1\n${this.engine.dump("")}`)
+                    },
                 },
             });
         </script>
