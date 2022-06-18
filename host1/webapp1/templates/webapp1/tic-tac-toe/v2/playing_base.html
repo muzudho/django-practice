@@ -54,7 +54,7 @@
 
                         <!-- `po_` は POST送信するパラメーター名の目印 -->
                         <input type="hidden" name="po_room_name" value="{{dj_room_name}}" />
-                        <input type="hidden" name="po_my_piece" value="{{dj_my_piece}}" />
+                        <input type="hidden" name="po_my_turn" value="{{dj_my_turn}}" />
                     </form>
                     {% block footer_section1 %}
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
@@ -63,7 +63,7 @@
                         {% verbatim %}
                         <v-alert type="success" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
-                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_turn}}</strong></v-alert>
                         <v-alert type="warning" v-show="isItOpponentsTurnToMove">Wait for other to place the move</v-alert>
                         {% verbatim %}
                         <v-alert type="warning" v-show="isReconnecting">Reconnecting... {{reconnectionCount}}/{{reconnectionMax}}</v-alert>
@@ -119,11 +119,11 @@
                     // 相手の手番なら、自動で動かします
                     vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, sq);
 
-                    // アラートの非表示
+                    // 「相手の手番で動かした」アラートの取りさげ
                     vue1.isItOpponentsTurnToMove = false;
                 }
 
-                // どちらの手番でもゲームオーバー判定は行います
+                // ゲームオーバー判定
                 vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
             }
 
@@ -181,8 +181,8 @@
                     // 思考エンジン
                     engine: new Engine(
                         // `po_` は POST送信するパラメーター名の目印
-                        // 自分の駒。 X か O
-                        document.forms["form1"]["po_my_piece"].value,
+                        // 自分の番。 X か O
+                        document.forms["form1"]["po_my_turn"].value,
                         // ユーザーコントロール
                         new UserCtrl(
                             /**

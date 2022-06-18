@@ -42,12 +42,12 @@ class Portal():
 class LoggingIn():
     """ログイン中"""
 
-    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&myturn={1}"
     #                                      ^ two
-    #                        -----------------------------------------
+    #                        ----------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&myturn=X
+    #                           -------------------------------------------
 
     _path_of_match_application = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                                  ^ two
@@ -98,9 +98,9 @@ def logging_in_render(request, path_of_http_playing, path_of_match_application):
 
         # `po_` は POST送信するパラメーター名の目印
         room_name = request.POST.get("po_room_name")
-        my_piece = request.POST.get("po_my_piece")
+        my_turn = request.POST.get("po_my_turn")
 
-        return redirect(path_of_http_playing.format(room_name, my_piece))
+        return redirect(path_of_http_playing.format(room_name, my_turn))
 
     # 訪問後
     return render(request, path_of_match_application, {})

@@ -29,12 +29,12 @@ from webapp1.models.m_user_profile import Profile
 class MatchApplication():
     """対局申込ページ"""
 
-    _path_of_http_playing = "/tic-tac-toe/v3/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v3/playing/{0}/?&myturn={1}"
     #                                      ^ three
-    #                        -----------------------------------------
+    #                        ----------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v3/playing/Elephant/?&myturn=X
+    #                           -------------------------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                     ^ two
@@ -115,8 +115,8 @@ def match_application_on_sent(request):
     # `po_` は POST送信するパラメーター名の目印
     # 部屋名
     po_room_name = request.POST.get("po_room_name")
-    # 自分の駒。 "X" か "O"。 機能拡張も想定
-    po_my_piece = request.POST.get("po_my_piece")
+    # 自分の番。 "X" か "O"。 機能拡張も想定
+    my_turn = request.POST.get("po_my_turn")
 
     # 部屋の取得 または 新規作成
     #
@@ -163,13 +163,13 @@ def match_application_on_sent(request):
         # print(
         #     f"[MatchApplication on_sent] profile.match_state={profile.match_state}")
 
-        if po_my_piece == "X":
+        if my_turn == "X":
             # X を取った方は先手とします
             room.sente_id = user_pk
             # ユーザーの状態を対局中（3）にします
             profile.match_state = 3
 
-        elif po_my_piece == "O":
+        elif my_turn == "O":
             # O を取った方は後手とします
             #
             # * 先手と後手が同じユーザーでも構わないものとします

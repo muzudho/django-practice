@@ -29,12 +29,12 @@ playing_expected_pieces = ['X', 'O']
 class MatchApplication():
     """対局申込"""
 
-    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v2/playing/{0}/?&myturn={1}"
     #                                      ^ two
-    #                        -----------------------------------------
+    #                        ----------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v2/playing/Elephant/?&myturn=X
+    #                           -------------------------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                     ^ two
@@ -108,12 +108,12 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
         # `po_` は POST送信するパラメーター名の目印
         po_room_name = request.POST.get("po_room_name")
-        # 自分の駒。 "X" か "O"。 機能拡張も想定
-        po_my_piece = request.POST.get("po_my_piece")
+        # 自分の番。 "X" か "O"。 機能拡張も想定
+        my_turn = request.POST.get("po_my_turn")
 
         # TODO バリデーションチェックしたい
 
-        return redirect(path_of_http_playing.format(po_room_name, po_my_piece))
+        return redirect(path_of_http_playing.format(po_room_name, my_turn))
 
     # 訪問後
     context = open(request)
@@ -123,16 +123,16 @@ def render_match_application(request, path_of_http_playing, path_of_html, on_sen
 
 def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_update, expected_pieces):
     """対局中 - 描画"""
-    my_piece = request.GET.get("mypiece")
-    if my_piece not in expected_pieces:
-        raise Http404(f"My piece '{my_piece}' does not exists")
+    my_turn = request.GET.get("myturn")
+    if my_turn not in expected_pieces:
+        raise Http404(f"My piece '{my_turn}' does not exists")
 
     on_update(request)
 
     # `dj_` は Djangoでレンダーするパラメーター名の目印
     context = {
         "dj_room_name": kw_room_name,
-        "dj_my_piece": my_piece,
+        "dj_my_turn": my_turn,
         "dj_path_of_ws_playing": path_of_ws_playing,
     }
     return render(request, path_of_html, context)
