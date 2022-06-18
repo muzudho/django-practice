@@ -347,12 +347,12 @@ from webapp1.views.tic_tac_toe.v3 import resources as tic_tac_toe_v3
 class MatchApplication():
     """対局申込ページ"""
 
-    _path_of_http_playing = "/tic-tac-toe/v3o1/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v3o1/playing/{0}/?&myturn={1}"
     #                                      ^^^ three o one
-    #                        -------------------------------------------
+    #                        ------------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
-    #                           ----------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&myturn=X
+    #                           ---------------------------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                     ^ two
