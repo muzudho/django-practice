@@ -7,6 +7,11 @@
  */
 class Connection {
     /**
+     * ウェブソケット
+     */
+    #webSock1;
+
+    /**
      * 生成
      *
      * @param {string} roomName - 部屋名
@@ -40,6 +45,13 @@ class Connection {
     }
 
     /**
+     * メッセージ送信
+     */
+    send(response) {
+        this.#webSock1.send(JSON.stringify(response));
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -51,43 +63,43 @@ class Connection {
         // * １回切りの使い捨て。再接続機能は無い
         // * 再接続したいときは、再生成する
         try {
-            this.webSock1 = new WebSocket(this._connectionString);
+            this.#webSock1 = new WebSocket(this._connectionString);
             // 以下、接続に成功
 
             // イベントハンドラを毎回設定し直してください
-            this.webSock1.onopen = this._onOpenWebSocket;
-            this.webSock1.onclose = this._onCloseWebSocket;
+            this.#webSock1.onopen = this._onOpenWebSocket;
+            this.#webSock1.onclose = this._onCloseWebSocket;
 
             // 設定: サーバーからメッセージを受信したとき
-            this.webSock1.onmessage = (e) => {
+            this.#webSock1.onmessage = (e) => {
                 // JSON を解析、メッセージだけ抽出
                 let data1 = JSON.parse(e.data);
                 let message = data1["message"];
                 this._setMessageFromServer(message);
             };
 
-            // this.webSock1.onerror = onWebSocketError;
-            this.webSock1.addEventListener("error", (event1) => {
+            // this.#webSock1.onerror = onWebSocketError;
+            this.#webSock1.addEventListener("error", (event1) => {
                 this._onWebSocketError(event1);
             });
 
             // 状態を表示
-            if (this.webSock1.readyState == WebSocket.CONNECTING) {
+            if (this.#webSock1.readyState == WebSocket.CONNECTING) {
                 // 未接続
                 console.log("[Connection connect] Connecting socket.");
-            } else if (this.webSock1.readyState == WebSocket.OPEN) {
+            } else if (this.#webSock1.readyState == WebSocket.OPEN) {
                 console.log("[Connection connect] Open socket.");
-                this.webSock1.onopen();
-            } else if (this.webSock1.readyState == WebSocket.CLOSING) {
+                this.#webSock1.onopen();
+            } else if (this.#webSock1.readyState == WebSocket.CLOSING) {
                 console.log("[Connection connect] Closing socket.");
-            } else if (this.webSock1.readyState == WebSocket.CLOSED) {
+            } else if (this.#webSock1.readyState == WebSocket.CLOSED) {
                 // サーバーが落ちたりしたときは、ここ
                 console.log("[Connection connect] Closed socket.");
 
                 // 再接続のリトライを書くタイミングはここです
                 this.reconnect();
             } else {
-                console.log(`[Connection connect] webSock1.readyState=${this.webSock1.readyState}`);
+                console.log(`[Connection connect] #webSock1.readyState=${this.#webSock1.readyState}`);
             }
         } catch (exception) {
             // キャッチで捕まえられない

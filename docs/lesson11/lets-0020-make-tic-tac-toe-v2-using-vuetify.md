@@ -556,7 +556,7 @@ function flipTurn(piece) {
 }
 ```
 
-# Step 5. プロトコル実装 - message_sender.js ファイル
+# Step 5. プロトコル実装 - outgoing_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -568,18 +568,18 @@ function flipTurn(piece) {
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
                 │           ├── 📄concepts.js
-👉              │           ├── 📄message_sender.js
+👉              │           ├── 📄outgoing_messages.js
                 │           └── 📄things.js
                 └── 🚀favicon.ico
 ```
 
 ```js
 /**
- * メッセージ一覧
+ * 送信メッセージ一覧
  *
  * * クライアントからサーバーへ送る
  */
-class MessageSender {
+class OutgoingMessages {
     /**
      * どちらかのプレイヤーが駒を置いたとき
      * @param {int} sq - 升番号
@@ -588,7 +588,7 @@ class MessageSender {
      */
     createDoMove(sq, pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
-        console.log(`[MessageSender createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
+        console.log(`[OutgoingMessages createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
         return {
             c2s_event: "C2S_Moved",
             c2s_sq: sq,
@@ -647,7 +647,7 @@ class MessageSender {
                 │       └── 📂v2
                 │           ├── 📄concepts.js
 👉              │           ├── 📄connection.js
-                │           ├── 📄message_sender.js
+                │           ├── 📄outgoing_messages.js
                 │           └── 📄things.js
                 └── 🚀favicon.ico
 ```
@@ -661,6 +661,11 @@ class MessageSender {
  * 接続
  */
 class Connection {
+    /**
+     * ウェブソケット
+     */
+    #webSock1;
+
     /**
      * 生成
      *
@@ -695,6 +700,13 @@ class Connection {
     }
 
     /**
+     * メッセージ送信
+     */
+    send(response) {
+        this.#webSock1.send(JSON.stringify(response));
+    }
+
+    /**
      * 接続
      */
     connect() {
@@ -706,43 +718,43 @@ class Connection {
         // * １回切りの使い捨て。再接続機能は無い
         // * 再接続したいときは、再生成する
         try {
-            this.webSock1 = new WebSocket(this._connectionString);
+            this.#webSock1 = new WebSocket(this._connectionString);
             // 以下、接続に成功
 
             // イベントハンドラを毎回設定し直してください
-            this.webSock1.onopen = this._onOpenWebSocket;
-            this.webSock1.onclose = this._onCloseWebSocket;
+            this.#webSock1.onopen = this._onOpenWebSocket;
+            this.#webSock1.onclose = this._onCloseWebSocket;
 
             // 設定: サーバーからメッセージを受信したとき
-            this.webSock1.onmessage = (e) => {
+            this.#webSock1.onmessage = (e) => {
                 // JSON を解析、メッセージだけ抽出
                 let data1 = JSON.parse(e.data);
                 let message = data1["message"];
                 this._setMessageFromServer(message);
             };
 
-            // this.webSock1.onerror = onWebSocketError;
-            this.webSock1.addEventListener("error", (event1) => {
+            // this.#webSock1.onerror = onWebSocketError;
+            this.#webSock1.addEventListener("error", (event1) => {
                 this._onWebSocketError(event1);
             });
 
             // 状態を表示
-            if (this.webSock1.readyState == WebSocket.CONNECTING) {
+            if (this.#webSock1.readyState == WebSocket.CONNECTING) {
                 // 未接続
                 console.log("[Connection connect] Connecting socket.");
-            } else if (this.webSock1.readyState == WebSocket.OPEN) {
+            } else if (this.#webSock1.readyState == WebSocket.OPEN) {
                 console.log("[Connection connect] Open socket.");
-                this.webSock1.onopen();
-            } else if (this.webSock1.readyState == WebSocket.CLOSING) {
+                this.#webSock1.onopen();
+            } else if (this.#webSock1.readyState == WebSocket.CLOSING) {
                 console.log("[Connection connect] Closing socket.");
-            } else if (this.webSock1.readyState == WebSocket.CLOSED) {
+            } else if (this.#webSock1.readyState == WebSocket.CLOSED) {
                 // サーバーが落ちたりしたときは、ここ
                 console.log("[Connection connect] Closed socket.");
 
                 // 再接続のリトライを書くタイミングはここです
                 this.reconnect();
             } else {
-                console.log(`[Connection connect] webSock1.readyState=${this.webSock1.readyState}`);
+                console.log(`[Connection connect] #webSock1.readyState=${this.#webSock1.readyState}`);
             }
         } catch (exception) {
             // キャッチで捕まえられない
@@ -795,8 +807,8 @@ class Connection {
                 │       └── 📂v2
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
+                │           ├── 📄outgoing_messages.js
 👉              │           ├── 📄position.js
-                │           ├── 📄message_sender.js
                 │           └── 📄things.js
                 └── 🚀favicon.ico
 ```
@@ -889,7 +901,7 @@ ${indent}${this._turn.dump(indent + "    ")}`;
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
-                │           ├── 📄message_sender.js
+                │           ├── 📄outgoing_messages.js
                 │           ├── 📄things.js
 👉              │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
@@ -958,7 +970,7 @@ class UserCtrl {
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
 👉              │           ├── 📄judge_ctrl.js
-                │           ├── 📄message_sender.js
+                │           ├── 📄outgoing_messages.js
                 │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
@@ -1058,7 +1070,7 @@ class JudgeCtrl {
                 │           ├── 📄connection.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
-                │           ├── 📄message_sender.js
+                │           ├── 📄outgoing_messages.js
                 │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
@@ -1178,7 +1190,7 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
 👉              │           ├── 📄message_receiver.js
-                │           ├── 📄message_sender.js
+                │           ├── 📄outgoing_messages.js
                 │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
@@ -1259,7 +1271,7 @@ function packSetMessageFromServer() {
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1357,7 +1369,7 @@ function packSetMessageFromServer() {
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1452,7 +1464,7 @@ function packSetMessageFromServer() {
         <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/message_receiver.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/message_sender.js' %}"></script>
+        <script src="{% static 'webapp1/tic-tac-toe/v2/outgoing_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
         <!--                    ==================================
@@ -1476,6 +1488,9 @@ function packSetMessageFromServer() {
             // 3. パス
             console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
+            // 送信メッセージ作成者
+            const outgoingMessages = new OutgoingMessages();
+
             // 接続
             var connection = new Connection(
                 roomName,
@@ -1483,8 +1498,8 @@ function packSetMessageFromServer() {
                 // Webソケットを開かれたとき
                 () => {
                     console.log("WebSockets connection created.");
-                    let response = vue1.messageSender.createStart();
-                    connection.webSock1.send(JSON.stringify(response));
+                    let response = outgoingMessages.createStart();
+                    connection.send(response);
                 },
                 // Webソケットが閉じられたとき
                 (exception) => {
@@ -1501,6 +1516,8 @@ function packSetMessageFromServer() {
                 /**
                  * 再接続のためのインターバルの通知
                  *
+                 * アラートが、接続中に短く非表示、次の接続までの待機中に長く表示と、逆になっているが、そうしないと表示が短くなってしまう
+                 *
                  * @param {bool} isBeginWait - 次の再接続までの待ち時間に入ったら真
                  * @param {int} retryCount - リトライ回数
                  * @param {int} retryMax - リトライ回数上限
@@ -1516,8 +1533,6 @@ function packSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    // メッセージ送信側
-                    messageSender: new MessageSender(),
                     building: new Building(
                         // `po_` は POST送信するパラメーター名の目印
                         // 自分の駒。 X か O
@@ -1538,8 +1553,8 @@ function packSetMessageFromServer() {
 
                                 // 自分の指し手なら送信
                                 if (vue1.building.position.turn.me == pieceMoved) {
-                                    let response = vue1.messageSender.createDoMove(sq, pieceMoved);
-                                    connection.webSock1.send(JSON.stringify(response));
+                                    let response = outgoingMessages.createDoMove(sq, pieceMoved);
+                                    connection.send(response);
                                 }
                             }
                         ),
@@ -1558,13 +1573,13 @@ function packSetMessageFromServer() {
                                 switch (gameoverSetValue) {
                                     case GameoverSet.win:
                                         // 勝ったとき
-                                        response = vue1.messageSender.createWon(pieceMoved);
-                                        connection.webSock1.send(JSON.stringify(response));
+                                        response = outgoingMessages.createWon(pieceMoved);
+                                        connection.send(response);
                                         break;
                                     case GameoverSet.draw:
                                         // 引き分けたとき
-                                        response = vue1.messageSender.createDraw();
-                                        connection.webSock1.send(JSON.stringify(response));
+                                        response = outgoingMessages.createDraw();
+                                        connection.send(response);
                                         break;
                                     case GameoverSet.lose:
                                         // 負けたとき
@@ -1812,7 +1827,7 @@ function packSetMessageFromServer() {
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1885,7 +1900,7 @@ function packSetMessageFromServer() {
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1995,7 +2010,7 @@ class TicTacToeV2MessageConverter():
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2098,7 +2113,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2172,7 +2187,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2353,7 +2368,7 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2445,7 +2460,7 @@ urlpatterns = [
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄message_receiver.js
-            │   │           ├── 📄message_sender.js
+            │   │           ├── 📄outgoing_messages.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico

@@ -83,7 +83,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. プロトコル実装 - message_sender.js ファイル
+# Step 2. プロトコル実装 - outgoing_messages.js ファイル
 
 以下のファイルを作成してほしい。  
 
@@ -94,7 +94,7 @@ docker-compose up
                 └── 📂webapp1
                     └── 📂tic-tac-toe
                         └── 📂v3
-👉                          └── message_sender.js
+👉                          └── outgoing_messages.js
 ```
 
 ```js

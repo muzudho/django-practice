@@ -1,9 +1,9 @@
 /**
- * メッセージ一覧
+ * 送信メッセージ一覧
  *
  * * クライアントからサーバーへ送る
  */
-class MessageSender {
+class OutgoingMessages {
     /**
      * どちらかのプレイヤーが駒を置いたとき
      * @param {int} sq - 升番号
@@ -12,7 +12,7 @@ class MessageSender {
      */
     createDoMove(sq, pieceMoved) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
-        console.log(`[MessageSender createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
+        console.log(`[OutgoingMessages createDoMove] sq=${sq} pieceMoved=${pieceMoved}`);
         return {
             c2s_event: "C2S_Moved",
             c2s_sq: sq,
