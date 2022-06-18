@@ -4,17 +4,11 @@
 class UserCtrl {
     /**
      * 初期化
+     *
+     * @param {function} onDoMove - 駒を置いたとき
      */
-    constructor() {
-        // イベントリスナー
-        this._onDoMove = () => {};
-    }
-
-    /**
-     * 駒を置いたとき
-     */
-    set onDoMove(func) {
-        this._onDoMove = func;
+    constructor(onDoMove) {
+        this._onDoMove = onDoMove;
     }
 
     /**

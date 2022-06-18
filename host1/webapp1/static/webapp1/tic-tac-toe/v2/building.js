@@ -5,13 +5,11 @@ class Building {
     /**
      * 生成
      * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
-     * @param {function} setLabelOfButton - 升ボタンのラベルの設定
+     * @param {UserCtrl} userCtrl - ユーザーコントロール
+     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
      */
-    constructor(myTurn, setLabelOfButton) {
+    constructor(myTurn, userCtrl, judgeCtrl) {
         console.log(`[Building constructor] 自分の手番=${myTurn}`);
-
-        // メッセージ一覧
-        this._messageSender = new MessageSender();
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
@@ -23,60 +21,10 @@ class Building {
         this._gameoverSet = new GameoverSet();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl();
+        this._userCtrl = userCtrl;
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl();
-
-        // 判断したとき
-        this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
-            this.gameoverSet.value = gameoverSetValue;
-            let response;
-
-            switch (gameoverSetValue) {
-                case GameoverSet.win:
-                    // 勝ったとき
-                    response = this.messageSender.createWon(pieceMoved);
-                    vue1.connection.webSock1.send(JSON.stringify(response));
-                    break;
-                case GameoverSet.draw:
-                    // 引き分けたとき
-                    response = this.messageSender.createDraw();
-                    vue1.connection.webSock1.send(JSON.stringify(response));
-                    break;
-                case GameoverSet.lose:
-                    // 負けたとき
-                    break;
-                case GameoverSet.none:
-                    // なんでもなかったとき
-                    break;
-                default:
-                    throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
-            }
-        };
-
-        this._setLabelOfButton = setLabelOfButton;
-
-        // １手進めたとき
-        this._userCtrl.onDoMove = (sq, pieceMoved) => {
-            // ボタンのラベルを更新
-            this._setLabelOfButton(sq, pieceMoved);
-
-            console.log(`[Building onDoMove] 自分の手番=${this._position.turn.me} pieceMoved=${pieceMoved}`);
-
-            // 自分の指し手なら送信
-            if (this._position.turn.me == pieceMoved) {
-                let response = this.messageSender.createDoMove(sq, pieceMoved);
-                vue1.connection.webSock1.send(JSON.stringify(response));
-            }
-        };
-    }
-
-    /**
-     * メッセージ一覧
-     */
-    get messageSender() {
-        return this._messageSender;
+        this._judgeCtrl = judgeCtrl;
     }
 
     /**
@@ -116,13 +64,6 @@ class Building {
      */
     get gameoverSet() {
         return this._gameoverSet;
-    }
-
-    /**
-     * ボタンにラベルをセットする関数
-     */
-    get setLabelOfButton() {
-        return this._setLabelOfButton;
     }
 
     /**

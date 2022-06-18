@@ -4,17 +4,12 @@
 class JudgeCtrl {
     /**
      * 初期化
+     *
+     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
      */
-    constructor() {
+    constructor(onJudged) {
         // 判断したとき
-        this._onJudged = (pieceMoved, gameoverSetValue) => {};
-    }
-
-    /**
-     * 判断したとき
-     */
-    set onJudged(func) {
-        this._onJudged = func;
+        this._onJudged = onJudged;
     }
 
     /**

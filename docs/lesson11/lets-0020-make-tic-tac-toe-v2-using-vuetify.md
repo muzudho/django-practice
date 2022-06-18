@@ -860,17 +860,11 @@ ${indent}${this._turn.dump(indent + "    ")}`;
 class UserCtrl {
     /**
      * 初期化
+     *
+     * @param {function} onDoMove - 駒を置いたとき
      */
-    constructor() {
-        // イベントリスナー
-        this._onDoMove = () => {};
-    }
-
-    /**
-     * 駒を置いたとき
-     */
-    set onDoMove(func) {
-        this._onDoMove = func;
+    constructor(onDoMove) {
+        this._onDoMove = onDoMove;
     }
 
     /**
@@ -935,17 +929,12 @@ class UserCtrl {
 class JudgeCtrl {
     /**
      * 初期化
+     *
+     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
      */
-    constructor() {
+    constructor(onJudged) {
         // 判断したとき
-        this._onJudged = (pieceMoved, gameoverSetValue) => {};
-    }
-
-    /**
-     * 判断したとき
-     */
-    set onJudged(func) {
-        this._onJudged = func;
+        this._onJudged = onJudged;
     }
 
     /**
@@ -1041,13 +1030,11 @@ class Building {
     /**
      * 生成
      * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
-     * @param {function} setLabelOfButton - 升ボタンのラベルの設定
+     * @param {UserCtrl} userCtrl - ユーザーコントロール
+     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
      */
-    constructor(myTurn, setLabelOfButton) {
+    constructor(myTurn, userCtrl, judgeCtrl) {
         console.log(`[Building constructor] 自分の手番=${myTurn}`);
-
-        // メッセージ一覧
-        this._messageSender = new MessageSender();
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
@@ -1059,60 +1046,10 @@ class Building {
         this._gameoverSet = new GameoverSet();
 
         // ユーザーコントロール
-        this._userCtrl = new UserCtrl();
+        this._userCtrl = userCtrl;
 
         // 審判コントロール
-        this._judgeCtrl = new JudgeCtrl();
-
-        // 判断したとき
-        this._judgeCtrl.onJudged = (pieceMoved, gameoverSetValue) => {
-            this.gameoverSet.value = gameoverSetValue;
-            let response;
-
-            switch (gameoverSetValue) {
-                case GameoverSet.win:
-                    // 勝ったとき
-                    response = this.messageSender.createWon(pieceMoved);
-                    vue1.connection.webSock1.send(JSON.stringify(response));
-                    break;
-                case GameoverSet.draw:
-                    // 引き分けたとき
-                    response = this.messageSender.createDraw();
-                    vue1.connection.webSock1.send(JSON.stringify(response));
-                    break;
-                case GameoverSet.lose:
-                    // 負けたとき
-                    break;
-                case GameoverSet.none:
-                    // なんでもなかったとき
-                    break;
-                default:
-                    throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
-            }
-        };
-
-        this._setLabelOfButton = setLabelOfButton;
-
-        // １手進めたとき
-        this._userCtrl.onDoMove = (sq, pieceMoved) => {
-            // ボタンのラベルを更新
-            this._setLabelOfButton(sq, pieceMoved);
-
-            console.log(`[Building onDoMove] 自分の手番=${this._position.turn.me} pieceMoved=${pieceMoved}`);
-
-            // 自分の指し手なら送信
-            if (this._position.turn.me == pieceMoved) {
-                let response = this.messageSender.createDoMove(sq, pieceMoved);
-                vue1.connection.webSock1.send(JSON.stringify(response));
-            }
-        };
-    }
-
-    /**
-     * メッセージ一覧
-     */
-    get messageSender() {
-        return this._messageSender;
+        this._judgeCtrl = judgeCtrl;
     }
 
     /**
@@ -1152,13 +1089,6 @@ class Building {
      */
     get gameoverSet() {
         return this._gameoverSet;
-    }
-
-    /**
-     * ボタンにラベルをセットする関数
-     */
-    get setLabelOfButton() {
-        return this._setLabelOfButton;
     }
 
     /**
@@ -1526,6 +1456,8 @@ function packSetMessageFromServer() {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
+                    // メッセージ送信側
+                    messageSender: new MessageSender(),
                     // 接続
                     connection: new Connection(
                         roomName,
@@ -1533,7 +1465,7 @@ function packSetMessageFromServer() {
                         // Webソケットを開かれたとき
                         () => {
                             console.log("WebSockets connection created.");
-                            let response = vue1.building.messageSender.createStart();
+                            let response = vue1.messageSender.createStart();
                             vue1.connection.webSock1.send(JSON.stringify(response));
                         },
                         // Webソケットが閉じられたとき
@@ -1552,48 +1484,61 @@ function packSetMessageFromServer() {
                         // `po_` は POST送信するパラメーター名の目印
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
-                        /**
-                         * 升ボタンのラベルの設定
-                         *
-                         * @param {number} sq - Square; 0 <= sq
-                         * @param {*} piece - text
-                         */
-                        (sq, piece)=>{
-                            console.log(`[lambda] setLabelOfButton sq=${sq} piece=${piece} this=${this}`);
-                            switch (sq) {
-                                case 0:
-                                    // * ここでは this はWindowを指しているので、グローバル変数を使います
-                                    vue1.label0 = piece;
-                                    break;
-                                case 1:
-                                    vue1.label1 = piece;
-                                    break;
-                                case 2:
-                                    vue1.label2 = piece;
-                                    break;
-                                case 3:
-                                    vue1.label3 = piece;
-                                    break;
-                                case 4:
-                                    vue1.label4 = piece;
-                                    break;
-                                case 5:
-                                    vue1.label5 = piece;
-                                    break;
-                                case 6:
-                                    vue1.label6 = piece;
-                                    break;
-                                case 7:
-                                    vue1.label7 = piece;
-                                    break;
-                                case 8:
-                                    vue1.label8 = piece;
-                                    break;
-                                default:
-                                    alert(`[Error] sq=${sq}`);
-                                    break;
+                        // ユーザーコントロール
+                        new UserCtrl(
+                            /**
+                             * 駒を置いたとき
+                             *
+                             * @param {int} sq - マス番号
+                             * @param {string} pieceMoved - 動かした駒
+                             */
+                            (sq, pieceMoved) => {
+                                // ボタンのラベルを更新
+                                vue1.setLabelOfButton(sq, pieceMoved);
+
+                                console.log(`[Building onDoMove] 自分の手番=${vue1.building.position.turn.me} pieceMoved=${pieceMoved}`);
+
+                                // 自分の指し手なら送信
+                                if (vue1.building.position.turn.me == pieceMoved) {
+                                    let response = vue1.messageSender.createDoMove(sq, pieceMoved);
+                                    vue1.connection.webSock1.send(JSON.stringify(response));
+                                }
                             }
-                        },
+                        ),
+                        // 審判コントロール
+                        new JudgeCtrl(
+                            /**
+                             * 判断したとき
+                             *
+                             * @param {*} pieceMoved - 動かした駒
+                             * @param {*} gameoverSetValue - ゲームオーバー集合の元
+                             */
+                            (pieceMoved, gameoverSetValue) => {
+                                vue1.building.gameoverSet.value = gameoverSetValue;
+                                let response;
+
+                                switch (gameoverSetValue) {
+                                    case GameoverSet.win:
+                                        // 勝ったとき
+                                        response = vue1.messageSender.createWon(pieceMoved);
+                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        break;
+                                    case GameoverSet.draw:
+                                        // 引き分けたとき
+                                        response = vue1.messageSender.createDraw();
+                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        break;
+                                    case GameoverSet.lose:
+                                        // 負けたとき
+                                        break;
+                                    case GameoverSet.none:
+                                        // なんでもなかったとき
+                                        break;
+                                    default:
+                                        throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
+                                }
+                            }
+                        )
                     ),
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
@@ -1646,7 +1591,7 @@ function packSetMessageFromServer() {
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.building.setLabelOfButton(sq, PC_EMPTY_LABEL);
+                            this.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
 
                         // ダンプ
@@ -1714,6 +1659,48 @@ function packSetMessageFromServer() {
                                 return "";
                             default:
                                 throw `unknown this.building.gameoverSet.value = ${this.building.gameoverSet.value}`;
+                        }
+                    },
+                    /**
+                     * 升ボタンのラベルの設定
+                     *
+                     * @param {number} sq - Square; 0 <= sq
+                     * @param {*} piece - text
+                     */
+                    setLabelOfButton(sq, piece) {
+                        console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece} this=${this}`);
+                        switch (sq) {
+                            case 0:
+                                // * ここでは this はWindowを指しているので、グローバル変数を使います
+                                vue1.label0 = piece;
+                                break;
+                            case 1:
+                                vue1.label1 = piece;
+                                break;
+                            case 2:
+                                vue1.label2 = piece;
+                                break;
+                            case 3:
+                                vue1.label3 = piece;
+                                break;
+                            case 4:
+                                vue1.label4 = piece;
+                                break;
+                            case 5:
+                                vue1.label5 = piece;
+                                break;
+                            case 6:
+                                vue1.label6 = piece;
+                                break;
+                            case 7:
+                                vue1.label7 = piece;
+                                break;
+                            case 8:
+                                vue1.label8 = piece;
+                                break;
+                            default:
+                                alert(`[Error] sq=${sq}`);
+                                break;
                         }
                     },
                     /**
