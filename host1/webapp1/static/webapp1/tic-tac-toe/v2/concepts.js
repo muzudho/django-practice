@@ -92,7 +92,6 @@ class Turn {
 
     set isMe(value) {
         this._isMe = value;
-        vue1.raiseMyTurnChanged();
     }
 
     /**

@@ -80,7 +80,6 @@ class Engine {
 
         // 局面の初期化
         this._position = new Position(this._position.turn.me);
-        vue1.raisePositionChanged();
     }
 
     dump(indent) {

@@ -121,6 +121,7 @@
 
                     // 自分の手番に変更
                     vue1.engine.position.turn.isMe = true;
+                    vue1.raiseMyTurnChanged();
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
@@ -287,6 +288,7 @@
                         // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
                         this.engine.start();
+                        this.raisePositionChanged();
 
 
                         // ボタンのラベルをクリアー
@@ -317,6 +319,7 @@
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
                                 this.engine.position.turn.isMe = false;
+                                this.raiseMyTurnChanged();
 
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
