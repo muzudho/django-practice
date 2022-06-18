@@ -138,6 +138,8 @@
             var connection = new Connection(
                 roomName,
                 connectionString,
+                // サーバーからのメッセージを受信したとき
+                incomingMessages,
                 // Webソケットを開かれたとき
                 () => {
                     console.log("WebSockets connection created.");
@@ -150,8 +152,6 @@
                     // 再接続の初回トライを書いてよいのはこのタイミングです
                     connection.reconnect();
                 },
-                // サーバーからのメッセージを受信したとき
-                incomingMessages,
                 // エラー時
                 (exception) => {
                     console.log(`Socket is error. ${exception.reason}`);
@@ -170,6 +170,12 @@
                     vue1.isReconnecting = isBeginWait;
                     vue1.reconnectionCount = retryCount;
                     vue1.reconnectionMax = retryMax;
+                },
+                /**
+                 * 再接続を諦めたとき
+                 */
+                ()=>{
+                    vue1.isSocketClosed = true;
                 });
 
             let vue1 = new Vue({

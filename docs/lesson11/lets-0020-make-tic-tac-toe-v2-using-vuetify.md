@@ -1170,13 +1170,14 @@ class Connection {
      *
      * @param {string} roomName - 部屋名
      * @param {strint} connectionString - Webソケット接続文字列
-     * @param {*} onOpenWebSocket - Webソケットを開かれたとき
-     * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
-     * @param {*} incommingMessages - 受信メッセージ一覧
-     * @param {*} onWebSocketError - Webソケットエラー時のメッセージ
-     * @param {*} onRetryWaiting - 再接続のためのインターバルの定期的なメッセージ
+     * @param {IncommingMessages} incommingMessages - 受信メッセージ一覧
+     * @param {function} onOpenWebSocket - Webソケットを開かれたとき
+     * @param {function} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
+     * @param {function} onWebSocketError - Webソケットエラー時のメッセージ
+     * @param {function} onRetryWaiting - 再接続のためのインターバルの定期的なメッセージ
+     * @param {function} onGiveUp - 再接続を諦めたとき
      */
-    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, incommingMessages, onWebSocketError, onRetryWaiting) {
+    constructor(roomName, connectionString, incommingMessages, onOpenWebSocket, onCloseWebSocket, onWebSocketError, onRetryWaiting, onGiveUp) {
         // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
@@ -1196,6 +1197,7 @@ class Connection {
         this._incommingMessages = incommingMessages;
         this._onWebSocketError = onWebSocketError;
         this._onRetryWaiting = onRetryWaiting;
+        this._onGiveUp = onGiveUp;
     }
 
     /**
@@ -1232,7 +1234,11 @@ class Connection {
                 this._incommingMessages.setMessageFromServer(message);
             };
 
-            // this.#webSock1.onerror = onWebSocketError;
+            this.#webSock1.addEventListener("open", (event1) => {
+                console.log("[Connection connect] WebSockets connection created.");
+                // 再接続カウンターをリセットします
+                this._retryCount = 0;
+            });
             this.#webSock1.addEventListener("error", (event1) => {
                 this._onWebSocketError(event1);
             });
@@ -1267,19 +1273,19 @@ class Connection {
     reconnect() {
         if (this._retryMax <= this._retryCount) {
             // 諦めます
-            vue1.isSocketClosed = true;
-            console.log(`[Reconnect] Give up`);
+            console.log(`[Connection reconnect] Give up`);
+            this._onGiveUp();
             return;
         }
 
-        console.log(`[Reconnect] Start...`);
+        console.log(`[Connection reconnect] Start...`);
 
         // 再接続のインターバルの開始を通知しますが、実際に接続するのは５秒後です
         // 最初は 0 回目なので、表示を考慮して +1 の下駄を履かせます
         this._onRetryWaiting(true, this._retryCount + 1, this._retryMax);
 
         setTimeout(() => {
-            console.log(`[Reconnect] Try... to:${this._connectionString}`);
+            console.log(`[Connection reconnect] Try... to:${this._connectionString}`);
 
             // 事前にカウントを上げておきます
             this._retryCount += 1;
@@ -1287,7 +1293,7 @@ class Connection {
             this._onRetryWaiting(false, this._retryCount, this._retryMax);
             // 接続
             this.connect();
-            console.log(`[Reconnect] End. retried:${this._retryCount}/${this._retryMax}`);
+            console.log(`[Connection reconnect] End. retried:${this._retryCount}/${this._retryMax}`);
         }, 5000);
     }
 }
@@ -1561,6 +1567,8 @@ class Connection {
             var connection = new Connection(
                 roomName,
                 connectionString,
+                // サーバーからのメッセージを受信したとき
+                incomingMessages,
                 // Webソケットを開かれたとき
                 () => {
                     console.log("WebSockets connection created.");
@@ -1573,8 +1581,6 @@ class Connection {
                     // 再接続の初回トライを書いてよいのはこのタイミングです
                     connection.reconnect();
                 },
-                // サーバーからのメッセージを受信したとき
-                incomingMessages,
                 // エラー時
                 (exception) => {
                     console.log(`Socket is error. ${exception.reason}`);
@@ -1593,6 +1599,12 @@ class Connection {
                     vue1.isReconnecting = isBeginWait;
                     vue1.reconnectionCount = retryCount;
                     vue1.reconnectionMax = retryMax;
+                },
+                /**
+                 * 再接続を諦めたとき
+                 */
+                ()=>{
+                    vue1.isSocketClosed = true;
                 });
 
             let vue1 = new Vue({
