@@ -9,8 +9,9 @@ class Engine {
      * @param {string} roomName - 部屋名
      * @param {string} myPiece - X か O
      * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+     * @param {function} setLabelOfButton - 升ボタンのラベルの設定
      */
-    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
+    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString, setLabelOfButton) {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
@@ -66,14 +67,12 @@ class Engine {
             }
         };
 
-        this.connect();
-    }
+        this._setLabelOfButton = setLabelOfButton;
 
-    setup(setLabelOfButton) {
         // １手進めたとき
         this._userCtrl.onDoMove = (sq, pieceMoved) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, pieceMoved);
+            this._setLabelOfButton(sq, pieceMoved);
 
             console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
@@ -83,6 +82,8 @@ class Engine {
                 this._connection.webSock1.send(JSON.stringify(response));
             }
         };
+
+        this.connect();
     }
 
     /**
@@ -136,6 +137,13 @@ class Engine {
      */
     get gameoverSet() {
         return this._gameoverSet;
+    }
+
+    /**
+     * ボタンにラベルをセットする関数
+     */
+    get setLabelOfButton() {
+        return this._setLabelOfButton;
     }
 
     /**

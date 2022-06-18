@@ -1045,8 +1045,9 @@ class Engine {
      * @param {string} roomName - 部屋名
      * @param {string} myPiece - X か O
      * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myPiece)=>{return connectionString;}
+     * @param {function} setLabelOfButton - 升ボタンのラベルの設定
      */
-    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString) {
+    constructor(setMessageFromServer, reconnect, roomName, myPiece, convertPartsToConnectionString, setLabelOfButton) {
         this._setMessageFromServer = setMessageFromServer;
         this._reconnect = reconnect;
 
@@ -1102,14 +1103,12 @@ class Engine {
             }
         };
 
-        this.connect();
-    }
+        this._setLabelOfButton = setLabelOfButton;
 
-    setup(setLabelOfButton) {
         // １手進めたとき
         this._userCtrl.onDoMove = (sq, pieceMoved) => {
             // ボタンのラベルを更新
-            setLabelOfButton(sq, pieceMoved);
+            this._setLabelOfButton(sq, pieceMoved);
 
             console.log(`[onDoMove] this._myPiece=${this._myPiece} pieceMoved=${pieceMoved}`);
 
@@ -1119,6 +1118,8 @@ class Engine {
                 this._connection.webSock1.send(JSON.stringify(response));
             }
         };
+
+        this.connect();
     }
 
     /**
@@ -1172,6 +1173,13 @@ class Engine {
      */
     get gameoverSet() {
         return this._gameoverSet;
+    }
+
+    /**
+     * ボタンにラベルをセットする関数
+     */
+    get setLabelOfButton() {
+        return this._setLabelOfButton;
     }
 
     /**
@@ -1576,7 +1584,49 @@ function packSetMessageFromServer() {
                             console.log(`[Debug] new Engine ... roomName=${roomName} myPiece=${myPiece} connectionString=${connectionString}`);
 
                             return connectionString;
-                        }
+                        },
+                        /**
+                         * 升ボタンのラベルの設定
+                         *
+                         * @param {number} sq - Square; 0 <= sq
+                         * @param {*} piece - text
+                         */
+                        (sq, piece)=>{
+                            console.log(`[lambda] setLabelOfButton sq=${sq} piece=${piece} this=${this}`);
+                            switch (sq) {
+                                case 0:
+                                    // * ここでは this はWindowを指しているので、グローバル変数を使います
+                                    vue1.label0 = piece;
+                                    break;
+                                case 1:
+                                    vue1.label1 = piece;
+                                    break;
+                                case 2:
+                                    vue1.label2 = piece;
+                                    break;
+                                case 3:
+                                    vue1.label3 = piece;
+                                    break;
+                                case 4:
+                                    vue1.label4 = piece;
+                                    break;
+                                case 5:
+                                    vue1.label5 = piece;
+                                    break;
+                                case 6:
+                                    vue1.label6 = piece;
+                                    break;
+                                case 7:
+                                    vue1.label7 = piece;
+                                    break;
+                                case 8:
+                                    vue1.label8 = piece;
+                                    break;
+                                default:
+                                    alert(`[Error] sq=${sq}`);
+                                    break;
+                            }
+                        },
                     ),
                     label0: PC_EMPTY_LABEL,
                     label1: PC_EMPTY_LABEL,
@@ -1619,8 +1669,6 @@ function packSetMessageFromServer() {
                         // 「相手の手番に着手しないでください」というアラートの非表示
                         this.isVisibleAlertWaitForOther = false;
 
-                        this.engine.setup(this.packSetLabelOfButton());
-
                         // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
                         this.engine.start();
@@ -1628,7 +1676,7 @@ function packSetMessageFromServer() {
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.setLabelOfButton(sq, PC_EMPTY_LABEL);
+                            this.engine.setLabelOfButton(sq, PC_EMPTY_LABEL);
                         }
 
                         // ダンプ
@@ -1665,55 +1713,6 @@ function packSetMessageFromServer() {
                                 this.engine.userCtrl.doMove(this.engine.position, this.engine.connection.myPiece, parseInt(sq));
                             }
                         }
-                    },
-                    /**
-                     * 升ボタンのラベル変更
-                     * @param {number} sq - Square; 0 <= sq
-                     * @param {*} piece - text
-                     */
-                    setLabelOfButton(sq, piece) {
-                        // console.log(`[methods setLabelOfButton] sq=${sq} piece=${piece}`);
-
-                        switch (sq) {
-                            case 0:
-                                this.label0 = piece;
-                                break;
-                            case 1:
-                                this.label1 = piece;
-                                break;
-                            case 2:
-                                this.label2 = piece;
-                                break;
-                            case 3:
-                                this.label3 = piece;
-                                break;
-                            case 4:
-                                this.label4 = piece;
-                                break;
-                            case 5:
-                                this.label5 = piece;
-                                break;
-                            case 6:
-                                this.label6 = piece;
-                                break;
-                            case 7:
-                                this.label7 = piece;
-                                break;
-                            case 8:
-                                this.label8 = piece;
-                                break;
-                            default:
-                                alert(`[Error] sq=${sq}`);
-                                break;
-                        }
-                    },
-                    /**
-                     * @return {*} ラムダ関数
-                     */
-                    packSetLabelOfButton() {
-                        return (sq, piece) => {
-                            this.setLabelOfButton(sq, piece);
-                        };
                     },
                     /**
                      * 対局は終了しました
