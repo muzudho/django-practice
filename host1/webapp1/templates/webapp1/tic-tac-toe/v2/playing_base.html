@@ -60,12 +60,15 @@
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
-                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isGameover">{{gameover_message}}</v-alert>
+                        <v-alert type="success" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
-                        <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
+                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="warning" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
+                        {% verbatim %}
+                        <v-alert type="warning" v-show="isReconnecting">Reconnecting... {{reconnectionCount}}/{{reconnectionMax}}</v-alert>
+                        {% endverbatim %}
+                        <v-alert type="error" v-show="isSocketClosed">Lost connection</v-alert>
                     </v-container>
                 </v-main>
             </v-app>
@@ -89,27 +92,6 @@
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            /**
-             * 再接続
-             *
-             * * 5秒後に1回だけ再接続にトライします。
-             *   そのあと接続が切れれば また再接続が呼び出されるので連続します
-             */
-            function reconnect() {
-                console.log("[Reconnect] Start...");
-                vue1.connection.isReconnectingDisplay = true;
-
-                setTimeout(() => {
-                    // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
-                    console.log("[Reconnect] Try...");
-                    // 再接続
-                    vue1.connection.connect();
-
-                    vue1.connection.isReconnectingDisplay = false;
-                    console.log("[Reconnect] End");
-                }, 5000);
-            }
-
             // 部屋名
             const roomName = document.forms["form1"]["po_room_name"].value;
             // 接続文字列
@@ -122,34 +104,48 @@
             // 3. パス
             console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
+            // 接続
+            var connection = new Connection(
+                roomName,
+                connectionString,
+                // Webソケットを開かれたとき
+                () => {
+                    console.log("WebSockets connection created.");
+                    let response = vue1.messageSender.createStart();
+                    connection.webSock1.send(JSON.stringify(response));
+                },
+                // Webソケットが閉じられたとき
+                (exception) => {
+                    console.log(`Socket is closed. Reconnect it. ${exception.reason}`);
+                    // 再接続の初回トライを書いてよいのはこのタイミングです
+                    connection.reconnect();
+                },
+                // サーバーからのメッセージを受信したとき
+                packSetMessageFromServer(),
+                // エラー時
+                (exception) => {
+                    console.log(`Socket is error. ${exception.reason}`);
+                },
+                /**
+                 * 再接続のためのインターバルの通知
+                 *
+                 * @param {bool} isBeginWait - 次の再接続までの待ち時間に入ったら真
+                 * @param {int} retryCount - リトライ回数
+                 * @param {int} retryMax - リトライ回数上限
+                 */
+                (isBeginWait, retryCount, retryMax)=>{
+                    // console.log(`WebSockets reconnection isBeginWait:${isBeginWait}`);
+                    vue1.isReconnecting = isBeginWait;
+                    vue1.reconnectionCount = retryCount;
+                    vue1.reconnectionMax = retryMax;
+                });
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     // メッセージ送信側
                     messageSender: new MessageSender(),
-                    // 接続
-                    connection: new Connection(
-                        roomName,
-                        connectionString,
-                        // Webソケットを開かれたとき
-                        () => {
-                            console.log("WebSockets connection created.");
-                            let response = vue1.messageSender.createStart();
-                            vue1.connection.webSock1.send(JSON.stringify(response));
-                        },
-                        // Webソケットが閉じられたとき
-                        (exception) => {
-                            console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${exception.reason}`);
-                            // 1回だけ再接続を試みます
-                            reconnect();
-                        },
-                        // サーバーからのメッセージを受信したとき
-                        packSetMessageFromServer(),
-                        // エラー時
-                        (exception) => {
-                            console.log(`Socket is error. ${exception.reason}`);
-                        }),
                     building: new Building(
                         // `po_` は POST送信するパラメーター名の目印
                         // 自分の駒。 X か O
@@ -171,7 +167,7 @@
                                 // 自分の指し手なら送信
                                 if (vue1.building.position.turn.me == pieceMoved) {
                                     let response = vue1.messageSender.createDoMove(sq, pieceMoved);
-                                    vue1.connection.webSock1.send(JSON.stringify(response));
+                                    connection.webSock1.send(JSON.stringify(response));
                                 }
                             }
                         ),
@@ -191,12 +187,12 @@
                                     case GameoverSet.win:
                                         // 勝ったとき
                                         response = vue1.messageSender.createWon(pieceMoved);
-                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        connection.webSock1.send(JSON.stringify(response));
                                         break;
                                     case GameoverSet.draw:
                                         // 引き分けたとき
                                         response = vue1.messageSender.createDraw();
-                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        connection.webSock1.send(JSON.stringify(response));
                                         break;
                                     case GameoverSet.lose:
                                         // 負けたとき
@@ -219,6 +215,10 @@
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isReconnecting: false,
+                    reconnectionCount: 0,
+                    reconnectionMax: 0,
+                    isSocketClosed: false,
                     isYourTurn: false,
                     isGameover: false,
                     // 「相手の手番に着手しないでください」というアラートの可視性
@@ -404,12 +404,6 @@
                         console.log(`[methods raisePositionChanged]`);
                         this.raiseMyTurnChanged();
                     },
-                    /**
-                     * 再接続中表示中なら、アラートを常時表示
-                     */
-                    isAlertReconnectingShow() {
-                        return this.connection.isReconnectingDisplay;
-                    },
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
                     {% endblock methods_footer %}
@@ -423,7 +417,7 @@
             });
 
             console.log(`[HTML] ★WS接続`);
-            vue1.connection.connect();
+            connection.connect();
         </script>
     </body>
 </html>

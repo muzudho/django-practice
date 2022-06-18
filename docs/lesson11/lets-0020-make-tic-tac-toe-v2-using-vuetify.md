@@ -670,8 +670,9 @@ class Connection {
      * @param {*} onCloseWebSocket - Webソケットが閉じられたとき。 例: サーバー側にエラーがあって接続が切れたりなど
      * @param {*} setMessageFromServer - サーバーからのメッセージがセットされる関数
      * @param {*} onWebSocketError - Webソケットエラー時のメッセージ
+     * @param {*} onRetryWaiting - 再接続のためのインターバルの定期的なメッセージ
      */
-    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError) {
+    constructor(roomName, connectionString, onOpenWebSocket, onCloseWebSocket, setMessageFromServer, onWebSocketError, onRetryWaiting) {
         // console.log(`[Connection constructor] roomName=[${roomName}] connectionString=[${connectionString}]`);
 
         // 部屋名
@@ -680,33 +681,17 @@ class Connection {
         // 接続文字列
         this._connectionString = connectionString;
 
-        // 再接続中表示フラグ
-        this.isReconnectingDisplay = false;
+        // リトライ回数
+        this._retryCount = 0;
+        // リトライ上限
+        this._retryMax = 10;
 
-        try {
-            // 接続できないと、この生成に失敗する。catch もできない
-            this.webSock1 = new WebSocket(this._connectionString);
-            // console.log(`[Debug][Connection connect] Connecting...`);
-
-            this.webSock1.onopen = onOpenWebSocket;
-            this.webSock1.onclose = onCloseWebSocket;
-
-            // 設定: サーバーからメッセージを受信したとき
-            this.webSock1.onmessage = (e) => {
-                // JSON を解析、メッセージだけ抽出
-                let data1 = JSON.parse(e.data);
-                let message = data1["message"];
-                setMessageFromServer(message);
-            };
-
-            // this.webSock1.onerror = onWebSocketError;
-            this.webSock1.addEventListener("error", (event1) => {
-                onWebSocketError(event1);
-            });
-        } catch (exception) {
-            // キャッチで捕まえられない
-            console.log(`[Connection constructor] exception:${exception}`);
-        }
+        // 再接続のために記憶しておきます
+        this._onOpenWebSocket = onOpenWebSocket;
+        this._onCloseWebSocket = onCloseWebSocket;
+        this._setMessageFromServer = setMessageFromServer;
+        this._onWebSocketError = onWebSocketError;
+        this._onRetryWaiting = onRetryWaiting;
     }
 
     /**
@@ -715,8 +700,32 @@ class Connection {
     connect() {
         // console.log(`[Connection#connect] Start this._connectionString=[${this._connectionString}]`);
 
-        // Webソケットを生成すると、接続も行われる。再接続したいときは、再生成する
+        // Webソケット
+        //
+        // * 生成と同時に接続が始まる。そこで例外が起こるとキャッチはできないし、なぜか後続の処理に続かず関数を抜けてしまう
+        // * １回切りの使い捨て。再接続機能は無い
+        // * 再接続したいときは、再生成する
         try {
+            this.webSock1 = new WebSocket(this._connectionString);
+            // 以下、接続に成功
+
+            // イベントハンドラを毎回設定し直してください
+            this.webSock1.onopen = this._onOpenWebSocket;
+            this.webSock1.onclose = this._onCloseWebSocket;
+
+            // 設定: サーバーからメッセージを受信したとき
+            this.webSock1.onmessage = (e) => {
+                // JSON を解析、メッセージだけ抽出
+                let data1 = JSON.parse(e.data);
+                let message = data1["message"];
+                this._setMessageFromServer(message);
+            };
+
+            // this.webSock1.onerror = onWebSocketError;
+            this.webSock1.addEventListener("error", (event1) => {
+                this._onWebSocketError(event1);
+            });
+
             // 状態を表示
             if (this.webSock1.readyState == WebSocket.CONNECTING) {
                 // 未接続
@@ -729,6 +738,9 @@ class Connection {
             } else if (this.webSock1.readyState == WebSocket.CLOSED) {
                 // サーバーが落ちたりしたときは、ここ
                 console.log("[Connection connect] Closed socket.");
+
+                // 再接続のリトライを書くタイミングはここです
+                this.reconnect();
             } else {
                 console.log(`[Connection connect] webSock1.readyState=${this.webSock1.readyState}`);
             }
@@ -736,6 +748,36 @@ class Connection {
             // キャッチで捕まえられない
             console.log(`[Connection connect] exception:${exception}`);
         }
+    }
+
+    /**
+     * 再接続
+     */
+    reconnect() {
+        if (this._retryMax <= this._retryCount) {
+            // 諦めます
+            vue1.isSocketClosed = true;
+            console.log(`[Reconnect] Give up`);
+            return;
+        }
+
+        console.log(`[Reconnect] Start...`);
+
+        // 再接続のインターバルの開始を通知しますが、実際に接続するのは５秒後です
+        // 最初は 0 回目なので、表示を考慮して +1 の下駄を履かせます
+        this._onRetryWaiting(true, this._retryCount + 1, this._retryMax);
+
+        setTimeout(() => {
+            console.log(`[Reconnect] Try... to:${this._connectionString}`);
+
+            // 事前にカウントを上げておきます
+            this._retryCount += 1;
+            // 再接続のインターバルの終了を通知しますが、実際には接続を開始します
+            this._onRetryWaiting(false, this._retryCount, this._retryMax);
+            // 接続
+            this.connect();
+            console.log(`[Reconnect] End. retried:${this._retryCount}/${this._retryMax}`);
+        }, 5000);
     }
 }
 ```
@@ -1390,12 +1432,15 @@ function packSetMessageFromServer() {
                     <!-- ボタン等を追加したいなら、ここに挿しこめる -->
                     {% endblock footer_section1 %}
                     <v-container>
-                        <v-alert type="info" color="green" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
-                        <v-alert type="warning" color="orange" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
                         {% verbatim %}
-                        <v-alert type="success" color="blue" v-show="isGameover">{{gameover_message}}</v-alert>
+                        <v-alert type="success" v-show="isGameover">{{gameover_message}}</v-alert>
                         {% endverbatim %}
-                        <v-alert type="warning" color="orange" v-show="isAlertReconnectingShow()">Reconnecting...</v-alert>
+                        <v-alert type="info" v-show="isYourTurn">Your turn. Place your move <strong>{{dj_my_piece}}</strong></v-alert>
+                        <v-alert type="warning" v-show="isVisibleAlertWaitForOther">Wait for other to place the move</v-alert>
+                        {% verbatim %}
+                        <v-alert type="warning" v-show="isReconnecting">Reconnecting... {{reconnectionCount}}/{{reconnectionMax}}</v-alert>
+                        {% endverbatim %}
+                        <v-alert type="error" v-show="isSocketClosed">Lost connection</v-alert>
                     </v-container>
                 </v-main>
             </v-app>
@@ -1419,27 +1464,6 @@ function packSetMessageFromServer() {
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            /**
-             * 再接続
-             *
-             * * 5秒後に1回だけ再接続にトライします。
-             *   そのあと接続が切れれば また再接続が呼び出されるので連続します
-             */
-            function reconnect() {
-                console.log("[Reconnect] Start...");
-                vue1.connection.isReconnectingDisplay = true;
-
-                setTimeout(() => {
-                    // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
-                    console.log("[Reconnect] Try...");
-                    // 再接続
-                    vue1.connection.connect();
-
-                    vue1.connection.isReconnectingDisplay = false;
-                    console.log("[Reconnect] End");
-                }, 5000);
-            }
-
             // 部屋名
             const roomName = document.forms["form1"]["po_room_name"].value;
             // 接続文字列
@@ -1452,34 +1476,48 @@ function packSetMessageFromServer() {
             // 3. パス
             console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
+            // 接続
+            var connection = new Connection(
+                roomName,
+                connectionString,
+                // Webソケットを開かれたとき
+                () => {
+                    console.log("WebSockets connection created.");
+                    let response = vue1.messageSender.createStart();
+                    connection.webSock1.send(JSON.stringify(response));
+                },
+                // Webソケットが閉じられたとき
+                (exception) => {
+                    console.log(`Socket is closed. Reconnect it. ${exception.reason}`);
+                    // 再接続の初回トライを書いてよいのはこのタイミングです
+                    connection.reconnect();
+                },
+                // サーバーからのメッセージを受信したとき
+                packSetMessageFromServer(),
+                // エラー時
+                (exception) => {
+                    console.log(`Socket is error. ${exception.reason}`);
+                },
+                /**
+                 * 再接続のためのインターバルの通知
+                 *
+                 * @param {bool} isBeginWait - 次の再接続までの待ち時間に入ったら真
+                 * @param {int} retryCount - リトライ回数
+                 * @param {int} retryMax - リトライ回数上限
+                 */
+                (isBeginWait, retryCount, retryMax)=>{
+                    // console.log(`WebSockets reconnection isBeginWait:${isBeginWait}`);
+                    vue1.isReconnecting = isBeginWait;
+                    vue1.reconnectionCount = retryCount;
+                    vue1.reconnectionMax = retryMax;
+                });
+
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     // メッセージ送信側
                     messageSender: new MessageSender(),
-                    // 接続
-                    connection: new Connection(
-                        roomName,
-                        connectionString,
-                        // Webソケットを開かれたとき
-                        () => {
-                            console.log("WebSockets connection created.");
-                            let response = vue1.messageSender.createStart();
-                            vue1.connection.webSock1.send(JSON.stringify(response));
-                        },
-                        // Webソケットが閉じられたとき
-                        (exception) => {
-                            console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${exception.reason}`);
-                            // 1回だけ再接続を試みます
-                            reconnect();
-                        },
-                        // サーバーからのメッセージを受信したとき
-                        packSetMessageFromServer(),
-                        // エラー時
-                        (exception) => {
-                            console.log(`Socket is error. ${exception.reason}`);
-                        }),
                     building: new Building(
                         // `po_` は POST送信するパラメーター名の目印
                         // 自分の駒。 X か O
@@ -1501,7 +1539,7 @@ function packSetMessageFromServer() {
                                 // 自分の指し手なら送信
                                 if (vue1.building.position.turn.me == pieceMoved) {
                                     let response = vue1.messageSender.createDoMove(sq, pieceMoved);
-                                    vue1.connection.webSock1.send(JSON.stringify(response));
+                                    connection.webSock1.send(JSON.stringify(response));
                                 }
                             }
                         ),
@@ -1521,12 +1559,12 @@ function packSetMessageFromServer() {
                                     case GameoverSet.win:
                                         // 勝ったとき
                                         response = vue1.messageSender.createWon(pieceMoved);
-                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        connection.webSock1.send(JSON.stringify(response));
                                         break;
                                     case GameoverSet.draw:
                                         // 引き分けたとき
                                         response = vue1.messageSender.createDraw();
-                                        vue1.connection.webSock1.send(JSON.stringify(response));
+                                        connection.webSock1.send(JSON.stringify(response));
                                         break;
                                     case GameoverSet.lose:
                                         // 負けたとき
@@ -1549,6 +1587,10 @@ function packSetMessageFromServer() {
                     label6: PC_EMPTY_LABEL,
                     label7: PC_EMPTY_LABEL,
                     label8: PC_EMPTY_LABEL,
+                    isReconnecting: false,
+                    reconnectionCount: 0,
+                    reconnectionMax: 0,
+                    isSocketClosed: false,
                     isYourTurn: false,
                     isGameover: false,
                     // 「相手の手番に着手しないでください」というアラートの可視性
@@ -1734,12 +1776,6 @@ function packSetMessageFromServer() {
                         console.log(`[methods raisePositionChanged]`);
                         this.raiseMyTurnChanged();
                     },
-                    /**
-                     * 再接続中表示中なら、アラートを常時表示
-                     */
-                    isAlertReconnectingShow() {
-                        return this.connection.isReconnectingDisplay;
-                    },
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
                     {% endblock methods_footer %}
@@ -1753,7 +1789,7 @@ function packSetMessageFromServer() {
             });
 
             console.log(`[HTML] ★WS接続`);
-            vue1.connection.connect();
+            connection.connect();
         </script>
     </body>
 </html>
