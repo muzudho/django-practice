@@ -19,13 +19,13 @@ class RoomState {
     /**
      * 生成
      * @param {int} value
-     * @param {function} changeValue - 値の変更
+     * @param {function} onChangeValue - 値の変更時
      */
-    constructor(value, changeValue) {
+    constructor(value, onChangeValue) {
         console.log(`[RoomState constructor]`);
 
         this._value = value;
-        this._changeValue = changeValue;
+        this._onChangeValue = onChangeValue;
     }
 
     /**
@@ -44,7 +44,7 @@ class RoomState {
 
         let oldValue = this._value;
         this._value = value;
-        this._changeValue(oldValue, this._value);
+        this._onChangeValue(oldValue, this._value);
     }
 
     /**
