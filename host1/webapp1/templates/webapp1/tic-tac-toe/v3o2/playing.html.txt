@@ -12,7 +12,7 @@
 
 {% block isYourTurn_patch1 %}
     // "X" か "O" かのどちらかのプレイヤーか
-    isYourTurn = isYourTurn && (this.building.position.turn.me == 'X' || this.building.position.turn.me == 'O');
+    isYourTurn = isYourTurn && (this.engine.position.turn.me == 'X' || this.engine.position.turn.me == 'O');
 {% endblock isYourTurn_patch1 %}
 
 
@@ -24,8 +24,8 @@
 
 {% block create_gameover_message %}
     // 観戦者のケース
-    if (this.building.position.turn.me == '_') {
-        switch (this.building.winner) {
+    if (this.engine.position.turn.me == '_') {
+        switch (this.engine.winner) {
             case PC_X_LABEL:
                 return this.messages.xWin;
             case PC_O_LABEL:
@@ -33,7 +33,7 @@
             case PC_EMPTY_LABEL:
                 return this.messages.draw;
             default:
-                throw `unknown this.building.winner = ${this.building.winner}`;
+                throw `unknown this.engine.winner = ${this.engine.winner}`;
         }
     }
 {% endblock create_gameover_message %}

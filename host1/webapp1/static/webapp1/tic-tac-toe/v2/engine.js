@@ -1,7 +1,7 @@
 /**
- * 建物
+ * 思考エンジン
  */
-class Building {
+class Engine {
     /**
      * 生成
      * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
@@ -9,7 +9,7 @@ class Building {
      * @param {JudgeCtrl} judgeCtrl - 審判コントロール
      */
     constructor(myTurn, userCtrl, judgeCtrl) {
-        console.log(`[Building constructor] 自分の手番=${myTurn}`);
+        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
@@ -70,7 +70,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] 自分の手番=${this._position.turn.me}`);
+        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -85,8 +85,8 @@ class Building {
 
     dump(indent) {
         return `
-${indent}Building
-${indent}--------
+${indent}Engine
+${indent}------
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
 ${indent}${this._position.dump(indent + "    ")}`;

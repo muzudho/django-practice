@@ -1054,7 +1054,7 @@ class JudgeCtrl {
 }
 ```
 
-# Step 10. 建物作成 - building.js ファイル
+# Step 10. 建物作成 - engine.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1065,9 +1065,9 @@ class JudgeCtrl {
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
-👉              │           ├── 📄building.js
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
+👉              │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
                 │           ├── 📄judge_ctrl.js
                 │           ├── 📄outgoing_messages.js
@@ -1078,9 +1078,9 @@ class JudgeCtrl {
 
 ```js
 /**
- * 建物
+ * 思考エンジン
  */
-class Building {
+class Engine {
     /**
      * 生成
      * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
@@ -1088,7 +1088,7 @@ class Building {
      * @param {JudgeCtrl} judgeCtrl - 審判コントロール
      */
     constructor(myTurn, userCtrl, judgeCtrl) {
-        console.log(`[Building constructor] 自分の手番=${myTurn}`);
+        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
 
         // あれば勝者 "X", "O" なければ空文字列
         this._winner = "";
@@ -1149,7 +1149,7 @@ class Building {
      * 対局開始時
      */
     start() {
-        console.log(`[Building start] 自分の手番=${this._position.turn.me}`);
+        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
 
         // 勝者のクリアー
         this._winner = "";
@@ -1164,8 +1164,8 @@ class Building {
 
     dump(indent) {
         return `
-${indent}Building
-${indent}--------
+${indent}Engine
+${indent}------
 ${indent}_winner:${this._winner}
 ${indent}${this._gameoverSet.dump(indent + "    ")}
 ${indent}${this._position.dump(indent + "    ")}`;
@@ -1184,9 +1184,9 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 ├── 📂webapp1
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
-                │           ├── 📄building.js
                 │           ├── 📄concepts.js
                 │           ├── 📄connection.js
+                │           ├── 📄engine.js
                 │           ├── 📄game_rule.js
 👉              │           ├── 📄incoming_messages.js
                 │           ├── 📄judge_ctrl.js
@@ -1305,9 +1305,9 @@ class IncomingMessages {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -1403,9 +1403,9 @@ class IncomingMessages {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -1506,11 +1506,11 @@ class IncomingMessages {
         <script src="{% static 'webapp1/tic-tac-toe/v2/incoming_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/outgoing_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/building.js' %}"></script>
-        <!--                    ==================================
+        <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
+        <!--                    ================================
                                 1
-        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/building.js
-                 ================================================
+        1. host1/webapp1/static/webapp1/tic-ta-toe/v2/engine.js
+                 ==============================================
         -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -1537,21 +1537,21 @@ class IncomingMessages {
                 vue1.onGameover(winner);
             }
             incomingMessages.onMoved = (message, sq, piece_moved)=>{
-                console.log(`[HTML onMoved] 自分の手番:${vue1.building.position.turn.me}`);
+                console.log(`[HTML onMoved] 自分の手番:${vue1.engine.position.turn.me}`);
 
-                if (piece_moved != vue1.building.position.turn.me) {
+                if (piece_moved != vue1.engine.position.turn.me) {
                     // 相手の手番なら、自動で動かします
-                    vue1.building.userCtrl.doMove(vue1.building.position, piece_moved, sq);
+                    vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, sq);
 
                     // 自分の手番に変更
-                    vue1.building.position.turn.isMe = true;
+                    vue1.engine.position.turn.isMe = true;
 
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
                 }
 
                 // どちらの手番でもゲームオーバー判定は行います
-                vue1.building.judgeCtrl.doJudge(vue1.building.position, piece_moved);
+                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
             }
 
             // 送信メッセージ作成者
@@ -1599,7 +1599,8 @@ class IncomingMessages {
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    building: new Building(
+                    // 思考エンジン
+                    engine: new Engine(
                         // `po_` は POST送信するパラメーター名の目印
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
@@ -1615,10 +1616,10 @@ class IncomingMessages {
                                 // ボタンのラベルを更新
                                 vue1.setLabelOfButton(sq, pieceMoved);
 
-                                console.log(`[Building onDoMove] 自分の手番=${vue1.building.position.turn.me} pieceMoved=${pieceMoved}`);
+                                console.log(`[Engine onDoMove] 自分の手番=${vue1.engine.position.turn.me} pieceMoved=${pieceMoved}`);
 
                                 // 自分の指し手なら送信
-                                if (vue1.building.position.turn.me == pieceMoved) {
+                                if (vue1.engine.position.turn.me == pieceMoved) {
                                     let response = outgoingMessages.createDoMove(sq, pieceMoved);
                                     connection.send(response);
                                 }
@@ -1633,7 +1634,7 @@ class IncomingMessages {
                              * @param {*} gameoverSetValue - ゲームオーバー集合の元
                              */
                             (pieceMoved, gameoverSetValue) => {
-                                vue1.building.gameoverSet.value = gameoverSetValue;
+                                vue1.engine.gameoverSet.value = gameoverSetValue;
                                 let response;
 
                                 switch (gameoverSetValue) {
@@ -1709,7 +1710,7 @@ class IncomingMessages {
 
                         // 先に 対局中状態 にしておいてから、エンジンをスタートさせてください
                         this.roomState.value = RoomState.playing;
-                        this.building.start();
+                        this.engine.start();
 
 
                         // ボタンのラベルをクリアー
@@ -1725,30 +1726,30 @@ class IncomingMessages {
                      * @param {*} sq - Square; 0 <= sq
                      */
                     clickSquare(sq) {
-                        console.log(`[methods clickSquare] gameoverSet:${this.building.gameoverSet.value}`);
-                        if (this.building.gameoverSet.value != GameoverSet.none) {
+                        console.log(`[methods clickSquare] gameoverSet:${this.engine.gameoverSet.value}`);
+                        if (this.engine.gameoverSet.value != GameoverSet.none) {
                             // Ban on illegal move
-                            console.log(`Ban on illegal move. gameoverSet:${this.building.gameoverSet.value}`);
+                            console.log(`Ban on illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                             return;
                         }
 
-                        if (this.building.position.board.getPieceBySq(sq) == PC_EMPTY) {
-                            if (!this.building.position.turn.isMe) {
+                        if (this.engine.position.board.getPieceBySq(sq) == PC_EMPTY) {
+                            if (!this.engine.position.turn.isMe) {
                                 // Wait for other to place the move
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
                                 // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.building.position.turn.isMe = false;
+                                this.engine.position.turn.isMe = false;
 
-                                if (this.building.gameoverSet.value != GameoverSet.none) {
+                                if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
-                                    console.log(`warning of illegal move. gameoverSet:${this.building.gameoverSet.value}`);
+                                    console.log(`warning of illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
                                     return;
                                 }
 
                                 // 自分の一手
-                                this.building.userCtrl.doMove(this.building.position, this.building.position.turn.me, parseInt(sq));
+                                this.engine.userCtrl.doMove(this.engine.position, this.engine.position.turn.me, parseInt(sq));
                             }
                         }
                     },
@@ -1757,7 +1758,7 @@ class IncomingMessages {
                      */
                     onGameover(winner) {
                         console.log(`[methods onGameover] winner=${winner}`);
-                        this.building.winner = winner;
+                        this.engine.winner = winner;
                         this.roomState.value = RoomState.none; // 画面を対局終了状態へ
 
                         this.gameover_message = this.createGameoverMessage();
@@ -1770,7 +1771,7 @@ class IncomingMessages {
                         // 返却値を変えたいなら、ここに挿しこめる
                         {% endblock create_gameover_message %}
 
-                        switch (this.building.gameoverSet.value) {
+                        switch (this.engine.gameoverSet.value) {
                             case GameoverSet.draw:
                                 return this.messages.draw;
                             case GameoverSet.win:
@@ -1781,7 +1782,7 @@ class IncomingMessages {
                                 // ここに来るのはおかしい
                                 return "";
                             default:
-                                throw `unknown this.building.gameoverSet.value = ${this.building.gameoverSet.value}`;
+                                throw `unknown this.engine.gameoverSet.value = ${this.engine.gameoverSet.value}`;
                         }
                     },
                     /**
@@ -1831,8 +1832,8 @@ class IncomingMessages {
                      * (2) 自分の手番か
                      */
                     updateYourTurn(){
-                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} 私の番か:${this.building.position.turn.isMe}`);
-                        let isYourTurn = this.roomState.value == RoomState.playing && this.building.position.turn.isMe;
+                        console.log(`[methods updateYourTurn 1] this.roomState=${this.roomState.value} 私の番か:${this.engine.position.turn.isMe}`);
+                        let isYourTurn = this.roomState.value == RoomState.playing && this.engine.position.turn.isMe;
 
                         {% block isYourTurn_patch1 %}
                         // 条件を追加したいなら、ここに挿しこめる
@@ -1864,7 +1865,7 @@ class IncomingMessages {
                      * ダンプ
                      */
                     dump() {
-                        console.log(`[DUMP] vue1\n${this.building.dump("")}`)
+                        console.log(`[DUMP] vue1\n${this.engine.dump("")}`)
                     },
                 },
             });
@@ -1887,9 +1888,9 @@ class IncomingMessages {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -1960,9 +1961,9 @@ class IncomingMessages {
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -2070,9 +2071,9 @@ class TicTacToeV2MessageConverter():
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -2173,9 +2174,9 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -2247,9 +2248,9 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -2428,9 +2429,9 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
@@ -2520,9 +2521,9 @@ urlpatterns = [
             │   ├── 📂webapp1
             │   │   └── 📂tic-tac-toe
             │   │       └── 📂v2
-            │   │           ├── 📄building.js
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
+            │   │           ├── 📄engine.js
             │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
