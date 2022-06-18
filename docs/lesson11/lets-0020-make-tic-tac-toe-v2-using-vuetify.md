@@ -1548,10 +1548,6 @@ class Connection {
                     // 相手の手番なら、自動で動かします
                     vue1.engine.userCtrl.doMove(vue1.engine.position, piece_moved, sq);
 
-                    // 自分の手番に変更
-                    vue1.engine.position.turn.isMe = true;
-                    vue1.raiseMyTurnChanged();
-
                     // アラートの非表示
                     vue1.isVisibleAlertWaitForOther = false;
                 }
@@ -1619,7 +1615,7 @@ class Connection {
                         // ユーザーコントロール
                         new UserCtrl(
                             /**
-                             * 駒を置いたとき
+                             * onDoMove - 駒を置いたとき
                              *
                              * @param {int} sq - マス番号
                              * @param {string} pieceMoved - 動かした駒
@@ -1628,13 +1624,19 @@ class Connection {
                                 // ボタンのラベルを更新
                                 vue1.setLabelOfButton(sq, pieceMoved);
 
-                                console.log(`[Engine onDoMove] 自分の手番=${vue1.engine.position.turn.me} pieceMoved=${pieceMoved}`);
+                                console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} pieceMoved=${pieceMoved}`);
 
                                 // 自分の指し手なら送信
                                 if (vue1.engine.position.turn.me == pieceMoved) {
                                     let response = outgoingMessages.createDoMove(sq, pieceMoved);
                                     connection.send(response);
                                 }
+
+                                // 手番を反転
+                                // console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.isMe}`);
+                                vue1.engine.position.turn.isMe = !vue1.engine.position.turn.isMe;
+                                // console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.isMe}`);
+                                vue1.raiseMyTurnChanged();
                             }
                         ),
                         // 審判コントロール
@@ -1752,10 +1754,6 @@ class Connection {
                                 console.log("Wait for other to place the move");
                                 this.isVisibleAlertWaitForOther = true;
                             } else {
-                                // （サーバーからの応答を待たず）相手の手番に変更します
-                                this.engine.position.turn.isMe = false;
-                                this.raiseMyTurnChanged();
-
                                 if (this.engine.gameoverSet.value != GameoverSet.none) {
                                     // ゲームオーバー後に駒を置いてはいけません
                                     console.log(`warning of illegal move. gameoverSet:${this.engine.gameoverSet.value}`);
