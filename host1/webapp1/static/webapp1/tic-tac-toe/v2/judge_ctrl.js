@@ -27,6 +27,8 @@ class JudgeCtrl {
 
     /**
      * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
      */
     doJudge(piece_moved) {
         let gameoverSetValue = this.#makeGameoverSetValue();
@@ -36,8 +38,6 @@ class JudgeCtrl {
 
     /**
      * ゲームオーバー判定
-     *
-     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
      *
      * @returns ゲームオーバー状態
      */
