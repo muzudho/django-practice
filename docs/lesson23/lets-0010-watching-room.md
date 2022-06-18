@@ -128,7 +128,7 @@ docker-compose up
             case PC_EMPTY_LABEL:
                 return this.messages.draw;
             default:
-                throw `unknown gameover_set = ${gameover_set}`;
+                throw `unknown this.engine.winner = ${this.engine.winner}`;
         }
     }
 {% endblock create_gameover_message %}
