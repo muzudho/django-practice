@@ -90,55 +90,68 @@
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
             /**
-             * 再接続関数の作成
-             * @return ラムダ関数
+             * 再接続
+             *
+             * * 5秒後に1回だけ再接続にトライします。
+             *   そのあと接続が切れれば また再接続が呼び出されるので連続します
              */
-            function packReconnect() {
-                // 5秒後に1回だけ再接続にトライします。
-                // そのあと接続が切れれば また再接続が呼び出されるので連続します
-                return () => {
-                    console.log("[Reconnect] Start...");
-                    vue1.building.connection.isReconnectingDisplay = true;
+            function reconnect() {
+                console.log("[Reconnect] Start...");
+                vue1.connection.isReconnectingDisplay = true;
 
-                    setTimeout(() => {
-                        // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
-                        console.log("[Reconnect] Try...");
-                        vue1.building.connect();
+                setTimeout(() => {
+                    // このコードブロックでは、 this の指しているものが コードブロックの外側のオブジェクトではないので注意
+                    console.log("[Reconnect] Try...");
+                    // 再接続
+                    vue1.connection.connect();
 
-                        vue1.building.connection.isReconnectingDisplay = false;
-                        console.log("[Reconnect] End");
-                    }, 5000);
-                };
+                    vue1.connection.isReconnectingDisplay = false;
+                    console.log("[Reconnect] End");
+                }, 5000);
             }
+
+            // 部屋名
+            const roomName = document.forms["form1"]["po_room_name"].value;
+            // 接続文字列
+            // `dj_` は Djangoでレンダーするパラメーター名の目印
+            const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
+            //                        ----]----------------------]-------------------------------------
+            //                        1    2                      3
+            // 1. プロトコル（Web socket）
+            // 2. ホスト アドレス
+            // 3. パス
+            console.log(`[HTML] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
 
             let vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
-                    building: new Building(
+                    // 接続
+                    connection: new Connection(
+                        roomName,
+                        connectionString,
+                        // Webソケットを開かれたとき
+                        () => {
+                            console.log("WebSockets connection created.");
+                            let response = vue1.building.messageSender.createStart();
+                            vue1.connection.webSock1.send(JSON.stringify(response));
+                        },
+                        // Webソケットが閉じられたとき
+                        (exception) => {
+                            console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${exception.reason}`);
+                            // 1回だけ再接続を試みます
+                            reconnect();
+                        },
+                        // サーバーからのメッセージを受信したとき
                         packSetMessageFromServer(),
-                        packReconnect(),
+                        // エラー時
+                        (exception) => {
+                            console.log(`Socket is error. ${exception.reason}`);
+                        }),
+                    building: new Building(
                         // `po_` は POST送信するパラメーター名の目印
-                        // 部屋名
-                        document.forms["form1"]["po_room_name"].value,
                         // 自分の駒。 X か O
                         document.forms["form1"]["po_my_piece"].value,
-                        /**
-                         * 接続文字列へ変換
-                         */
-                        (roomName) => {
-                            // 接続文字列
-                            // `dj_` は Djangoでレンダーするパラメーター名の目印
-                            const connectionString = `ws://${window.location.host}{{dj_path_of_ws_playing}}${roomName}/`;
-                            //                        ----]----------------------]-------------------------------------
-                            //                        1    2                      3
-                            // 1. プロトコル（Web socket）
-                            // 2. ホスト アドレス
-                            // 3. パス
-                            console.log(`[lambda] convertPartsToConnectionString roomName=${roomName} connectionString=${connectionString}`);
-
-                            return connectionString;
-                        },
                         /**
                          * 升ボタンのラベルの設定
                          *
@@ -212,8 +225,11 @@
                 },
                 // page loaded
                 mounted: () => {
-                    // ここで Vue の準備完了後の処理ができる。
-                    // ただし、まだ this は初期化されてない
+                    // * ここで vue1 はまだ初期化されていない
+                    // * ここで this は Window を指している
+                    console.log(`[mounted] ★dataより後か先か？`);
+                    console.log(`[mounted] ★this:${this}`);
+                    // console.log(`[mounted] ★vue1.data.messages.youWin:${vue1.messages.youWin}`);
                 },
                 methods: {
                     // 対局開始時
@@ -335,7 +351,7 @@
                      * 再接続中表示中なら、アラートを常時表示
                      */
                     isAlertReconnectingShow() {
-                        return this.building.connection.isReconnectingDisplay;
+                        return this.connection.isReconnectingDisplay;
                     },
                     {% block methods_footer %}
                     // メソッドを追加したければ、ここに挿しこめる
@@ -348,6 +364,9 @@
                     },
                 },
             });
+
+            console.log(`[HTML] ★WS接続`);
+            vue1.connection.connect();
         </script>
     </body>
 </html>

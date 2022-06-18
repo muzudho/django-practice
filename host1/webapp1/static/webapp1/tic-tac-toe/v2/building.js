@@ -4,21 +4,11 @@
 class Building {
     /**
      * 生成
-     * @param {*} setMessageFromServer - サーバーからのメッセージをセットする関数
-     * @param {*} reconnect - 再接続ラムダ関数
-     * @param {string} roomName - 部屋名
      * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
-     * @param {function} convertPartsToConnectionString - 接続文字列を返す関数 (roomName, myTurn)=>{return connectionString;}
      * @param {function} setLabelOfButton - 升ボタンのラベルの設定
      */
-    constructor(setMessageFromServer, reconnect, roomName, myTurn, convertPartsToConnectionString, setLabelOfButton) {
+    constructor(myTurn, setLabelOfButton) {
         console.log(`[Building constructor] 自分の手番=${myTurn}`);
-
-        this._setMessageFromServer = setMessageFromServer;
-        this._reconnect = reconnect;
-
-        // 接続
-        this._connection = new Connection(roomName, convertPartsToConnectionString(roomName));
 
         // メッセージ一覧
         this._messageSender = new MessageSender();
@@ -47,12 +37,12 @@ class Building {
                 case GameoverSet.win:
                     // 勝ったとき
                     response = this.messageSender.createWon(pieceMoved);
-                    this._connection.webSock1.send(JSON.stringify(response));
+                    vue1.connection.webSock1.send(JSON.stringify(response));
                     break;
                 case GameoverSet.draw:
                     // 引き分けたとき
                     response = this.messageSender.createDraw();
-                    this._connection.webSock1.send(JSON.stringify(response));
+                    vue1.connection.webSock1.send(JSON.stringify(response));
                     break;
                 case GameoverSet.lose:
                     // 負けたとき
@@ -77,18 +67,9 @@ class Building {
             // 自分の指し手なら送信
             if (this._position.turn.me == pieceMoved) {
                 let response = this.messageSender.createDoMove(sq, pieceMoved);
-                this._connection.webSock1.send(JSON.stringify(response));
+                vue1.connection.webSock1.send(JSON.stringify(response));
             }
         };
-
-        this.connect();
-    }
-
-    /**
-     * 接続
-     */
-    get connection() {
-        return this._connection;
     }
 
     /**
@@ -142,32 +123,6 @@ class Building {
      */
     get setLabelOfButton() {
         return this._setLabelOfButton;
-    }
-
-    /**
-     * 接続
-     */
-    connect() {
-        this._connection.connect(
-            // Webソケットを開かれたとき
-            () => {
-                console.log("WebSockets connection created.");
-                let response = this.messageSender.createStart();
-                this._connection.webSock1.send(JSON.stringify(response));
-            },
-            // Webソケットが閉じられたとき
-            (e) => {
-                console.log(`Socket is closed. Reconnect will be attempted in 1 second. ${e.reason}`);
-                // 1回だけ再接続を試みます
-                this._reconnect();
-            },
-            // サーバーからのメッセージを受信したとき
-            this._setMessageFromServer,
-            // エラー時
-            (e) => {
-                console.log(`Socket is error. ${e.reason}`);
-            }
-        );
     }
 
     /**
