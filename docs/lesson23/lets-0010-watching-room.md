@@ -107,7 +107,7 @@ docker-compose up
 
 {% block isYourTurn_patch1 %}
     // "X" か "O" かのどちらかのプレイヤーか
-    isYourTurn = isYourTurn && (this.building.connection.myPiece == 'X' || this.building.connection.myPiece == 'O');
+    isYourTurn = isYourTurn && (this.building.myPiece == 'X' || this.building.myPiece == 'O');
 {% endblock isYourTurn_patch1 %}
 
 
@@ -119,7 +119,7 @@ docker-compose up
 
 {% block create_gameover_message %}
     // 観戦者のケース
-    if (this.building.connection.myPiece == '_') {
+    if (this.building.myPiece == '_') {
         switch (this.building.winner) {
             case PC_X_LABEL:
                 return this.messages.xWin;
