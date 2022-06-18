@@ -1,66 +1,52 @@
-from webapp1.views.tic_tac_toe.v2 import game_rule
-#    ------- --------------------        ---------
-#    1       2                           3
+from webapp1.views.tic_tac_toe.v3o2.things import PC_EMPTY
+#    ------- ---------------------- ------        --------
+#    1       2                      3             4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. 変数，クラス名等
+
+from webapp1.views.tic_tac_toe.v3o2.concepts import WIN_PATTERN, GameoverSet
+#    ------- ---------------------- --------        -----------...
+#    1       2                      3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. 変数，クラス名等
 
 
 class JudgeCtrl():
     """審判コントロール"""
 
-    def __init__(self, playeq, userCtrl):
-        """生成
+    def __init__(self):
+        """生成"""
+
+        def ignore(piece_moved, gameover_set_value):
+            pass
+
+        self._onJudged = ignore
+        """判断したとき"""
+
+    @property
+    def onJudged(self, value):
+        """判断したとき"""
+        self._onJudged = value
+
+    def doJudge(self, position, piece_moved):
+        """ゲームオーバー判定
+
+        * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
 
         Parameters
         ----------
-        playeq:
-            遊具
-        userCtrl:
-            ユーザーコントロール
-        """
+        position : Position
+            局面"""
 
-        self._playeq = playeq
-        """遊具"""
+        gameover_set_value = self.makeGameoverState(position)
+        print(f"[doJudge] gameover_set_value={gameover_set_value}")
+        self._onJudged(piece_moved, gameover_set_value)
 
-        self._userCtrl = userCtrl
-        """ユーザーコントロール"""
-
-        def doNothing():
-            pass
-
-        self._onWon = doNothing
-        """イベントリスナー"""
-
-        self._onDraw = doNothing
-
-    def onWon(self, func):
-        """勝ったとき"""
-        self._onWon = func
-
-    def onDraw(self, func):
-        """引き分けたとき"""
-        self._onDraw = func
-
-    def doJudge(self, myPiece):
-        """ゲームオーバー判定"""
-
-        self._playeq.gameoverState = self.makeGameoverState()
-        print(f"[doJudge] gameoverState={self._playeq.gameoverState}")
-
-        if self._playeq.gameoverState == game_rule.GAMEOVER_WIN:
-            self._onWon(myPiece)
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_DRAW:
-            self._onDraw()
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_LOSE:
-            pass
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_NONE:
-            pass
-        else:
-            raise ValueError(
-                f"Unexpected gameoverState={self._playeq.gameoverState}")
-
-    def makeGameoverState(self):
+    def makeGameoverState(self, position):
         """ゲームオーバー判定
 
         * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
@@ -69,34 +55,30 @@ class JudgeCtrl():
         -------
         ゲームオーバー状態
         """
-        print(
-            f"[makeGameoverState] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
         if self._playeq.isThere3SamePieces():
-            for squaresOfWinPattern in game_rule.WIN_PATTERN:
-                print(
-                    f"[makeGameoverState] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
-                if self.isPieceInLine(squaresOfWinPattern):
-                    print(
-                        f"[makeGameoverState] self._playeq.isMyTurn={self._playeq.isMyTurn}")
-                    if self._playeq.isMyTurn:
+            for squaresOfWinPattern in WIN_PATTERN:
+                if self.isPieceInLine(position, squaresOfWinPattern):
+                    if position.myTurn.isTrue:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return game_rule.GAMEOVER_LOSE
+                        return GameoverSet.lose
                     else:
                         # 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return game_rule.GAMEOVER_WIN
+                        return GameoverSet.win
 
-        if self._playeq.isBoardFill():
+        if position.isBoardFill:
             # 勝ち負けが付かず、盤が埋まったら引き分け
-            return game_rule.GAMEOVER_DRAW
+            return GameoverSet.draw
 
         # ゲームオーバーしてません
-        return game_rule.GAMEOVER_NONE
+        return GameoverSet.none
 
-    def isPieceInLine(self, squaresOfWinPattern):
+    def isPieceInLine(self, position, squaresOfWinPattern):
         """駒が３つ並んでいるか？
 
         Parameters
         ----------
+        position : Position
+            局面
         squaresOfWinPattern : _type_
             勝ちパターン
 
@@ -105,6 +87,7 @@ class JudgeCtrl():
         _type_
             並んでいれば真、それ以外は偽
         """
-        return self._playeq.getPieceBySq(squaresOfWinPattern[0]) != game_rule.PC_EMPTY and \
-            self._playeq.getPieceBySq(squaresOfWinPattern[0]) == self._playeq.getPieceBySq(squaresOfWinPattern[1]) \
-            and self._playeq.getPieceBySq(squaresOfWinPattern[0]) == self._playeq.getPieceBySq(squaresOfWinPattern[2])
+        return position.board.getPieceBySq(squaresOfWinPattern[0]) != PC_EMPTY and \
+            position.board.getPieceBySq(squaresOfWinPattern[0]) == position.board.getPieceBySq(squaresOfWinPattern[1]) and \
+            position.board.getPieceBySq(
+                squaresOfWinPattern[0]) == position.board.getPieceBySq(squaresOfWinPattern[2])

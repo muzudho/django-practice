@@ -76,7 +76,7 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. ゲームルール定義 - game_rule.py ファイル
+# Step 2. 物定義 - things.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -86,26 +86,15 @@ docker-compose up
             └── 📂views
                 └── 📂tic-tac-toe
                     └── 📂v2
-👉                      └── 📄game_rule.py
+👉                      └── 📄things.py
 ```
 
 ```py
-# ゲームオーバー判定
-#
-# * 自分視点
-GAMEOVER_NONE = 0
-"""ゲームオーバーしてません"""
+# +--------
+# | 駒
+# |
 
-GAMEOVER_WIN = 1
-"""勝ち"""
-
-GAMEOVER_DRAW = 2
-"""引き分け"""
-
-GAMEOVER_LOSE = 3
-"""負け"""
-
-# PC は Piece （駒、石、などの意味）の略です。
+# PC は Piece （駒）の略です。
 PC_EMPTY = 0
 """Pieceがないことを表します"""
 
@@ -124,6 +113,14 @@ PC_X_LABEL = "X"
 
 PC_O_LABEL = "O"
 """後手"""
+
+# |
+# | 駒
+# +--------
+
+# +--------
+# | 盤
+# |
 
 BOARD_AREA = 9
 """盤上の升の数"""
@@ -161,155 +158,14 @@ SQ_7 = 7
 SQ_8 = 8
 """8のマス"""
 
-WIN_PATTERN = [
-    [SQ_0, SQ_1, SQ_2],
-    """
-    +---------+
-    | *  *  * |
-    | .  .  . |
-    | .  .  . |
-    +---------+
-    """
 
-    [SQ_3, SQ_4, SQ_5],
-    """
-    +---------+
-    | .  .  . |
-    | *  *  * |
-    | .  .  . |
-    +---------+
-    """
-
-    [SQ_6, SQ_7, SQ_8],
-    """
-    +---------+
-    | .  .  . |
-    | .  .  . |
-    | *  *  * |
-    +---------+
-    """
-
-    [SQ_0, SQ_3, SQ_6],
-    """
-    +---------+
-    | *  .  . |
-    | *  .  . |
-    | *  .  . |
-    +---------+
-    """
-
-    [SQ_1, SQ_4, SQ_7],
-    """
-    +---------+
-    | .  *  . |
-    | .  *  . |
-    | .  *  . |
-    +---------+
-    """
-
-    [SQ_2, SQ_5, SQ_8],
-    """
-    +---------+
-    | .  .  * |
-    | .  .  * |
-    | .  .  * |
-    +---------+
-    """
-
-    [SQ_0, SQ_4, SQ_8],
-    """
-    +---------+
-    | *  .  . |
-    | .  *  . |
-    | .  .  * |
-    +---------+
-    """
-
-    [SQ_2, SQ_4, SQ_6],
-    """
-    +---------+
-    | .  .  * |
-    | .  *  . |
-    | *  .  . |
-    +---------+
-    """
-]
-"""石が３つ並んでいるパターン"""
-
-
-def flipTurn(piece):
-    """手番反転
-
-    Returns
-    -------
-    str
-        piece
-    """
-
-    if piece == PC_X_LABEL:
-        return PC_O_LABEL
-    elif piece == PC_O_LABEL:
-        return PC_X_LABEL
-
-    return piece
-```
-
-# Step 3. 遊具定義 - playground_equipment.py ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂views
-                └── 📂tic-tac-toe
-                    └── 📂v2
-                        ├── 📄game_rule.py
-👉                      └── 📄playground_equipment.py
-```
-
-```py
-from webapp1.views.tic_tac_toe.v2 import game_rule
-#    ------- --------------------        ---------
-#    1       2                           3
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-
-
-class Position():
-    """局面"""
-
+class Board ():
     def __init__(self):
-        # あとで onStart(...) を呼出してください
-        pass
+        """"""
 
-    def onStart(self, myPiece):
-        """対局開始時
-
-        Parameters
-        ----------
-        myPiece : str
-            "X", "O", "_"
-        """
-
-        self._board = [game_rule.PC_EMPTY, game_rule.PC_EMPTY, game_rule.PC_EMPTY, game_rule.PC_EMPTY,
-                       game_rule.PC_EMPTY, game_rule.PC_EMPTY, game_rule.PC_EMPTY, game_rule.PC_EMPTY, game_rule.PC_EMPTY]
-        """盤面"""
-
-        self._countOfMove = 0
-        """何手目"""
-
-        self._isMyTurn = myPiece == game_rule.PC_X_LABEL
-        """自分の手番か（初回は先手）"""
-
-        self._isVisibleAlertWaitForOther = False
-        """「相手の手番に着手しないでください」というアラートの可視性"""
-
-        self._gameoverState = game_rule.GAMEOVER_NONE
-        """ゲームオーバーしてません"""
-
-        # イベントハンドラはそのまま
+        self._squares = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY,
+                         PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY]
+        """各マス"""
 
     def getPieceBySq(self, sq):
         """盤上のマス番号で示して、駒を取得
@@ -324,7 +180,7 @@ class Position():
         _type_
             _description_
         """
-        return self._board[sq]
+        return self._squares[sq]
 
     def setPiece(self, sq, piece):
         """盤上のマスに駒を上書きします
@@ -336,49 +192,60 @@ class Position():
         piece : str
             駒
         """
-        self._board[sq] = piece
+        self._squares[sq] = piece
 
-    def incrementCountOfMove(self):
-        """手数を１増やします"""
-        self._countOfMove += 1
+    def dump(self, indent):
+        """ダンプ"""
+        return f"""
+{indent}Board
+{indent}-----
+{indent}_squares: {self._squares}"""
 
-    def isBoardFill(self):
-        """マスがすべて埋まっていますか"""
-        return self._countOfMove == 9
 
-    def isThere3SamePieces(self):
-        """同じ駒が３個ありますか"""
-        return 5 <= self._countOfMove
+# | 盤
+# |
+# +--------
+
+# +--------
+# | 棋譜
+# |
+
+
+class Record ():
+    def __init__(self):
+        self._squares = []
+
+    def push(self, sq):
+        """追加
+
+        Parameters
+        ----------
+        sq : int
+            駒を置いた場所
+        """
+        self._squares.append(sq)
+
+    def pop(self):
+        self._squares.pop()
 
     @property
-    def isMyTurn(self):
-        """私のターンですか"""
-        return self._isMyTurn
+    def length(self):
+        return len(self._squares)
 
-    @isMyTurn.setter
-    def isMyTurn(self, value):
-        self._isMyTurn = value
+    def dump(self, indent):
+        """ダンプ"""
+        return f"""
+{indent}Record
+{indent}------
+{indent}_squares: ${self._squares}"""
 
-    @property
-    def isVisibleAlertWaitForOther(self):
-        """「相手の手番に着手しないでください」というアラートの可視性"""
-        return self._isVisibleAlertWaitForOther
 
-    @isVisibleAlertWaitForOther.setter
-    def isVisibleAlertWaitForOther(self, value):
-        self._isVisibleAlertWaitForOther = value
-
-    @property
-    def gameoverState(self):
-        """ゲームオーバー状態"""
-        return self._gameoverState
-
-    @gameoverState.setter
-    def gameoverState(self, value):
-        self._gameoverState = value
+# | 棋譜
+# |
+# +--------
 ```
 
-# Step 4. ユーザー操作定義 - user_ctrl.py ファイル
+# Step 3. 概念定義 - concepts.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -388,34 +255,414 @@ class Position():
             └── 📂views
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── 📄game_rule.py
-                        ├── 📄playground_equipment.py
-👉                      └── 📄user_ctrl.py
+👉                      ├── 📄concepts.py
+                        └── 📄things.py
 ```
 
 ```py
-from webapp1.views.tic_tac_toe.v2 import game_rule
-#    ------- --------------------        ---------
-#    1       2                           3
+from webapp1.views.tic_tac_toe.v3o2 import things
+#    ------- ----------------------        ------
+#    1       2                             3
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
 
 
-class UserCtrl ():
-    """ユーザーコントロール"""
+class RoomState ():
+    """部屋の状態"""
 
-    def __init__(self, playeq):
-        """_summary_
+    @staticmethod
+    @property
+    def none():
+        """ゲームしてません"""
+        return 0
+
+    @staticmethod
+    @property
+    def playing():
+        """ゲーム中"""
+        return 1
+
+    def __init__(self, value, onChangeValue):
+        """生成
 
         Parameters
         ----------
-        playeq : _type_
-            局面
+        value : int
+            _description_
+        onChangeValue : function
+            値の変更時
+        """
+        print(f"[RoomState constructor]")
+
+        self._value = value
+        self._onChangeValue = onChangeValue
+
+    @property
+    def value(self):
+        """値"""
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        print(f"[RoomState set value]")
+
+        if self._value == value:
+            return
+
+        oldValue = self._value
+        self._value = value
+        self._onChangeValue(oldValue, self._value)
+
+    def dump(self, indent):
+        """ダンプ
+
+        Parameters
+        ----------
+        indent : str
+            インデント
+        """
+        return f"""
+{indent}RoomState
+{indent}---------
+{indent}_value: {self._value}"""
+
+
+class MyTurn ():
+    """自分のターン"""
+
+    def __init__(self, myPiece):
+        """生成
+
+        Parameters
+        ----------
+        myPiece : str
+            自分の駒。 "X", "O", "_"
         """
 
-        self._playeq = playeq
-        """局面"""
+        self._isTrue = myPiece == things.PC_X_LABEL
+        """自分の手番か（初回は先手）"""
+
+    @property
+    def isTrue(self):
+        """真実か？"""
+        return self._isTrue
+
+    @property.isTrue
+    def isTrue(self, value):
+        self._isTrue = value
+        # vue1.raiseMyTurnChanged()
+
+    def dump(self, indent):
+        """ダンプ
+
+        Parameters
+        ----------
+        indent : str
+            インデント
+
+        Returns
+        -------
+        str
+            ダンプ
+        """
+        return f"""
+{indent}MyTurn
+{indent}------
+{indent}_isTrue: ${self._isTrue}"""
+
+
+class GameoverSet():
+    """ゲームオーバー集合
+
+    * 自分視点
+    """
+
+    @ staticmethod
+    @ property
+    def none():
+        """ゲームオーバーしてません"""
+        return 0
+
+    @ staticmethod
+    @ property
+    def win():
+        """勝ち"""
+        return 1
+
+    @ staticmethod
+    @ property
+    def draw():
+        """引き分け"""
+        return 2
+
+    @ staticmethod
+    @ property
+    def lose():
+        """負け"""
+        return 3
+
+    def __init__(self, value):
+        """生成
+
+        Parameters
+        ----------
+        value : int
+            値
+        """
+        self._value = value
+
+    @property
+    def value(self):
+        """値"""
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+
+    def dump(self, indent):
+        """ダンプ
+
+        Parameters
+        ----------
+        indent : str
+            インデント
+        """
+        if self._value == GameoverSet.none:
+            text = "none"
+        elif self._value == GameoverSet.win:
+            text = "win"
+        elif self._value == GameoverSet.draw:
+            text = "draw"
+        elif self._value == GameoverSet.lose:
+            text = "lose"
+        else:
+            raise ValueError(
+                f"[GameoverSet dump] Unexpected value={self._value}")
+
+        return f"""
+{indent}GameoverSet
+{indent}-----------
+{indent}_value: {text}"""
+
+
+WIN_PATTERN = [
+    [things.SQ_0, things.SQ_1, things.SQ_2],
+    """
+    +---------+
+    | *  *  * |
+    | .  .  . |
+    | .  .  . |
+    +---------+
+    """
+
+    [things.SQ_3, things.SQ_4, things.SQ_5],
+    """
+    +---------+
+    | .  .  . |
+    | *  *  * |
+    | .  .  . |
+    +---------+
+    """
+
+    [things.SQ_6, things.SQ_7, things.SQ_8],
+    """
+    +---------+
+    | .  .  . |
+    | .  .  . |
+    | *  *  * |
+    +---------+
+    """
+
+    [things.SQ_0, things.SQ_3, things.SQ_6],
+    """
+    +---------+
+    | *  .  . |
+    | *  .  . |
+    | *  .  . |
+    +---------+
+    """
+
+    [things.SQ_1, things.SQ_4, things.SQ_7],
+    """
+    +---------+
+    | .  *  . |
+    | .  *  . |
+    | .  *  . |
+    +---------+
+    """
+
+    [things.SQ_2, things.SQ_5, things.SQ_8],
+    """
+    +---------+
+    | .  .  * |
+    | .  .  * |
+    | .  .  * |
+    +---------+
+    """
+
+    [things.SQ_0, things.SQ_4, things.SQ_8],
+    """
+    +---------+
+    | *  .  . |
+    | .  *  . |
+    | .  .  * |
+    +---------+
+    """
+
+    [things.SQ_2, things.SQ_4, things.SQ_6],
+    """
+    +---------+
+    | .  .  * |
+    | .  *  . |
+    | *  .  . |
+    +---------+
+    """
+]
+"""駒が３つ並んでいるパターン"""
+
+
+def flipTurn(piece):
+    """手番反転
+
+    Returns
+    -------
+    str
+        piece
+    """
+
+    if piece == things.PC_X_LABEL:
+        return things.PC_O_LABEL
+    elif piece == things.PC_O_LABEL:
+        return things.PC_X_LABEL
+
+    return piece
+```
+
+# Step 4. 局面定義 - positions.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂views
+                └── 📂tic-tac-toe
+                    └── 📂v2
+                        ├── 📄concepts.py
+👉                      ├── 📄positions.py
+                        └── 📄things.py
+```
+
+```py
+from webapp1.views.tic_tac_toe.v3o2.things import Board, Record
+#    ------- ---------------------- ------        -------------
+#    1       2                      3             4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+from webapp1.views.tic_tac_toe.v3o2.concepts import MyTurn
+#    ------- ---------------------- --------        ------
+#    1       2                      3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. クラス名
+
+
+class Position():
+    """局面"""
+
+    def __init__(self, myPiece):
+        """初期化
+
+        * 対局開始時
+
+        Parameters
+        ----------
+        myPiece : str
+            "X", "O", "_"
+        """
+        print(f"[Position constructor] myPiece=${myPiece}")
+
+        self._board = Board()
+        """盤面"""
+
+        self._record = Record()
+        """棋譜"""
+
+        self._myTurn = MyTurn(myPiece)
+        """自分の手番"""
+
+    @property
+    def board(self):
+        """盤"""
+        return self._board
+
+    @property
+    def record(self):
+        """棋譜"""
+        return self._record
+
+    @property
+    def myTurn(self):
+        """自分のターン"""
+        return self._myTurn
+
+    @property
+    def isBoardFill(self):
+        """マスがすべて埋まっていますか"""
+        return self.record.length == 9
+
+    @property
+    def isThere3SamePieces(self):
+        """同じ駒が３個ありますか"""
+        return 5 <= self.record.length
+
+    def dump(self, indent):
+        """ダンプ"""
+        return f"""
+{indent}Position
+{indent}--------
+{indent}{self._board.dump(indent + "    ")}
+{indent}{self._record.dump(indent + "    ")}
+{indent}{self._myTurn.dump(indent + "    ")}"""
+```
+
+# Step 5. ユーザー操作定義 - user_ctrl.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂views
+                └── 📂tic-tac-toe
+                    └── 📂v2
+                        ├── 📄concepts.py
+                        ├── 📄positions.py
+                        ├── 📄things.py
+👉                      └── 📄user_ctrl.py
+```
+
+```py
+from webapp1.views.tic_tac_toe.v3o2.things import PC_EMPTY, PC_X_LABEL, PC_O_LABEL, PC_X, PC_O
+#    ------- ---------------------- ------        --------...
+#    1       2                      3             4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. 変数，クラス名等
+
+
+class UserCtrl ():
+    """ユーザーコントロール"""
+
+    def __init__(self):
+        """生成"""
 
         def doNothing():
             pass
@@ -429,40 +676,38 @@ class UserCtrl ():
 
     @onDoMove.setter
     def onDoMove(self, value):
-        """石を置いたとき"""
+        """駒を置いたとき"""
         self._onDoMove = value
 
-    def doMove(self, sq, piece):
-        """石を置きます
+    def doMove(self, position, piece, sq):
+        """駒を置きます
 
         Parameters
         ----------
-        sq : int
-            升番号 0 <= sq
+        position : Position
+            局面
         piece : str
             X か O
+        sq : int
+            升番号 0 <= sq
 
         Returns
         -------
         _type_
-            石を置けたら真、それ以外は偽
+            駒を置けたら真、それ以外は偽
         """
-        if self._playeq.gameoverState != game_rule.GAMEOVER_NONE:
-            # Warning of illegal move
-            print(
-                f"Warning of illegal move. gameoverState={self._playeq.gameoverState}")
 
-        if self._playeq.getPieceBySq(sq) == game_rule.PC_EMPTY:
+        if position.getPieceBySq(sq) == PC_EMPTY:
             # 空升なら
 
             self._playeq.incrementCountOfMove()
             # 手数を１増やします
 
-            # 石を置きます
-            if piece == game_rule.PC_X_LABEL:
-                self._playeq.setPiece(sq, game_rule.PC_X)
-            elif piece == game_rule.PC_O_LABEL:
-                self._playeq.setPiece(sq, game_rule.PC_O)
+            # 駒を置きます
+            if piece == PC_X_LABEL:
+                self._playeq.setPiece(sq, PC_X)
+            elif piece == PC_O_LABEL:
+                self._playeq.setPiece(sq, PC_O)
             else:
                 print(f"[Error] Invalid piece={piece}")
                 return False
@@ -473,7 +718,7 @@ class UserCtrl ():
         return True
 ```
 
-# Step 5. 審判操作定義 - judge_ctrl.py ファイル
+# Step 6. 審判操作定義 - judge_ctrl.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -483,76 +728,63 @@ class UserCtrl ():
             └── 📂views
                 └── 📂tic-tac-toe
                     └── 📂v2
-                        ├── 📄game_rule.py
+                        ├── 📄concepts.py
 👉                      ├── 📄judge_ctrl.py
-                        ├── 📄playground_equipment.py
+                        ├── 📄positions.py
+                        ├── 📄things.py
                         └── 📄user_ctrl.py
 ```
 
 ```py
-from webapp1.views.tic_tac_toe.v2 import game_rule
-#    ------- --------------------        ---------
-#    1       2                           3
+from webapp1.views.tic_tac_toe.v3o2.things import PC_EMPTY
+#    ------- ---------------------- ------        --------
+#    1       2                      3             4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
+# 4. 変数，クラス名等
+
+from webapp1.views.tic_tac_toe.v3o2.concepts import WIN_PATTERN, GameoverSet
+#    ------- ---------------------- --------        -----------...
+#    1       2                      3               4
+# 1. アプリケーション フォルダー名
+# 2. ディレクトリー名
+# 3. Python ファイル名。拡張子抜き
+# 4. 変数，クラス名等
 
 
 class JudgeCtrl():
     """審判コントロール"""
 
-    def __init__(self, playeq, userCtrl):
-        """生成
+    def __init__(self):
+        """生成"""
+
+        def ignore(piece_moved, gameover_set_value):
+            pass
+
+        self._onJudged = ignore
+        """判断したとき"""
+
+    @property
+    def onJudged(self, value):
+        """判断したとき"""
+        self._onJudged = value
+
+    def doJudge(self, position, piece_moved):
+        """ゲームオーバー判定
+
+        * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
 
         Parameters
         ----------
-        playeq:
-            局面
-        userCtrl:
-            ユーザーコントロール
-        """
+        position : Position
+            局面"""
 
-        self._playeq = playeq
-        """局面"""
+        gameover_set_value = self.makeGameoverState(position)
+        print(f"[doJudge] gameover_set_value={gameover_set_value}")
+        self._onJudged(piece_moved, gameover_set_value)
 
-        self._userCtrl = userCtrl
-        """ユーザーコントロール"""
-
-        def doNothing():
-            pass
-
-        self._onWon = doNothing
-        """イベントリスナー"""
-
-        self._onDraw = doNothing
-
-    def onWon(self, func):
-        """勝ったとき"""
-        self._onWon = func
-
-    def onDraw(self, func):
-        """引き分けたとき"""
-        self._onDraw = func
-
-    def doJudge(self, myPiece):
-        """ゲームオーバー判定"""
-
-        self._playeq.gameoverState = self.makeGameoverSetValue()
-        print(f"[doJudge] gameoverState={self._playeq.gameoverState}")
-
-        if self._playeq.gameoverState == game_rule.GAMEOVER_WIN:
-            self._onWon(myPiece)
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_DRAW:
-            self._onDraw()
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_LOSE:
-            pass
-        elif self._playeq.gameoverState == game_rule.GAMEOVER_NONE:
-            pass
-        else:
-            raise ValueError(
-                f"Unexpected gameoverState={self._playeq.gameoverState}")
-
-    def makeGameoverSetValue(self):
+    def makeGameoverState(self, position):
         """ゲームオーバー判定
 
         * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
@@ -561,34 +793,30 @@ class JudgeCtrl():
         -------
         ゲームオーバー状態
         """
-        print(
-            f"[makeGameoverSetValue] isThere3SamePieces={self._playeq.isThere3SamePieces()}")
         if self._playeq.isThere3SamePieces():
-            for squaresOfWinPattern in game_rule.WIN_PATTERN:
-                print(
-                    f"[makeGameoverSetValue] self.isPieceInLine(squaresOfWinPattern)={self.isPieceInLine(squaresOfWinPattern)}")
-                if self.isPieceInLine(squaresOfWinPattern):
-                    print(
-                        f"[makeGameoverSetValue] self._playeq.myTurn.isTrue={self._playeq.myTurn.isTrue}")
-                    if self._playeq.myTurn.isTrue:
+            for squaresOfWinPattern in WIN_PATTERN:
+                if self.isPieceInLine(position, squaresOfWinPattern):
+                    if position.myTurn.isTrue:
                         # 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return game_rule.GAMEOVER_LOSE
+                        return GameoverSet.lose
                     else:
                         # 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return game_rule.GAMEOVER_WIN
+                        return GameoverSet.win
 
-        if self._playeq.isBoardFill():
+        if position.isBoardFill:
             # 勝ち負けが付かず、盤が埋まったら引き分け
-            return game_rule.GAMEOVER_DRAW
+            return GameoverSet.draw
 
         # ゲームオーバーしてません
-        return game_rule.GAMEOVER_NONE
+        return GameoverSet.none
 
-    def isPieceInLine(self, squaresOfWinPattern):
+    def isPieceInLine(self, position, squaresOfWinPattern):
         """駒が３つ並んでいるか？
 
         Parameters
         ----------
+        position : Position
+            局面
         squaresOfWinPattern : _type_
             勝ちパターン
 
@@ -597,12 +825,13 @@ class JudgeCtrl():
         _type_
             並んでいれば真、それ以外は偽
         """
-        return self._playeq.getPieceBySq(squaresOfWinPattern[0]) != game_rule.PC_EMPTY and \
-            self._playeq.getPieceBySq(squaresOfWinPattern[0]) == self._playeq.getPieceBySq(squaresOfWinPattern[1]) \
-            and self._playeq.getPieceBySq(squaresOfWinPattern[0]) == self._playeq.getPieceBySq(squaresOfWinPattern[2])
+        return position.board.getPieceBySq(squaresOfWinPattern[0]) != PC_EMPTY and \
+            position.board.getPieceBySq(squaresOfWinPattern[0]) == position.board.getPieceBySq(squaresOfWinPattern[1]) and \
+            position.board.getPieceBySq(
+                squaresOfWinPattern[0]) == position.board.getPieceBySq(squaresOfWinPattern[2])
 ```
 
-# Step 6. エンジン作成 - engine.py ファイル
+# Step 7. エンジン作成 - engine.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -612,10 +841,11 @@ class JudgeCtrl():
             └── 📂views
                 └── 📂tic-tac-toe
                     └── 📂v2
+                        ├── 📄concepts.py
 👉                      ├── 📄engine.py
-                        ├── 📄game_rule.py
                         ├── 📄judge_ctrl.py
-                        ├── 📄playground_equipment.py
+                        ├── 📄positions.py
+                        ├── 📄things.py
                         └── 📄user_ctrl.py
 ```
 
