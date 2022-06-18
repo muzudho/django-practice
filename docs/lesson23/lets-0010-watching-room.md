@@ -201,12 +201,12 @@ playing_expected_pieces = ['X', 'O', '_']
 class MatchApplication():
     """対局申込ページ"""
 
-    _path_of_http_playing = "/tic-tac-toe/v3o2/playing/{0}/?&mypiece={1}"
+    _path_of_http_playing = "/tic-tac-toe/v3o2/playing/{0}/?&myturn={1}"
     #                                    ^^^ three o two
-    #                      -------------------------------------------
-    #                      1
-    # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&mypiece=X
-    #                           ----------------------------------------------
+    #                        ------------------------------------------
+    #                        1
+    # 1. http://example.com:8000/tic-tac-toe/v3o1/playing/Elephant/?&myturn=X
+    #                           ---------------------------------------------
 
     _path_of_html = "webapp1/tic-tac-toe/v2/match_application.html"
     #                                     ^ two
