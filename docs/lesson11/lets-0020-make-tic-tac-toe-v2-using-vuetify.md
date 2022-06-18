@@ -556,7 +556,8 @@ function flipTurn(piece) {
 }
 ```
 
-# Step 5. 送信メッセージ実装 - outgoing_messages.js ファイル
+
+# Step 5. 局面作成 - position.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -568,8 +569,383 @@ function flipTurn(piece) {
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
                 │           ├── 📄concepts.js
-👉              │           ├── 📄outgoing_messages.js
+👉              │           ├── 📄position.js
                 │           └── 📄things.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 局面
+ */
+class Position {
+    /**
+     * 初期化
+     *
+     * * 対局開始時
+     *
+     * @param {string} myTurn - 自分の手番。 "X", "O"
+     */
+    constructor(myTurn) {
+        console.log(`[Position constructor] 自分の手番=${myTurn}`);
+
+        // 盤面
+        this._board = new Board();
+
+        // 棋譜
+        this._record = new Record();
+
+        // 番
+        this._turn = new Turn(myTurn);
+    }
+
+    /**
+     * 盤
+     */
+    get board() {
+        return this._board;
+    }
+
+    /**
+     * 棋譜
+     */
+    get record() {
+        return this._record;
+    }
+
+    /**
+     * 番
+     */
+    get turn() {
+        return this._turn;
+    }
+
+    /**
+     * マスがすべて埋まっていますか
+     */
+    isBoardFill() {
+        return this.record.length == 9;
+    }
+
+    /**
+     * 同じ駒が３個ありますか
+     */
+    isThere3SamePieces() {
+        return 5 <= this.record.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Position
+${indent}--------
+${indent}${this._board.dump(indent + "    ")}
+${indent}${this._record.dump(indent + "    ")}
+${indent}${this._turn.dump(indent + "    ")}`;
+    }
+}
+```
+
+# Step 6. ユーザーコントロール作成 - user_ctrl.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── 📄concepts.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+👉              │           └── 📄user_ctrl.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * ユーザーコントロール
+ */
+class UserCtrl {
+    /**
+     * 初期化
+     *
+     * @param {function} onDoMove - 駒を置いたとき
+     */
+    constructor(onDoMove) {
+        this._onDoMove = onDoMove;
+    }
+
+    /**
+     * 駒を置きます
+     * @param {number} sq - 升番号; 0 <= sq
+     * @param {*} piece - X か O
+     * @returns 駒を置けたら真、それ以外は偽
+     */
+    doMove(position, piece, sq) {
+        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
+            // 空升なら駒を置きます
+
+            position.record.push(sq); // 棋譜に追加
+
+            // 駒を置きます
+            switch (piece) {
+                case PC_X_LABEL:
+                    position.board.setPiece(sq, PC_X);
+                    break;
+                case PC_O_LABEL:
+                    position.board.setPiece(sq, PC_O);
+                    break;
+                default:
+                    alert(`[Error] Invalid piece = ${piece}`);
+                    return false;
+            }
+
+            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
+            this._onDoMove(sq, piece);
+        }
+
+        return true;
+    }
+}
+```
+
+# Step 7. 審判作成 - judge_ctrl.js ファイル
+
+以下のファイルを作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── 📄concepts.js
+👉              │           ├── 📄judge_ctrl.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 審判コントロール
+ */
+class JudgeCtrl {
+    /**
+     * 初期化
+     *
+     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
+     */
+    constructor(onJudged) {
+        // 判断したとき
+        this._onJudged = onJudged;
+    }
+
+    /**
+     * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @param {Position} position - 局面
+     */
+    doJudge(position, piece_moved) {
+        let gameoverSetValue = this.#makeGameoverSetValue(position);
+        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
+        this._onJudged(piece_moved, gameoverSetValue);
+    }
+
+    /**
+     * ゲームオーバー判定
+     *
+     * @param {Position} position - 局面
+     * @returns ゲームオーバー元
+     */
+    #makeGameoverSetValue(position) {
+        if (position.isThere3SamePieces()) {
+            // 先手番が駒を３つ置いてから、判定を始めます
+            for (let squaresOfWinPattern of WIN_PATTERN) {
+                // 勝ちパターンの１つについて
+                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
+                    // 当てはまるなら
+                    if (position.turn.isMe) {
+                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
+                        return GameoverSet.lose;
+                    } else {
+                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
+                        return GameoverSet.win;
+                    }
+                }
+            }
+        }
+
+        // 勝ち負けが付かず、盤が埋まったら引き分け
+        if (position.isBoardFill()) {
+            return GameoverSet.draw;
+        }
+
+        // ゲームオーバーしてません
+        return GameoverSet.none;
+    }
+
+    /**
+     * 駒が３つ並んでいるか？
+     *
+     * @param {Position} position - 局面
+     * @param {*} squaresOfWinPattern - 勝ちパターン
+     * @returns 並んでいれば真、それ以外は偽
+     */
+    #isPieceInLine(position, squaresOfWinPattern) {
+        return (
+            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
+        );
+    }
+}
+```
+
+# Step 8. 思考エンジン作成 - engine.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── 📄concepts.js
+👉              │           ├── 📄engine.js
+                │           ├── 📄judge_ctrl.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
+                └── 🚀favicon.ico
+```
+
+```js
+/**
+ * 思考エンジン
+ */
+class Engine {
+    /**
+     * 生成
+     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
+     * @param {UserCtrl} userCtrl - ユーザーコントロール
+     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
+     */
+    constructor(myTurn, userCtrl, judgeCtrl) {
+        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
+
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
+        // 局面
+        this._position = new Position(myTurn);
+
+        // ゲームオーバー集合
+        this._gameoverSet = new GameoverSet();
+
+        // ユーザーコントロール
+        this._userCtrl = userCtrl;
+
+        // 審判コントロール
+        this._judgeCtrl = judgeCtrl;
+    }
+
+    /**
+     * 局面
+     */
+    get position() {
+        return this._position;
+    }
+
+    /**
+     * ユーザーコントロール
+     */
+    get userCtrl() {
+        return this._userCtrl;
+    }
+
+    /**
+     * 審判コントロール
+     */
+    get judgeCtrl() {
+        return this._judgeCtrl;
+    }
+
+    /**
+     * 勝者
+     */
+    get winner() {
+        return this._winner;
+    }
+
+    set winner(value) {
+        this._winner = value;
+    }
+
+    /**
+     * ゲームオーバー集合
+     */
+    get gameoverSet() {
+        return this._gameoverSet;
+    }
+
+    /**
+     * 対局開始時
+     */
+    start() {
+        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
+
+        // 勝者のクリアー
+        this._winner = "";
+
+        // ゲームオーバー状態のクリアー
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
+
+        // 局面の初期化
+        this._position = new Position(this._position.turn.me);
+        vue1.raisePositionChanged();
+    }
+
+    dump(indent) {
+        return `
+${indent}Engine
+${indent}------
+${indent}_winner:${this._winner}
+${indent}${this._gameoverSet.dump(indent + "    ")}
+${indent}${this._position.dump(indent + "    ")}`;
+    }
+}
+```
+
+# Step 9. 送信メッセージ実装 - outgoing_messages.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂webapp1                       # アプリケーション フォルダー
+            └── 📂static
+                ├── 📂webapp1
+                │   └── 📂tic-tac-toe
+                │       └── 📂v2
+                │           ├── 📄concepts.js
+                │           ├── 📄engine.js
+                │           ├── 📄judge_ctrl.js
+👉              │           ├── 📄outgoing_messages.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
 
@@ -634,7 +1010,7 @@ class OutgoingMessages {
 }
 ```
 
-# Step 6. 受信メッセージ実装 - incoming_messages.js ファイル
+# Step 10. 受信メッセージ実装 - incoming_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -646,12 +1022,11 @@ class OutgoingMessages {
                 │   └── 📂tic-tac-toe
                 │       └── 📂v2
                 │           ├── 📄concepts.js
-                │           ├── 📄connection.js
                 │           ├── 📄engine.js
-                │           ├── 📄game_rule.js
 👉              │           ├── 📄incoming_messages.js
                 │           ├── 📄judge_ctrl.js
                 │           ├── 📄outgoing_messages.js
+                │           ├── 📄position.js
                 │           ├── 📄things.js
                 │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
@@ -755,7 +1130,7 @@ class IncomingMessages {
 }
 ```
 
-# Step 7. Webソケット接続の実装 - connection.js ファイル
+# Step 11. Webソケット接続の実装 - connection.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -768,8 +1143,13 @@ class IncomingMessages {
                 │       └── 📂v2
                 │           ├── 📄concepts.js
 👉              │           ├── 📄connection.js
+                │           ├── 📄engine.js
+                │           ├── 📄incoming_messages.js
+                │           ├── 📄judge_ctrl.js
                 │           ├── 📄outgoing_messages.js
-                │           └── 📄things.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
                 └── 🚀favicon.ico
 ```
 
@@ -915,385 +1295,6 @@ class Connection {
 }
 ```
 
-# Step 8. 局面作成 - position.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄connection.js
-                │           ├── 📄outgoing_messages.js
-👉              │           ├── 📄position.js
-                │           └── 📄things.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 局面
- */
-class Position {
-    /**
-     * 初期化
-     *
-     * * 対局開始時
-     *
-     * @param {string} myTurn - 自分の手番。 "X", "O"
-     */
-    constructor(myTurn) {
-        console.log(`[Position constructor] 自分の手番=${myTurn}`);
-
-        // 盤面
-        this._board = new Board();
-
-        // 棋譜
-        this._record = new Record();
-
-        // 番
-        this._turn = new Turn(myTurn);
-    }
-
-    /**
-     * 盤
-     */
-    get board() {
-        return this._board;
-    }
-
-    /**
-     * 棋譜
-     */
-    get record() {
-        return this._record;
-    }
-
-    /**
-     * 番
-     */
-    get turn() {
-        return this._turn;
-    }
-
-    /**
-     * マスがすべて埋まっていますか
-     */
-    isBoardFill() {
-        return this.record.length == 9;
-    }
-
-    /**
-     * 同じ駒が３個ありますか
-     */
-    isThere3SamePieces() {
-        return 5 <= this.record.length;
-    }
-
-    /**
-     * ダンプ
-     */
-    dump(indent) {
-        return `
-${indent}Position
-${indent}--------
-${indent}${this._board.dump(indent + "    ")}
-${indent}${this._record.dump(indent + "    ")}
-${indent}${this._turn.dump(indent + "    ")}`;
-    }
-}
-```
-
-# Step 9. ユーザーコントロール作成 - user_ctrl.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄connection.js
-                │           ├── 📄game_rule.js
-                │           ├── 📄outgoing_messages.js
-                │           ├── 📄things.js
-👉              │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * ユーザーコントロール
- */
-class UserCtrl {
-    /**
-     * 初期化
-     *
-     * @param {function} onDoMove - 駒を置いたとき
-     */
-    constructor(onDoMove) {
-        this._onDoMove = onDoMove;
-    }
-
-    /**
-     * 駒を置きます
-     * @param {number} sq - 升番号; 0 <= sq
-     * @param {*} piece - X か O
-     * @returns 駒を置けたら真、それ以外は偽
-     */
-    doMove(position, piece, sq) {
-        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
-            // 空升なら駒を置きます
-
-            position.record.push(sq); // 棋譜に追加
-
-            // 駒を置きます
-            switch (piece) {
-                case PC_X_LABEL:
-                    position.board.setPiece(sq, PC_X);
-                    break;
-                case PC_O_LABEL:
-                    position.board.setPiece(sq, PC_O);
-                    break;
-                default:
-                    alert(`[Error] Invalid piece = ${piece}`);
-                    return false;
-            }
-
-            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
-            this._onDoMove(sq, piece);
-        }
-
-        return true;
-    }
-}
-```
-
-# Step 10. 審判作成 - judge_ctrl.js ファイル
-
-以下のファイルを作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄connection.js
-                │           ├── 📄game_rule.js
-👉              │           ├── 📄judge_ctrl.js
-                │           ├── 📄outgoing_messages.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 審判コントロール
- */
-class JudgeCtrl {
-    /**
-     * 初期化
-     *
-     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
-     */
-    constructor(onJudged) {
-        // 判断したとき
-        this._onJudged = onJudged;
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
-     *
-     * @param {Position} position - 局面
-     */
-    doJudge(position, piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue(position);
-        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
-        this._onJudged(piece_moved, gameoverSetValue);
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * @param {Position} position - 局面
-     * @returns ゲームオーバー元
-     */
-    #makeGameoverSetValue(position) {
-        if (position.isThere3SamePieces()) {
-            // 先手番が駒を３つ置いてから、判定を始めます
-            for (let squaresOfWinPattern of WIN_PATTERN) {
-                // 勝ちパターンの１つについて
-                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
-                    // 当てはまるなら
-                    if (position.turn.isMe) {
-                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GameoverSet.lose;
-                    } else {
-                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GameoverSet.win;
-                    }
-                }
-            }
-        }
-
-        // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (position.isBoardFill()) {
-            return GameoverSet.draw;
-        }
-
-        // ゲームオーバーしてません
-        return GameoverSet.none;
-    }
-
-    /**
-     * 駒が３つ並んでいるか？
-     *
-     * @param {Position} position - 局面
-     * @param {*} squaresOfWinPattern - 勝ちパターン
-     * @returns 並んでいれば真、それ以外は偽
-     */
-    #isPieceInLine(position, squaresOfWinPattern) {
-        return (
-            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
-        );
-    }
-}
-```
-
-# Step 11. 思考エンジン作成 - engine.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄connection.js
-👉              │           ├── 📄engine.js
-                │           ├── 📄game_rule.js
-                │           ├── 📄judge_ctrl.js
-                │           ├── 📄outgoing_messages.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 思考エンジン
- */
-class Engine {
-    /**
-     * 生成
-     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
-     * @param {UserCtrl} userCtrl - ユーザーコントロール
-     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
-     */
-    constructor(myTurn, userCtrl, judgeCtrl) {
-        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
-
-        // あれば勝者 "X", "O" なければ空文字列
-        this._winner = "";
-
-        // 局面
-        this._position = new Position(myTurn);
-
-        // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet();
-
-        // ユーザーコントロール
-        this._userCtrl = userCtrl;
-
-        // 審判コントロール
-        this._judgeCtrl = judgeCtrl;
-    }
-
-    /**
-     * 局面
-     */
-    get position() {
-        return this._position;
-    }
-
-    /**
-     * ユーザーコントロール
-     */
-    get userCtrl() {
-        return this._userCtrl;
-    }
-
-    /**
-     * 審判コントロール
-     */
-    get judgeCtrl() {
-        return this._judgeCtrl;
-    }
-
-    /**
-     * 勝者
-     */
-    get winner() {
-        return this._winner;
-    }
-
-    set winner(value) {
-        this._winner = value;
-    }
-
-    /**
-     * ゲームオーバー集合
-     */
-    get gameoverSet() {
-        return this._gameoverSet;
-    }
-
-    /**
-     * 対局開始時
-     */
-    start() {
-        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
-
-        // 勝者のクリアー
-        this._winner = "";
-
-        // ゲームオーバー状態のクリアー
-        this._gameoverSet = new GameoverSet(GameoverSet.none);
-
-        // 局面の初期化
-        this._position = new Position(this._position.turn.me);
-        vue1.raisePositionChanged();
-    }
-
-    dump(indent) {
-        return `
-${indent}Engine
-${indent}------
-${indent}_winner:${this._winner}
-${indent}${this._gameoverSet.dump(indent + "    ")}
-${indent}${this._position.dump(indent + "    ")}`;
-    }
-}
-```
-
 # Step 12. 対局申込画面作成 - match_application.html ファイル
 
 以下のファイルを新規作成してほしい  
@@ -1308,10 +1309,10 @@ ${indent}${this._position.dump(indent + "    ")}`;
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1406,10 +1407,10 @@ ${indent}${this._position.dump(indent + "    ")}`;
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1891,10 +1892,10 @@ ${indent}${this._position.dump(indent + "    ")}`;
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -1964,10 +1965,10 @@ ${indent}${this._position.dump(indent + "    ")}`;
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2074,10 +2075,10 @@ class TicTacToeV2MessageConverter():
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2177,10 +2178,10 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2251,10 +2252,10 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2432,10 +2433,10 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
@@ -2524,10 +2525,10 @@ urlpatterns = [
             │   │           ├── 📄concepts.js
             │   │           ├── 📄connection.js
             │   │           ├── 📄engine.js
-            │   │           ├── 📄game_rule.js
             │   │           ├── 📄incoming_messages.js
             │   │           ├── 📄judge_ctrl.js
             │   │           ├── 📄outgoing_messages.js
+            │   │           ├── 📄position.js
             │   │           ├── 📄things.js
             │   │           └── 📄user_ctrl.js
             │   └── 🚀favicon.ico
