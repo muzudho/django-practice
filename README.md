@@ -52,7 +52,7 @@ cd home/ubuntu/app/host1
 docker-compose up
 ```
 
-モデルのマイグレーションが必要なら、  
+モデルのマイグレーションが必要なら、別ターミナルから、  
 
 ```shell
 docker-compose run --rm web python3 manage.py makemigrations webapp1 --settings settings
