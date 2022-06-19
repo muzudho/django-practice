@@ -1,4 +1,4 @@
-"""〇×ゲームの練習１"""
+"""〇×ゲームの練習１．１"""
 from django.http import Http404
 from django.shortcuts import render, redirect
 
@@ -9,19 +9,19 @@ from django.shortcuts import render, redirect
 class MatchApplication():
     """対局申込"""
 
-    _path_of_http_playing = "/tic-tac-toe/v1/playing/{0}/?&mypiece={1}"
-    #                                      ^ one
-    #                        -----------------------------------------
+    _path_of_http_playing = "/tic-tac-toe/v1o1/playing/{0}/?&mypiece={1}"
+    #                                      ^^^ one o one
+    #                        -------------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v1/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v1o1/playing/Elephant/?&mypiece=X
+    #                           ----------------------------------------------
 
-    _path_of_html = "webapp1/tic-tac-toe/v1/match_application.html"
-    #                                     ^ one
-    #                ---------------------------------------------
+    _path_of_html = "tic_tac_toe/v1o1/match_application.html"
+    #                             ^^^ one o one
+    #                ---------------------------------------
     #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_application.html
-    #                            ---------------------------------------------
+    # 1. host1/apps1/tic_tac_toe/templates/tic_tac_toe/v1o1/match_application.html
+    #                                      ---------------------------------------
 
     def render(request):
         """描画"""
@@ -31,12 +31,12 @@ class MatchApplication():
 class Playing():
     """対局"""
 
-    _path_of_html = "webapp1/tic-tac-toe/v1/playing.html"
-    #                                     ^ one
-    #                -----------------------------------
-    #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/playing.html
-    #                            -----------------------------------
+    _path_of_html = "tic_tac_toe/v1o1/playing.html"
+    #                             ^^^ one o one
+    #                -----------------------------
+    #                                            1
+    # 1. host1/apps1/tic_tac_toe/templates/tic_tac_toe/v1o1/playing.html
+    #                                      -----------------------------
 
     def render(request, room_name):
         """描画"""

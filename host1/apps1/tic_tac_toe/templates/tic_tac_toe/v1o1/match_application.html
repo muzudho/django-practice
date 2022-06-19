@@ -5,11 +5,19 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "webapp1/tic-tac-toe/v1/main.css" %}' />
+        <link rel="stylesheet" href='{% static "tic_tac_toe/v1o1/main.css" %}' />
+        <!--                                    =========================
+                                                1
+        1. `host1/apps1/tic_tac_toe/static/tic_tac_toe/v1o1/main.css`
+                                           =========================
+        -->
     </head>
     <body>
         <div class="wrapper">
-            <h1>Welcome to Tic Tac Toe Game</h1>
+            <h1>Welcome to Tic Tac Toe Game Copy</h1>
+
+            <p>📖 Original: <a href="https://blog.logrocket.com/django-channels-and-websockets/">Django Channels and WebSockets</a></p>
+
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-control">

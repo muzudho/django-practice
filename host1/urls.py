@@ -23,7 +23,10 @@ from webapp1.views import v_accounts_v1
 # 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
-    # webapp1
+    # +----
+    # | webapp1 アプリケーション
+
+    # ぶら下げ
     path('', include('webapp1.urls')),
     #    --           ------------
     #    1            2
@@ -31,8 +34,15 @@ urlpatterns = [
     # 2. `host1/webapp1/urls.py` の urlpatterns を (1.) にぶら下げます
     #           ------------
 
+    # | webapp1 アプリケーション
     # +----
-    # | 認証
+
+
+
+
+    # +----
+    # | 認証 アプリケーション
+    # |
     # | See also: https://sinyblog.com/django/django-allauth/
 
     # allauth の URLのパスのコピー
@@ -66,6 +76,23 @@ urlpatterns = [
     # 2. v_accounts_v1.py ファイルの accounts_v1_login_view グローバル変数。ビューのオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
 
-    # | 認証
+    # | 認証 アプリケーション
+    # +----
+
+
+
+
+    # +----
+    # | 〇×ゲーム アプリケーション
+
+    # ぶら下げ
+    path('', include('apps1.tic_tac_toe.urls')),
+    #    --           ----------------------
+    #    1            2
+    # 1. 例えば `http://example.com/` のような URLの直下
+    # 2. `host1/apps1/tic_tac_toe.urls.py` の urlpatterns を (1.) にぶら下げます
+    #           ----------------------
+
+    # | 〇×ゲーム アプリケーション
     # +----
 ]

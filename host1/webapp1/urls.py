@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import path
 from django.views.generic import TemplateView
 import account_pb2_grpc
 from webapp1.services import UserService
@@ -15,7 +15,7 @@ from webapp1.views import v_index
 # 3. Python ファイル名。拡張子抜き
 
 from webapp1.views import v_login_user, v_member, \
-    v_room, v_home, v_lobby_v1, v_accounts_v1
+    v_room, v_home, v_lobby_v1
 
 from webapp1.views.practice import pages as practice_pages
 #    ------- --------------        -----    --------------
@@ -44,14 +44,6 @@ from webapp1.views.practice import session as practice_session
 from webapp1.views.practice import vuetify as practice_vuetify
 #    ------- --------------        -------    ----------------
 #    1       2                     3          4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. `3.` の別名
-
-from webapp1.views.tic_tac_toe.v1 import resources as tic_tac_toe_v1
-#    ------- --------------------        ---------    --------------
-#    1       2                           3            4
 # 1. アプリケーション フォルダー名
 # 2. ディレクトリー名
 # 3. Python ファイル名。拡張子抜き
@@ -384,38 +376,6 @@ urlpatterns = [
     # 2. HTMLテンプレートの中で {% url 'readDataTable2o3' %} のような形でURLを取得するのに使える
 
     # | 練習
-    # +----
-
-
-
-
-    # +----
-    # | 〇×ゲーム１
-
-    # 対局申込
-    path('tic-tac-toe/v1/match-application/',
-         # --------------------------------
-         # 1
-         tic_tac_toe_v1.MatchApplication.render),
-    #    --------------------------------------
-    #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-application/` のような URL のパスの部分
-    #                              ---------------------------------
-    # 2. tic_tac_toe_v1 (別名)ファイルの MatchApplication クラスの render 静的メソッド
-
-    # 対局中
-    path('tic-tac-toe/v1/playing/<str:room_name>/',
-         # --------------------------------------
-         # 1
-         tic_tac_toe_v1.Playing.render),
-    #    -----------------------------
-    #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/<部屋名>/` のような URL のパスの部分。
-    #                              --------------------------------
-    #    <部屋名> に入った文字列は room_name 変数に渡されます
-    # 2. tic_tac_toe_v1 (別名)ファイルの Playing クラスの render 静的メソッド
-
-    # | 〇×ゲーム１
     # +----
 
 
