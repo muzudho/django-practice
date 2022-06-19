@@ -684,7 +684,7 @@ accounts_v1_signup_view = AccountsV1SignupView.as_view()
 
 # Step 11. URL設定 - urls.py ファイル
 
-以下のように該当箇所を追加してほしい  
+以下の既存ファイルに、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -699,11 +699,12 @@ accounts_v1_signup_view = AccountsV1SignupView.as_view()
         │   │           └── 📄signup.html
         │   ├── 📂views
         │   │   └── v_accounts_v1.py
-👉      │   └── 📄urls.py
+❌      │   └── 📄urls.py                       # これではない
         ├── 📄.env
         ├── 🐳docker-compose.yml
         ├── 📄requirements.txt
-        └── 📄settings.py
+        ├── 📄settings.py
+👉      └── 📄urls.py                           # こちら
 ```
 
 ```py
@@ -730,7 +731,7 @@ urlpatterns = [
 
 
     # +----
-    # | Allauth
+    # | 認証
     # | See also: https://sinyblog.com/django/django-allauth/
 
     # ログイン後に戻ってくるWebページの指定
@@ -760,7 +761,7 @@ urlpatterns = [
     # 2. allauth の SignupView をカスタマイズしたオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
 
-    # | Allauth
+    # | 認証
     # +----
 ]
 ```

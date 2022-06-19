@@ -33,6 +33,7 @@ urlpatterns = [
 
     # +----
     # | 認証
+    # | See also: https://sinyblog.com/django/django-allauth/
 
     # allauth の URLのパスのコピー
     path('accounts/v1/', include('allauth.urls')),
@@ -48,7 +49,7 @@ urlpatterns = [
          name="accounts_v1_signup"),
     #          ------------------
     #          3
-    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分
+    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分にマッチする
     #                              -------------------
     # 2. allauth の SignupView をカスタマイズしたオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
