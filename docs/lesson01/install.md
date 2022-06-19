@@ -124,13 +124,16 @@ services:
   # Djangoアプリ
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000 --settings=config.settings
-    #                                   ------- ---- --------------------------
+    command: python manage.py runserver 0.0.0.0:8000 --settings=settings
+    #                                   ------- ---- -------------------
     #                                   1       2    3
     # 1. Dockerコンテナ内のサーバーは localhost ではなく 0.0.0.0 と書く
     # 2. Dockerコンテナ内のWebアプリケーションのポート番号
-    # 3. Djangoの設定ファイル（host1/config/settings.py）の拡張子抜き
-    #                              ----------------
+    # 3. Djangoの設定ファイル（host1/settings.py）の拡張子抜き
+    #                              ---------
+    #    例えばレッスンの最初に webapp1 アプリケーションを作成した場合、
+    #    デフォルトでは webapp1 アプリケーション用の --settings=webapp1.settings を指定するようになるので、
+    #    複数のアプリケーションの設定ファイルを指定するよう、トップフォルダーの settings.py （あとで作成する）に変更する
     volumes:
       - .:/code
     ports:
@@ -181,11 +184,10 @@ docker-compose run web django-admin.py startproject webapp1 .
 
 ```plaintext
     └── 📂host1
-        ├── 📂config                # 新規作成
-👉      │   └── 📄urls.py           # host1/webapp1/urls.py とは別物
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+👉      └── 📄urls.py               # host1/webapp1/urls.py とは別物
 ```
 
 ```py
@@ -223,8 +225,6 @@ urlpatterns = [
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -237,14 +237,12 @@ urlpatterns = [
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        └── 📄urls.py
 ```
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-👉      │   ├── 📄settings.py       # ここへ移動
-        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -256,8 +254,12 @@ urlpatterns = [
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+👉      ├── 📄settings.py       # ここへ移動
+        └── 📄urls.py
 ```
+
+webapp1アプリケーション用の設定ファイルを、複数のアプリケーションの設定ファイルとして使えるよう格上げした  
 
 # Step 8. 設定編集 - settings.py ファイル
 
@@ -265,9 +267,6 @@ urlpatterns = [
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-👉      │   ├── 📄settings.py
-        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -279,7 +278,9 @@ urlpatterns = [
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+👉      ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 ```py
@@ -287,13 +288,20 @@ import os # 冒頭のあたりに追加
 
 # ...中略...
 
-# 以下を書きかえてください
+# * 以下を削除
 # ROOT_URLCONF = 'webapp1.urls'
-ROOT_URLCONF = 'config.urls'
-#               -----------
-#               1
-# 1. host1/config/urls.py
+#                 ------------
+#                 1
+# 1. host1/webapp/urls.py
 #          -----------
+#
+# * 以下を追加
+ROOT_URLCONF = 'urls'
+#               ----
+#               1
+# 1. host1/urls.py
+#          ----
+#    トップフォルダーの urls.py を指定する
 
 # ...中略...
 

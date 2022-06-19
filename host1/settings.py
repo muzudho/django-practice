@@ -64,12 +64,20 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# * 以下を削除
 # ROOT_URLCONF = 'webapp1.urls'
-ROOT_URLCONF = 'config.urls'
-#               -----------
-#               1
-# 1. host1/config/urls.py
+#                 ------------
+#                 1
+# 1. host1/webapp/urls.py
 #          -----------
+#
+# * 以下を追加
+ROOT_URLCONF = 'urls'
+#               ----
+#               1
+# 1. host1/urls.py
+#          ----
+#    トップフォルダーの urls.py を指定する
 
 # 調べ終わったら消す
 # Example: `/code/webapp1/templates`

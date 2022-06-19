@@ -14,13 +14,16 @@ services:
   # Djangoアプリ
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000 --settings=config.settings
-    #                                   ------- ---- --------------------------
+    command: python manage.py runserver 0.0.0.0:8000 --settings=settings
+    #                                   ------- ---- -------------------
     #                                   1       2    3
     # 1. Dockerコンテナ内のサーバーは localhost ではなく 0.0.0.0 と書く
     # 2. Dockerコンテナ内のWebアプリケーションのポート番号
-    # 3. Djangoの設定ファイル（host1/config/settings.py）の拡張子抜き
-    #                              ----------------
+    # 3. Djangoの設定ファイル（host1/settings.py）の拡張子抜き
+    #                              ---------
+    #    例えばレッスンの最初に webapp1 アプリケーションを作成した場合、
+    #    デフォルトでは webapp1 アプリケーション用の --settings=webapp1.settings を指定するようになるので、
+    #    複数のアプリケーションの設定ファイルを指定するよう、トップフォルダーの settings.py （あとで作成する）に変更する
     volumes:
       - .:/code
     ports:
