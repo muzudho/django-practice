@@ -39,7 +39,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 # 1. 設定モジュール名 `host1/settings.py`
 #                          --------
 #    例えばレッスンの最初に webapp1 アプリケーションを作成した場合、
-#    デフォルトでは webapp1 アプリケーション用の設定モジュール名 `webapp1.settings` を指定するようになるので、
+#    デフォルトでは webapp1 アプリケーション用の設定モジュール名 `webapp1.settings` を指定するようになっているので、
 #                                                            ------- --------
 #                                                            1o1     1o2
 #    1o1. アプリケーション フォルダー名

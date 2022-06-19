@@ -55,9 +55,17 @@ docker-compose up
 モデルのマイグレーションが必要なら、  
 
 ```shell
-docker-compose run --rm web python3 manage.py makemigrations webapp1
+docker-compose run --rm web python3 manage.py makemigrations webapp1 --settings settings
+#                                                                               --------
+#                                                                               1
+# 1. host1/settings.py
+#          --------
 
-docker-compose run --rm web python manage.py migrate
+docker-compose run --rm web python manage.py migrate --settings settings
+#                                                               --------
+#                                                               1
+# 1. host1/settings.py
+#          --------
 ```
 
 # Others
