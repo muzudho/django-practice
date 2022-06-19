@@ -40,8 +40,8 @@
         │   ├── 📄urls.py
         │   └── 📄wsgi.py
         ├── 📄.env
-        ├── 📄docker-compose.yml
-        ├── 📄Dockerfile
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
         ├── 📄manage.py
         └── 📄requirements.txt
 ```

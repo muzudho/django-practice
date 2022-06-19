@@ -68,7 +68,7 @@ psycopg2>=2.8
 
 ```plaintext
     └── 📂host1
-👉      ├── 📄Dockerfile
+👉      ├── 🐳Dockerfile
         └── 📄requirements.txt
 ```
 
@@ -102,8 +102,8 @@ COPY . /code/
 
 ```plaintext
     └── 📂host1
-👉      ├── 📄docker-compose.yml
-        ├── 📄Dockerfile
+👉      ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
         └── 📄requirements.txt
 ```
 
@@ -190,8 +190,8 @@ docker-compose run web django-admin.py startproject webapp1 .
 👉      │   ├── 📄settings.py       # これを切り取り
         │   ├── 📄urls.py
         │   └── 📄wsgi.py
-        ├── 📄docker-compose.yml
-        ├── 📄Dockerfile
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
         ├── 📄manage.py
         └── 📄requirements.txt
 ```
@@ -208,8 +208,8 @@ docker-compose run web django-admin.py startproject webapp1 .
         │   ├── 📄asgi.py
         │   ├── 📄urls.py
         │   └── 📄wsgi.py
-        ├── 📄docker-compose.yml
-        ├── 📄Dockerfile
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
         ├── 📄manage.py
         └── 📄requirements.txt
 ```
@@ -230,8 +230,8 @@ docker-compose run web django-admin.py startproject webapp1 .
         │   ├── 📄asgi.py
         │   ├── 📄urls.py
         │   └── 📄wsgi.py
-        ├── 📄docker-compose.yml
-        ├── 📄Dockerfile
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
         ├── 📄manage.py
         └── 📄requirements.txt
 ```
