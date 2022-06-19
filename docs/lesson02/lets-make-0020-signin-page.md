@@ -1,6 +1,6 @@
 # 目的
 
-見た目がマシな　サインイン（利用開始）のページがほしい。  
+見た目がマシな　サインイン（利用開始）のページがほしい  
 
 # はじめに
 
@@ -15,13 +15,15 @@
 | Container | Docker                                    |
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 
-ディレクトリ構成を抜粋すると 以下のようになっている。  
+ディレクトリ構成を抜粋すると 以下のようになっている  
 
 ```plaintext
-    └── 📂host1
+    └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
+        ├── 📂config
+        │   └── 📄settings.py
         ├── 📂data
         │   └── 📂db
-        │       └── （たくさんのもの）
+        │       └── <たくさんのもの>
         ├── 📂webapp1                       # アプリケーション フォルダー
         │   ├── 📂static
         │   │   └── 📂allauth-customized
@@ -33,14 +35,15 @@
         │   │           └── 📄signup.html
         │   ├── 📂views
         │   │   └── v_accounts_v1.py
-        │　　├── 📄settings.py
-        │　　├── 📄urls.py
-        │　　└── <いろいろ>
+        │   ├── 📄__init__.py
+        │   ├── 📄asgi.py
+        │   ├── 📄urls.py
+        │   └── 📄wsgi.py
         ├── 📄.env
-        ├── 🐳docker-compose.yml
-        ├── 🐳Dockerfile
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        ├── 📄docker-compose.yml
+        ├── 📄Dockerfile
+        ├── 📄manage.py
+        └── 📄requirements.txt
 ```
 
 # Step 1. Dockerコンテナの起動
@@ -60,7 +63,7 @@ docker-compose up
 以下のファイルを新規作成してほしい  
 
 ```plaintext
-    └── 📂host1
+    └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
         └── 📂webapp1                       # アプリケーション フォルダー
             └── 📂templates
                 └── 📂allauth-customized
@@ -69,7 +72,7 @@ docker-compose up
 👉                          └── 📄login.html
 ```
 
-👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
+👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてほしい  
 
 ```html
 <!--
@@ -252,11 +255,11 @@ docker-compose up
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
+        └── 📂webapp1
             ├── 📂templates
             │   └── 📂allauth-customized
             │       └── 📂v1
-            │           └── 📂account           # allauth のディレクトリー構成を真似ます
+            │           └── 📂account
             │               └── 📄login.html
             └── 📂views
 👉              └── v_accounts_v1.py
@@ -287,15 +290,15 @@ accounts_v1_login_view = AccountsV1LoginView.as_view()
 
 # Step 4. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい  
+以下の既存ファイルに、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
+        └── 📂webapp1
             ├── 📂templates
             │   └── 📂allauth-customized
             │       └── 📂v1
-            │           └── 📂account           # allauth のディレクトリー構成を真似ます
+            │           └── 📂account
             │               └── 📄login.html
             ├── 📂views
             │   └── 📄v_account_v1.py
@@ -332,13 +335,13 @@ urlpatterns = [
 
 📖 [http://localhost:8000/accounts/v1/login/](http://localhost:8000/accounts/v1/login/)  
 
-👆 ログイン ページを開きます  
+👆 ログイン ページを開く  
 
 既にログインしているなら、  
 
 📖 [http://localhost:8000/accounts/v1/logout/](http://localhost:8000/accounts/v1/logout/)  
 
-👆 ログアウトを試してみてください  
+👆 ログアウトを試してほしい  
 
 # 次の記事
 
