@@ -41,16 +41,16 @@ http://<省略>.com/
         │   ├── 📂views
         │   │   └── v_accounts_v1.py
         │   ├── 📄__init__.py
-        │   ├── 📄asgi.py
-        │   ├── 📄urls.py
-        │   └── 📄wsgi.py
+        │   └── 📄urls.py
         ├── 📄.env
+        ├── 📄asgi.py
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
         ├── 📄requirements.txt
         ├── 📄settings.py
-        └── 📄urls.py
+        ├── 📄urls.py
+        └── 📄wsgi.py
 ```
 
 # Step 1. 画面作成 - index.html ファイル
