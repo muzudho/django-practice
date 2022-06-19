@@ -103,8 +103,8 @@ ROOT_URLCONF = 'urls'
 #    トップフォルダーの urls.py を指定する
 
 # 調べ終わったら消す
-print(
-    f"[settings.py] os.path.join(BASE_DIR, 'webapp1', 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
+# print(
+#    f"[settings.py] os.path.join(BASE_DIR, 'webapp1', 'templates')={os.path.join(BASE_DIR, 'webapp1', 'templates')}")
 # Example: `/webapp1/templates`
 # Example: `/code/webapp1/templates`
 
@@ -186,11 +186,32 @@ TEMPLATES = [
     },
 ]
 
-# （削除） WSGI_APPLICATION = 'webapp1.wsgi.application'
-ASGI_APPLICATION = "webapp1.asgi.application"
-#                   -------
-#                   1
-# 1. アプリケーション フォルダー名
+# * 設定ファイルを `host1/webapp1/settings.py` から `host1/settings.py` へ移動する
+# * 変更前
+# WSGI_APPLICATION = 'webapp1.wsgi.application'
+#                     ------- ---- -----------
+#                     1       2    3
+# 1. アプリケーションフォルダー
+# 2. `host1/webapp1/wsgi.py`
+#                   ----
+# 3. グローバル変数名
+#
+# * WSGI を ASGI にバージョンアップする
+# * 変更前 2
+# WSGI_APPLICATION = 'wsgi.application'
+#                     ---- -----------
+#                     1    2
+# 1. `host1/wsgi.py`
+#           ----
+# 2. グローバル変数名
+#
+# * 変更後
+ASGI_APPLICATION = "asgi.application"
+#                   ---- -----------
+#                   1    2
+# 1. `host1/asgi.py`
+#           ----
+# 2. グローバル変数名
 
 # （追加） See also: 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 CHANNEL_LAYERS = {
