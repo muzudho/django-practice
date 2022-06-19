@@ -105,11 +105,32 @@ INSTALLED_APPS = [
     'channels',
 ]
 
-# （削除） WSGI_APPLICATION = 'webapp1.wsgi.application'
-ASGI_APPLICATION = "webapp1.asgi.application"
-#                   -------
-#                   1
-# 1. アプリケーション フォルダー名
+# * 設定ファイルを `host1/webapp1/settings.py` から `host1/settings.py` へ移動する
+# * 変更前
+# WSGI_APPLICATION = 'webapp1.wsgi.application'
+#                     ------- ---- -----------
+#                     1       2    3
+# 1. アプリケーションフォルダー
+# 2. `host1/webapp1/wsgi.py`
+#                   ----
+# 3. グローバル変数名
+#
+# * WSGI を ASGI にバージョンアップする
+# * 変更前 2
+# WSGI_APPLICATION = 'wsgi.application'
+#                     ---- -----------
+#                     1    2
+# 1. `host1/wsgi.py`
+#           ----
+# 2. グローバル変数名
+#
+# * 変更後
+ASGI_APPLICATION = "asgi.application"
+#                   ---- -----------
+#                   1    2
+# 1. `host1/asgi.py`
+#           ----
+# 2. グローバル変数名
 
 # （追加） See also: 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)
 CHANNEL_LAYERS = {
@@ -135,16 +156,15 @@ CHANNEL_LAYERS = {
 }
 ```
 
-# Step 4. 設定の編集 - asgi.py ファイル＜その１＞
+# Step 4. ASGI設定 - asgi.py ファイル＜その１＞
 
-以下のファイルを編集してほしい。  
+以下の既存のファイルを、編集してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-👉      │   ├── 📄asgi.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+👉      ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
@@ -199,20 +219,20 @@ docker-compose run --rm web python3 manage.py migrate
 docker-compose up
 ```
 
-# Step 6. consumer.py ファイルを作成
+# Step 6. Webソケット設定 - consumer.py ファイル
 
-以下のファイルを作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
         ├── 📂webapp1
-        │   ├── 📂websocks
-        │   │   └── 📂websock_practice1
-        │   │       └── 📂v1
-👉      │   │           └── 📄consumer.py
-        │   ├── 📄asgi.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+        │   └── 📂websocks
+        │       └── 📂websock_practice1
+        │           └── 📂v1
+👉      │               └── 📄consumer.py
+        ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
@@ -246,7 +266,7 @@ class WebsockPractice1V1Consumer(AsyncWebsocketConsumer):
         await self.send(text_data=res)
 ```
 
-# Step 7. routing1.py ファイルを作成
+# Step 7. ルート編集 - routing1.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -257,10 +277,10 @@ class WebsockPractice1V1Consumer(AsyncWebsocketConsumer):
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
-        │   ├── 📄asgi.py
-👉      │   ├── 📄routing1.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+👉      │   └── 📄routing1.py
+        ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
@@ -288,9 +308,9 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 8. 設定の編集 - asgi.py ファイル＜その２＞
+# Step 8. ASGI設定 - asgi.py ファイル＜その２＞
 
-`asgi.py` ファイルは既存なので、以下の部分をマージしてほしい。  
+以下の既存のファイルに、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -299,10 +319,10 @@ websocket_urlpatterns = [
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
-👉      │   ├── 📄asgi.py
-        │   ├── 📄routing1.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+        │   └── 📄routing1.py
+👉      ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
@@ -379,15 +399,15 @@ pip install websocket-client
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
-        │   ├── 📄asgi.py
-        │   ├── 📄routing1.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+        │   └── 📄routing1.py
+        ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 # Step 11. websock_client.py ファイルの作成
 
-以下のファイルを作成してほしい。  
+以下のファイルを、新規作成してほしい  
 
 ```plaintext
     ├── 📂host_local1
@@ -402,10 +422,10 @@ pip install websocket-client
         │   │   └── 📂websock_practice1
         │   │       └── 📂v1
         │   │           └── 📄consumer.py
-        │   ├── 📄asgi.py
-        │   ├── 📄routing1.py
-        │   └── 📄settings.py
-        └── 📄requirements.txt
+        │   └── 📄routing1.py
+        ├── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
