@@ -38,7 +38,6 @@ Django に最初から入っている HTMLレンダラー に満足できない�
         │   │   └── 📂practice
         │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
-        │   ├── 📄settings.py
         │   ├── 📄urls.py
         │   └── <いろいろ>
         ├── 📄.env
@@ -46,7 +45,8 @@ Django に最初から入っている HTMLレンダラー に満足できない�
         ├── 🐳Dockerfile
         ├── 📄manage.py
         ├── 📄requirements.txt
-        └── <いろいろ>
+        ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 # Step 1. 画面作成 - vuetify-hello1.html ファイル
@@ -136,19 +136,20 @@ def readHello(request, id=id):
 
 # Step 3. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+以下の既存ファイルに、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            ├── 📂templates
-            │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-            │       └── 📂practice
-            │           └── 📄vuetify-hello1.html
-            ├── 📂views
-            │   └── 📂practice
-            │       └── 📄vuetify.py
-👉          └── 📄urls.py
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂templates
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-hello1.html
+        │   ├── 📂views
+        │   │   └── 📂practice
+        │   │       └── 📄vuetify.py
+👉      │   └── 📄urls.py                       # こちら
+❌      └── 📄urls.py                           # これではない
 ```
 
 ```py
