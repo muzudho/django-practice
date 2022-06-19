@@ -218,8 +218,6 @@ docker-compose run web django-admin.py startproject webapp1 .
 
 続けて、そのファイルを編集してほしい  
 
-📄host1/webapp1/settings.py:  
-
 ```plaintext
     └── 📂host1
         ├── 📂config

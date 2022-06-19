@@ -24,6 +24,26 @@
 | Editor    | Visual Studio Code （以下 VSCode と表記） |
 | Database  | PostgreSQL                                |
 
+ディレクトリ構成を抜粋すると 以下のようになっている  
+
+```plaintext
+    └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
+        ├── 📂config
+        │   └── 📄settings.py
+        ├── 📂data
+        │   └── 📂db
+        │       └── <たくさんのもの>
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📄__init__.py
+        │   ├── 📄asgi.py
+        │   ├── 📄urls.py
+        │   └── 📄wsgi.py
+        ├── 📄docker-compose.yml
+        ├── 📄Dockerfile
+        ├── 📄manage.py
+        └── 📄requirements.txt
+```
+
 # Step 1. Dockerコンテナの起動
 
 （していなければ） Docker コンテナを起動しておいてほしい  
@@ -36,28 +56,29 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. Gmail 側の設定をしよう
+# Step 2. SMTP設定 - 例えばGoogleアカウント
 
 パスワードを忘れたとき、パスワード変更画面のURLがメールで飛んでくる仕掛けはよくある。  
-そのメールを飛ばすサーバーは、Googleのを借りることにする。
+そのメールを飛ばすサーバーは、例えばGoogleのを借りることにする  
 
-Googleのアカウントから、
+Googleのアカウントから、  
 
 `[Googleアカウント] - [セキュリティ] - [Googleへのログイン] - [アプリパスワード]` と進んでほしい。  
-アプリの名前は、例えば `DjangoPractice` とでもしておけばいいだろう。
-すると 16桁の **アプリパスワード** が発行される。覚えておかなくていいと表示されるかも知れないが、一旦覚えてくれ。  
+アプリの名前は、例えば `DjangoPractice` とでもしておけばいいだろう。  
+すると 16桁の **アプリパスワード** が発行される。覚えておかなくていいと表示されるかも知れないが、一旦覚えてくれ  
 
-# Step 3. ".env" ファイルを作成しよう
+# Step 3. 環境変数作成 - ".env" ファイル
 
 🚫ソースにパスワードをハードコーディングしてリモートのGitリポジトリにプッシュすると被害に遭うだろう。  
 
-パスワードのような漏れて困るものは ソースではなく 📄`.env` ファイルに書くのを習慣にし、
-このファイルは 📄`.gitignore` ファイルを設定することで（あるいは既に設定してあって） リモートのGitリポジトリにプッシュしないようにしてほしい。  
+パスワードのような漏れて困るものは ソースではなく 📄`.env` ファイルに書くのを習慣にし、  
+このファイルは 📄`.gitignore` ファイルを設定することで（あるいは既に設定してあって） リモートのGitリポジトリにプッシュしないようにしてほしい  
+
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-👉      ├── 📄.env
-        └── <いろいろ>
+👉      └── 📄.env
 ```
 
 ```plaintext
@@ -65,17 +86,16 @@ EMAIL_HOST_USER=あなたのGmailアドレス
 EMAIL_HOST_PASSWORD=あなたのGmailアドレスのアプリパスワード
 ```
 
-あなたのGmailのパスワードを書くのではなく、Gmailの**アプリ**パスワードを書くという違いに気を付けてほしい。  
+あなたのGmailのパスワードを書くのではなく、Gmailの**アプリ**パスワードを書くという違いに気を付けてほしい  
 
-# Step 4. Yamlファイルの設定
+# Step 4. ドッカーコンポーズ編集 - docker-compose.yml ファイル
 
 以下のファイルの該当箇所を追記してほしい
 
 ```plaintext
     └── 📂host1
         ├── 📄.env
-👉      ├── 🐳docker-compose.yml
-        └── <いろいろ>
+👉      └── 🐳docker-compose.yml
 ```
 
 ```yaml
@@ -88,18 +108,17 @@ EMAIL_HOST_PASSWORD=あなたのGmailアドレスのアプリパスワード
 ```
 
 意味としては `${.envファイルの中の変数名}` の内容を、 Dockerコンテナの環境変数に入れている。  
-最近の Docker は、`docker-compose.yml` と同じ階層の `.env` ファイルを勝手に読み込んでくれる。  
+最近の Docker は、`docker-compose.yml` と同じ階層の `.env` ファイルを勝手に読み込んでくれる  
 
-# Step 5. requirements.txt の設定
+# Step 5. Pythonパッケージ編集 - requirements.txt ファイル
 
-ファイルの末尾にでも追加してほしい。  
+ファイルの末尾にでも追加してほしい  
 
 ```plaintext
     └── 📂host1
         ├── 📄.env
         ├── 🐳docker-compose.yml
-👉      ├── 📄requirements.txt
-        └── <いろいろ>
+👉      └── 📄requirements.txt
 ```
 
 ```shell
@@ -109,20 +128,18 @@ django-allauth>=0.32.0
 
 # Step 6. 設定編集 - settings.py ファイル
 
-以下のように該当箇所を追加してほしい。  
+以下のように該当箇所を追加してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
-👉      │　　├── 📄settings.py
-        │　　└── <いろいろ>
+        ├── 📂config
+👉      │   └── 📄settings.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄requirements.txt
 ```
 
-👇 レッスンの進み具合によって、 URL などを変えてください  
+👇 レッスンの進み具合によって、 URL などを変えてほしい  
 
 ```py
 INSTALLED_APPS = [
@@ -233,15 +250,15 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # メールサーバのGm
 EMAIL_USE_TLS = True # TLSの設定（TRUE,FALSE)
 ```
 
-# Step 7. Docker コンテナの再起動 - コマンド実行
+# Step 7. Docker コンテナの再起動 - docker-compose コマンド
 
-Dockerコンテナは起動しているものとし、以下のコマンドを打鍵してほしい。  
+Dockerコンテナは起動しているものとし、以下のコマンドを打鍵してほしい  
 
 ```shell
 docker-compose down
 ```
 
-Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい。  
+Dockerコンテナは停止しているものとし、以下のコマンドを打鍵してほしい  
 
 ```shell
 docker-compose build
@@ -255,24 +272,23 @@ docker-compose up
 
 # Step 8. 機能強化 - form-html-parser.js ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
+        ├── 📂config
+        │   └── 📄settings.py
         ├── 📂webapp1                       # アプリケーション フォルダー
-        │   ├── 📂static
-        │   │   └── 📂allauth-customized
-        │   │       └── 📂v1
-👉      │   │           └── 📄form-html-parser.js
-        │　　├── 📄settings.py
-        │　　└── <いろいろ>
+        │   └── 📂static
+        │       └── 📂allauth-customized
+        │           └── 📂v1
+👉      │               └── 📄form-html-parser.js
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄requirements.txt
 ```
 
-👇以下のファイルは、 django-allauth パッケージのHTML出力の仕様が変わったら作り直してください  
+👇以下のファイルは、 django-allauth パッケージのHTML出力の仕様が変わったら作り直してほしい  
 
 ```js
 class DjangoAllauthFormParser {
@@ -437,28 +453,27 @@ class DjangoAllauthFormParser {
 
 # Step 9. テンプレート編集 - signup.html ファイル
 
-以下のファイルを新規作成してほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
+        ├── 📂config
+        │   └── 📄settings.py
+        ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
         │   │       └── 📂v1
         │   │           └── 📄form-html-parser.js
-        │   ├── 📂templates
-        │   │   └── 📂allauth-customized
-        │   │       └── 📂v1
-👉      │   │           └── 📄signup.html
-        │　　├── 📄settings.py
-        │　　└── <いろいろ>
+        │   └── 📂templates
+        │       └── 📂allauth-customized
+        │           └── 📂v1
+👉      │               └── 📄signup.html
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄requirements.txt
 ```
 
-👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてください  
+👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてほしい  
 
 ```html
 <!--
@@ -611,11 +626,13 @@ class DjangoAllauthFormParser {
 
 # Step 10. ビュー編集 - v_accounts_v1.py ファイル
 
-以下のファイルを 無ければ新規作成、有れば編集してほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
+        ├── 📂config
+        │   └── 📄settings.py
+        ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
         │   │       └── 📂v1
@@ -624,14 +641,11 @@ class DjangoAllauthFormParser {
         │   │   └── 📂allauth-customized
         │   │       └── 📂v1
         │   │           └── 📄signup.html
-        │   ├── 📂views
-👉      │   │   └── v_accounts_v1.py
-        │　　├── 📄settings.py
-        │　　└── <いろいろ>
+        │   └── 📂views
+👉      │       └── v_accounts_v1.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄requirements.txt
 ```
 
 ```py
@@ -664,13 +678,15 @@ class AccountsV1SignupView(SignupView):
 accounts_v1_signup_view = AccountsV1SignupView.as_view()
 ```
 
-# Step 11. urls.py の設定
+# Step 11. URL設定 - urls.py ファイル
 
-以下のように該当箇所を追加してほしい。  
+以下のように該当箇所を追加してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
+        ├── 📂config
+        │   └── 📄settings.py
+        ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
         │   │       └── 📂v1
@@ -681,13 +697,10 @@ accounts_v1_signup_view = AccountsV1SignupView.as_view()
         │   │           └── 📄signup.html
         │   ├── 📂views
         │   │   └── v_accounts_v1.py
-        │　　├── 📄settings.py
-👉      │　　├── 📄urls.py
-        │　　└── <いろいろ>
+👉      │   └── 📄urls.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        ├── 📄requirements.txt
-        └── <いろいろ>
+        └── 📄requirements.txt
 ```
 
 ```py
@@ -753,15 +766,15 @@ urlpatterns = [
 
 📖 [http://localhost:8000/accounts/v1/signup/](http://localhost:8000/accounts/v1/signup/)  
 
-👆 サインアップ ページを開きます  
+👆 サインアップ ページを開く  
 
 既にログインしているなら、  
 
 📖 [http://localhost:8000/accounts/v1/logout/](http://localhost:8000/accounts/v1/logout/)  
 
-👆 ログアウトを試してみてください  
+👆 ログアウトを試してほしい  
 
-あとは アカウントを作成したり、パスワードを忘れたときの手続きを試してほしい。  
+あとは アカウントを作成したり、パスワードを忘れたときの手続きを試してほしい  
 
 # 次の記事
 

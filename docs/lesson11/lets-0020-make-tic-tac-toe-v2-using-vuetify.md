@@ -22,7 +22,7 @@
 | Database         | Redis                                     |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
 
-ディレクトリ構成を抜粋すると 以下のようになっている。  
+ディレクトリ構成を抜粋すると 以下のようになっている  
 
 ```plaintext
     ├── 📂host_local1
