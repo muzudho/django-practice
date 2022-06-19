@@ -64,7 +64,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'webapp1.urls'
+# ROOT_URLCONF = 'webapp1.urls'
+ROOT_URLCONF = 'config.urls'
+#               -----------
+#               1
+# 1. host1/config/urls.py
+#          -----------
 
 # 調べ終わったら消す
 # Example: `/code/webapp1/templates`

@@ -175,12 +175,56 @@ docker-compose run web django-admin.py startproject webapp1 .
         └── 📄manage.py
 ```
 
-# Step 6. 設定ファイルの移動 - settings.py ファイル
+# Step 6. 総合のURL設定 - urls.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        ├── 📂config                # 新規作成
+👉      │   └── 📄urls.py           # host1/webapp1/urls.py とは別物
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        └── 📄requirements.txt
+```
+
+```py
+"""webapp1 URL Configuration
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+"""
+from django.urls import include, path
+
+urlpatterns = [
+    # webapp1
+    path('', include('webapp1.urls')),
+    #    --           ------------
+    #    1            2
+    # 1. 例えば `http://example.com/` のような URLの直下
+    # 2. `host1/webapp1/urls.py` の urlpatterns を (1.) にぶら下げます
+    #           ------------
+]
+```
+
+# Step 7. 設定ファイルの移動 - settings.py ファイル
 
 以下のファイルを移動してほしい  
 
 ```plaintext
     └── 📂host1
+        ├── 📂config
+        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -198,8 +242,9 @@ docker-compose run web django-admin.py startproject webapp1 .
 
 ```plaintext
     └── 📂host1
-        ├── 📂config                # 新規作成
-👉      │   └── 📄settings.py       # ここへ移動
+        ├── 📂config
+👉      │   ├── 📄settings.py       # ここへ移動
+        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -214,14 +259,15 @@ docker-compose run web django-admin.py startproject webapp1 .
         └── 📄requirements.txt
 ```
 
-# Step 7. 設定編集 - settings.py ファイル
+# Step 8. 設定編集 - settings.py ファイル
 
 続けて、そのファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
         ├── 📂config
-👉      │   └── 📄settings.py
+👉      │   ├── 📄settings.py
+        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -238,6 +284,16 @@ docker-compose run web django-admin.py startproject webapp1 .
 
 ```py
 import os # 冒頭のあたりに追加
+
+# ...中略...
+
+# 以下を書きかえてください
+# ROOT_URLCONF = 'webapp1.urls'
+ROOT_URLCONF = 'config.urls'
+#               -----------
+#               1
+# 1. host1/config/urls.py
+#          -----------
 
 # ...中略...
 
@@ -260,7 +316,7 @@ DATABASES = {
 }
 ```
 
-# Step 8. ドッカーコンテナ起動 - docker-compose コマンド
+# Step 9. ドッカーコンテナ起動 - docker-compose コマンド
 
 以下のコマンドを叩いてほしい  
 
@@ -268,7 +324,7 @@ DATABASES = {
 docker-compose up
 ```
 
-# Step 9. Webページへアクセス
+# Step 10. Webページへアクセス
 
 次に、ブラウザで以下のURLにアクセスしてほしい  
 
