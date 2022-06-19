@@ -49,8 +49,8 @@ class TicTacToeV3o1MessageConverter(TicTacToeV2MessageConverter):
         # 駒を置いた方の X か O
         piece_moved = doc_received.get("c2s_pieceMoved", None)
         print(
-            f"[TicTacToeV3o1MessageConverter on_move] クライアントからのメッセージを受信しました event=[{event}] room_name=[{room_name}] sq=[{sq}] piece_moved=[{piece_moved}]")
-        # [TicTacToeV3o1MessageConverter on_move] event=[C2S_Moved] sq=[2] piece_moved=[X]
+            f"[TicTacToeV3o1MessageConverter on_move] クライアントからのメッセージを受信しました room_name=[{room_name}] event=[{event}] piece_moved=[{piece_moved}] sq=[{sq}]")
+        # クライアントからのメッセージを受信しました room_name=[Elephant] event=[C2S_Moved] piece_moved=[X] sq=[2]
 
         # 部屋取得
         room = await get_room_by_name(room_name)
