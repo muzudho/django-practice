@@ -143,37 +143,6 @@ urlpatterns = [
     # 2. 最初から用意されているページ？
     # 3. ログイン後に飛んでくるページの URL のパスを 'home' という名前で覚えておく
 
-    # allauth の URLのパスのコピー
-    path('accounts/v1/', include('allauth.urls')),
-    #     ------------   -----------------------
-    #     1
-    # 1. 例えば `http://example.com/accounts/v1/` のような URLのパスの部分
-    # 2. allauth の例えば `login/` のようなパスを 1. のパスにぶら下げる形で全てコピーします
-
-    # サインアップ（会員登録）
-    path("accounts/v1/signup/", view=v_accounts_v1.accounts_v1_signup_view,
-         # ------------------        -------------------------------------
-         # 1                        2
-         name="accounts_v1_signup"),
-    #          ------------------
-    #          3
-    # 1. 例えば `http://example.com/accounts/v1/signup/` のような URL のパスの部分
-    #                              -------------------
-    # 2. allauth の SignupView をカスタマイズしたオブジェクト
-    # 3. HTMLテンプレートの中で {% url 'accounts_v1_signup' %} のような形でURLを取得するのに使える
-
-    # サインイン
-    path("accounts/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
-         # -----------------        ------------------------------------
-         # 1                        2
-         name="accounts_v1_login"),
-    #          -----------------
-    #          3
-    # 1. 例えば `http://example.com/accounts/v1/login/` のような URL のパスの部分
-    #                              -------------------
-    # 2. 既に用意されているビューのオブジェクト？
-    # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
-
     # | 認証
     # +----
 

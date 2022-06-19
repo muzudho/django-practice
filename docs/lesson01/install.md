@@ -288,6 +288,31 @@ import os # 冒頭のあたりに追加
 
 # ...中略...
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+#
+# * 設定ファイルを `host1/webapp1/settings.py` から `host1/settings.py` へ移動する
+# * 以下を削除
+# BASE_DIR = Path(__file__).resolve().parent.parent
+#                                     -------------
+#                                     1
+# 1. 例えば `host1/webapp1/settings.py` ファイルから見て
+#    .resolve()               は `code/webapp1/settings.py` （`host1` は見えず `code` に差し変わっている）
+#    .resolve().parent        は `code/webapp1/`
+#    .resolve().parent.parent は `code/`
+#
+# * 以下を追加
+BASE_DIR = Path(__file__).resolve().parent
+#                                   ------
+#                                   1
+# 1. 例えば `host1/settings.py` ファイルから見て
+#    .resolve()               は `code/settings.py` （`host1` は見えず `code` に差し変わっている）
+#    .resolve().parent        は `code/`
+#
+# print(f"Path(__file__).resolve()={Path(__file__).resolve()}")
+# print(f"Path(__file__).resolve().parent={Path(__file__).resolve().parent}")
+
+# ...中略...
+
 # * 以下を削除
 # ROOT_URLCONF = 'webapp1.urls'
 #                 ------------
