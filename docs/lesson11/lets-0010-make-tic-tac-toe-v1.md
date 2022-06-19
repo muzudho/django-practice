@@ -60,15 +60,14 @@ Webサーバーと、クライアント側のアプリ間で通信する練習�
         │   ├── 📄admin.py
         │   ├── 📄asgi.py
         │   ├── 📄routing1.py
-        │   ├── 📄settings.py
-        │   ├── 📄urls.py
-        │   └── <いろいろ>
+        │   └── 📄urls.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
         ├── 📄requirements.txt
-        └── <いろいろ>
+        ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
@@ -693,7 +692,7 @@ def render_playing(request, room_name, path_of_html):
 
 # Step 9. ルート編集 - urls.py ファイル
 
-📄`urls.py` は既存だろうから、以下のソースをマージしてほしい。  
+以下の既存のファイルに、以下のソースをマージしてほしい  
 
 ```plaintext
     └── 📂host1
@@ -714,8 +713,9 @@ def render_playing(request, room_name, path_of_html):
         │   │   └── 📂tic_tac_toe
         │   │       └── 📂v1
         │   │           └── 📄resources.py
-👉      │   └── 📄urls.py
-        └── 📄requirements.txt
+👉      │   └── 📄urls.py                       # こちら
+        ├── 📄requirements.txt
+❌      └── 📄urls.py                           # これではない
 ```
 
 ```py
