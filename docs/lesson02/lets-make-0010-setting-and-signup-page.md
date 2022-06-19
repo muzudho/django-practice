@@ -262,9 +262,17 @@ Dockerコンテナは停止しているものとし、以下のコマンドを�
 ```shell
 docker-compose build
 
-docker-compose run --rm web python3 manage.py makemigrations
+docker-compose run --rm web python3 manage.py makemigrations --settings settings
+#                                                                       --------
+#                                                                       1
+# 1. host1/settings.py
+#          --------
 
-docker-compose run --rm web python3 manage.py migrate
+docker-compose run --rm web python3 manage.py migrate --settings settings
+#                                                                --------
+#                                                                1
+# 1. host1/settings.py
+#          --------
 
 docker-compose up
 ```
@@ -786,6 +794,10 @@ urlpatterns = [
 📖 [docker-compose.ymlで.envファイルに定義した環境変数を使う](https://kitigai.hatenablog.com/entry/2019/05/08/003000)  
 📖 [Redmineにて、メールのgmail（2段階認証設定）に送付するときに行った対処法](https://zenn.dev/gashi/articles/67e6c244942ef1318395)  
 📖 [【Django】認証したユーザー（super, staff, active）の権限でアクセス制限・表示制限を設定する](https://office54.net/python/django/django-access-limit)  
+
+## Django関連
+
+📖 [Django 管理コマンド manage.py まとめ](https://qiita.com/okoppe8/items/7e3de8a4dd40b48debea)  
 
 ## 認証関連
 
