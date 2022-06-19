@@ -19,8 +19,6 @@
 
 ```plaintext
     └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -43,7 +41,9 @@
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 # Step 1. Dockerコンテナの起動
@@ -294,15 +294,16 @@ accounts_v1_login_view = AccountsV1LoginView.as_view()
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
-            ├── 📂templates
-            │   └── 📂allauth-customized
-            │       └── 📂v1
-            │           └── 📂account
-            │               └── 📄login.html
-            ├── 📂views
-            │   └── 📄v_account_v1.py
-👉          └── 📄urls.py
+        ├── 📂webapp1
+        │   ├── 📂templates
+        │   │   └── 📂allauth-customized
+        │   │       └── 📂v1
+        │   │           └── 📂account
+        │   │               └── 📄login.html
+        │   ├── 📂views
+        │   │   └── 📄v_account_v1.py
+❌      │   └── 📄urls.py                       # これではない
+👉      └── 📄urls.py                           # こちら
 ```
 
 ```py
@@ -316,18 +317,26 @@ from webapp1.views import v_accounts_v1
 # 3. Python ファイル名。拡張子抜き
 
 urlpatterns = [
+
     # ...中略...
 
-    # サインイン
-    path("account/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
-         # ----------------        ------------------------------------
-         # 1                       2
+    # +----
+    # | 認証
+
+    # ログイン
+    path("accounts/v1/login/", view=v_accounts_v1.accounts_v1_login_view,
+         # -----------------        ------------------------------------
+         # 1                        2
          name="accounts_v1_login"),
     #          -----------------
     #          3
-    # 1. URLの `account/v1/login/` というパスにマッチする
-    # 2. 既に用意されているビューのオブジェクト？
+    # 1. 例えば `http://example.com/accounts/v1/login/` のような URL のパスの部分
+    #                              -------------------
+    # 2. v_accounts_v1.py ファイルの accounts_v1_login_view グローバル変数。ビューのオブジェクト
     # 3. HTMLテンプレートの中で {% url 'accounts_v1_login' %} のような形でURLを取得するのに使える
+
+    # | 認証
+    # +----
 ]
 ```
 
