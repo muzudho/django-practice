@@ -116,17 +116,16 @@ docker-compose run --rm web python3 manage.py migrate
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
-        │   └── 📂static
-        │       └── 📂webapp1
-        │           └── 📂tic-tac-toe
-        │               └── 📂v1
+        ├── 📂apps1                         # 新規作成。複数のアプリケーションを入れるフォルダー。末尾の 1 は文字列検索しやすいように付けているだけで特別な意味はない
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       └── 📂static
+        │           └── 📂tic_tac_toe       # アプリケーション フォルダーと同名。フォルダー構成が冗長になるが、HTMLソースが読みやすくなるという工夫
+        │               └── 📂v1o1          # version 1.1 ぐらいの意味。小数を使うと刻みやすい。 1.0 ではなく 1.1 から始めると、1.0.1 を挿入できるメリットがある
 👉      │                   └── 📄main.css
         └── 📄requirements.txt
 ```
 
 ```css
-/* static/css/main.css */
 body {
   /* width: 100%; */
   height: 90vh;
@@ -194,13 +193,13 @@ select {
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
-        │   └── 📂static
-        │       └── 📂webapp1
-        │           └── 📂tic-tac-toe
-        │               └── 📂v1
-👉      │                   ├── 📄play.js
-        │                   └── 📄main.css
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       └── 📂static
+        │           └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
+        │               └── 📂v1o1
+        │                   ├── 📄main.css
+👉      │                   └── 📄play.js
         └── 📄requirements.txt
 ```
 
@@ -210,21 +209,21 @@ select {
 var roomName = document.getElementById("board").getAttribute("room_name");
 var myPiece = document.getElementById("board").getAttribute("my_piece");
 
-var connectionString = `ws://${window.location.host}/tic-tac-toe/v1/playing/${roomName}/`;
-//                           ----------------------- -----------------------------------
-//                           1                       2
-// 1. ホスト アドレス
-// 2. URLの一部
+var connectionString = `ws://${window.location.host}/tic-tac-toe/v1o1/playing/${roomName}/`;
+//                      ----]----------------------- -------------------------------------
+//                      1    2                       3
+//                      ------------------------------------------------------------------
+//                      4
+// 1. スキーム : Web Socket
+// 2. ホスト アドレス
+// 3. パス
+// 4. URL
 
 var webSock1 = new WebSocket(connectionString);
 
-const PC_EMPTY = -1 // A square without piece; PC is piece
+const PC_EMPTY = -1; // A square without piece; PC is piece
 // Game board for maintaing the state of the game
-var board = [
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    PC_EMPTY, PC_EMPTY, PC_EMPTY,
-];
+var board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
 
 // SQ is square
 // +---------+
@@ -232,15 +231,16 @@ var board = [
 // | 3  4  5 |
 // | 6  7  8 |
 // +---------+
-const SQ_0 = 0
-const SQ_1 = 1
-const SQ_2 = 2
-const SQ_3 = 3
-const SQ_4 = 4
-const SQ_5 = 5
-const SQ_6 = 6
-const SQ_7 = 7
-const SQ_8 = 8
+const SQ_0 = 0;
+const SQ_1 = 1;
+const SQ_2 = 2;
+const SQ_3 = 3;
+const SQ_4 = 4;
+const SQ_5 = 5;
+const SQ_6 = 6;
+const SQ_7 = 7;
+const SQ_8 = 8;
+
 // Winning indexes.
 arrayOfSquaresOfWinPattern = [
     // +---------+
@@ -290,55 +290,54 @@ arrayOfSquaresOfWinPattern = [
     // | .  *  . |
     // | *  .  . |
     // +---------+
-    [SQ_2, SQ_4, SQ_6]
-]
+    [SQ_2, SQ_4, SQ_6],
+];
 let countOfMove = 0; // Number of moves done
 let myTurn = true; // Boolean variable to get the turn of the player.
 
 // Add the click event listener on every block.
-let elementArrayOfSquare = document.getElementsByClassName('square');
+let elementArrayOfSquare = document.getElementsByClassName("square");
 for (const element of elementArrayOfSquare) {
-    element.addEventListener("click", event=>{
-        const sq = event.path[0].getAttribute('square'); // Square; 0 <= sq
-        if(board[sq] == PC_EMPTY){
-            if(!myTurn){
-                alert("Wait for other to place the move")
-            }
-            else{
+    element.addEventListener("click", (event) => {
+        const sq = event.path[0].getAttribute("square"); // Square; 0 <= sq
+        if (board[sq] == PC_EMPTY) {
+            if (!myTurn) {
+                alert("Wait for other to place the move");
+            } else {
                 myTurn = false;
-                document.getElementById("alert_move").style.display = 'none'; // Hide
+                document.getElementById("alert_move").style.display = "none"; // Hide
                 makeMove(sq, myPiece);
             }
         }
-    })
+    });
 }
 
 /**
  * Make a move
  * @param {*} sq - Square; 0 <= sq
- * @param {*} myPiece 
- * @returns 
+ * @param {*} myPiece
+ * @returns
  */
-function makeMove(sq, myPiece){
+function makeMove(sq, myPiece) {
     sq = parseInt(sq);
     let data = {
-        "event": "MOVE",
-        "message": {
-            "index": sq,
-            "player": myPiece
-        }
-    }
+        event: "MOVE",
+        message: {
+            index: sq,
+            player: myPiece,
+        },
+    };
 
-    if(board[sq] == PC_EMPTY){
+    if (board[sq] == PC_EMPTY) {
         // if the valid move, update the board
         // state and send the move to the server.
         countOfMove++;
 
         switch (myPiece) {
-            case 'X':
+            case "X":
                 board[sq] = 1;
                 break;
-            case 'O':
+            case "O":
                 board[sq] = 0;
                 break;
             default:
@@ -346,41 +345,36 @@ function makeMove(sq, myPiece){
                 return false;
         }
 
-        webSock1.send(JSON.stringify(data))
+        webSock1.send(JSON.stringify(data));
     }
     // place the move in the game box.
     elementArrayOfSquare[sq].innerHTML = myPiece;
     // check for the winner
     const gameOver = isGameOver();
-    if(myTurn){
+    if (myTurn) {
         // if player winner, send the END event.
-        if(gameOver){
+        if (gameOver) {
             data = {
-                "event": "END",
-                "message": `${myPiece} is a winner. Play again?`
-            }
-            webSock1.send(JSON.stringify(data))
-        }
-        else if(!gameOver && countOfMove == 9){
+                event: "END",
+                message: `${myPiece} is a winner. Play again?`,
+            };
+            webSock1.send(JSON.stringify(data));
+        } else if (!gameOver && countOfMove == 9) {
             data = {
-                "event": "END",
-                "message": "It's a draw. Play again?"
-            }
-            webSock1.send(JSON.stringify(data))
+                event: "END",
+                message: "It's a draw. Play again?",
+            };
+            webSock1.send(JSON.stringify(data));
         }
     }
 }
 
 // function to reset the game.
-function reset(){
-    board = [
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-        PC_EMPTY, PC_EMPTY, PC_EMPTY,
-    ];
+function reset() {
+    board = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
     countOfMove = 0;
     myTurn = true;
-    document.getElementById("alert_move").style.display = 'inline';
+    document.getElementById("alert_move").style.display = "inline";
     for (const element of elementArrayOfSquare) {
         element.innerHTML = "";
     }
@@ -388,20 +382,18 @@ function reset(){
 
 /**
  * check if their is winning move
- * @param {*} squaresOfWinPattern 
- * @returns 
+ * @param {*} squaresOfWinPattern
+ * @returns
  */
 function isPieceInLine(squaresOfWinPattern) {
-    return board[squaresOfWinPattern[0]] !== PC_EMPTY &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] &&
-        board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
+    return board[squaresOfWinPattern[0]] !== PC_EMPTY && board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[1]] && board[squaresOfWinPattern[0]] === board[squaresOfWinPattern[2]];
 }
 
 /**
  * function to check if player is winner.
  * @returns I won
  */
-function isGameOver(){
+function isGameOver() {
     if (5 <= countOfMove) {
         for (let squaresOfWinPattern of arrayOfSquaresOfWinPattern) {
             if (isPieceInLine(squaresOfWinPattern)) {
@@ -419,15 +411,17 @@ function isGameOver(){
 function connect() {
     // on websocket open, send the START event.
     webSock1.onopen = () => {
-        console.log('WebSockets connection created.');
-        webSock1.send(JSON.stringify({
-            "event": "START",
-            "message": ""
-        }));
+        console.log("WebSockets connection created.");
+        webSock1.send(
+            JSON.stringify({
+                event: "START",
+                message: "",
+            })
+        );
     };
 
     webSock1.onclose = (e) => {
-        console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+        console.log("Socket is closed. Reconnect will be attempted in 1 second.", e.reason);
         setTimeout(function () {
             connect();
         }, 1000);
@@ -439,7 +433,7 @@ function connect() {
         // Do the appropriate steps on each event.
         let data = JSON.parse(e.data);
         data = data["payload"];
-        let message = data['message'];
+        let message = data["message"];
         let event = data["event"];
         switch (event) {
             case "START":
@@ -453,20 +447,20 @@ function connect() {
                 break;
             case "MOVE":
                 console.log(`[Message] MOVE e=${e.data}`); // ちゃんと動いているようなら消す
-                if(message["player"] != myPiece){
-                    makeMove(message["index"], message["player"])
+                if (message["player"] != myPiece) {
+                    makeMove(message["index"], message["player"]);
                     myTurn = true;
-                    document.getElementById("alert_move").style.display = 'inline';
+                    document.getElementById("alert_move").style.display = "inline";
                 }
                 break;
-            default:
-                console.log(`[Message] (Others) e=${e.data}`); // ちゃんと動いているようなら消す
-                console.log("No event")
+            default: // ちゃんと動いているようなら消す
+                console.log(`[Message] (Others) e=${e.data}`);
+                console.log("No event");
         }
     };
 
     if (webSock1.readyState == WebSocket.OPEN) {
-        console.log('Open socket.');
+        console.log("Open socket.");
         webSock1.onopen();
     }
 }
@@ -481,17 +475,16 @@ connect();
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1                       # アプリケーション フォルダー
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   └── 📂templates
-        │       └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │           └── 📂tic-tac-toe
-        │               └── 📂v1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       └── 📂templates
+        │           └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
+        │               └── 📂v1o1
 👉      │                   └── 📄match_application.html
         └── 📄requirements.txt
 ```
@@ -504,11 +497,19 @@ connect();
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "webapp1/tic-tac-toe/v1/main.css" %}' />
+        <link rel="stylesheet" href='{% static "tic_tac_toe/v1o1/main.css" %}' />
+        <!--                                    =========================
+                                                1
+        1. `host1/apps1/tic_tac_toe/static/tic_tac_toe/v1o1/main.css`
+                                           =========================
+        -->
     </head>
     <body>
         <div class="wrapper">
-            <h1>Welcome to Tic Tac Toe Game</h1>
+            <h1>Welcome to Tic Tac Toe Game Copy</h1>
+
+            <p>📖 Original: <a href="https://blog.logrocket.com/django-channels-and-websockets/">Django Channels and WebSockets</a></p>
+
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-control">
@@ -535,17 +536,16 @@ connect();
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   └── 📂templates
-        │       └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │           └── 📂tic-tac-toe
-        │               └── 📂v1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       └── 📂templates
+        │           └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
+        │               └── 📂v1o1
         │                   ├── 📄match_application.html
 👉      │                   └── 📄playing.html
         └── 📄requirements.txt
@@ -559,7 +559,12 @@ connect();
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Tic Tac Toe</title>
-        <link rel="stylesheet" href='{% static "webapp1/tic-tac-toe/v1/main.css" %}' />
+        <link rel="stylesheet" href='{% static "tic_tac_toe/v1o1/main.css" %}' />
+        <!--                                    =========================
+                                                1
+        1. `host1/apps1/tic_tac_toe/static/tic_tac_toe/v1o1/main.css`
+                                           =========================
+        -->
     </head>
     <body>
         <div class="wrapper">
@@ -581,7 +586,12 @@ connect();
             <div id="alert_move">Your turn. Place your move <strong>{{my_piece}}</strong></div>
         </div>
 
-        <script src="{% static 'webapp1/tic-tac-toe/v1/play.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v1o1/play.js' %}"></script>
+        <!--                    ========================
+                                1
+        1. `host1/apps1/tic_tac_toe/static/tic_tac_toe/v1o1/play.js`
+                                           ========================
+        -->
         {% block javascript %} {% endblock javascript %}
     </body>
 </html>
@@ -593,28 +603,26 @@ connect();
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   ├── 📂templates
-        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄match_application.html
-        │   │               └── 📄playing.html
-        │   └── 📂views
-        │       └── 📂tic_tac_toe
-        │           └── 📂v1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       └── 📂views
+        │           └── 📂v1o1              # HTMLレンダリングで参照されるパスではないから、アプリケーション フォルダーと同名のフォルダーは要らない
 👉      │               └── 📄resources.py
         └── 📄requirements.txt
 ```
 
 ```py
-"""〇×ゲームの練習１"""
+"""〇×ゲームの練習１．１"""
 from django.http import Http404
 from django.shortcuts import render, redirect
 
@@ -625,19 +633,19 @@ from django.shortcuts import render, redirect
 class MatchApplication():
     """対局申込"""
 
-    _path_of_http_playing = "/tic-tac-toe/v1/playing/{0}/?&mypiece={1}"
-    #                                      ^ one
-    #                        -----------------------------------------
+    _path_of_http_playing = "/tic-tac-toe/v1o1/playing/{0}/?&mypiece={1}"
+    #                                      ^^^ one o one
+    #                        -------------------------------------------
     #                        1
-    # 1. http://example.com:8000/tic-tac-toe/v1/playing/Elephant/?&mypiece=X
-    #                           --------------------------------------------
+    # 1. http://example.com:8000/tic-tac-toe/v1o1/playing/Elephant/?&mypiece=X
+    #                           ----------------------------------------------
 
-    _path_of_html = "webapp1/tic-tac-toe/v1/match_application.html"
-    #                                     ^ one
-    #                ---------------------------------------------
+    _path_of_html = "tic_tac_toe/v1o1/match_application.html"
+    #                             ^^^ one o one
+    #                ---------------------------------------
     #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/match_application.html
-    #                            ---------------------------------------------
+    # 1. host1/apps1/tic_tac_toe/templates/tic_tac_toe/v1o1/match_application.html
+    #                                      ---------------------------------------
 
     def render(request):
         """描画"""
@@ -647,12 +655,12 @@ class MatchApplication():
 class Playing():
     """対局"""
 
-    _path_of_html = "webapp1/tic-tac-toe/v1/playing.html"
-    #                                     ^ one
-    #                -----------------------------------
-    #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v1/playing.html
-    #                            -----------------------------------
+    _path_of_html = "tic_tac_toe/v1o1/playing.html"
+    #                             ^^^ one o one
+    #                -----------------------------
+    #                                            1
+    # 1. host1/apps1/tic_tac_toe/templates/tic_tac_toe/v1o1/playing.html
+    #                                      -----------------------------
 
     def render(request, room_name):
         """描画"""
@@ -690,30 +698,28 @@ def render_playing(request, room_name, path_of_html):
     return render(request, path_of_html, context)
 ```
 
-# Step 9. ルート編集 - urls.py ファイル
+# Step 9. ルート新規作成 - apps1/tic_tac_toe/urls.py ファイル
 
-以下の既存のファイルに、以下のソースをマージしてほしい  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   ├── 📂templates
-        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄match_application.html
-        │   │               └── 📄playing.html
-        │   ├── 📂views
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄resources.py
-👉      │   └── 📄urls.py                       # こちら
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+👉      │       └── 📄urls.py                   # こちら
         ├── 📄requirements.txt
 ❌      └── 📄urls.py                           # これではない
 ```
@@ -721,40 +727,45 @@ def render_playing(request, room_name, path_of_html):
 ```py
 from django.urls import path
 
-from webapp1.views.tic_tac_toe.v1 import resources as tic_tac_toe_v1
-#    ------- --------------------        ---------    --------------
-#    1       2                           3            4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. `3.` の別名
+# 〇×ゲームの練習１
+from apps1.tic_tac_toe.views.v1o1 import resources as tic_tac_toe_v1
+#    ----- ----------- ----------        ---------    --------------
+#    1     2           3                 4            5
+#    ----------------------------
+#    6
+# 1. 開発者用ディレクトリーの一部
+# 2. アプリケーション フォルダー名
+# 3. ディレクトリー名
+# 4. Python ファイル名。拡張子抜き
+# 5. `4.` の別名
+# 6. モジュール名
+
 
 urlpatterns = [
-    # ...略...
 
     # +----
     # | 〇×ゲーム１
 
     # 対局申込
-    path('tic-tac-toe/v1/match-application/',
-         # --------------------------------
+    path('tic-tac-toe/v1o1/match-application/',
+         # ----------------------------------
          # 1
          tic_tac_toe_v1.MatchApplication.render),
     #    --------------------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/match-application/` のような URL のパスの部分
-    #                              ---------------------------------
+    # 1. 例えば `http://example.com/tic-tac-toe/v1o1/match-application/` のような URL のパスの部分
+    #                              -----------------------------------
     # 2. tic_tac_toe_v1 (別名)ファイルの MatchApplication クラスの render 静的メソッド
 
     # 対局中
-    path('tic-tac-toe/v1/playing/<str:room_name>/',
-         # --------------------------------------
+    path('tic-tac-toe/v1o1/playing/<str:room_name>/',
+         # ----------------------------------------
          # 1
          tic_tac_toe_v1.Playing.render),
     #    -----------------------------
     #    2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/<部屋名>/` のような URL のパスの部分。
-    #                              --------------------------------
+    # 1. 例えば `http://example.com/tic-tac-toe/v1o1/playing/<部屋名>/` のような URL のパスの部分。
+    #                              ----------------------------------
     #    <部屋名> に入った文字列は room_name 変数に渡されます
     # 2. tic_tac_toe_v1 (別名)ファイルの Playing クラスの render 静的メソッド
 
@@ -763,35 +774,88 @@ urlpatterns = [
 ]
 ```
 
-# Step 10. consumer.py ファイルの作成
+# Step 10. 総合ルート編集 - host1/urls.py ファイル
+
+以下の既存のファイルに、以下のソースをマージしてほしい  
+
+```plaintext
+    └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+❌      │       └── 📄urls.py                   # これではない
+        ├── 📄requirements.txt
+👉      └── 📄urls.py                           # こちら
+```
+
+```py
+from django.urls import include, path
+
+
+# ...中略...
+
+
+urlpatterns = [
+
+
+    # ...中略...
+
+
+    # +----
+    # | 〇×ゲーム アプリケーション
+
+    # ぶら下げ
+    path('', include('apps1.tic_tac_toe.urls')),
+    #    --           ----------------------
+    #    1            2
+    # 1. 例えば `http://example.com/` のような URLの直下
+    # 2. `host1/apps1/tic_tac_toe.urls.py` の urlpatterns を (1.) にぶら下げます
+    #           ----------------------
+
+    # | 〇×ゲーム アプリケーション
+    # +----
+]
+```
+
+# Step 11. consumer.py ファイルの作成
 
 以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   ├── 📂templates
-        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄match_application.html
-        │   │               └── 📄playing.html
-        │   ├── 📂websocks
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-👉      │   │           └── 📄consumer.py
-        │   ├── 📂views
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄resources.py
-        │   └── 📄urls.py
-        └── 📄requirements.txt
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂websocks
+        │       │   └── 📂v1o1                  # HTMLレンダリングで参照されるパスではないから、アプリケーション フォルダーと同名のフォルダーは要らない
+👉      │       │       └── 📄consumer.py
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+        │       └── 📄urls.py
+        ├── 📄requirements.txt
+        └── 📄urls.py
 ```
 
 ```py
@@ -833,7 +897,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'MOVE':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message', # type属性は必須
+                'type': 'send_message',  # type属性は必須
                 'message': message,
                 "event": "MOVE"
             })
@@ -841,7 +905,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'START':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message', # type属性は必須
+                'type': 'send_message',  # type属性は必須
                 'message': message,
                 'event': "START"
             })
@@ -849,7 +913,7 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         if event == 'END':
             # Send message to room group
             await self.channel_layer.group_send(self.room_group_name, {
-                'type': 'send_message', # type属性は必須
+                'type': 'send_message',  # type属性は必須
                 'message': message,
                 'event': "END"
             })
@@ -862,96 +926,97 @@ class TicTacToeV1Consumer(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 11. ルート編集 - routing1.py ファイル
+# Step 12. Webソケット用ルート新規作成 - urls_ws1.py ファイル
 
-以下のファイルを無ければ作成、あればマージしてほしい。  
+以下のファイルを新規作成してほしい  
 
 ```plaintext
     └── 📂host1
-        ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   ├── 📂templates
-        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄match_application.html
-        │   │               └── 📄playing.html
-        │   ├── 📂websocks
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄consumer.py
-        │   ├── 📂views
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄resources.py
-👉      │   ├── 📄routing1.py
-        │   └── 📄urls.py
-        └── 📄requirements.txt
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂websocks
+        │       │   └── 📂v1o1
+        │       │       └── 📄consumer.py
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+👉      │       ├── 📄urls_ws1.py               # 末尾の 1 は文字列検索しやすいように付けているだけで特別な意味はない
+        │       └── 📄urls.py
+        ├── 📄requirements.txt
+        └── 📄urls.py
 ```
 
 ```py
+# See also: 📖 [Channels - Consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html)
 from django.conf.urls import url
 
 # 〇×ゲームの練習１
-from webapp1.websocks.tic_tac_toe.v1.consumer import TicTacToeV1Consumer
-#    ------- ----------------------- --------        -------------------
-#    1       2                       3                4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. クラス名
+from apps1.tic_tac_toe.websocks.v1o1.consumer import TicTacToeV1Consumer
+#    ----- ----------- ------------- --------        -------------------
+#    1     2           3             4               5
+#    ----------------------------------------
+#    6
+# 1. 開発者用ディレクトリーの一部
+# 2. アプリケーション フォルダー名
+# 3. ディレクトリー名
+# 4. Python ファイル名。拡張子抜き
+# 5. クラス名
+# 6. モジュール名
 
 websocket_urlpatterns = [
-    # ...中略...
-
     # 〇×ゲームの練習１
-    url(r'^tic-tac-toe/v1/playing/(?P<room_name>\w+)/$',
-        # --------------------------------------------
+    url(r'^tic-tac-toe/v1o1/playing/(?P<room_name>\w+)/$',
+        # ----------------------------------------------
         # 1
         TicTacToeV1Consumer.as_asgi()),
     #   -----------------------------
     #   2
-    # 1. 例えば `http://example.com/tic-tac-toe/v1/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方
+    # 1. 例えば `http://example.com/tic-tac-toe/v1o1/playing/Elephant/` のようなURLのパスの部分の、Django での正規表現の書き方。
+    #    room_name は変数として渡される
     # 2. クラス名とメソッド。 URL を ASGI形式にする
 ]
 ```
 
-# Step 12. 設定の編集 - asgi.py ファイル
+# Step 13. ソケットの設定 - asgi.py ファイル
 
-無ければ以下のファイルを作成、あればマージしてほしい。  
+（連載の整理が追いついていないので一旦）webapp1 アプリケーションの既存の asgi.py ファイルを編集してほしい  
 
 ```plaintext
     └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂websocks
+        │       │   └── 📂v1o1
+        │       │       └── 📄consumer.py
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+        │       ├── 📄urls_ws1.py
+        │       └── 📄urls.py
         ├── 📂webapp1
-        │   ├── 📂static
-        │   │   └── 📂webapp1
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄play.js
-        │   │               └── 📄main.css
-        │   ├── 📂templates
-        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄match_application.html
-        │   │               └── 📄playing.html
-        │   ├── 📂websocks
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄consumer.py
-        │   ├── 📂views
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄resources.py
-👉      │   ├── 📄asgi.py
-        │   ├── 📄routing1.py
-        │   └── 📄urls.py
-        └── 📄requirements.txt
+👉      │   └── 📄asgi.py
+        ├── 📄requirements.txt
+        └── 📄urls.py
 ```
 
 ```py
@@ -960,11 +1025,24 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
+
+import apps1.tic_tac_toe.urls_ws1
+#      ----------------- --------
+#      1                 2
+# 1. アプリケーション フォルダー名
+# 2. Pythonファイル名（拡張子除く）
+
 import webapp1.routing1
 #      ------- --------
 #      1       2
 # 1. アプリケーション フォルダー名
 # 2. Pythonファイル名（拡張子除く）
+
+# 複数のアプリケーションの websocket_urlpatterns をマージします
+websocket_urlpatterns_merged = []
+websocket_urlpatterns_merged.extend(
+    apps1.tic_tac_toe.urls_ws1.websocket_urlpatterns)
+websocket_urlpatterns_merged.extend(webapp1.routing1.websocket_urlpatterns)
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 #                                                --------
@@ -980,26 +1058,135 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 #
 #    複数のアプリケーションの設定ファイルを指定するよう、トップフォルダーの settings.py に変更する
 
+# （削除） django.setup()
+
 # （削除） application = get_asgi_application()
-application = ProtocolTypeRouter({ # 追加
-    "http": get_asgi_application(),
-    "websocket": AuthMiddlewareStack(
+
+application = ProtocolTypeRouter({
+    # （削除） "http": AsgiHandler(),
+    "http": get_asgi_application(),  # 追加
+    "websocket": AuthMiddlewareStack(  # 追加
         URLRouter(
-            webapp1.routing1.websocket_urlpatterns
-            # -----
-            # 1
-            #
-            # 1. アプリケーション フォルダー名
+            # * 削除
+            # webapp1.routing1.websocket_urlpatterns
+            # * 追加
+            websocket_urlpatterns_merged
         )
     ),
 })
 ```
 
-# Step 13. Web画面へアクセス
+# Step 14. Djangoの設定 - settings.py ファイル
+
+以下の既存のファイルを編集してほしい  
+
+```plaintext
+    └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂websocks
+        │       │   └── 📂v1o1
+        │       │       └── 📄consumer.py
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+        │       ├── 📄urls_ws1.py
+        │       └── 📄urls.py
+        ├── 📂webapp1
+        │   └── 📄asgi.py
+        ├── 📄requirements.txt
+👉      ├── 📄settings.py
+        └── 📄urls.py
+```
+
+```py
+# ...略...
+
+
+# Application definition
+
+INSTALLED_APPS = [
+    # あなたが追加したアプリケーション
+    'apps1.tic_tac_toe',                # 追加
+    'webapp1',
+
+    # Djangoの標準アプリケーション
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+
+    # ...略...
+
+
+]
+
+
+# ...略...
+
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # 'DIRS' 配列には全く指定しないか、１つでも指定するなら デフォルトのテンプレート フォルダーを含めるようにしてください
+
+
+            # ...略...
+
+
+            # * 以下を追加
+            #
+            # +----
+            # | 〇×ゲーム アプリケーション
+
+            os.path.join(BASE_DIR, 'apps1', 'tic_tac_toe', 'templates'),
+            #            --------   -----    -----------    ---------
+            #            1          2        3              4
+            #
+            # Example: /host1/apps1/tic_tac_toe/templates/tic_tac_toe/v1o1/match_application.html
+            #          ------ ----- ----------- ---------
+            #          1      2     3           4
+            #
+            # 1. あなたの開発用ディレクトリー（例えば host1）が code に差し替わっています
+            # 2. 開発用ディレクトリー
+            # 3. アプリケーション フォルダー
+            # 4. テンプレート フォルダー
+
+            # | 〇×ゲーム アプリケーション
+            # +----
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+
+
+            # ...略...
+
+
+        },
+    },
+]
+
+```
+
+# Step 15. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
-📖 [http://localhost:8000/tic-tac-toe/v1/match-application/](http://localhost:8000/tic-tac-toe/v1/match-application/)  
+📖 [http://localhost:8000/tic-tac-toe/v1o1/match-application/](http://localhost:8000/tic-tac-toe/v1o1/match-application/)  
 
 # 次の記事
 
@@ -1007,4 +1194,10 @@ application = ProtocolTypeRouter({ # 追加
 
 # 参考にした記事
 
+## Web Socket
+
 📖 [Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/)  
+
+## Django settings
+
+📖 [スタティックファイルの利用](https://python.keicode.com/django/how-to-serve-static-files.php)  
