@@ -30,8 +30,6 @@ http://<省略>.com/practice/page1
 
 ```plaintext
     └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -51,7 +49,9 @@ http://<省略>.com/practice/page1
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 # Step 1. Dockerコンテナの起動
@@ -129,15 +129,16 @@ def render_page1(request):
 
 ```plaintext
     └── 📂host1
-        └── 📂webapp1
-            ├── 📂templates
-            │   └── 📂webapp1
-            │       └── 📂practice
-            │           └── 📄page1.html
-            ├── 📂views
-            │   └── 📂practice
-            │       └── 📄pages.py
-👉          └── 📄urls.py
+        ├── 📂webapp1
+        │   ├── 📂templates
+        │   │   └── 📂webapp1
+        │   │       └── 📂practice
+        │   │           └── 📄page1.html
+        │   ├── 📂views
+        │   │   └── 📂practice
+        │   │       └── 📄pages.py
+👉      │   └── 📄urls.py                       # こちら
+❌      └── 📄urls.py                           # これではない
 ```
 
 ```py
