@@ -28,9 +28,6 @@
 
 ```plaintext
     └── 📂host1                   # あなたの開発用ディレクトリー。任意の名前
-        ├── 📂config
-        │   ├── 📄settings.py
-        │   └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── <たくさんのもの>
@@ -42,7 +39,9 @@
         ├── 🐳docker-compose.yml
         ├── 🐳Dockerfile
         ├── 📄manage.py
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        ├── 📄settings.py
+        └── 📄urls.py
 ```
 
 # Step 1. Dockerコンテナの起動
@@ -133,11 +132,10 @@ django-allauth>=0.32.0
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-👉      │   └── 📄settings.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+👉      └── 📄settings.py
 ```
 
 👇 レッスンの進み具合によって、 URL などを変えてほしい  
@@ -277,8 +275,6 @@ docker-compose up
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂webapp1                       # アプリケーション フォルダー
         │   └── 📂static
         │       └── 📂allauth-customized
@@ -286,7 +282,8 @@ docker-compose up
 👉      │               └── 📄form-html-parser.js
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 👇以下のファイルは、 django-allauth パッケージのHTML出力の仕様が変わったら作り直してほしい  
@@ -458,8 +455,6 @@ class DjangoAllauthFormParser {
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
@@ -471,7 +466,8 @@ class DjangoAllauthFormParser {
 👉      │               └── 📄signup.html
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 👇レッスンの進み具合によって、埋め込んであるURLは 貼り替えてほしい  
@@ -631,8 +627,6 @@ class DjangoAllauthFormParser {
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
@@ -646,7 +640,8 @@ class DjangoAllauthFormParser {
 👉      │       └── v_accounts_v1.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
@@ -685,8 +680,6 @@ accounts_v1_signup_view = AccountsV1SignupView.as_view()
 
 ```plaintext
     └── 📂host1
-        ├── 📂config
-        │   └── 📄settings.py
         ├── 📂webapp1
         │   ├── 📂static
         │   │   └── 📂allauth-customized
@@ -701,7 +694,8 @@ accounts_v1_signup_view = AccountsV1SignupView.as_view()
 👉      │   └── 📄urls.py
         ├── 📄.env
         ├── 🐳docker-compose.yml
-        └── 📄requirements.txt
+        ├── 📄requirements.txt
+        └── 📄settings.py
 ```
 
 ```py
