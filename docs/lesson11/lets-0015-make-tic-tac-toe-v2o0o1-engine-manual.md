@@ -1125,3 +1125,7 @@ urlpatterns = [
 # Step 11. Web画面へアクセス
 
 📖 [http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/](http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/)  
+
+# 参考にした記事
+
+📖 [【JavaScript】配列を複製する](https://zenn.dev/kou_pg_0131/articles/js-clone-array) - スプレッド構文  

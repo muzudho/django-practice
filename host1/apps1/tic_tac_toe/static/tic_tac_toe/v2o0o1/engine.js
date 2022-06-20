@@ -88,19 +88,10 @@ class Engine {
     execute(command) {
         switch (command) {
             case "board":
-                return `[? moves / ? turn]
-+---+---+---+
-|   |   |   |
-+---+---+---+
-|   |   |   |
-+---+---+---+
-|   |   |   |
-+---+---+---+
-`;
-                break;
+                return this._position.toBoardString();
             default:
                 // ignored
-                break;
+                return "";
         }
     }
 

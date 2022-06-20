@@ -57,6 +57,34 @@ class Position {
         return 5 <= this.record.length;
     }
 
+    toBoardString() {
+        // 何手目
+        const moves = this._record.length + 1;
+
+        // 手番
+        let currentTurn;
+        if (this._turn.isMe) {
+            currentTurn = this._turn.me;
+        } else {
+            currentTurn = flipTurn(this._turn.me);
+        }
+
+        // 各マス
+        const squares = this._board.toArray();
+        console.log(`squares=${squares}`);
+        const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
+
+        return `[${moves} moves / ${currentTurn} turn]
++---+---+---+
+| ${a} | ${b} | ${c} |
++---+---+---+
+| ${d} | ${e} | ${f} |
++---+---+---+
+| ${g} | ${h} | ${i} |
++---+---+---+
+`;
+    }
+
     /**
      * ダンプ
      */
