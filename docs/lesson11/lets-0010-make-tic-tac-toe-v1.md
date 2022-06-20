@@ -1188,7 +1188,7 @@ TEMPLATES = [
 
 # 次の記事
 
-📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)  
+📖 [DockerでTic-Tac-Toeの思考エンジンを作ろう！](https://qiita.com/muzudho1/items/69021deb9ec541406cfb)  
 
 # 参考にした記事
 

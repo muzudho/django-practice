@@ -15,8 +15,6 @@
 | Container        | Docker                                    |
 | Program Language | Python 3                                  |
 | Web framework    | Django                                    |
-| Communication    | Web socket                                |
-|                  | JSON                                      |
 | Frontend         | Vuetify                                   |
 | Database         | Redis                                     |
 | Editor           | Visual Studio Code （以下 VSCode と表記） |
@@ -27,6 +25,26 @@
     ├── 📂host_local1
     │    └── <いろいろ>
     └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄main.css
+        │       │           └── 📄play.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v1o1
+        │       │           ├── 📄match_application.html
+        │       │           └── 📄playing.html
+        │       ├── 📂websocks
+        │       │   └── 📂v1o1
+        │       │       └── 📄consumer.py
+        │       ├── 📂views
+        │       │   └── 📂v1o1
+        │       │       └── 📄resources.py
+        │       ├── 📄urls_ws1.py
+        │       └── 📄urls.py
         ├── 📂data
         │   └── 📂db
         │       └── （たくさんのもの）
@@ -36,28 +54,16 @@
         │   ├── 📂static
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1
-        │   │       ├── 📂practice
-        │   │       │   └── 📄vuetify-desserts.json
-        │   │       └── 📂tic-tac-toe
-        │   │           └── 📂v1
-        │   │               ├── 📄game.js
-        │   │               └── 📄main.css
+        │   │       └── 📂practice
+        │   │           └── 📄vuetify-desserts.json
         │   ├── 📂templates
         │   │   ├── 📂allauth-customized
         │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
-        │   │       ├── 📂tic-tac-toe
-        │   │       │   └── 📂v1
-        │   │       │       └── 📄<いろいろ>.html
         │   │       └── 📂<いろいろ>-practice
         │   │           └── 📄<いろいろ>.html
         │   ├── 📂views
-        │   │   └── 📂tic-tac-toe
-        │   │       └── 📂v1
-        │   │           └── 📄<いろいろ>.py
-        │   ├── 📂websocks
-        │   │   └── 📂tic_tac_toe
-        │   │       └── 📂v1
-        │   │           └── 📄consumer.py
+        │   │   └── 📂practice
+        │   │       └── 📄<いろいろ>.py
         │   ├── 📄admin.py
         │   ├── 📄routing1.py
         │   └── 📄urls.py
@@ -117,9 +123,28 @@ const PC_O = 2;
  * ラベル
  * @type {string}
  */
-const PC_EMPTY_LABEL = "";
+const PC_EMPTY_LABEL = ".";
 const PC_X_LABEL = "X";
 const PC_O_LABEL = "O";
+
+/**
+ * 定数をラベルに変換
+ *
+ * @param {int} pc
+ * @returns {str} label
+ */
+function pc_to_label(pc) {
+    switch (pc) {
+        case PC_EMPTY:
+            return PC_EMPTY_LABEL;
+        case PC_X:
+            return PC_X_LABEL;
+        case PC_O:
+            return PC_O_LABEL;
+        default:
+            return pc;
+    }
+}
 
 // |
 // | 駒
@@ -179,6 +204,15 @@ class Board {
      */
     setPiece(sq, piece) {
         this._squares[sq] = piece;
+    }
+
+    /**
+     *
+     * @returns コピー配列
+     */
+    toArray() {
+        // スプレッド構文
+        return [...this._squares];
     }
 
     /**
@@ -597,6 +631,35 @@ class Position {
         return 5 <= this.record.length;
     }
 
+    toBoardString() {
+        // 何手目
+        const moves = this._record.length + 1;
+
+        // 手番
+        let currentTurn;
+        if (this._turn.isMe) {
+            currentTurn = this._turn.me;
+        } else {
+            currentTurn = flipTurn(this._turn.me);
+        }
+
+        // 各マス
+        const squares = this._board.toArray();
+        console.log(`squares=${squares}`);
+        const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
+
+        return `[Next ${moves} moves / ${currentTurn} turn]
++---+---+---+
+| ${a} | ${b} | ${c} |
++---+---+---+
+| ${d} | ${e} | ${f} |
++---+---+---+
+| ${g} | ${h} | ${i} |
++---+---+---+
+
+`;
+    }
+
     /**
      * ダンプ
      */
@@ -880,6 +943,33 @@ class Engine {
         this._position = new Position(this._position.turn.me);
     }
 
+    /**
+     * コマンドの実行
+     */
+    execute(command) {
+        let ret = "";
+
+        const lines = command.split(/\r?\n/);
+        for (const line of lines) {
+            const tokens = line.split(" ");
+            switch (tokens[0]) {
+                case "board":
+                    // Example: `board`
+                    ret += this._position.toBoardString();
+                    break;
+                case "play":
+                    // Example: `play X 2`
+                    this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    break;
+                default:
+                    // ignored
+                    break;
+            }
+        }
+
+        return ret;
+    }
+
     dump(indent) {
         return `
 ${indent}Engine
@@ -925,6 +1015,12 @@ ${indent}${this._position.dump(indent + "    ")}`;
         <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
         <title>Tic Tac Toe</title>
+        <style>
+            /* 等幅 */
+            .v-textarea textarea {
+                font-family: monospace, monospace;
+            }
+        </style>
     </head>
     <body>
         <div id="app">
@@ -939,7 +1035,7 @@ ${indent}${this._position.dump(indent + "    ")}`;
                             <!-- 入力 -->
                             <v-textarea name="po_input" required v-model="inputText.value" label="Input"></v-textarea>
 
-                            <v-btn block elevation="2"> Enter </v-btn>
+                            <v-btn block elevation="2" v-on:click="executeVu()"> Execute </v-btn>
 
                             <!-- 出力 -->
                             <v-textarea name="po_output" required v-model="outputText.value" label="Output"></v-textarea>
@@ -955,26 +1051,109 @@ ${indent}${this._position.dump(indent + "    ")}`;
         <script src="{% static 'tic_tac_toe/v2o0o1/user_ctrl.js' %}"></script>
         <script src="{% static 'tic_tac_toe/v2o0o1/judge_ctrl.js' %}"></script>
         <script src="{% static 'tic_tac_toe/v2o0o1/engine.js' %}"></script>
-        <!--                    ==========================
+        <!--                    ============================
                                 1
         1. host1/apps1/tic_tac_toe/static/tic-ta-toe/v2o0o1/engine.js
-                                          =========================
+                                          ===========================
         -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
         <script>
-            new Vue({
+            const vue1 = new Vue({
                 el: "#app",
                 vuetify: new Vuetify(),
                 data: {
                     // 入力
                     inputText: {
-                        value: "Test1",
+                        value: `board
+play X 1
+board
+play O 4
+board
+play X 5
+board
+play O 2
+board
+play X 6
+board
+play O 0
+board
+play X 8
+board
+play O 7
+board
+play X 3
+board
+`,
                     },
                     // 出力
                     outputText: {
-                        value: "Test2",
+                        value: 'Please push "Execute" button.',
+                    },
+                    // 思考エンジン
+                    engine: new Engine(
+                        // 自分の番。 とりあえず "X" としておく
+                        PC_X_LABEL,
+                        // ユーザーコントロール
+                        new UserCtrl(
+                            /**
+                             * onDoMove - 駒を置いたとき
+                             *
+                             * @param {int} sq - マス番号
+                             * @param {string} pieceMoved - 動かした駒
+                             */
+                            (sq, pieceMoved) => {
+                                console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} 置いたマス=${sq} 動かした駒=${pieceMoved}`);
+
+                                // 手番を反転
+                                vue1.engine.position.turn.isMe = !vue1.engine.position.turn.isMe;
+                            }
+                        ),
+                        // 審判コントロール
+                        new JudgeCtrl(
+                            /**
+                             * onDoJudge - 判断したとき
+                             *
+                             * @param {*} pieceMoved - 動かした駒
+                             * @param {*} gameoverSetValue - ゲームオーバー集合の元
+                             */
+                            (pieceMoved, gameoverSetValue) => {
+                                console.log(`[Engine onDoJudge] 自分の番=${vue1.engine.position.turn.me} 動かした駒=${pieceMoved}`);
+                                vue1.engine.gameoverSet.value = gameoverSetValue;
+
+                                switch (gameoverSetValue) {
+                                    case GameoverSet.win:
+                                        // 勝ったとき
+                                        console.log(`[Engine onDoJudge] 勝ち`);
+                                        break;
+                                    case GameoverSet.draw:
+                                        // 引き分けたとき
+                                        console.log(`[Engine onDoJudge] 引き分け`);
+                                        break;
+                                    case GameoverSet.lose:
+                                        // 負けたとき
+                                        console.log(`[Engine onDoJudge] 負け`);
+                                        break;
+                                    case GameoverSet.none:
+                                        // なんでもなかったとき
+                                        console.log(`[Engine onDoJudge] 何もなし`);
+                                        break;
+                                    default:
+                                        throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
+                                }
+                            }
+                        )
+                    ),
+                },
+                methods: {
+                    // 関数名の末尾の Vu は vue1 のメソッドであることを表す目印
+                    /**
+                     * po_input 欄のコマンドを入力します
+                     */
+                    executeVu() {
+                        console.log(`[methods executeVu]`);
+                        vue1.outputText.value = vue1.engine.execute(vue1.inputText.value);
                     },
                 },
             });
@@ -1125,6 +1304,10 @@ urlpatterns = [
 # Step 11. Web画面へアクセス
 
 📖 [http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/](http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/)  
+
+# 次の記事
+
+📖 [Djangoを介してWebブラウザ越しに２人対戦できる〇×ゲームを作ろう！ Vuetify編](https://qiita.com/muzudho1/items/f302bdb40fb5c13f9603)  
 
 # 参考にした記事
 
