@@ -86,13 +86,27 @@ class Engine {
      * コマンドの実行
      */
     execute(command) {
-        switch (command) {
-            case "board":
-                return this._position.toBoardString();
-            default:
-                // ignored
-                return "";
+        let ret = "";
+
+        const lines = command.split(/\r?\n/);
+        for (const line of lines) {
+            const tokens = line.split(" ");
+            switch (tokens[0]) {
+                case "board":
+                    // Example: `board`
+                    ret += this._position.toBoardString();
+                    break;
+                case "play":
+                    // Example: `play X 2`
+                    this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    break;
+                default:
+                    // ignored
+                    break;
+            }
         }
+
+        return ret;
     }
 
     dump(indent) {

@@ -1128,4 +1128,7 @@ urlpatterns = [
 
 # 参考にした記事
 
+## Java Script
+
 📖 [【JavaScript】配列を複製する](https://zenn.dev/kou_pg_0131/articles/js-clone-array) - スプレッド構文  
+📖 [Split a String by Newline in JavaScript](https://bobbyhadz.com/blog/javascript-split-string-by-newline#split-a-string-by-newline-in-javascript) - 改行でスプリット  
