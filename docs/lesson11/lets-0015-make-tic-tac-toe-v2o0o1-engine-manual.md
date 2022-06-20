@@ -1,0 +1,1127 @@
+# 目的
+
+〇×ゲーム（Tic tac toe）の思考エンジンを作りたい  
+
+# はじめに
+
+この記事は Lesson01 から順に全部やってこないと ソースが足りず実行できないので注意されたい。  
+連載の目次: 📖 [DjangoとDockerでゲーム対局サーバーを作ろう！](https://qiita.com/muzudho1/items/eb0df0ea604e1fd9cdae)  
+
+この記事のアーキテクチャ:  
+
+| Key              | Value                                     |
+| ---------------- | ----------------------------------------- |
+| OS               | Windows10                                 |
+| Container        | Docker                                    |
+| Program Language | Python 3                                  |
+| Web framework    | Django                                    |
+| Communication    | Web socket                                |
+|                  | JSON                                      |
+| Frontend         | Vuetify                                   |
+| Database         | Redis                                     |
+| Editor           | Visual Studio Code （以下 VSCode と表記） |
+
+ディレクトリ構成を抜粋すると 以下のようになっている  
+
+```plaintext
+    ├── 📂host_local1
+    │    └── <いろいろ>
+    └── 📂host1
+        ├── 📂data
+        │   └── 📂db
+        │       └── （たくさんのもの）
+        ├── 📂webapp1                       # アプリケーション フォルダー
+        │   ├── 📂models
+        │   │   └── 📄<いろいろ>.py
+        │   ├── 📂static
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1
+        │   │       ├── 📂practice
+        │   │       │   └── 📄vuetify-desserts.json
+        │   │       └── 📂tic-tac-toe
+        │   │           └── 📂v1
+        │   │               ├── 📄game.js
+        │   │               └── 📄main.css
+        │   ├── 📂templates
+        │   │   ├── 📂allauth-customized
+        │   │   └── 📂webapp1               # アプリケーション フォルダーと同じ名前
+        │   │       ├── 📂tic-tac-toe
+        │   │       │   └── 📂v1
+        │   │       │       └── 📄<いろいろ>.html
+        │   │       └── 📂<いろいろ>-practice
+        │   │           └── 📄<いろいろ>.html
+        │   ├── 📂views
+        │   │   └── 📂tic-tac-toe
+        │   │       └── 📂v1
+        │   │           └── 📄<いろいろ>.py
+        │   ├── 📂websocks
+        │   │   └── 📂tic_tac_toe
+        │   │       └── 📂v1
+        │   │           └── 📄consumer.py
+        │   ├── 📄admin.py
+        │   ├── 📄routing1.py
+        │   └── 📄urls.py
+        ├── 📄asgi.py
+        ├── 📄.env
+        ├── 🐳docker-compose.yml
+        ├── 🐳Dockerfile
+        ├── 📄manage.py
+        ├── 📄requirements.txt
+        ├── 📄settings.py
+        └── 📄urls.py
+```
+
+以下、参考にした元記事は 📖[Django Channels and WebSockets](https://blog.logrocket.com/django-channels-and-websockets/) だ。  
+わたしの記事は単に **やってみた** ぐらいの位置づけだ  
+
+# Step 1. Dockerコンテナの起動
+
+（していなければ） Docker コンテナを起動しておいてほしい  
+
+```shell
+# docker-compose.yml ファイルを置いてあるディレクトリーへ移動してほしい
+cd host1
+
+# Docker コンテナ起動
+docker-compose up
+```
+
+# Step 2. 物の定義 - things.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
+                        └── 📂v2o0o1
+👉                          └── 📄things.js
+```
+
+```js
+// +--------
+// | 駒
+// |
+
+/**
+ * PC は Piece （駒）の略です
+ * @type {number}
+ */
+const PC_EMPTY = 0; // Pieceがないことを表します
+const PC_X = 1;
+const PC_O = 2;
+
+/**
+ * ラベル
+ * @type {string}
+ */
+const PC_EMPTY_LABEL = "";
+const PC_X_LABEL = "X";
+const PC_O_LABEL = "O";
+
+// |
+// | 駒
+// +--------
+
+// +--------
+// | 盤
+// |
+
+/**
+ * 盤上の升の数
+ * @type {number}
+ */
+const BOARD_AREA = 9;
+
+/**
+ * SQ は Square （マス）の略です
+ * +---------+
+ * | 0  1  2 |
+ * | 3  4  5 |
+ * | 6  7  8 |
+ * +---------+
+ * @type {number}
+ */
+const SQ_0 = 0;
+const SQ_1 = 1;
+const SQ_2 = 2;
+const SQ_3 = 3;
+const SQ_4 = 4;
+const SQ_5 = 5;
+const SQ_6 = 6;
+const SQ_7 = 7;
+const SQ_8 = 8;
+
+/**
+ * 盤
+ */
+class Board {
+    constructor() {
+        // 各マス
+        this._squares = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
+    }
+
+    /**
+     * 盤上のマス番号で示して、駒を取得
+     * @param {number} sq - マス番号
+     */
+    getPieceBySq(sq) {
+        return this._squares[sq];
+    }
+
+    /**
+     * 盤上のマスに駒を上書きします
+     *
+     * @param {*} sq - マス番号
+     * @param {*} piece - 駒
+     */
+    setPiece(sq, piece) {
+        this._squares[sq] = piece;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Board
+${indent}-----
+${indent}_squares:${this._squares}`;
+    }
+}
+
+// | 盤
+// |
+// +--------
+
+// +--------
+// | 棋譜
+// |
+
+/**
+ * 棋譜
+ */
+class Record {
+    constructor() {
+        this._squares = [];
+    }
+
+    /**
+     *
+     * @param {*} sq - 駒を置いた場所
+     */
+    push(sq) {
+        this._squares.push(sq);
+    }
+
+    pop() {
+        this._squares.pop();
+    }
+
+    get length() {
+        return this._squares.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Record
+${indent}------
+${indent}_squares:${this._squares}`;
+    }
+}
+
+// | 棋譜
+// |
+// +--------
+```
+
+# Step 3. 概念の定義 - concepts.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+👉                          ├── 📄concepts.js
+                            └── 📄things.js
+```
+
+```js
+/**
+ * 部屋の状態
+ */
+class RoomState {
+    /**
+     * ゲームしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * ゲーム中
+     */
+    static get playing() {
+        return 1;
+    }
+
+    /**
+     * 生成
+     * @param {int} value
+     * @param {function} onChangeValue - 値の変更時
+     */
+    constructor(value, onChangeValue) {
+        console.log(`[RoomState constructor]`);
+
+        this._value = value;
+        this._onChangeValue = onChangeValue;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        console.log(`[RoomState set value]`);
+
+        if (this._value === value) {
+            return;
+        }
+
+        let oldValue = this._value;
+        this._value = value;
+        this._onChangeValue(oldValue, this._value);
+    }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}RoomState
+${indent}---------
+${indent}_value:${this._value}`;
+    }
+}
+
+/**
+ * 番
+ */
+class Turn {
+    /**
+     * 生成
+     * @param {*} myTurn - 自分の手番。 "X", "O"
+     */
+    constructor(myTurn) {
+        // 自分の手番
+        this._me = myTurn;
+
+        // 自分の手番か（初回はXが先手）
+        this._isMe = this._me == PC_X_LABEL;
+    }
+
+    /**
+     * 自分の手番
+     */
+    get me() {
+        return this._me;
+    }
+
+    /**
+     * 私の番か？
+     */
+    get isMe() {
+        return this._isMe;
+    }
+
+    set isMe(value) {
+        this._isMe = value;
+    }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        return `
+${indent}Turn
+${indent}----
+${indent}_me:${this._me}
+${indent}_isMe:${this._isMe}`;
+    }
+}
+
+/**
+ * ゲームオーバー集合
+ *
+ * * 自分視点
+ */
+class GameoverSet {
+    /**
+     * ゲームオーバーしてません
+     */
+    static get none() {
+        return 0;
+    }
+
+    /**
+     * 勝ち
+     */
+    static get win() {
+        return 1;
+    }
+
+    /**
+     * 引き分け
+     */
+    static get draw() {
+        return 2;
+    }
+
+    /**
+     * 負け
+     */
+    static get lose() {
+        return 3;
+    }
+
+    /**
+     * 生成
+     * @param {int} value
+     */
+    constructor(value) {
+        this._value = value;
+    }
+
+    /**
+     * 値
+     */
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+    }
+
+    /**
+     * ダンプ
+     * @param {str} indent
+     * @returns
+     */
+    dump(indent) {
+        let text;
+        switch (this._value) {
+            case GameoverSet.none:
+                text = "none";
+                break;
+            case GameoverSet.win:
+                text = "win";
+                break;
+            case GameoverSet.draw:
+                text = "draw";
+                break;
+            case GameoverSet.lose:
+                text = "lose";
+                break;
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
+
+        return `
+${indent}GameoverSet
+${indent}-----------
+${indent}_value:${text}`;
+    }
+}
+
+/**
+ * 駒が３つ並んでいるパターン
+ */
+WIN_PATTERN = [
+    // +---------+
+    // | *  *  * |
+    // | .  .  . |
+    // | .  .  . |
+    // +---------+
+    [SQ_0, SQ_1, SQ_2],
+    // +---------+
+    // | .  .  . |
+    // | *  *  * |
+    // | .  .  . |
+    // +---------+
+    [SQ_3, SQ_4, SQ_5],
+    // +---------+
+    // | .  .  . |
+    // | .  .  . |
+    // | *  *  * |
+    // +---------+
+    [SQ_6, SQ_7, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | *  .  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_0, SQ_3, SQ_6],
+    // +---------+
+    // | .  *  . |
+    // | .  *  . |
+    // | .  *  . |
+    // +---------+
+    [SQ_1, SQ_4, SQ_7],
+    // +---------+
+    // | .  .  * |
+    // | .  .  * |
+    // | .  .  * |
+    // +---------+
+    [SQ_2, SQ_5, SQ_8],
+    // +---------+
+    // | *  .  . |
+    // | .  *  . |
+    // | .  .  * |
+    // +---------+
+    [SQ_0, SQ_4, SQ_8],
+    // +---------+
+    // | .  .  * |
+    // | .  *  . |
+    // | *  .  . |
+    // +---------+
+    [SQ_2, SQ_4, SQ_6],
+];
+
+/**
+ * 手番反転
+ *
+ * @param {*} piece
+ * @returns
+ */
+function flipTurn(piece) {
+    if (piece == PC_X_LABEL) {
+        return PC_O_LABEL;
+    } else if (piece == PC_O_LABEL) {
+        return PC_X_LABEL;
+    }
+
+    return piece;
+}
+```
+
+# Step 4. 局面作成 - position.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+                            ├── 📄concepts.js
+👉                          ├── 📄position.js
+                            └── 📄things.js
+```
+
+```js
+/**
+ * 局面
+ */
+class Position {
+    /**
+     * 初期化
+     *
+     * * 対局開始時
+     *
+     * @param {string} myTurn - 自分の手番。 "X", "O"
+     */
+    constructor(myTurn) {
+        console.log(`[Position constructor] 自分の手番=${myTurn}`);
+
+        // 盤面
+        this._board = new Board();
+
+        // 棋譜
+        this._record = new Record();
+
+        // 番
+        this._turn = new Turn(myTurn);
+    }
+
+    /**
+     * 盤
+     */
+    get board() {
+        return this._board;
+    }
+
+    /**
+     * 棋譜
+     */
+    get record() {
+        return this._record;
+    }
+
+    /**
+     * 番
+     */
+    get turn() {
+        return this._turn;
+    }
+
+    /**
+     * マスがすべて埋まっていますか
+     */
+    isBoardFill() {
+        return this.record.length == 9;
+    }
+
+    /**
+     * 同じ駒が３個ありますか
+     */
+    isThere3SamePieces() {
+        return 5 <= this.record.length;
+    }
+
+    /**
+     * ダンプ
+     */
+    dump(indent) {
+        return `
+${indent}Position
+${indent}--------
+${indent}${this._board.dump(indent + "    ")}
+${indent}${this._record.dump(indent + "    ")}
+${indent}${this._turn.dump(indent + "    ")}`;
+    }
+}
+```
+
+# Step 5. ユーザーコントロール作成 - user_ctrl.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+                            ├── 📄concepts.js
+                            ├── 📄position.js
+                            ├── 📄things.js
+👉                          └── 📄user_ctrl.js
+```
+
+```js
+/**
+ * ユーザーコントロール
+ */
+class UserCtrl {
+    /**
+     * 初期化
+     *
+     * @param {function} onDoMove - 駒を置いたとき
+     */
+    constructor(onDoMove) {
+        this._onDoMove = onDoMove;
+    }
+
+    /**
+     * 駒を置きます
+     *
+     * @param {number} sq - 升番号; 0 <= sq
+     * @param {*} piece - X か O
+     * @returns 駒を置けたら真、それ以外は偽
+     */
+    doMove(position, piece, sq) {
+        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
+            // 空升なら駒を置きます
+
+            position.record.push(sq); // 棋譜に追加
+
+            // 駒を置きます
+            switch (piece) {
+                case PC_X_LABEL:
+                    position.board.setPiece(sq, PC_X);
+                    break;
+                case PC_O_LABEL:
+                    position.board.setPiece(sq, PC_O);
+                    break;
+                default:
+                    console.log(`[UserCtrl doMove] illegal move. invalid piece = ${piece}`);
+                    return false;
+            }
+
+            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
+            this._onDoMove(sq, piece);
+            return true;
+        }
+
+        // 駒が置いてあるマスに駒は置けません
+        console.log(`[UserCtrl doMove] illegal move. not empty square. sq=${sq}`);
+        return false;
+    }
+}
+```
+
+# Step 6. 審判作成 - judge_ctrl.js ファイル
+
+以下のファイルを作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+                            ├── 📄concepts.js
+👉                          ├── 📄judge_ctrl.js
+                            ├── 📄position.js
+                            ├── 📄things.js
+                            └── 📄user_ctrl.js
+```
+
+```js
+/**
+ * 審判コントロール
+ */
+class JudgeCtrl {
+    /**
+     * 初期化
+     *
+     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
+     */
+    constructor(onJudged) {
+        // 判断したとき
+        this._onJudged = onJudged;
+    }
+
+    /**
+     * ゲームオーバー判定
+     *
+     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
+     *
+     * @param {Position} position - 局面
+     */
+    doJudge(position, piece_moved) {
+        let gameoverSetValue = this.#makeGameoverSetValue(position);
+        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
+        this._onJudged(piece_moved, gameoverSetValue);
+    }
+
+    /**
+     * ゲームオーバー判定
+     *
+     * @param {Position} position - 局面
+     * @returns ゲームオーバー元
+     */
+    #makeGameoverSetValue(position) {
+        if (position.isThere3SamePieces()) {
+            // 先手番が駒を３つ置いてから、判定を始めます
+            for (let squaresOfWinPattern of WIN_PATTERN) {
+                // 勝ちパターンの１つについて
+                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
+                    // 当てはまるなら
+                    if (position.turn.isMe) {
+                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
+                        return GameoverSet.lose;
+                    } else {
+                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
+                        return GameoverSet.win;
+                    }
+                }
+            }
+        }
+
+        // 勝ち負けが付かず、盤が埋まったら引き分け
+        if (position.isBoardFill()) {
+            return GameoverSet.draw;
+        }
+
+        // ゲームオーバーしてません
+        return GameoverSet.none;
+    }
+
+    /**
+     * 駒が３つ並んでいるか？
+     *
+     * @param {Position} position - 局面
+     * @param {*} squaresOfWinPattern - 勝ちパターン
+     * @returns 並んでいれば真、それ以外は偽
+     */
+    #isPieceInLine(position, squaresOfWinPattern) {
+        return (
+            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
+            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
+        );
+    }
+}
+```
+
+# Step 7. 思考エンジン作成 - engine.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+                            ├── 📄concepts.js
+👉                          ├── 📄engine.js
+                            ├── 📄judge_ctrl.js
+                            ├── 📄position.js
+                            ├── 📄things.js
+                            └── 📄user_ctrl.js
+```
+
+```js
+/**
+ * 思考エンジン
+ */
+class Engine {
+    /**
+     * 生成
+     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
+     * @param {UserCtrl} userCtrl - ユーザーコントロール
+     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
+     */
+    constructor(myTurn, userCtrl, judgeCtrl) {
+        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
+
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
+        // 局面
+        this._position = new Position(myTurn);
+
+        // ゲームオーバー集合
+        this._gameoverSet = new GameoverSet();
+
+        // ユーザーコントロール
+        this._userCtrl = userCtrl;
+
+        // 審判コントロール
+        this._judgeCtrl = judgeCtrl;
+    }
+
+    /**
+     * 局面
+     */
+    get position() {
+        return this._position;
+    }
+
+    /**
+     * ユーザーコントロール
+     */
+    get userCtrl() {
+        return this._userCtrl;
+    }
+
+    /**
+     * 審判コントロール
+     */
+    get judgeCtrl() {
+        return this._judgeCtrl;
+    }
+
+    /**
+     * 勝者
+     */
+    get winner() {
+        return this._winner;
+    }
+
+    set winner(value) {
+        this._winner = value;
+    }
+
+    /**
+     * ゲームオーバー集合
+     */
+    get gameoverSet() {
+        return this._gameoverSet;
+    }
+
+    /**
+     * 対局開始時
+     */
+    start() {
+        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
+
+        // 勝者のクリアー
+        this._winner = "";
+
+        // ゲームオーバー状態のクリアー
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
+
+        // 局面の初期化
+        this._position = new Position(this._position.turn.me);
+    }
+
+    dump(indent) {
+        return `
+${indent}Engine
+${indent}------
+${indent}_winner:${this._winner}
+${indent}${this._gameoverSet.dump(indent + "    ")}
+${indent}${this._position.dump(indent + "    ")}`;
+    }
+}
+```
+
+# Step 8. エンジン テスト ページ作成 - engine_manual.html ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                ├── 📂static
+                │   └── 📂tic_tac_toe
+                │       └── 📂v2o0o1
+                │           ├── 📄concepts.js
+                │           ├── 📄engine.js
+                │           ├── 📄judge_ctrl.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
+                └── 📂templates
+                    └── 📂tic_tac_toe       # アプリケーション フォルダーと同じ名前
+                        └── 📂v2o0o1
+👉                          └── 📄engine_manual.html
+```
+
+```html
+{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+        <title>Tic Tac Toe</title>
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container fluid>
+                        <h1>Tic Tac Toe Engine Test</h1>
+                        <v-form method="POST">
+                            {% csrf_token %}
+
+                            <!-- `po_` は POST送信するパラメーター名の目印 -->
+                            <!-- 入力 -->
+                            <v-textarea name="po_input" required v-model="inputText.value" label="Input"></v-textarea>
+
+                            <v-btn block elevation="2"> Enter </v-btn>
+
+                            <!-- 出力 -->
+                            <v-textarea name="po_output" required v-model="outputText.value" label="Output"></v-textarea>
+                        </v-form>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="{% static 'tic_tac_toe/v2o0o1/things.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/concepts.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/position.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/user_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/judge_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/engine.js' %}"></script>
+        <!--                    ==========================
+                                1
+        1. host1/apps1/tic_tac_toe/static/tic-ta-toe/v2o0o1/engine.js
+                                          =========================
+        -->
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            new Vue({
+                el: "#app",
+                vuetify: new Vuetify(),
+                data: {
+                    // 入力
+                    inputText: {
+                        value: "Test1",
+                    },
+                    // 出力
+                    outputText: {
+                        value: "Test2",
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
+```
+
+# Step 9. ビュー作成 - resources.py ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                ├── 📂static
+                │   └── 📂tic_tac_toe
+                │       └── 📂v2o0o1
+                │           ├── 📄concepts.js
+                │           ├── 📄engine.js
+                │           ├── 📄judge_ctrl.js
+                │           ├── 📄position.js
+                │           ├── 📄things.js
+                │           └── 📄user_ctrl.js
+                ├── 📂templates
+                │   └── 📂tic_tac_toe
+                │       └── 📂v2o0o1
+                │           └── 📄engine_manual.html
+                └── 📂views
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+👉                          └── 📄resources.py
+```
+
+```py
+"""〇×ゲームの練習２．０．１"""
+from django.shortcuts import render
+
+
+class EngineManual():
+    """エンジン手動"""
+
+    _path_of_html = "tic_tac_toe/v2o0o1/engine_manual.html"
+    #                             ^^^^^ two o zero o one
+    #                -------------------------------------
+    #                1
+    # 1. host1/apps1/tic_tac_toe/templates/tic_tac_toe/v2o0o1/engine_manual.html
+    #                                      -------------------------------------
+
+    @staticmethod
+    def render(request):
+        """描画"""
+        return render_match_application(request, EngineManual._path_of_html)
+
+
+# 以下、関数
+
+
+def render_match_application(request, path_of_html):
+    """対局申込 - 描画"""
+
+    context = {}
+
+    return render(request, path_of_html, context)
+```
+
+# Step 10. ルート編集 - urls.py ファイル
+
+以下の既存のファイルに、以下のソースをマージしてほしい  
+
+```plaintext
+    └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       ├── 📂static
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v2o0o1
+        │       │           ├── 📄concepts.js
+        │       │           ├── 📄engine.js
+        │       │           ├── 📄judge_ctrl.js
+        │       │           ├── 📄position.js
+        │       │           ├── 📄things.js
+        │       │           └── 📄user_ctrl.js
+        │       ├── 📂templates
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v2o0o1
+        │       │           └── 📄engine_manual.html
+        │       ├── 📂views
+        │       │   └── 📂tic_tac_toe
+        │       │       └── 📂v2o0o1
+        │       │           └── 📄resources.py
+👉      │       └── 📄urls.py                   # こちら
+❌      └── 📄urls.py                           # これではない
+```
+
+```py
+from django.urls import path
+
+
+# ...中略...
+
+
+# 〇×ゲームの練習２．０．１
+from apps1.tic_tac_toe.views.v2o0o1 import resources as tic_tac_toe_v2o0o1
+#    ----- ----------- ------------        ---------    ------------------
+#    1     2           3                   4            5
+#    ------------------------------
+#    6
+# 1. 開発者用ディレクトリーの一部
+# 2. アプリケーション フォルダー名
+# 3. ディレクトリー名
+# 4. Python ファイル名。拡張子抜き
+# 5. `4.` の別名
+# 6. モジュール名
+
+
+# ...略...
+
+
+urlpatterns = [
+
+
+    # ...略...
+
+
+    # +----
+    # | 〇×ゲーム２．０．１
+
+    # 対局申込
+    path('tic-tac-toe/v2o0o1/engine-manual/',
+         #             ^^^^^ two o zero o one
+         # --------------------------------
+         # 1
+         tic_tac_toe_v2o0o1.EngineManual.render),
+    #                 ^^^^^ two o zero o one
+    #    --------------------------------------
+    #    2
+    # 1. 例えば `http://example.com/tic-tac-toe/v2o0o1/engine-manual/` のような URL のパスの部分
+    #                              ---------------------------------
+    # 2. tic_tac_toe_v2o0o1 (別名)ファイルの EngineManual クラスの render 静的メソッド
+
+    # | 〇×ゲーム２．０．１
+    # +----
+]
+```
+
+# Step 11. Web画面へアクセス
+
+📖 [http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/](http://localhost:8000/tic-tac-toe/v2o0o1/engine-manual/)  
