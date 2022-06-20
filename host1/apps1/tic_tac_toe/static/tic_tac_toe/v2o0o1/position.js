@@ -74,7 +74,7 @@ class Position {
         console.log(`squares=${squares}`);
         const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
 
-        return `[${moves} moves / ${currentTurn} turn]
+        return `[Next ${moves} moves / ${currentTurn} turn]
 +---+---+---+
 | ${a} | ${b} | ${c} |
 +---+---+---+
