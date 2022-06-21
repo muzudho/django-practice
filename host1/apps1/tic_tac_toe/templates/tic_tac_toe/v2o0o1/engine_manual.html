@@ -100,7 +100,7 @@ board
                                 console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} 置いたマス=${sq} 動かした駒=${pieceMoved}`);
 
                                 // 手番を反転
-                                vue1.engine.position.turn.isMe = !vue1.engine.position.turn.isMe;
+                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next);
                             }
                         ),
                         // 審判コントロール

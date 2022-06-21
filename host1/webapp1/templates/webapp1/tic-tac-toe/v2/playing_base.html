@@ -204,9 +204,9 @@
                                 }
 
                                 // 手番を反転
-                                // console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.isMe}`);
-                                vue1.engine.position.turn.isMe = !vue1.engine.position.turn.isMe;
-                                // console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.isMe}`);
+                                console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.next}`);
+                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next)
+                                console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.next}`);
                                 vue1.raiseMyTurnChanged();
                             }
                         ),

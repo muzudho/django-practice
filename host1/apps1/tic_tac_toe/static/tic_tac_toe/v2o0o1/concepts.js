@@ -72,8 +72,14 @@ class Turn {
         // 自分の手番
         this._me = myTurn;
 
-        // 自分の手番か（初回はXが先手）
-        this._isMe = this._me == PC_X_LABEL;
+        // 初期局面でコンストラクターが呼び出される想定で、"X" の方なら先手
+        if (myTurn == PC_X_LABEL) {
+            // 先手は自分
+            this._next = myTurn;
+        } else {
+            // 先手は相手
+            this._next = flipTurn(myTurn);
+        }
     }
 
     /**
@@ -84,14 +90,21 @@ class Turn {
     }
 
     /**
+     * 次の番，手番
+     */
+    get next() {
+        return this._next;
+    }
+
+    set next(value) {
+        this._next = value;
+    }
+
+    /**
      * 私の番か？
      */
     get isMe() {
-        return this._isMe;
-    }
-
-    set isMe(value) {
-        this._isMe = value;
+        return this._me == this._next;
     }
 
     /**
@@ -104,6 +117,7 @@ class Turn {
 ${indent}Turn
 ${indent}----
 ${indent}_me:${this._me}
+${indent}_next:${this._next}
 ${indent}_isMe:${this._isMe}`;
     }
 }

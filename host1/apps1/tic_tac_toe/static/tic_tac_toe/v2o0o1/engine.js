@@ -100,6 +100,10 @@ class Engine {
                     // Example: `play X 2`
                     this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
                     break;
+                case "judge":
+                    // Example: `judge`
+                    this._judgeCtrl.doJudge(this._position);
+                    break;
                 default:
                     // ignored
                     break;

@@ -363,8 +363,14 @@ class Turn {
         // 自分の手番
         this._me = myTurn;
 
-        // 自分の手番か（初回はXが先手）
-        this._isMe = this._me == PC_X_LABEL;
+        // 初期局面でコンストラクターが呼び出される想定で、"X" の方なら先手
+        if (myTurn == PC_X_LABEL) {
+            // 先手は自分
+            this._next = myTurn;
+        } else {
+            // 先手は相手
+            this._next = flipTurn(myTurn);
+        }
     }
 
     /**
@@ -375,14 +381,21 @@ class Turn {
     }
 
     /**
+     * 次の番，手番
+     */
+    get next() {
+        return this._next;
+    }
+
+    set next(value) {
+        this._next = value;
+    }
+
+    /**
      * 私の番か？
      */
     get isMe() {
-        return this._isMe;
-    }
-
-    set isMe(value) {
-        this._isMe = value;
+        return this._me == this._next;
     }
 
     /**
@@ -395,6 +408,7 @@ class Turn {
 ${indent}Turn
 ${indent}----
 ${indent}_me:${this._me}
+${indent}_next:${this._next}
 ${indent}_isMe:${this._isMe}`;
     }
 }
@@ -998,14 +1012,14 @@ class OutgoingMessages {
 
     /**
      * 勝った方のプレイヤーが、サーバーに対局終了メッセージを送ります
-     * @param {*} pieceMoved - 駒を置いた方の X か O
+     * @param {*} winner - 勝者。 "X" か "O"
      * @returns メッセージ
      */
-    createWon(pieceMoved) {
+    createWon(winner) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
             c2s_event: "C2S_End",
-            c2s_winner: pieceMoved,
+            c2s_winner: winner,
         };
     }
 }
@@ -1636,16 +1650,16 @@ class Connection {
                                 }
 
                                 // 手番を反転
-                                // console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.isMe}`);
-                                vue1.engine.position.turn.isMe = !vue1.engine.position.turn.isMe;
-                                // console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.isMe}`);
+                                console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.next}`);
+                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next)
+                                console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.next}`);
                                 vue1.raiseMyTurnChanged();
                             }
                         ),
                         // 審判コントロール
                         new JudgeCtrl(
                             /**
-                             * 判断したとき
+                             * onDoJudge - 判断したとき
                              *
                              * @param {*} pieceMoved - 動かした駒
                              * @param {*} gameoverSetValue - ゲームオーバー集合の元

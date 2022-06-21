@@ -45,14 +45,14 @@ class OutgoingMessages {
 
     /**
      * 勝った方のプレイヤーが、サーバーに対局終了メッセージを送ります
-     * @param {*} pieceMoved - 駒を置いた方の X か O
+     * @param {*} winner - 勝者。 "X" か "O"
      * @returns メッセージ
      */
-    createWon(pieceMoved) {
+    createWon(winner) {
         // `c2s_` は クライアントからサーバーへ送る変数の目印
         return {
             c2s_event: "C2S_End",
-            c2s_winner: pieceMoved,
+            c2s_winner: winner,
         };
     }
 }
