@@ -19,10 +19,12 @@ class JudgeCtrl {
      *
      * @param {Position} position - 局面
      */
-    doJudge(position, piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue(position);
-        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
-        this._onJudged(piece_moved, gameoverSetValue);
+    doJudge(position) {
+        let gameoverSet = this.#makeGameoverSet(position);
+        console.log(`[doJudge] gameoverSet.toString()=${gameoverSet.toString()}`);
+        this._onJudged(gameoverSet);
+
+        return gameoverSet;
     }
 
     /**
@@ -31,7 +33,7 @@ class JudgeCtrl {
      * @param {Position} position - 局面
      * @returns ゲームオーバー元
      */
-    #makeGameoverSetValue(position) {
+    #makeGameoverSet(position) {
         if (position.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
@@ -40,10 +42,10 @@ class JudgeCtrl {
                     // 当てはまるなら
                     if (position.turn.isMe) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GameoverSet.lose;
+                        return new GameoverSet(GameoverSet.lost);
                     } else {
                         // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GameoverSet.win;
+                        return new GameoverSet(GameoverSet.won);
                     }
                 }
             }
@@ -51,11 +53,11 @@ class JudgeCtrl {
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
         if (position.isBoardFill()) {
-            return GameoverSet.draw;
+            return new GameoverSet(GameoverSet.draw);
         }
 
         // ゲームオーバーしてません
-        return GameoverSet.none;
+        return new GameoverSet(GameoverSet.none);
     }
 
     /**

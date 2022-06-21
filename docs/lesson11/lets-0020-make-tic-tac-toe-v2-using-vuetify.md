@@ -149,9 +149,28 @@ const PC_O = 2;
  * ラベル
  * @type {string}
  */
-const PC_EMPTY_LABEL = "";
+const PC_EMPTY_LABEL = ".";
 const PC_X_LABEL = "X";
 const PC_O_LABEL = "O";
+
+/**
+ * 定数をラベルに変換
+ *
+ * @param {int} pc
+ * @returns {str} label
+ */
+function pc_to_label(pc) {
+    switch (pc) {
+        case PC_EMPTY:
+            return PC_EMPTY_LABEL;
+        case PC_X:
+            return PC_X_LABEL;
+        case PC_O:
+            return PC_O_LABEL;
+        default:
+            return pc;
+    }
+}
 
 // |
 // | 駒
@@ -211,6 +230,15 @@ class Board {
      */
     setPiece(sq, piece) {
         this._squares[sq] = piece;
+    }
+
+    /**
+     *
+     * @returns コピー配列
+     */
+    toArray() {
+        // スプレッド構文
+        return [...this._squares];
     }
 
     /**
@@ -427,23 +455,23 @@ class GameoverSet {
     }
 
     /**
-     * 勝ち
+     * 勝った
      */
-    static get win() {
+    static get won() {
         return 1;
     }
 
     /**
-     * 引き分け
+     * 引き分けた
      */
     static get draw() {
         return 2;
     }
 
     /**
-     * 負け
+     * 負けた
      */
-    static get lose() {
+    static get lost() {
         return 3;
     }
 
@@ -462,8 +490,19 @@ class GameoverSet {
         return this._value;
     }
 
-    set value(value) {
-        this._value = value;
+    toString() {
+        switch (this._value) {
+            case GameoverSet.none:
+                return "=\n.\n";
+            case GameoverSet.won:
+                return "= won\n.\n";
+            case GameoverSet.draw:
+                return "= draw\n.\n";
+            case GameoverSet.lost:
+                return "= lost\n.\n";
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
     }
 
     /**
@@ -472,28 +511,11 @@ class GameoverSet {
      * @returns
      */
     dump(indent) {
-        let text;
-        switch (this._value) {
-            case GameoverSet.none:
-                text = "none";
-                break;
-            case GameoverSet.win:
-                text = "win";
-                break;
-            case GameoverSet.draw:
-                text = "draw";
-                break;
-            case GameoverSet.lose:
-                text = "lose";
-                break;
-            default:
-                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
-        }
-
         return `
 ${indent}GameoverSet
 ${indent}-----------
-${indent}_value:${text}`;
+${indent}_value:${this._value}
+${indent}toString():${this.toString()}`;
     }
 }
 
@@ -646,6 +668,35 @@ class Position {
         return 5 <= this.record.length;
     }
 
+    toBoardString() {
+        // 何手目
+        const moves = this._record.length + 1;
+
+        // 手番
+        let currentTurn;
+        if (this._turn.isMe) {
+            currentTurn = this._turn.me;
+        } else {
+            currentTurn = flipTurn(this._turn.me);
+        }
+
+        // 各マス
+        const squares = this._board.toArray();
+        console.log(`squares=${squares}`);
+        const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
+
+        return `= [Next ${moves} moves / ${currentTurn} turn]
+. +---+---+---+
+. | ${a} | ${b} | ${c} |
+. +---+---+---+
+. | ${d} | ${e} | ${f} |
+. +---+---+---+
+. | ${g} | ${h} | ${i} |
+. +---+---+---+
+.
+`;
+    }
+
     /**
      * ダンプ
      */
@@ -771,10 +822,12 @@ class JudgeCtrl {
      *
      * @param {Position} position - 局面
      */
-    doJudge(position, piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue(position);
-        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
-        this._onJudged(piece_moved, gameoverSetValue);
+    doJudge(position) {
+        let gameoverSet = this.#makeGameoverSet(position);
+        console.log(`[doJudge] gameoverSet.toString()=${gameoverSet.toString()}`);
+        this._onJudged(gameoverSet);
+
+        return gameoverSet;
     }
 
     /**
@@ -783,7 +836,7 @@ class JudgeCtrl {
      * @param {Position} position - 局面
      * @returns ゲームオーバー元
      */
-    #makeGameoverSetValue(position) {
+    #makeGameoverSet(position) {
         if (position.isThere3SamePieces()) {
             // 先手番が駒を３つ置いてから、判定を始めます
             for (let squaresOfWinPattern of WIN_PATTERN) {
@@ -792,10 +845,10 @@ class JudgeCtrl {
                     // 当てはまるなら
                     if (position.turn.isMe) {
                         // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GameoverSet.lose;
+                        return new GameoverSet(GameoverSet.lost);
                     } else {
                         // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GameoverSet.win;
+                        return new GameoverSet(GameoverSet.won);
                     }
                 }
             }
@@ -803,11 +856,11 @@ class JudgeCtrl {
 
         // 勝ち負けが付かず、盤が埋まったら引き分け
         if (position.isBoardFill()) {
-            return GameoverSet.draw;
+            return new GameoverSet(GameoverSet.draw);
         }
 
         // ゲームオーバーしてません
-        return GameoverSet.none;
+        return new GameoverSet(GameoverSet.none);
     }
 
     /**
@@ -868,7 +921,7 @@ class Engine {
         this._position = new Position(myTurn);
 
         // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet();
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // ユーザーコントロール
         this._userCtrl = userCtrl;
@@ -914,6 +967,10 @@ class Engine {
      */
     get gameoverSet() {
         return this._gameoverSet;
+    }
+
+    set gameoverSet(value) {
+        this._gameoverSet = value;
     }
 
     /**
@@ -1570,7 +1627,7 @@ class Connection {
                 }
 
                 // ゲームオーバー判定
-                vue1.engine.judgeCtrl.doJudge(vue1.engine.position, piece_moved);
+                vue1.engine.judgeCtrl.doJudge(vue1.engine.position);
             }
 
             // 送信メッセージ作成者
@@ -1661,17 +1718,16 @@ class Connection {
                             /**
                              * onDoJudge - 判断したとき
                              *
-                             * @param {*} pieceMoved - 動かした駒
-                             * @param {*} gameoverSetValue - ゲームオーバー集合の元
+                             * @param {*} gameoverSet - ゲームオーバー集合
                              */
-                            (pieceMoved, gameoverSetValue) => {
-                                vue1.engine.gameoverSet.value = gameoverSetValue;
+                            (gameoverSet) => {
+                                vue1.engine.gameoverSet = gameoverSet;
                                 let response;
 
-                                switch (gameoverSetValue) {
-                                    case GameoverSet.win:
-                                        // 勝ったとき
-                                        response = outgoingMessages.createWon(pieceMoved);
+                                switch (gameoverSet.value) {
+                                    case GameoverSet.won:
+                                        // 自分が勝ったとき
+                                        response = outgoingMessages.createWon(vue1.engine.position.turn.me);
                                         connection.send(response);
                                         break;
                                     case GameoverSet.draw:
@@ -1679,14 +1735,14 @@ class Connection {
                                         response = outgoingMessages.createDraw();
                                         connection.send(response);
                                         break;
-                                    case GameoverSet.lose:
-                                        // 負けたとき
+                                    case GameoverSet.lost:
+                                        // 自分が負けたとき
                                         break;
                                     case GameoverSet.none:
                                         // なんでもなかったとき
                                         break;
                                     default:
-                                        throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
+                                        throw new Error(`Unexpected gameoverSet.value=${gameoverSet.value}`);
                                 }
                             }
                         )
@@ -1716,8 +1772,8 @@ class Connection {
                     gameover_message : "",
                     messages: {
                         draw: "It's a draw.",
-                        youLose: "You lose.",
-                        youWin: "You win!",
+                        youLost: "You lost.",
+                        youWon: "You won!",
                         {% block appendix_message %}
                         // メッセージを追加したければ、ここに挿しこめる
                         {% endblock appendix_message %}
@@ -1729,7 +1785,7 @@ class Connection {
                     // * ここで this は Window を指している
                     console.log(`[mounted] ★dataより後か先か？`);
                     console.log(`[mounted] ★this:${this}`);
-                    // console.log(`[mounted] ★vue1.data.messages.youWin:${vue1.messages.youWin}`);
+                    // console.log(`[mounted] ★vue1.data.messages.youWon:${vue1.messages.youWon}`);
                 },
                 methods: {
                     // 対局開始時
@@ -1747,7 +1803,7 @@ class Connection {
 
                         // ボタンのラベルをクリアー
                         for (let sq = 0; sq < BOARD_AREA; sq += 1) {
-                            this.setLabelOfButton(sq, PC_EMPTY_LABEL);
+                            this.setLabelOfButton(sq, "");
                         }
 
                         // ダンプ
@@ -1803,10 +1859,10 @@ class Connection {
                         switch (this.engine.gameoverSet.value) {
                             case GameoverSet.draw:
                                 return this.messages.draw;
-                            case GameoverSet.win:
-                                return this.messages.youWin;
-                            case GameoverSet.lose:
-                                return this.messages.youLose;
+                            case GameoverSet.won:
+                                return this.messages.youWon;
+                            case GameoverSet.lost:
+                                return this.messages.youLost;
                             case GameoverSet.none:
                                 // ここに来るのはおかしい
                                 return "";

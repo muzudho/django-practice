@@ -14,9 +14,28 @@ const PC_O = 2;
  * ラベル
  * @type {string}
  */
-const PC_EMPTY_LABEL = "";
+const PC_EMPTY_LABEL = ".";
 const PC_X_LABEL = "X";
 const PC_O_LABEL = "O";
+
+/**
+ * 定数をラベルに変換
+ *
+ * @param {int} pc
+ * @returns {str} label
+ */
+function pc_to_label(pc) {
+    switch (pc) {
+        case PC_EMPTY:
+            return PC_EMPTY_LABEL;
+        case PC_X:
+            return PC_X_LABEL;
+        case PC_O:
+            return PC_O_LABEL;
+        default:
+            return pc;
+    }
+}
 
 // |
 // | 駒
@@ -76,6 +95,15 @@ class Board {
      */
     setPiece(sq, piece) {
         this._squares[sq] = piece;
+    }
+
+    /**
+     *
+     * @returns コピー配列
+     */
+    toArray() {
+        // スプレッド構文
+        return [...this._squares];
     }
 
     /**

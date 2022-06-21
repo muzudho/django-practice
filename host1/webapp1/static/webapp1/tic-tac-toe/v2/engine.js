@@ -18,7 +18,7 @@ class Engine {
         this._position = new Position(myTurn);
 
         // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet();
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // ユーザーコントロール
         this._userCtrl = userCtrl;
@@ -64,6 +64,10 @@ class Engine {
      */
     get gameoverSet() {
         return this._gameoverSet;
+    }
+
+    set gameoverSet(value) {
+        this._gameoverSet = value;
     }
 
     /**
