@@ -169,11 +169,11 @@ class GameoverSet():
         """
         if self._value == GameoverSet.none:
             text = "none"
-        elif self._value == GameoverSet.win:
+        elif self._value == GameoverSet.won:
             text = "win"
         elif self._value == GameoverSet.draw:
             text = "draw"
-        elif self._value == GameoverSet.lose:
+        elif self._value == GameoverSet.lost:
             text = "lose"
         else:
             raise ValueError(

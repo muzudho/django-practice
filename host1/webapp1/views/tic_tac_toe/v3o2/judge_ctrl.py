@@ -32,7 +32,7 @@ class JudgeCtrl():
         """判断したとき"""
         self._onJudged = value
 
-    def doJudge(self, position, piece_moved):
+    def doJudge(self, position):
         """ゲームオーバー判定
 
         * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
@@ -44,7 +44,7 @@ class JudgeCtrl():
 
         gameover_set_value = self.makeGameoverState(position)
         print(f"[doJudge] gameover_set_value={gameover_set_value}")
-        self._onJudged(piece_moved, gameover_set_value)
+        self._onJudged(gameover_set_value)
 
     def makeGameoverState(self, position):
         """ゲームオーバー判定
@@ -63,7 +63,7 @@ class JudgeCtrl():
                         return GameoverSet.lose
                     else:
                         # 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GameoverSet.win
+                        return GameoverSet.won
 
         if position.isBoardFill:
             # 勝ち負けが付かず、盤が埋まったら引き分け

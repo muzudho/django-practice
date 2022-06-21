@@ -120,7 +120,7 @@ class Building():
     def getGameoverState(self):
         """対局結果
 
-        勝者 "X", "O" を、勝敗 WIN, DRAW, LOSE, NONE に変換
+        勝者 "X", "O" を、勝敗 won, draw, lost, "" に変換
         """
 
         if self._winner == game_rule.PC_EMPTY_LABEL:

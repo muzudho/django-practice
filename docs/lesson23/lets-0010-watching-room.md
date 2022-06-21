@@ -111,8 +111,8 @@ docker-compose up
 
 
 {% block appendix_message %}
-    xWin: "X win!",
-    oWin: "O win!",
+    xWon: "X won!",
+    oWon: "O won!",
 {% endblock appendix_message %}
 
 
@@ -121,9 +121,9 @@ docker-compose up
     if (this.engine.position.turn.me == '_') {
         switch (this.engine.winner) {
             case PC_X_LABEL:
-                return this.messages.xWin;
+                return this.messages.xWon;
             case PC_O_LABEL:
-                return this.messages.oWin;
+                return this.messages.oWon;
             case PC_EMPTY_LABEL:
                 return this.messages.draw;
             default:
