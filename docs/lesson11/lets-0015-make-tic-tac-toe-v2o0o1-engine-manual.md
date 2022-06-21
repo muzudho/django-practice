@@ -146,6 +146,25 @@ function pc_to_label(pc) {
     }
 }
 
+/**
+ * ラベルを定数に変換
+ *
+ * @param {str} - label
+ * @returns {int} - pc
+ */
+function label_to_pc(label) {
+    switch (label) {
+        case PC_EMPTY_LABEL:
+            return PC_EMPTY;
+        case PC_X_LABEL:
+            return PC_X;
+        case PC_O_LABEL:
+            return PC_O;
+        default:
+            return label;
+    }
+}
+
 // |
 // | 駒
 // +--------
@@ -216,6 +235,15 @@ class Board {
     }
 
     /**
+     * 盤面を設定します
+     *
+     * @param {*} token - Example: `..O.X....`
+     */
+    parse(token) {
+        this._squares = token.split("").map((x) => label_to_pc(x));
+    }
+
+    /**
      * ダンプ
      */
     dump(indent) {
@@ -256,6 +284,26 @@ class Record {
 
     get length() {
         return this._squares.length;
+    }
+
+    /**
+     * 棋譜を設定します
+     *
+     * @param {*} token - Example: `53`
+     */
+    parse(token) {
+        this._squares = token.split("").map((x) => parseInt(x));
+    }
+
+    /**
+     * 棋譜を先頭から読取ります
+     *
+     * @param {function(int)} setSq - callback
+     */
+    forEach(setSq) {
+        for (const sq of this._squares) {
+            setSq(sq);
+        }
     }
 
     /**
@@ -1044,6 +1092,13 @@ class Engine {
                     // Example: `board`
                     log += this._position.toBoardString();
                     break;
+
+                case "judge":
+                    // Example: `judge`
+                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                    log += gameoverSet.toString();
+                    break;
+
                 case "play":
                     // Example: `play X 2`
                     const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
@@ -1053,11 +1108,23 @@ class Engine {
                         log += "? err\n.\n";
                     }
                     break;
-                case "judge":
-                    // Example: `judge`
-                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
-                    log += gameoverSet.toString();
+
+                case "position":
+                    // Example: `position ..O.X.... next X moves 53`
+                    //           -------- --------- ---- - ----- --
+                    //           0        1         2    3 4     5
+                    // 1. 初期局面
+                    // 2. 次の番，手番
+                    // 3. 初期局面からの棋譜
+                    this._position.board.parse(tokens[1]);
+                    this._position.turn.next = tokens[3];
+                    this._position.record.parse(tokens[5]);
+                    this._position.record.forEach((sq) => {
+                        this._userCtrl.doMove(this._position, this._position.turn.next, sq);
+                    });
+                    log += `=\n.\n`;
                     break;
+
                 default:
                     // ignored
                     break;
@@ -1192,6 +1259,9 @@ judge
 play X 3
 board
 judge
+
+position ..O.X.... next X moves 53
+board
 `,
                     },
                     // 出力

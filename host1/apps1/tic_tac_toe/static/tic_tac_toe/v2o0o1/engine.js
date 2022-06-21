@@ -108,6 +108,13 @@ class Engine {
                     // Example: `board`
                     log += this._position.toBoardString();
                     break;
+
+                case "judge":
+                    // Example: `judge`
+                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                    log += gameoverSet.toString();
+                    break;
+
                 case "play":
                     // Example: `play X 2`
                     const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
@@ -117,11 +124,23 @@ class Engine {
                         log += "? err\n.\n";
                     }
                     break;
-                case "judge":
-                    // Example: `judge`
-                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
-                    log += gameoverSet.toString();
+
+                case "position":
+                    // Example: `position ..O.X.... next X moves 53`
+                    //           -------- --------- ---- - ----- --
+                    //           0        1         2    3 4     5
+                    // 1. 初期局面
+                    // 2. 次の番，手番
+                    // 3. 初期局面からの棋譜
+                    this._position.board.parse(tokens[1]);
+                    this._position.turn.next = tokens[3];
+                    this._position.record.parse(tokens[5]);
+                    this._position.record.forEach((sq) => {
+                        this._userCtrl.doMove(this._position, this._position.turn.next, sq);
+                    });
+                    log += `=\n.\n`;
                     break;
+
                 default:
                     // ignored
                     break;
