@@ -428,23 +428,23 @@ class GameoverSet {
     }
 
     /**
-     * 勝ち
+     * 勝った
      */
-    static get win() {
+    static get won() {
         return 1;
     }
 
     /**
-     * 引き分け
+     * 引き分けた
      */
     static get draw() {
         return 2;
     }
 
     /**
-     * 負け
+     * 負けた
      */
-    static get lose() {
+    static get lost() {
         return 3;
     }
 
@@ -463,8 +463,19 @@ class GameoverSet {
         return this._value;
     }
 
-    set value(value) {
-        this._value = value;
+    toString() {
+        switch (this._value) {
+            case GameoverSet.none:
+                return "=\n.\n";
+            case GameoverSet.won:
+                return "= won\n.\n";
+            case GameoverSet.draw:
+                return "= draw\n.\n";
+            case GameoverSet.lost:
+                return "= lost\n.\n";
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
     }
 
     /**
@@ -473,28 +484,11 @@ class GameoverSet {
      * @returns
      */
     dump(indent) {
-        let text;
-        switch (this._value) {
-            case GameoverSet.none:
-                text = "none";
-                break;
-            case GameoverSet.win:
-                text = "win";
-                break;
-            case GameoverSet.draw:
-                text = "draw";
-                break;
-            case GameoverSet.lose:
-                text = "lose";
-                break;
-            default:
-                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
-        }
-
         return `
 ${indent}GameoverSet
 ${indent}-----------
-${indent}_value:${text}`;
+${indent}_value:${this._value}
+${indent}toString():${this.toString()}`;
     }
 }
 
@@ -662,15 +656,15 @@ class Position {
         console.log(`squares=${squares}`);
         const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
 
-        return `[Next ${moves} moves / ${currentTurn} turn]
-+---+---+---+
-| ${a} | ${b} | ${c} |
-+---+---+---+
-| ${d} | ${e} | ${f} |
-+---+---+---+
-| ${g} | ${h} | ${i} |
-+---+---+---+
-
+        return `= [Next ${moves} moves / ${currentTurn} turn]
+. +---+---+---+
+. | ${a} | ${b} | ${c} |
+. +---+---+---+
+. | ${d} | ${e} | ${f} |
+. +---+---+---+
+. | ${g} | ${h} | ${i} |
+. +---+---+---+
+.
 `;
     }
 
@@ -777,103 +771,6 @@ class UserCtrl {
 
 ```js
 /**
- * 審判コントロール
- */
-class JudgeCtrl {
-    /**
-     * 初期化
-     *
-     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
-     */
-    constructor(onJudged) {
-        // 判断したとき
-        this._onJudged = onJudged;
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
-     *
-     * @param {Position} position - 局面
-     */
-    doJudge(position, piece_moved) {
-        let gameoverSetValue = this.#makeGameoverSetValue(position);
-        console.log(`[doJudge] gameoverSetValue=${gameoverSetValue}`);
-        this._onJudged(piece_moved, gameoverSetValue);
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * @param {Position} position - 局面
-     * @returns ゲームオーバー元
-     */
-    #makeGameoverSetValue(position) {
-        if (position.isThere3SamePieces()) {
-            // 先手番が駒を３つ置いてから、判定を始めます
-            for (let squaresOfWinPattern of WIN_PATTERN) {
-                // 勝ちパターンの１つについて
-                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
-                    // 当てはまるなら
-                    if (position.turn.isMe) {
-                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return GameoverSet.lose;
-                    } else {
-                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return GameoverSet.win;
-                    }
-                }
-            }
-        }
-
-        // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (position.isBoardFill()) {
-            return GameoverSet.draw;
-        }
-
-        // ゲームオーバーしてません
-        return GameoverSet.none;
-    }
-
-    /**
-     * 駒が３つ並んでいるか？
-     *
-     * @param {Position} position - 局面
-     * @param {*} squaresOfWinPattern - 勝ちパターン
-     * @returns 並んでいれば真、それ以外は偽
-     */
-    #isPieceInLine(position, squaresOfWinPattern) {
-        return (
-            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
-        );
-    }
-}
-```
-
-# Step 7. 思考エンジン作成 - engine.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂apps1
-            └── 📂tic_tac_toe               # アプリケーション フォルダー
-                └── 📂static
-                    └── 📂tic_tac_toe
-                        └── 📂v2o0o1
-                            ├── 📄concepts.js
-👉                          ├── 📄engine.js
-                            ├── 📄judge_ctrl.js
-                            ├── 📄position.js
-                            ├── 📄things.js
-                            └── 📄user_ctrl.js
-```
-
-```js
-/**
  * 思考エンジン
  */
 class Engine {
@@ -893,7 +790,7 @@ class Engine {
         this._position = new Position(myTurn);
 
         // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet();
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // ユーザーコントロール
         this._userCtrl = userCtrl;
@@ -941,6 +838,10 @@ class Engine {
         return this._gameoverSet;
     }
 
+    set gameoverSet(value) {
+        this._gameoverSet = value;
+    }
+
     /**
      * 対局開始時
      */
@@ -961,23 +862,37 @@ class Engine {
      * コマンドの実行
      */
     execute(command) {
-        let ret = "";
+        let log = "";
 
         const lines = command.split(/\r?\n/);
         for (const line of lines) {
+            // 空行はパス
+            if (line.trim() === "") {
+                continue;
+            }
+
+            // One line command
+            log += "# " + line + "\n";
+
             const tokens = line.split(" ");
             switch (tokens[0]) {
                 case "board":
                     // Example: `board`
-                    ret += this._position.toBoardString();
+                    log += this._position.toBoardString();
                     break;
                 case "play":
                     // Example: `play X 2`
-                    this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    if (isOk) {
+                        log += "=\n.\n";
+                    } else {
+                        log += "? err\n.\n";
+                    }
                     break;
                 case "judge":
                     // Example: `judge`
-                    this._judgeCtrl.doJudge(this._position);
+                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                    log += gameoverSet.toString();
                     break;
                 default:
                     // ignored
@@ -985,7 +900,171 @@ class Engine {
             }
         }
 
-        return ret;
+        return log;
+    }
+
+    dump(indent) {
+        return `
+${indent}Engine
+${indent}------
+${indent}_winner:${this._winner}
+${indent}${this._gameoverSet.dump(indent + "    ")}
+${indent}${this._position.dump(indent + "    ")}`;
+    }
+}
+```
+
+# Step 7. 思考エンジン作成 - engine.js ファイル
+
+以下のファイルを新規作成してほしい  
+
+```plaintext
+    └── 📂host1
+        └── 📂apps1
+            └── 📂tic_tac_toe               # アプリケーション フォルダー
+                └── 📂static
+                    └── 📂tic_tac_toe
+                        └── 📂v2o0o1
+                            ├── 📄concepts.js
+👉                          ├── 📄engine.js
+                            ├── 📄judge_ctrl.js
+                            ├── 📄position.js
+                            ├── 📄things.js
+                            └── 📄user_ctrl.js
+```
+
+```js
+/**
+ * 思考エンジン
+ */
+class Engine {
+    /**
+     * 生成
+     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
+     * @param {UserCtrl} userCtrl - ユーザーコントロール
+     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
+     */
+    constructor(myTurn, userCtrl, judgeCtrl) {
+        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
+
+        // あれば勝者 "X", "O" なければ空文字列
+        this._winner = "";
+
+        // 局面
+        this._position = new Position(myTurn);
+
+        // ゲームオーバー集合
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
+
+        // ユーザーコントロール
+        this._userCtrl = userCtrl;
+
+        // 審判コントロール
+        this._judgeCtrl = judgeCtrl;
+    }
+
+    /**
+     * 局面
+     */
+    get position() {
+        return this._position;
+    }
+
+    /**
+     * ユーザーコントロール
+     */
+    get userCtrl() {
+        return this._userCtrl;
+    }
+
+    /**
+     * 審判コントロール
+     */
+    get judgeCtrl() {
+        return this._judgeCtrl;
+    }
+
+    /**
+     * 勝者
+     */
+    get winner() {
+        return this._winner;
+    }
+
+    set winner(value) {
+        this._winner = value;
+    }
+
+    /**
+     * ゲームオーバー集合
+     */
+    get gameoverSet() {
+        return this._gameoverSet;
+    }
+
+    set gameoverSet(value) {
+        this._gameoverSet = value;
+    }
+
+    /**
+     * 対局開始時
+     */
+    start() {
+        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
+
+        // 勝者のクリアー
+        this._winner = "";
+
+        // ゲームオーバー状態のクリアー
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
+
+        // 局面の初期化
+        this._position = new Position(this._position.turn.me);
+    }
+
+    /**
+     * コマンドの実行
+     */
+    execute(command) {
+        let log = "";
+
+        const lines = command.split(/\r?\n/);
+        for (const line of lines) {
+            // 空行はパス
+            if (line.trim() === "") {
+                continue;
+            }
+
+            // One line command
+            log += "# " + line + "\n";
+
+            const tokens = line.split(" ");
+            switch (tokens[0]) {
+                case "board":
+                    // Example: `board`
+                    log += this._position.toBoardString();
+                    break;
+                case "play":
+                    // Example: `play X 2`
+                    const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    if (isOk) {
+                        log += "=\n.\n";
+                    } else {
+                        log += "? err\n.\n";
+                    }
+                    break;
+                case "judge":
+                    // Example: `judge`
+                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                    log += gameoverSet.toString();
+                    break;
+                default:
+                    // ignored
+                    break;
+            }
+        }
+
+        return log;
     }
 
     dump(indent) {
@@ -1085,24 +1164,34 @@ ${indent}${this._position.dump(indent + "    ")}`;
                     // 入力
                     inputText: {
                         value: `board
+judge
 play X 1
 board
+judge
 play O 4
 board
+judge
 play X 5
 board
+judge
 play O 2
 board
+judge
 play X 6
 board
+judge
 play O 0
 board
+judge
 play X 8
 board
+judge
 play O 7
 board
+judge
 play X 3
 board
+judge
 `,
                     },
                     // 出力
@@ -1133,15 +1222,14 @@ board
                             /**
                              * onDoJudge - 判断したとき
                              *
-                             * @param {*} pieceMoved - 動かした駒
-                             * @param {*} gameoverSetValue - ゲームオーバー集合の元
+                             * @param {*} gameoverSet - ゲームオーバー集合
                              */
-                            (pieceMoved, gameoverSetValue) => {
-                                console.log(`[Engine onDoJudge] 自分の番=${vue1.engine.position.turn.me} 動かした駒=${pieceMoved}`);
-                                vue1.engine.gameoverSet.value = gameoverSetValue;
+                            (gameoverSet) => {
+                                console.log(`[Engine onDoJudge] 自分の番=${vue1.engine.position.turn.me}`);
+                                vue1.engine.gameoverSet = gameoverSet;
 
-                                switch (gameoverSetValue) {
-                                    case GameoverSet.win:
+                                switch (gameoverSet.value) {
+                                    case GameoverSet.won:
                                         // 勝ったとき
                                         console.log(`[Engine onDoJudge] 勝ち`);
                                         break;
@@ -1149,7 +1237,7 @@ board
                                         // 引き分けたとき
                                         console.log(`[Engine onDoJudge] 引き分け`);
                                         break;
-                                    case GameoverSet.lose:
+                                    case GameoverSet.lost:
                                         // 負けたとき
                                         console.log(`[Engine onDoJudge] 負け`);
                                         break;
@@ -1158,7 +1246,7 @@ board
                                         console.log(`[Engine onDoJudge] 何もなし`);
                                         break;
                                     default:
-                                        throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
+                                        throw new Error(`Unexpected gameoverSet.value=${gameoverSet.value}`);
                                 }
                             }
                         )

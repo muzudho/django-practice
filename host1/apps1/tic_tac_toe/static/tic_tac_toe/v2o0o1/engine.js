@@ -18,7 +18,7 @@ class Engine {
         this._position = new Position(myTurn);
 
         // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet();
+        this._gameoverSet = new GameoverSet(GameoverSet.none);
 
         // ユーザーコントロール
         this._userCtrl = userCtrl;
@@ -66,6 +66,10 @@ class Engine {
         return this._gameoverSet;
     }
 
+    set gameoverSet(value) {
+        this._gameoverSet = value;
+    }
+
     /**
      * 対局開始時
      */
@@ -86,23 +90,37 @@ class Engine {
      * コマンドの実行
      */
     execute(command) {
-        let ret = "";
+        let log = "";
 
         const lines = command.split(/\r?\n/);
         for (const line of lines) {
+            // 空行はパス
+            if (line.trim() === "") {
+                continue;
+            }
+
+            // One line command
+            log += "# " + line + "\n";
+
             const tokens = line.split(" ");
             switch (tokens[0]) {
                 case "board":
                     // Example: `board`
-                    ret += this._position.toBoardString();
+                    log += this._position.toBoardString();
                     break;
                 case "play":
                     // Example: `play X 2`
-                    this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                    if (isOk) {
+                        log += "=\n.\n";
+                    } else {
+                        log += "? err\n.\n";
+                    }
                     break;
                 case "judge":
                     // Example: `judge`
-                    this._judgeCtrl.doJudge(this._position);
+                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                    log += gameoverSet.toString();
                     break;
                 default:
                     // ignored
@@ -110,7 +128,7 @@ class Engine {
             }
         }
 
-        return ret;
+        return log;
     }
 
     dump(indent) {

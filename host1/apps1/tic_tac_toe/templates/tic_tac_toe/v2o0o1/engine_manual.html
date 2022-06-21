@@ -60,24 +60,34 @@
                     // 入力
                     inputText: {
                         value: `board
+judge
 play X 1
 board
+judge
 play O 4
 board
+judge
 play X 5
 board
+judge
 play O 2
 board
+judge
 play X 6
 board
+judge
 play O 0
 board
+judge
 play X 8
 board
+judge
 play O 7
 board
+judge
 play X 3
 board
+judge
 `,
                     },
                     // 出力
@@ -108,15 +118,14 @@ board
                             /**
                              * onDoJudge - 判断したとき
                              *
-                             * @param {*} pieceMoved - 動かした駒
-                             * @param {*} gameoverSetValue - ゲームオーバー集合の元
+                             * @param {*} gameoverSet - ゲームオーバー集合
                              */
-                            (pieceMoved, gameoverSetValue) => {
-                                console.log(`[Engine onDoJudge] 自分の番=${vue1.engine.position.turn.me} 動かした駒=${pieceMoved}`);
-                                vue1.engine.gameoverSet.value = gameoverSetValue;
+                            (gameoverSet) => {
+                                console.log(`[Engine onDoJudge] 自分の番=${vue1.engine.position.turn.me}`);
+                                vue1.engine.gameoverSet = gameoverSet;
 
-                                switch (gameoverSetValue) {
-                                    case GameoverSet.win:
+                                switch (gameoverSet.value) {
+                                    case GameoverSet.won:
                                         // 勝ったとき
                                         console.log(`[Engine onDoJudge] 勝ち`);
                                         break;
@@ -124,7 +133,7 @@ board
                                         // 引き分けたとき
                                         console.log(`[Engine onDoJudge] 引き分け`);
                                         break;
-                                    case GameoverSet.lose:
+                                    case GameoverSet.lost:
                                         // 負けたとき
                                         console.log(`[Engine onDoJudge] 負け`);
                                         break;
@@ -133,7 +142,7 @@ board
                                         console.log(`[Engine onDoJudge] 何もなし`);
                                         break;
                                     default:
-                                        throw new Error(`Unexpected gameoverSetValue=${gameoverSetValue}`);
+                                        throw new Error(`Unexpected gameoverSet.value=${gameoverSet.value}`);
                                 }
                             }
                         )

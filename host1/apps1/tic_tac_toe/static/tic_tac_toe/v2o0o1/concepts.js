@@ -136,23 +136,23 @@ class GameoverSet {
     }
 
     /**
-     * 勝ち
+     * 勝った
      */
-    static get win() {
+    static get won() {
         return 1;
     }
 
     /**
-     * 引き分け
+     * 引き分けた
      */
     static get draw() {
         return 2;
     }
 
     /**
-     * 負け
+     * 負けた
      */
-    static get lose() {
+    static get lost() {
         return 3;
     }
 
@@ -171,8 +171,19 @@ class GameoverSet {
         return this._value;
     }
 
-    set value(value) {
-        this._value = value;
+    toString() {
+        switch (this._value) {
+            case GameoverSet.none:
+                return "=\n.\n";
+            case GameoverSet.won:
+                return "= won\n.\n";
+            case GameoverSet.draw:
+                return "= draw\n.\n";
+            case GameoverSet.lost:
+                return "= lost\n.\n";
+            default:
+                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
+        }
     }
 
     /**
@@ -181,28 +192,11 @@ class GameoverSet {
      * @returns
      */
     dump(indent) {
-        let text;
-        switch (this._value) {
-            case GameoverSet.none:
-                text = "none";
-                break;
-            case GameoverSet.win:
-                text = "win";
-                break;
-            case GameoverSet.draw:
-                text = "draw";
-                break;
-            case GameoverSet.lose:
-                text = "lose";
-                break;
-            default:
-                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
-        }
-
         return `
 ${indent}GameoverSet
 ${indent}-----------
-${indent}_value:${text}`;
+${indent}_value:${this._value}
+${indent}toString():${this.toString()}`;
     }
 }
 
