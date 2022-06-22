@@ -37,6 +37,25 @@ function pc_to_label(pc) {
     }
 }
 
+/**
+ * ラベルを定数に変換
+ *
+ * @param {str} - label
+ * @returns {int} - pc
+ */
+function label_to_pc(label) {
+    switch (label) {
+        case PC_EMPTY_LABEL:
+            return PC_EMPTY;
+        case PC_X_LABEL:
+            return PC_X;
+        case PC_O_LABEL:
+            return PC_O;
+        default:
+            return label;
+    }
+}
+
 // |
 // | 駒
 // +--------
@@ -107,6 +126,15 @@ class Board {
     }
 
     /**
+     * 盤面を設定します
+     *
+     * @param {*} token - Example: `..O.X....`
+     */
+    parse(token) {
+        this._squares = token.split("").map((x) => label_to_pc(x));
+    }
+
+    /**
      * ダンプ
      */
     dump(indent) {
@@ -134,6 +162,13 @@ class Record {
     }
 
     /**
+     * 棋譜の破棄
+     */
+    clear() {
+        this._squares = [];
+    }
+
+    /**
      *
      * @param {*} sq - 駒を置いた場所
      */
@@ -141,12 +176,40 @@ class Record {
         this._squares.push(sq);
     }
 
+    /**
+     * 最後尾の要素を削除して返します
+     * @returns {int} sq - 空なら undefined
+     */
     pop() {
-        this._squares.pop();
+        return this._squares.pop();
     }
 
     get length() {
         return this._squares.length;
+    }
+
+    /**
+     * 棋譜を設定します
+     *
+     * @param {*} token - Example: `53`
+     */
+    parse(token) {
+        this._squares = token.split("").map((x) => parseInt(x));
+    }
+
+    /**
+     * 棋譜を先頭から読取ります
+     *
+     * @param {function(int)} setSq - callback
+     */
+    forEach(setSq) {
+        for (const sq of this._squares) {
+            setSq(sq);
+        }
+    }
+
+    toMovesString() {
+        return this._squares.join("");
     }
 
     /**

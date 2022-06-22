@@ -82,6 +82,7 @@ class Position {
 . +---+---+---+
 . | ${g} | ${h} | ${i} |
 . +---+---+---+
+. moves ${this._record.toMovesString()}
 .
 `;
     }

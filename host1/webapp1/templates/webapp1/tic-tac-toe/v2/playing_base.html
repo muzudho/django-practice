@@ -186,7 +186,9 @@
                         // ユーザーコントロール
                         new UserCtrl(
                             /**
-                             * onDoMove - 駒を置いたとき
+                             * onDidMove - 駒を置いたあと
+                             *
+                             * * 手番がひっくり返っていることに注意してください
                              *
                              * @param {int} sq - マス番号
                              * @param {string} pieceMoved - 動かした駒
@@ -195,7 +197,7 @@
                                 // ボタンのラベルを更新
                                 vue1.setLabelOfButton(sq, pieceMoved);
 
-                                console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} pieceMoved=${pieceMoved}`);
+                                console.log(`[Engine onDidMove] sq=${sq} pieceMoved=${pieceMoved}`);
 
                                 // 自分の指し手なら送信
                                 if (vue1.engine.position.turn.me == pieceMoved) {
@@ -203,10 +205,7 @@
                                     connection.send(response);
                                 }
 
-                                // 手番を反転
-                                console.log(`[Engine onDoMove] 反転前の手番=${vue1.engine.position.turn.next}`);
-                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next)
-                                console.log(`[Engine onDoMove] 反転後の手番=${vue1.engine.position.turn.next}`);
+                                // 手番の再描画を通知
                                 vue1.raiseMyTurnChanged();
                             }
                         ),
