@@ -91,6 +91,12 @@ judge
 
 position ..O.X.... next X moves 53
 board
+undo
+board
+undo
+board
+undo
+board
 `,
                     },
                     // 出力
@@ -104,16 +110,15 @@ board
                         // ユーザーコントロール
                         new UserCtrl(
                             /**
-                             * onDoMove - 駒を置いたとき
+                             * onDidMove - 駒を置いたあと
+                             *
+                             * * 手番がひっくり返っていることに注意してください
                              *
                              * @param {int} sq - マス番号
                              * @param {string} pieceMoved - 動かした駒
                              */
                             (sq, pieceMoved) => {
-                                console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} 置いたマス=${sq} 動かした駒=${pieceMoved}`);
-
-                                // 手番を反転
-                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next);
+                                console.log(`[Engine onDidMove] 置いたマス=${sq} 動かした駒=${pieceMoved}`);
                             }
                         ),
                         // 審判コントロール

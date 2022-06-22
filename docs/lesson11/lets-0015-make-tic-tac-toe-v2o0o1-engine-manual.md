@@ -712,6 +712,7 @@ class Position {
 . +---+---+---+
 . | ${g} | ${h} | ${i} |
 . +---+---+---+
+. moves ${this._record.toMovesString()}
 .
 `;
     }
@@ -755,15 +756,16 @@ class UserCtrl {
     /**
      * 初期化
      *
-     * @param {function} onDoMove - 駒を置いたとき
+     * @param {function} onDidMove - 駒を置いたあと
      */
-    constructor(onDoMove) {
-        this._onDoMove = onDoMove;
+    constructor(onDidMove) {
+        this._onDidMove = onDidMove;
     }
 
     /**
      * 駒を置きます
      *
+     * @param {Position} position - 局面
      * @param {number} sq - 升番号; 0 <= sq
      * @param {*} piece - X か O
      * @returns 駒を置けたら真、それ以外は偽
@@ -771,6 +773,7 @@ class UserCtrl {
     doMove(position, piece, sq) {
         if (position.board.getPieceBySq(sq) == PC_EMPTY) {
             // 空升なら駒を置きます
+            console.log(`[UserCtrl doMove] 置いたマス:${sq} 動かした駒:${piece}`);
 
             position.record.push(sq); // 棋譜に追加
 
@@ -783,18 +786,44 @@ class UserCtrl {
                     position.board.setPiece(sq, PC_O);
                     break;
                 default:
-                    console.log(`[UserCtrl doMove] illegal move. invalid piece = ${piece}`);
+                    console.log(`[UserCtrl doMove] illegal move. invalid piece:${piece}`);
                     return false;
             }
 
-            console.log(`[UserCtrl doMove] sq=${sq} piece=${piece}`);
-            this._onDoMove(sq, piece);
+            console.log(`[UserCtrl doMove] 反転前の手番=${position.turn.next}`);
+            position.turn.next = flipTurn(position.turn.next);
+            console.log(`[UserCtrl doMove] 反転後の手番=${position.turn.next}`);
+
+            this._onDidMove(sq, piece);
             return true;
         }
 
         // 駒が置いてあるマスに駒は置けません
-        console.log(`[UserCtrl doMove] illegal move. not empty square. sq=${sq}`);
+        console.log(`[UserCtrl doMove] illegal move. not empty square. sq:${sq}`);
         return false;
+    }
+
+    /**
+     * 一手戻します
+     *
+     * @param {Position} position - 局面
+     * @returns {bool} wasItDelete - 削除しました
+     */
+    undoMove(position) {
+        const previousSq = position.record.pop();
+        console.log(`[UserCtrl undoMove] previousSq:${previousSq}`);
+
+        if (typeof previousSq === "undefined") {
+            return false;
+        }
+
+        console.log(`[UserCtrl doMove] 反転前の手番:${position.turn.next}`);
+        position.turn.next = flipTurn(position.turn.next);
+        console.log(`[UserCtrl doMove] 反転後の手番:${position.turn.next}`);
+
+        // 盤上の駒を消します
+        position.board.setPiece(previousSq, PC_EMPTY);
+        return true;
     }
 }
 ```
@@ -1089,40 +1118,64 @@ class Engine {
             const tokens = line.split(" ");
             switch (tokens[0]) {
                 case "board":
-                    // Example: `board`
-                    log += this._position.toBoardString();
+                    {
+                        // Example: `board`
+                        log += this._position.toBoardString();
+                    }
                     break;
 
                 case "judge":
-                    // Example: `judge`
-                    const gameoverSet = this._judgeCtrl.doJudge(this._position);
-                    log += gameoverSet.toString();
+                    {
+                        // Example: `judge`
+                        const gameoverSet = this._judgeCtrl.doJudge(this._position);
+                        log += gameoverSet.toString();
+                    }
                     break;
 
                 case "play":
-                    // Example: `play X 2`
-                    const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
-                    if (isOk) {
-                        log += "=\n.\n";
-                    } else {
-                        log += "? err\n.\n";
+                    {
+                        // Example: `play X 2`
+                        const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
+                        if (isOk) {
+                            log += "=\n.\n";
+                        } else {
+                            log += "? this engine couldn't play\n.\n";
+                        }
                     }
                     break;
 
                 case "position":
-                    // Example: `position ..O.X.... next X moves 53`
-                    //           -------- --------- ---- - ----- --
-                    //           0        1         2    3 4     5
-                    // 1. 初期局面
-                    // 2. 次の番，手番
-                    // 3. 初期局面からの棋譜
-                    this._position.board.parse(tokens[1]);
-                    this._position.turn.next = tokens[3];
-                    this._position.record.parse(tokens[5]);
-                    this._position.record.forEach((sq) => {
-                        this._userCtrl.doMove(this._position, this._position.turn.next, sq);
-                    });
-                    log += `=\n.\n`;
+                    {
+                        // Example: `position ..O.X.... next X moves 53`
+                        //           -------- --------- ---- - ----- --
+                        //           0        1         2    3 4     5
+                        // 1. 初期局面
+                        // 2. 次の番，手番
+                        // 3. 初期局面からの棋譜
+                        this._position.board.parse(tokens[1]);
+                        this._position.turn.next = tokens[3];
+
+                        // 棋譜の配列を作る
+                        const arr = tokens[5].split("");
+                        // 指定局面から指す，棋譜作成
+                        this._position.record.clear();
+                        for (const sq of arr) {
+                            this._userCtrl.doMove(this._position, this._position.turn.next, sq);
+                        }
+                        log += `=\n.\n`;
+                    }
+                    break;
+
+                case "undo":
+                    {
+                        // Example: `undo`
+                        const isOk = this._userCtrl.undoMove(this._position);
+                        if (isOk) {
+                            log += "=\n.\n";
+                        } else {
+                            log += "? this engine couldn't undo\n.\n";
+                        }
+                    }
                     break;
 
                 default:
@@ -1262,6 +1315,12 @@ judge
 
 position ..O.X.... next X moves 53
 board
+undo
+board
+undo
+board
+undo
+board
 `,
                     },
                     // 出力
@@ -1275,16 +1334,15 @@ board
                         // ユーザーコントロール
                         new UserCtrl(
                             /**
-                             * onDoMove - 駒を置いたとき
+                             * onDidMove - 駒を置いたあと
+                             *
+                             * * 手番がひっくり返っていることに注意してください
                              *
                              * @param {int} sq - マス番号
                              * @param {string} pieceMoved - 動かした駒
                              */
                             (sq, pieceMoved) => {
-                                console.log(`[Engine onDoMove] 自分の番=${vue1.engine.position.turn.me} 置いたマス=${sq} 動かした駒=${pieceMoved}`);
-
-                                // 手番を反転
-                                vue1.engine.position.turn.next = flipTurn(vue1.engine.position.turn.next);
+                                console.log(`[Engine onDidMove] 置いたマス=${sq} 動かした駒=${pieceMoved}`);
                             }
                         ),
                         // 審判コントロール

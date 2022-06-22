@@ -162,6 +162,13 @@ class Record {
     }
 
     /**
+     * 棋譜の破棄
+     */
+    clear() {
+        this._squares = [];
+    }
+
+    /**
      *
      * @param {*} sq - 駒を置いた場所
      */
@@ -169,8 +176,12 @@ class Record {
         this._squares.push(sq);
     }
 
+    /**
+     * 最後尾の要素を削除して返します
+     * @returns {int} sq - 空なら undefined
+     */
     pop() {
-        this._squares.pop();
+        return this._squares.pop();
     }
 
     get length() {
@@ -195,6 +206,10 @@ class Record {
         for (const sq of this._squares) {
             setSq(sq);
         }
+    }
+
+    toMovesString() {
+        return this._squares.join("");
     }
 
     /**
