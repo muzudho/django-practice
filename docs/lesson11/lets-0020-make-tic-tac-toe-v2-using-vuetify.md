@@ -1,7 +1,9 @@
 # 目的
 
-前の記事で、１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）を作った。  
-これのフロントエンドを Vuetify に置き換えたい  
+フロントエンドに Vuetify を使って、  
+１人２役で２窓で遊ぶ 〇×ゲーム（Tic tac toe）を作りたい  
+
+〇×ゲームの思考エンジンは　前の記事で作った物を流用する  
 
 # はじめに
 
@@ -28,6 +30,18 @@
     ├── 📂host_local1
     │    └── <いろいろ>
     └── 📂host1
+        ├── 📂apps1
+        │   └── 📂tic_tac_toe               # アプリケーション フォルダー
+        │       └── 📂static
+        │           └── 📂tic_tac_toe
+        │               └── 📂v2o0o1
+        │                   └── 📂think             # 〇×ゲームの思考エンジン
+        │                       ├── 📄concepts.js
+        │                       ├── 📄engine.js
+        │                       ├── 📄judge_ctrl.js
+        │                       ├── 📄position.js
+        │                       ├── 📄things.js
+        │                       └── 📄user_ctrl.js
         ├── 📂data
         │   └── 📂db
         │       └── （たくさんのもの）
@@ -117,1070 +131,7 @@ favicon.ico を有効にするには HTML で設定する必要があるが、�
 以下略
 ```
 
-# Step 3. 物の定義 - things.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-👉              │           └── 📄things.js
-                └── 🚀favicon.ico
-```
-
-```js
-// +--------
-// | 駒
-// |
-
-/**
- * PC は Piece （駒）の略です
- * @type {number}
- */
-const PC_EMPTY = 0; // Pieceがないことを表します
-const PC_X = 1;
-const PC_O = 2;
-
-/**
- * ラベル
- * @type {string}
- */
-const PC_EMPTY_LABEL = ".";
-const PC_X_LABEL = "X";
-const PC_O_LABEL = "O";
-
-/**
- * 定数をラベルに変換
- *
- * @param {int} pc
- * @returns {str} label
- */
-function pc_to_label(pc) {
-    switch (pc) {
-        case PC_EMPTY:
-            return PC_EMPTY_LABEL;
-        case PC_X:
-            return PC_X_LABEL;
-        case PC_O:
-            return PC_O_LABEL;
-        default:
-            return pc;
-    }
-}
-
-/**
- * ラベルを定数に変換
- *
- * @param {str} - label
- * @returns {int} - pc
- */
-function label_to_pc(label) {
-    switch (label) {
-        case PC_EMPTY_LABEL:
-            return PC_EMPTY;
-        case PC_X_LABEL:
-            return PC_X;
-        case PC_O_LABEL:
-            return PC_O;
-        default:
-            return label;
-    }
-}
-
-// |
-// | 駒
-// +--------
-
-// +--------
-// | 盤
-// |
-
-/**
- * 盤上の升の数
- * @type {number}
- */
-const BOARD_AREA = 9;
-
-/**
- * SQ は Square （マス）の略です
- * +---------+
- * | 0  1  2 |
- * | 3  4  5 |
- * | 6  7  8 |
- * +---------+
- * @type {number}
- */
-const SQ_0 = 0;
-const SQ_1 = 1;
-const SQ_2 = 2;
-const SQ_3 = 3;
-const SQ_4 = 4;
-const SQ_5 = 5;
-const SQ_6 = 6;
-const SQ_7 = 7;
-const SQ_8 = 8;
-
-/**
- * 盤
- */
-class Board {
-    constructor() {
-        // 各マス
-        this._squares = [PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY, PC_EMPTY];
-    }
-
-    /**
-     * 盤上のマス番号で示して、駒を取得
-     * @param {number} sq - マス番号
-     */
-    getPieceBySq(sq) {
-        return this._squares[sq];
-    }
-
-    /**
-     * 盤上のマスに駒を上書きします
-     *
-     * @param {*} sq - マス番号
-     * @param {*} piece - 駒
-     */
-    setPiece(sq, piece) {
-        this._squares[sq] = piece;
-    }
-
-    /**
-     *
-     * @returns コピー配列
-     */
-    toArray() {
-        // スプレッド構文
-        return [...this._squares];
-    }
-
-    /**
-     * 盤面を設定します
-     *
-     * @param {*} token - Example: `..O.X....`
-     */
-    parse(token) {
-        this._squares = token.split("").map((x) => label_to_pc(x));
-    }
-
-    /**
-     * ダンプ
-     */
-    dump(indent) {
-        return `
-${indent}Board
-${indent}-----
-${indent}_squares:${this._squares}`;
-    }
-}
-
-// | 盤
-// |
-// +--------
-
-// +--------
-// | 棋譜
-// |
-
-/**
- * 棋譜
- */
-class Record {
-    constructor() {
-        this._squares = [];
-    }
-
-    /**
-     * 棋譜の破棄
-     */
-    clear() {
-        this._squares = [];
-    }
-
-    /**
-     *
-     * @param {*} sq - 駒を置いた場所
-     */
-    push(sq) {
-        this._squares.push(sq);
-    }
-
-    /**
-     * 最後尾の要素を削除して返します
-     * @returns {int} sq - 空なら undefined
-     */
-    pop() {
-        return this._squares.pop();
-    }
-
-    get length() {
-        return this._squares.length;
-    }
-
-    /**
-     * 棋譜を設定します
-     *
-     * @param {*} token - Example: `53`
-     */
-    parse(token) {
-        this._squares = token.split("").map((x) => parseInt(x));
-    }
-
-    /**
-     * 棋譜を先頭から読取ります
-     *
-     * @param {function(int)} setSq - callback
-     */
-    forEach(setSq) {
-        for (const sq of this._squares) {
-            setSq(sq);
-        }
-    }
-
-    toMovesString() {
-        return this._squares.join("");
-    }
-
-    /**
-     * ダンプ
-     */
-    dump(indent) {
-        return `
-${indent}Record
-${indent}------
-${indent}_squares:${this._squares}`;
-    }
-}
-
-// | 棋譜
-// |
-// +--------
-```
-
-# Step 4. 概念の定義 - concepts.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-👉              │           ├── 📄concepts.js
-                │           └── 📄things.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 部屋の状態
- */
-class RoomState {
-    /**
-     * ゲームしてません
-     */
-    static get none() {
-        return 0;
-    }
-
-    /**
-     * ゲーム中
-     */
-    static get playing() {
-        return 1;
-    }
-
-    /**
-     * 生成
-     * @param {int} value
-     * @param {function} onChangeValue - 値の変更時
-     */
-    constructor(value, onChangeValue) {
-        console.log(`[RoomState constructor]`);
-
-        this._value = value;
-        this._onChangeValue = onChangeValue;
-    }
-
-    /**
-     * 値
-     */
-    get value() {
-        return this._value;
-    }
-
-    set value(value) {
-        console.log(`[RoomState set value]`);
-
-        if (this._value === value) {
-            return;
-        }
-
-        let oldValue = this._value;
-        this._value = value;
-        this._onChangeValue(oldValue, this._value);
-    }
-
-    /**
-     * ダンプ
-     * @param {str} indent
-     * @returns
-     */
-    dump(indent) {
-        return `
-${indent}RoomState
-${indent}---------
-${indent}_value:${this._value}`;
-    }
-}
-
-/**
- * 番
- */
-class Turn {
-    /**
-     * 生成
-     * @param {*} myTurn - 自分の手番。 "X", "O"
-     */
-    constructor(myTurn) {
-        // 自分の手番
-        this._me = myTurn;
-
-        // 初期局面でコンストラクターが呼び出される想定で、"X" の方なら先手
-        if (myTurn == PC_X_LABEL) {
-            // 先手は自分
-            this._next = myTurn;
-        } else {
-            // 先手は相手
-            this._next = flipTurn(myTurn);
-        }
-    }
-
-    /**
-     * 自分の手番
-     */
-    get me() {
-        return this._me;
-    }
-
-    /**
-     * 次の番，手番
-     */
-    get next() {
-        return this._next;
-    }
-
-    set next(value) {
-        this._next = value;
-    }
-
-    /**
-     * 私の番か？
-     */
-    get isMe() {
-        return this._me == this._next;
-    }
-
-    /**
-     * ダンプ
-     * @param {str} indent
-     * @returns
-     */
-    dump(indent) {
-        return `
-${indent}Turn
-${indent}----
-${indent}_me:${this._me}
-${indent}_next:${this._next}
-${indent}_isMe:${this._isMe}`;
-    }
-}
-
-/**
- * ゲームオーバー集合
- *
- * * 自分視点
- */
-class GameoverSet {
-    /**
-     * ゲームオーバーしてません
-     */
-    static get none() {
-        return 0;
-    }
-
-    /**
-     * 勝った
-     */
-    static get won() {
-        return 1;
-    }
-
-    /**
-     * 引き分けた
-     */
-    static get draw() {
-        return 2;
-    }
-
-    /**
-     * 負けた
-     */
-    static get lost() {
-        return 3;
-    }
-
-    /**
-     * 生成
-     * @param {int} value
-     */
-    constructor(value) {
-        this._value = value;
-    }
-
-    /**
-     * 値
-     */
-    get value() {
-        return this._value;
-    }
-
-    toString() {
-        switch (this._value) {
-            case GameoverSet.none:
-                return "=\n.\n";
-            case GameoverSet.won:
-                return "= won\n.\n";
-            case GameoverSet.draw:
-                return "= draw\n.\n";
-            case GameoverSet.lost:
-                return "= lost\n.\n";
-            default:
-                throw Error(`[GameoverSet dump] Unexpected value=${this._value}`);
-        }
-    }
-
-    /**
-     * ダンプ
-     * @param {str} indent
-     * @returns
-     */
-    dump(indent) {
-        return `
-${indent}GameoverSet
-${indent}-----------
-${indent}_value:${this._value}
-${indent}toString():${this.toString()}`;
-    }
-}
-
-/**
- * 駒が３つ並んでいるパターン
- */
-WIN_PATTERN = [
-    // +---------+
-    // | *  *  * |
-    // | .  .  . |
-    // | .  .  . |
-    // +---------+
-    [SQ_0, SQ_1, SQ_2],
-    // +---------+
-    // | .  .  . |
-    // | *  *  * |
-    // | .  .  . |
-    // +---------+
-    [SQ_3, SQ_4, SQ_5],
-    // +---------+
-    // | .  .  . |
-    // | .  .  . |
-    // | *  *  * |
-    // +---------+
-    [SQ_6, SQ_7, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | *  .  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_0, SQ_3, SQ_6],
-    // +---------+
-    // | .  *  . |
-    // | .  *  . |
-    // | .  *  . |
-    // +---------+
-    [SQ_1, SQ_4, SQ_7],
-    // +---------+
-    // | .  .  * |
-    // | .  .  * |
-    // | .  .  * |
-    // +---------+
-    [SQ_2, SQ_5, SQ_8],
-    // +---------+
-    // | *  .  . |
-    // | .  *  . |
-    // | .  .  * |
-    // +---------+
-    [SQ_0, SQ_4, SQ_8],
-    // +---------+
-    // | .  .  * |
-    // | .  *  . |
-    // | *  .  . |
-    // +---------+
-    [SQ_2, SQ_4, SQ_6],
-];
-
-/**
- * 手番反転
- *
- * @param {*} piece
- * @returns
- */
-function flipTurn(piece) {
-    if (piece == PC_X_LABEL) {
-        return PC_O_LABEL;
-    } else if (piece == PC_O_LABEL) {
-        return PC_X_LABEL;
-    }
-
-    return piece;
-}
-```
-
-
-# Step 5. 局面作成 - position.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-👉              │           ├── 📄position.js
-                │           └── 📄things.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 局面
- */
-class Position {
-    /**
-     * 初期化
-     *
-     * * 対局開始時
-     *
-     * @param {string} myTurn - 自分の手番。 "X", "O"
-     */
-    constructor(myTurn) {
-        console.log(`[Position constructor] 自分の手番=${myTurn}`);
-
-        // 盤面
-        this._board = new Board();
-
-        // 棋譜
-        this._record = new Record();
-
-        // 番
-        this._turn = new Turn(myTurn);
-    }
-
-    /**
-     * 盤
-     */
-    get board() {
-        return this._board;
-    }
-
-    /**
-     * 棋譜
-     */
-    get record() {
-        return this._record;
-    }
-
-    /**
-     * 番
-     */
-    get turn() {
-        return this._turn;
-    }
-
-    /**
-     * マスがすべて埋まっていますか
-     */
-    isBoardFill() {
-        return this.record.length == 9;
-    }
-
-    /**
-     * 同じ駒が３個ありますか
-     */
-    isThere3SamePieces() {
-        return 5 <= this.record.length;
-    }
-
-    toBoardString() {
-        // 何手目
-        const moves = this._record.length + 1;
-
-        // 手番
-        let currentTurn;
-        if (this._turn.isMe) {
-            currentTurn = this._turn.me;
-        } else {
-            currentTurn = flipTurn(this._turn.me);
-        }
-
-        // 各マス
-        const squares = this._board.toArray();
-        console.log(`squares=${squares}`);
-        const [a, b, c, d, e, f, g, h, i] = squares.map((x) => pc_to_label(x));
-
-        return `= [Next ${moves} moves / ${currentTurn} turn]
-. +---+---+---+
-. | ${a} | ${b} | ${c} |
-. +---+---+---+
-. | ${d} | ${e} | ${f} |
-. +---+---+---+
-. | ${g} | ${h} | ${i} |
-. +---+---+---+
-. moves ${this._record.toMovesString()}
-.
-`;
-    }
-
-    /**
-     * ダンプ
-     */
-    dump(indent) {
-        return `
-${indent}Position
-${indent}--------
-${indent}${this._board.dump(indent + "    ")}
-${indent}${this._record.dump(indent + "    ")}
-${indent}${this._turn.dump(indent + "    ")}`;
-    }
-}
-```
-
-# Step 6. ユーザーコントロール作成 - user_ctrl.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-                │           ├── 📄position.js
-                │           ├── 📄things.js
-👉              │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * ユーザーコントロール
- */
-class UserCtrl {
-    /**
-     * 初期化
-     *
-     * @param {function} onDidMove - 駒を置いたあと
-     */
-    constructor(onDidMove) {
-        this._onDidMove = onDidMove;
-    }
-
-    /**
-     * 駒を置きます
-     *
-     * @param {Position} position - 局面
-     * @param {number} sq - 升番号; 0 <= sq
-     * @param {*} piece - X か O
-     * @returns 駒を置けたら真、それ以外は偽
-     */
-    doMove(position, piece, sq) {
-        if (position.board.getPieceBySq(sq) == PC_EMPTY) {
-            // 空升なら駒を置きます
-            console.log(`[UserCtrl doMove] 置いたマス:${sq} 動かした駒:${piece}`);
-
-            position.record.push(sq); // 棋譜に追加
-
-            // 駒を置きます
-            switch (piece) {
-                case PC_X_LABEL:
-                    position.board.setPiece(sq, PC_X);
-                    break;
-                case PC_O_LABEL:
-                    position.board.setPiece(sq, PC_O);
-                    break;
-                default:
-                    console.log(`[UserCtrl doMove] illegal move. invalid piece:${piece}`);
-                    return false;
-            }
-
-            console.log(`[UserCtrl doMove] 反転前の手番=${position.turn.next}`);
-            position.turn.next = flipTurn(position.turn.next);
-            console.log(`[UserCtrl doMove] 反転後の手番=${position.turn.next}`);
-
-            this._onDidMove(sq, piece);
-            return true;
-        }
-
-        // 駒が置いてあるマスに駒は置けません
-        console.log(`[UserCtrl doMove] illegal move. not empty square. sq:${sq}`);
-        return false;
-    }
-
-    /**
-     * 一手戻します
-     *
-     * @param {Position} position - 局面
-     * @returns {bool} wasItDelete - 削除しました
-     */
-    undoMove(position) {
-        const previousSq = position.record.pop();
-        console.log(`[UserCtrl undoMove] previousSq:${previousSq}`);
-
-        if (typeof previousSq === "undefined") {
-            return false;
-        }
-
-        console.log(`[UserCtrl doMove] 反転前の手番:${position.turn.next}`);
-        position.turn.next = flipTurn(position.turn.next);
-        console.log(`[UserCtrl doMove] 反転後の手番:${position.turn.next}`);
-
-        // 盤上の駒を消します
-        position.board.setPiece(previousSq, PC_EMPTY);
-        return true;
-    }
-}
-```
-
-# Step 7. 審判作成 - judge_ctrl.js ファイル
-
-以下のファイルを作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-👉              │           ├── 📄judge_ctrl.js
-                │           ├── 📄position.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 審判コントロール
- */
-class JudgeCtrl {
-    /**
-     * 初期化
-     *
-     * @param {function} onJudged - 判断したとき。 (pieceMoved, gameoverSetValue) => {};
-     */
-    constructor(onJudged) {
-        // 判断したとき
-        this._onJudged = onJudged;
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * * 自分が指した後の盤面（＝手番が相手に渡った始めの盤面）を評価することに注意してください
-     *
-     * @param {Position} position - 局面
-     */
-    doJudge(position) {
-        let gameoverSet = this.#makeGameoverSet(position);
-        console.log(`[doJudge] gameoverSet.toString()=${gameoverSet.toString()}`);
-        this._onJudged(gameoverSet);
-
-        return gameoverSet;
-    }
-
-    /**
-     * ゲームオーバー判定
-     *
-     * @param {Position} position - 局面
-     * @returns ゲームオーバー元
-     */
-    #makeGameoverSet(position) {
-        if (position.isThere3SamePieces()) {
-            // 先手番が駒を３つ置いてから、判定を始めます
-            for (let squaresOfWinPattern of WIN_PATTERN) {
-                // 勝ちパターンの１つについて
-                if (this.#isPieceInLine(position, squaresOfWinPattern)) {
-                    // 当てはまるなら
-                    if (position.turn.isMe) {
-                        // 相手が指して自分の手番になったときに ３目が揃った。私の負け
-                        return new GameoverSet(GameoverSet.lost);
-                    } else {
-                        // 自分がが指して相手の手番になったときに ３目が揃った。私の勝ち
-                        return new GameoverSet(GameoverSet.won);
-                    }
-                }
-            }
-        }
-
-        // 勝ち負けが付かず、盤が埋まったら引き分け
-        if (position.isBoardFill()) {
-            return new GameoverSet(GameoverSet.draw);
-        }
-
-        // ゲームオーバーしてません
-        return new GameoverSet(GameoverSet.none);
-    }
-
-    /**
-     * 駒が３つ並んでいるか？
-     *
-     * @param {Position} position - 局面
-     * @param {*} squaresOfWinPattern - 勝ちパターン
-     * @returns 並んでいれば真、それ以外は偽
-     */
-    #isPieceInLine(position, squaresOfWinPattern) {
-        return (
-            position.board.getPieceBySq(squaresOfWinPattern[0]) !== PC_EMPTY && //
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[1]) &&
-            position.board.getPieceBySq(squaresOfWinPattern[0]) === position.board.getPieceBySq(squaresOfWinPattern[2])
-        );
-    }
-}
-```
-
-# Step 8. 思考エンジン作成 - engine.js ファイル
-
-以下のファイルを新規作成してほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-                ├── 📂webapp1
-                │   └── 📂tic-tac-toe
-                │       └── 📂v2
-                │           ├── 📄concepts.js
-👉              │           ├── 📄engine.js
-                │           ├── 📄judge_ctrl.js
-                │           ├── 📄position.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
-                └── 🚀favicon.ico
-```
-
-```js
-/**
- * 思考エンジン
- */
-class Engine {
-    /**
-     * 生成
-     * @param {string} myTurn - 自分の手番。 "X" か "O"。 部屋に入ると変えることができない
-     * @param {UserCtrl} userCtrl - ユーザーコントロール
-     * @param {JudgeCtrl} judgeCtrl - 審判コントロール
-     */
-    constructor(myTurn, userCtrl, judgeCtrl) {
-        console.log(`[Engine constructor] 自分の手番=${myTurn}`);
-
-        // あれば勝者 "X", "O" なければ空文字列
-        this._winner = "";
-
-        // 局面
-        this._position = new Position(myTurn);
-
-        // ゲームオーバー集合
-        this._gameoverSet = new GameoverSet(GameoverSet.none);
-
-        // ユーザーコントロール
-        this._userCtrl = userCtrl;
-
-        // 審判コントロール
-        this._judgeCtrl = judgeCtrl;
-    }
-
-    /**
-     * 局面
-     */
-    get position() {
-        return this._position;
-    }
-
-    /**
-     * ユーザーコントロール
-     */
-    get userCtrl() {
-        return this._userCtrl;
-    }
-
-    /**
-     * 審判コントロール
-     */
-    get judgeCtrl() {
-        return this._judgeCtrl;
-    }
-
-    /**
-     * 勝者
-     */
-    get winner() {
-        return this._winner;
-    }
-
-    set winner(value) {
-        this._winner = value;
-    }
-
-    /**
-     * ゲームオーバー集合
-     */
-    get gameoverSet() {
-        return this._gameoverSet;
-    }
-
-    set gameoverSet(value) {
-        this._gameoverSet = value;
-    }
-
-    /**
-     * 対局開始時
-     */
-    start() {
-        console.log(`[Engine start] 自分の手番=${this._position.turn.me}`);
-
-        // 勝者のクリアー
-        this._winner = "";
-
-        // ゲームオーバー状態のクリアー
-        this._gameoverSet = new GameoverSet(GameoverSet.none);
-
-        // 局面の初期化
-        this._position = new Position(this._position.turn.me);
-    }
-
-    /**
-     * コマンドの実行
-     */
-    execute(command) {
-        let log = "";
-
-        const lines = command.split(/\r?\n/);
-        for (const line of lines) {
-            // 空行はパス
-            if (line.trim() === "") {
-                continue;
-            }
-
-            // One line command
-            log += "# " + line + "\n";
-
-            const tokens = line.split(" ");
-            switch (tokens[0]) {
-                case "board":
-                    {
-                        // Example: `board`
-                        log += this._position.toBoardString();
-                    }
-                    break;
-
-                case "judge":
-                    {
-                        // Example: `judge`
-                        const gameoverSet = this._judgeCtrl.doJudge(this._position);
-                        log += gameoverSet.toString();
-                    }
-                    break;
-
-                case "play":
-                    {
-                        // Example: `play X 2`
-                        const isOk = this._userCtrl.doMove(this._position, tokens[1], parseInt(tokens[2]));
-                        if (isOk) {
-                            log += "=\n.\n";
-                        } else {
-                            log += "? this engine couldn't play\n.\n";
-                        }
-                    }
-                    break;
-
-                case "position":
-                    {
-                        // Example: `position ..O.X.... next X moves 53`
-                        //           -------- --------- ---- - ----- --
-                        //           0        1         2    3 4     5
-                        // 1. 初期局面
-                        // 2. 次の番，手番
-                        // 3. 初期局面からの棋譜
-                        this._position.board.parse(tokens[1]);
-                        this._position.turn.next = tokens[3];
-
-                        // 棋譜の配列を作る
-                        const arr = tokens[5].split("");
-                        // 指定局面から指す，棋譜作成
-                        this._position.record.clear();
-                        for (const sq of arr) {
-                            this._userCtrl.doMove(this._position, this._position.turn.next, sq);
-                        }
-                        log += `=\n.\n`;
-                    }
-                    break;
-
-                case "undo":
-                    {
-                        // Example: `undo`
-                        const isOk = this._userCtrl.undoMove(this._position);
-                        if (isOk) {
-                            log += "=\n.\n";
-                        } else {
-                            log += "? this engine couldn't undo\n.\n";
-                        }
-                    }
-                    break;
-
-                default:
-                    // ignored
-                    break;
-            }
-        }
-
-        return log;
-    }
-
-    dump(indent) {
-        return `
-${indent}Engine
-${indent}------
-${indent}_winner:${this._winner}
-${indent}${this._gameoverSet.dump(indent + "    ")}
-${indent}${this._position.dump(indent + "    ")}`;
-    }
-}
-```
-
-# Step 9. 送信メッセージ実装 - outgoing_messages.js ファイル
+# Step 3. 送信メッセージ実装 - outgoing_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1262,7 +213,7 @@ class OutgoingMessages {
 }
 ```
 
-# Step 10. 受信メッセージ実装 - incoming_messages.js ファイル
+# Step 4. 受信メッセージ実装 - incoming_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1382,7 +333,7 @@ class IncomingMessages {
 }
 ```
 
-# Step 11. Webソケット接続の実装 - connection.js ファイル
+# Step 5. Webソケット接続の実装 - connection.js ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1553,7 +504,7 @@ class Connection {
 }
 ```
 
-# Step 12. 対局申込画面作成 - match_application.html ファイル
+# Step 6. 対局申込画面作成 - match_application.html ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1651,7 +602,7 @@ class Connection {
 </html>
 ```
 
-# Step 13. 対局画面作成 - playing_base.html ファイル
+# Step 7. 対局画面作成 - playing_base.html ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -1757,15 +708,15 @@ class Connection {
             </v-app>
         </div>
 
-        <script src="{% static 'webapp1/tic-tac-toe/v2/things.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/concepts.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/things.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/concepts.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/position.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/user_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/judge_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/engine.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/connection.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/judge_ctrl.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/position.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/incoming_messages.js' %}"></script>
         <script src="{% static 'webapp1/tic-tac-toe/v2/outgoing_messages.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/user_ctrl.js' %}"></script>
-        <script src="{% static 'webapp1/tic-tac-toe/v2/engine.js' %}"></script>
         <!--                    ================================
                                 1
         1. host1/webapp1/static/webapp1/tic-ta-toe/v2/engine.js
@@ -2140,7 +1091,7 @@ class Connection {
 </html>
 ```
 
-# Step 14. 対局画面作成 - playing.html.txt ファイル
+# Step 8. 対局画面作成 - playing.html.txt ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -2213,7 +1164,7 @@ class Connection {
 {% endblock methods_footer %}
 ```
 
-# Step 15. 通信プロトコル作成 - message_converter.py ファイル
+# Step 9. 通信プロトコル作成 - message_converter.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -2323,7 +1274,7 @@ class TicTacToeV2MessageConverter():
         pass
 ```
 
-# Step 16. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
+# Step 10. Webソケットの通信プロトコル作成 - consumer_base.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -2426,7 +1377,7 @@ class TicTacToeV2ConsumerBase(AsyncJsonWebsocketConsumer):
         }))
 ```
 
-# Step 17. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
+# Step 11. Webソケットの通信プロトコル作成 - consumer_custom.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -2500,7 +1451,7 @@ class TicTacToeV2ConsumerCustom(TicTacToeV2ConsumerBase):
         return await self._messageConverter.on_receive(self.scope, doc_received)
 ```
 
-# Step 18. ビュー作成 - resources.py ファイル
+# Step 12. ビュー作成 - resources.py ファイル
 
 以下のファイルを新規作成してほしい  
 
@@ -2681,7 +1632,7 @@ def render_playing(request, kw_room_name, path_of_ws_playing, path_of_html, on_u
     return render(request, path_of_html, context)
 ```
 
-# Step 19. ルート編集 - urls.py ファイル
+# Step 13. ルート編集 - urls.py ファイル
 
 以下の既存のファイルに、以下のソースをマージしてほしい  
 
@@ -2774,7 +1725,7 @@ urlpatterns = [
 ]
 ```
 
-# Step 20. ルート編集 - routing1.py ファイル
+# Step 14. ルート編集 - routing1.py ファイル
 
 以下の既存のファイルを編集してほしい  
 
@@ -2850,7 +1801,7 @@ websocket_urlpatterns = [
 ]
 ```
 
-# Step 21. Web画面へアクセス
+# Step 15. Web画面へアクセス
 
 このゲームは２人用なので、Webページを２窓で開き、片方が X プレイヤー、もう片方が O プレイヤーとして遊んでください  
 
