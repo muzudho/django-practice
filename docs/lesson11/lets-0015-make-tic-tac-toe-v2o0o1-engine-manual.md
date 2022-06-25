@@ -103,7 +103,8 @@ docker-compose up
                 └── 📂static
                     └── 📂tic_tac_toe       # アプリケーション フォルダーと同名
                         └── 📂v2o0o1
-👉                          └── 📄things.js
+                            └── 📂think
+👉                              └── 📄things.js
 ```
 
 ```js
@@ -333,8 +334,9 @@ ${indent}_squares:${this._squares}`;
                 └── 📂static
                     └── 📂tic_tac_toe
                         └── 📂v2o0o1
-👉                          ├── 📄concepts.js
-                            └── 📄things.js
+                            └── 📂think
+👉                              ├── 📄concepts.js
+                                └── 📄things.js
 ```
 
 ```js
@@ -622,9 +624,10 @@ function flipTurn(piece) {
                 └── 📂static
                     └── 📂tic_tac_toe
                         └── 📂v2o0o1
-                            ├── 📄concepts.js
-👉                          ├── 📄position.js
-                            └── 📄things.js
+                            └── 📂think
+                                ├── 📄concepts.js
+👉                              ├── 📄position.js
+                                └── 📄things.js
 ```
 
 ```js
@@ -742,10 +745,11 @@ ${indent}${this._turn.dump(indent + "    ")}`;
                 └── 📂static
                     └── 📂tic_tac_toe
                         └── 📂v2o0o1
-                            ├── 📄concepts.js
-                            ├── 📄position.js
-                            ├── 📄things.js
-👉                          └── 📄user_ctrl.js
+                            └── 📂think
+                                ├── 📄concepts.js
+                                ├── 📄position.js
+                                ├── 📄things.js
+👉                              └── 📄user_ctrl.js
 ```
 
 ```js
@@ -839,11 +843,12 @@ class UserCtrl {
                 └── 📂static
                     └── 📂tic_tac_toe
                         └── 📂v2o0o1
-                            ├── 📄concepts.js
-👉                          ├── 📄judge_ctrl.js
-                            ├── 📄position.js
-                            ├── 📄things.js
-                            └── 📄user_ctrl.js
+                            └── 📂think
+                                ├── 📄concepts.js
+👉                              ├── 📄judge_ctrl.js
+                                ├── 📄position.js
+                                ├── 📄things.js
+                                └── 📄user_ctrl.js
 ```
 
 ```js
@@ -1002,12 +1007,13 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 └── 📂static
                     └── 📂tic_tac_toe
                         └── 📂v2o0o1
-                            ├── 📄concepts.js
-👉                          ├── 📄engine.js
-                            ├── 📄judge_ctrl.js
-                            ├── 📄position.js
-                            ├── 📄things.js
-                            └── 📄user_ctrl.js
+                            └── 📂think
+                                ├── 📄concepts.js
+👉                              ├── 📄engine.js
+                                ├── 📄judge_ctrl.js
+                                ├── 📄position.js
+                                ├── 📄things.js
+                                └── 📄user_ctrl.js
 ```
 
 ```js
@@ -1209,12 +1215,13 @@ ${indent}${this._position.dump(indent + "    ")}`;
                 ├── 📂static
                 │   └── 📂tic_tac_toe
                 │       └── 📂v2o0o1
-                │           ├── 📄concepts.js
-                │           ├── 📄engine.js
-                │           ├── 📄judge_ctrl.js
-                │           ├── 📄position.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
+                │           └── 📂think
+                │               ├── 📄concepts.js
+                │               ├── 📄engine.js
+                │               ├── 📄judge_ctrl.js
+                │               ├── 📄position.js
+                │               ├── 📄things.js
+                │               └── 📄user_ctrl.js
                 └── 📂templates
                     └── 📂tic_tac_toe       # アプリケーション フォルダーと同じ名前
                         └── 📂v2o0o1
@@ -1262,16 +1269,16 @@ ${indent}${this._position.dump(indent + "    ")}`;
             </v-app>
         </div>
 
-        <script src="{% static 'tic_tac_toe/v2o0o1/things.js' %}"></script>
-        <script src="{% static 'tic_tac_toe/v2o0o1/concepts.js' %}"></script>
-        <script src="{% static 'tic_tac_toe/v2o0o1/position.js' %}"></script>
-        <script src="{% static 'tic_tac_toe/v2o0o1/user_ctrl.js' %}"></script>
-        <script src="{% static 'tic_tac_toe/v2o0o1/judge_ctrl.js' %}"></script>
-        <script src="{% static 'tic_tac_toe/v2o0o1/engine.js' %}"></script>
-        <!--                    ============================
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/things.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/concepts.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/position.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/user_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/judge_ctrl.js' %}"></script>
+        <script src="{% static 'tic_tac_toe/v2o0o1/think/engine.js' %}"></script>
+        <!--                    ==================================
                                 1
-        1. host1/apps1/tic_tac_toe/static/tic-ta-toe/v2o0o1/engine.js
-                                          ===========================
+        1. host1/apps1/tic_tac_toe/static/tic-ta-toe/v2o0o1/think/engine.js
+                                          =================================
         -->
 
         <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
@@ -1407,12 +1414,13 @@ board
                 ├── 📂static
                 │   └── 📂tic_tac_toe
                 │       └── 📂v2o0o1
-                │           ├── 📄concepts.js
-                │           ├── 📄engine.js
-                │           ├── 📄judge_ctrl.js
-                │           ├── 📄position.js
-                │           ├── 📄things.js
-                │           └── 📄user_ctrl.js
+                │           └── 📂think
+                │               ├── 📄concepts.js
+                │               ├── 📄engine.js
+                │               ├── 📄judge_ctrl.js
+                │               ├── 📄position.js
+                │               ├── 📄things.js
+                │               └── 📄user_ctrl.js
                 ├── 📂templates
                 │   └── 📂tic_tac_toe
                 │       └── 📂v2o0o1
@@ -1466,12 +1474,13 @@ def render_match_application(request, path_of_html):
         │       ├── 📂static
         │       │   └── 📂tic_tac_toe
         │       │       └── 📂v2o0o1
-        │       │           ├── 📄concepts.js
-        │       │           ├── 📄engine.js
-        │       │           ├── 📄judge_ctrl.js
-        │       │           ├── 📄position.js
-        │       │           ├── 📄things.js
-        │       │           └── 📄user_ctrl.js
+        │       │           └── 📂think
+        │       │               ├── 📄concepts.js
+        │       │               ├── 📄engine.js
+        │       │               ├── 📄judge_ctrl.js
+        │       │               ├── 📄position.js
+        │       │               ├── 📄things.js
+        │       │               └── 📄user_ctrl.js
         │       ├── 📂templates
         │       │   └── 📂tic_tac_toe
         │       │       └── 📂v2o0o1
