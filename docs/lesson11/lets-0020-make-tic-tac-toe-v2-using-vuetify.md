@@ -101,36 +101,6 @@ cd host1
 docker-compose up
 ```
 
-# Step 2. アイコンの設定 - favicon.ico ファイル
-
-favicon.ico は、例えば 以下のサイトで作れる。作ってきてほしい。  
-
-📖 [Favicon Generator. For real.](https://realfavicongenerator.net/)  
-
-例えば、以下の場所に置いてほしい  
-
-```plaintext
-    └── 📂host1
-        └── 📂webapp1                       # アプリケーション フォルダー
-            └── 📂static
-👉              └── 🚀favicon.ico
-```
-
-favicon.ico を有効にするには HTML で設定する必要があるが、まだ作成しない。以下は例。あとで全体を再掲する。  
-
-```plaintext
-{% load static %} {% comment %} 👈あとで static "URL" を使うので load static します {% endcomment %}
-<!DOCTYPE html>
-<html>
-    <head>
-        <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}" />
-        中略
-        <title>Tic Tac Toe</title>
-    </head>
-    <body>
-以下略
-```
-
 # Step 3. 送信メッセージ実装 - outgoing_messages.js ファイル
 
 以下のファイルを新規作成してほしい  
