@@ -44,15 +44,14 @@ Lesson 0.4 Auth - Sign up
   * もっと勉強したい人向けの関連記事
     * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
-Lesson 0.5 Auth - Log in
+Lesson 0.5 Auth - Log in/out
+
+※サインインとログイン、サインアウトとログアウトは、実装としては同じもの  
 
 * 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
+* 📖 [Djangoでログインしていないと見れないページ，およびログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 
 **以下、連載再構成予定**  
-
-Lesson 3. Page  
-
-* 📖 [Djangoでログイン／ログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 
 Lesson 4. Super-user  
 
