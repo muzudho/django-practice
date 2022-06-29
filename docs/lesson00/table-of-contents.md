@@ -38,24 +38,24 @@ Lesson 0.3 Portal
 * 📖 [Djangoでポータルページを作成しよう！](https://qiita.com/muzudho1/items/ad2299cf94a9a5b1c254)
 * 📖 [DjangoでCSVとpandasを使ってPythonコードを編集しなくてもポータルページのリンクを増減できるようにしよう！](https://qiita.com/muzudho1/items/19c44296501c29c41d31)
 
-Lesson 0.4 Auth - Sign up
+Lesson 0.4 Auth - Sign up  
 
 * 📖 [Djangoでユーザー認証を付けよう！](https://qiita.com/muzudho1/items/55cb7ac55299afd51887)
   * もっと勉強したい人向けの関連記事
     * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
-Lesson 0.5 Auth - Log in/out
+Lesson 0.5 Auth - Log in/out  
 
 ※サインインとログイン、サインアウトとログアウトは、実装としては同じもの  
 
 * 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
 * 📖 [Djangoでログインしていないと見れないページ，およびログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 
-**以下、連載再構成予定**  
-
-Lesson 4. Super-user  
+Lesson 0.6 Super-user
 
 * 📖 [Djangoでスーパーユーザーを追加しよう！](https://qiita.com/muzudho1/items/cf21fa75e23e1f987153)
+
+**以下、連載再構成予定**  
 
 Lesson 5. Model  
 
