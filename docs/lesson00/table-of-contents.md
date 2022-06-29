@@ -44,11 +44,11 @@ Lesson 0.4 Auth - Sign up
   * もっと勉強したい人向けの関連記事
     * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
-**以下、連載再構成予定**  
-
-Lesson 2. Auth  
+Lesson 0.5 Auth - Log in
 
 * 📖 [Djangoでサインイン（利用開始）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
+
+**以下、連載再構成予定**  
 
 Lesson 3. Page  
 
