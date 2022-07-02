@@ -48,6 +48,10 @@ Lesson 0.4 Auth - Sign up
   * もっと勉強したい人向けの関連記事
     * 📚 [Djangoで、django-allauthのテンプレートを差し替えよう！](https://qiita.com/muzudho1/items/6120055b2a8eb4e28527)
 
+Lesson 0.4.5 Reset database
+
+* 📖 [Djangoでdataフォルダーを壊してしまったときのリセット方法を覚えよう！](https://qiita.com/muzudho1/items/1ecaac80568c981fcd59)
+
 Lesson 0.5 Auth - Log in/out  
 
 ※サインインとログイン、サインアウトとログアウトは、実装としては同じもの  
