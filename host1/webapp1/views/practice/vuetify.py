@@ -3,37 +3,6 @@ from django.http import HttpResponse
 from django.template import loader
 
 
-def readHello(request, id=id):
-    """Vuetify練習"""
-
-    template = loader.get_template('webapp1/practice/vuetify-hello1.html')
-    #                               ------------------------------------
-    #                               1
-    # 1. host1/webapp1/templates/webapp1/practice/vuetify-hello1.html を取ってきます。
-    #                            ------------------------------------
-
-    context = {
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
-def readDataTable1(request, id=id):
-    """Vuetify練習"""
-
-    template = loader.get_template(
-        'webapp1/practice/vuetify-data-table1.html')
-    #    -----------------------------------------
-    #    1
-    # 1. host1/webapp1/templates/webapp1/practice/vuetify-data-table1.html を取ってきます。
-    #                            -----------------------------------------
-
-    context = {
-    }
-
-    return HttpResponse(template.render(context, request))
-
-
 def readDataTable2(request):
     """Vuetify練習"""
     template = loader.get_template(
