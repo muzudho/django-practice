@@ -235,66 +235,6 @@ urlpatterns = [
     # | 練習
 
     # Vuetify練習
-    path('practice/vuetify-hello1',
-         # ----------------------
-         # 1
-         practice_vuetify.readHello, name='readHello'),
-    #    --------------------------        ---------
-    #    2                                 3
-    # 1. 例えば `http://example.com/practice/vuetify-hello1` のような URL のパスの部分
-    #                              ------------------------
-    # 2. practice_vuetify (別名)ファイルの readHello メソッド
-    # 3. HTMLテンプレートの中で {% url 'readHello' %} のような形でURLを取得するのに使える
-
-    # Vuetify練習
-    path('practice/vuetify-data-table1', practice_vuetify.readDataTable1,
-         # ---------------------------   -------------------------------
-         # 1                             2
-         name='readDataTable1'),
-    #          --------------
-    #          3
-    # 1. 例えば `http://example.com/practice/vuetify-data-table1` のような URL のパスの部分
-    #                              -----------------------------
-    # 2. practice_vuetify (別名)ファイルの readDataTable1 メソッド
-    # 3. HTMLテンプレートの中で {% url 'readDataTable1' %} のような形でURLを取得するのに使える
-
-    # Vuetify練習
-    path('practice/vuetify-data-table2', practice_vuetify.readDataTable2,
-         # ---------------------------   -------------------------------
-         # 1                             2
-         name='readDataTable2'),
-    #          --------------
-    #          3
-    # 1. 例えば `http://example.com/practice/vuetify-data-table2` のような URL のパスの部分
-    #                              -----------------------------
-    # 2. practice_vuetify (別名)ファイルの readDataTable2 メソッド
-    # 3. HTMLテンプレートの中で {% url 'readDataTable2' %} のような形でURLを取得するのに使える
-
-    # Vuetifyのテキストフィールドのバリデーションの練習
-    path('practice/vuetify-text-field-validation1', practice_vuetify.render_practice_text_field_validation1,
-         # --------------------------------------   -------------------------------------------------------
-         # 1                                        2
-         name='practice_text_field_validation1'),
-    #          -------------------------------
-    #          3
-    # 1. 例えば `http://example.com/practice/vuetify-text-field-validation1` のような URL のパスの部分
-    #                              ---------------------------------------
-    # 2. practice_vuetify (別名)ファイルの render_practice_text_field_validation1 メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_text_field_validation1' %} のような形でURLを取得するのに使える
-
-    # Vuetify練習
-    path('practice/vuetify-json-textarea1', practice_vuetify.readJsonTextarea1,
-         # ------------------------------   ----------------------------------
-         # 1                                2
-         name='readJsonTextarea1'),
-    #          -----------------
-    #          3
-    # 1. 例えば `http://example.com/practice/vuetify-json-textarea1` のような URL のパスの部分
-    #                              -------------------------------
-    # 2. practice_vuetify (別名)ファイルの readJsonTextarea1 メソッド
-    # 3. HTMLテンプレートの中で {% url 'readJsonTextarea1' %} のような形でURLを取得するのに使える
-
-    # Vuetify練習
     path('practice/vuetify-data-table2o2', practice_vuetify.readDataTable2o2,
          # -----------------------------   ---------------------------------
          # 1                               2
