@@ -85,11 +85,11 @@ Lesson 0.9 JSON
 * 📖 [DjangoのサーバーからデータをJSON形式のテキストで受信しよう！](https://qiita.com/muzudho1/items/d83760a6a4abadaf19c4)
 * 📖 [DjangoでデータをサーバーへJSON形式で渡して、記憶させよう！](https://qiita.com/muzudho1/items/ed0ea262aaa327a2d12b)
 
-**以下、連載再構成予定**  
-
-Lesson 9. Socket  
+Lesson 0.10 Socket  
 
 * 📖 [ソケットを使おう！](https://qiita.com/muzudho1/items/7a6501f7dbafbaa9b96c)
+
+**以下、連載再構成予定**  
 
 Lesson 10. Web socket  
 
