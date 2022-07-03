@@ -13,14 +13,6 @@ from webapp1.models.m_dessert import Dessert
 # 4. クラス名
 
 
-def readJsonResponse1(request):
-    """JSONでの応答練習"""
-    with open('webapp1/static/webapp1/practice/vuetify-desserts.json', mode='r', encoding='utf-8') as f:
-        doc = json.load(f)
-
-    return JsonResponse(doc)
-
-
 def readJsonTextarea2(request):
     """JSONでの応答練習"""
     template = loader.get_template('practice/json-textarea2.html')
