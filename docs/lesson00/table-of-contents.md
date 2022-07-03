@@ -20,7 +20,7 @@
 学習コストが低くなるように並べている。  
 数字の小さな Lesson から　上から下へ１つずつ、飛ばさず全部　読み進めてほしい。  
 
-Table of Contents  
+Lesson 0 Table of Contents  
 
 * 📖 `DjangoとDockerでゲーム対局サーバーを作ろう！` (この記事)  
 
@@ -72,13 +72,16 @@ Lesson 0.7 CRUD
 * 📖 [Djangoでモデルのインスタンスの削除ページを作成しよう！](https://qiita.com/muzudho1/items/32694c883331c75ef059)
 * 📖 [Djangoでモデルのインスタンスの作成／更新ページを作成しよう！](https://qiita.com/muzudho1/items/806ecdba1654ae169f37)
 
+Lesson 0.8 Vuetify  
+
+* 📖 [DjangoでフロントエンドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
+
 **以下、連載再構成予定**  
 
 Lesson 7. Vuetify  
 
-* 📖 [DjangoでフロントエンドにVuetifyを使おう！](https://qiita.com/muzudho1/items/e80a72b027249daa4d41)
-    * 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)
-    * 📖 [DjangoでVuetifyのテキストフィールドのバリデーションの練習をしよう！](https://qiita.com/muzudho1/items/fd47e589cd3f9449fcbb)
+* 📖 [DjangoでVuetifyのData tableを使おう！](https://qiita.com/muzudho1/items/2b01d3acce5ec1b5770b)
+* 📖 [DjangoでVuetifyのテキストフィールドのバリデーションの練習をしよう！](https://qiita.com/muzudho1/items/fd47e589cd3f9449fcbb)
 
 Lesson 8. JSON  
 
