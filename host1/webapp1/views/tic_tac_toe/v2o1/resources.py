@@ -1,42 +1,7 @@
 """〇×ゲームの練習２．１"""
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.template import loader
-
-
-class Portal():
-    """ポータル"""
-
-    _path_of_html = "webapp1/tic-tac-toe/v2/portal.html"
-    #                ----------------------------------
-    #                1
-    # 1. host1/webapp1/templates/webapp1/tic-tac-toe/v2/portal.html を取得
-    #                            ----------------------------------
-
-    _path_of_match_application = "/tic-tac-toe/v2/match-application/"
-    #                             ----------------------------------
-    #                             1
-    # 1. http://example.com/tic-tac-toe/v2/match-application/
-    #                      ----------------------------------
-
-    _path_of_signin = "/tic-tac-toe/v2/login/"
-    #                  ----------------------
-    #                  1
-    # 1. http://example.com/tic-tac-toe/v2/login/
-    #                      ----------------------
-
-    _path_of_signout = "/tic-tac-toe/v2/logout/"
-    #                   -----------------------
-    #                   1
-    # 1. http://example.com/tic-tac-toe/v2/logout/
-    #                      -----------------------
-
-    @staticmethod
-    def render(request):
-        """描画"""
-        return portal_render(request, Portal._path_of_html, Portal._path_of_match_application, Portal._path_of_signin, Portal._path_of_signout)
 
 
 class LoggingIn():
@@ -75,20 +40,6 @@ class LoggingOut():
 
 
 # 以下、関数
-
-
-def portal_render(request, path_of_html, path_of_match_application, path_of_signinin, path_of_signout):
-    """ポータル - 描画"""
-    template = loader.get_template(path_of_html)
-
-    context = {
-        # "dj_" は 「Djangoがレンダーに埋め込む変数」 の目印
-        'dj_user': request.user,
-        'dj_pathOfMatchApplication': path_of_match_application,
-        'dj_pathOfSignin': path_of_signinin,
-        'dj_pathOfLogout': path_of_signout,
-    }
-    return HttpResponse(template.render(context, request))
 
 
 def logging_in_render(request, path_of_http_playing, path_of_match_application):
