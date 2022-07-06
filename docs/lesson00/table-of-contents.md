@@ -61,7 +61,11 @@ Lesson 0.5 Auth - Log in/out
 * 📖 [Djangoでサインイン（ユーザー認証）のページを作ろう！](https://qiita.com/muzudho1/items/1d34d64562ff07f1742a)
 * 📖 [Djangoでログインしていないと見れないページ，およびログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 * 📖 [Djangoでログインしていない人には見えず、ログインしている人には見えるボタンを作ろう！](https://qiita.com/muzudho1/items/0c59f3ce7aa6bef2a91f)
+
+Lesson 0.5.5 User, Extends User, and Active User  
+
 * 📖 [Djangoで会員登録ユーザーを一覧しよう！](https://qiita.com/muzudho1/items/13c15be5b9070dab1770)
+* 📖 [DjangoでUserモデルを拡張しよう！](https://qiita.com/muzudho1/items/2d182729f625234f0eff)
 * 📖 [Djangoでアクティブユーザーの一覧を作ろう！](https://qiita.com/muzudho1/items/bea77e8a69c5c805e1d7)
 
 Lesson 0.6 Model  
@@ -124,10 +128,6 @@ Lesson 15. User home
 Lesson 17. Lobby  
 
 * 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
-
-Lesson 18. Extend user model  
-
-* 📖 [DjangoでUserモデルを拡張しよう！](https://qiita.com/muzudho1/items/2d182729f625234f0eff)
 
 Lesson 19. Web page reload and redirect automatically  
 
