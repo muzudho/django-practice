@@ -62,6 +62,7 @@ Lesson 0.5 Auth - Log in/out
 * 📖 [Djangoでログインしていないと見れないページ，およびログアウト機能を付けよう！](https://qiita.com/muzudho1/items/9f1ae4d0debc0b8aa4b1)
 * 📖 [Djangoでログインしていない人には見えず、ログインしている人には見えるボタンを作ろう！](https://qiita.com/muzudho1/items/0c59f3ce7aa6bef2a91f)
 * 📖 [Djangoで会員登録ユーザーを一覧しよう！](https://qiita.com/muzudho1/items/13c15be5b9070dab1770)
+* 📖 [Djangoでアクティブユーザーの一覧を作ろう！](https://qiita.com/muzudho1/items/bea77e8a69c5c805e1d7)
 
 Lesson 0.6 Model  
 
@@ -119,10 +120,6 @@ Lesson 13. Make room
 Lesson 15. User home  
 
 * 📖 [Djangoでユーザーホームを作ろう！](https://qiita.com/muzudho1/items/37532c83235b7f9e60c9)
-
-Lesson 16. Active user  
-
-* 📖 [Djangoでアクティブユーザーの一覧を作ろう！](https://qiita.com/muzudho1/items/bea77e8a69c5c805e1d7)
 
 Lesson 17. Lobby  
 
