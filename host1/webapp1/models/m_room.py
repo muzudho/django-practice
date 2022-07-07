@@ -41,4 +41,4 @@ class Room(models.Model):
 
     def __str__(self):
         """このオブジェクトを文字列にしたとき返るもの"""
-        return self.name
+        return f"{self.name} room"
