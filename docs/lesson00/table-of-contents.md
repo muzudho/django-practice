@@ -119,15 +119,19 @@ Lesson 0.14 Make room
 * 📖 [Djangoでゲーム対局部屋を削除しよう！](https://qiita.com/muzudho1/items/172485842e7adfb749aa)
 * 📖 [Djangoでゲーム対局部屋を作成または更新しよう！](https://qiita.com/muzudho1/items/6eaf6cf90fe5a6519184)
 
+Lesson 0.15 User home  
+
+...  
+
+Lesson 0.16 Lobby
+
+* 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
+
 **以下、連載再構成予定**  
 
 Lesson 15. User home  
 
 * 📖 [Djangoでユーザーホームを作ろう！](https://qiita.com/muzudho1/items/37532c83235b7f9e60c9)
-
-Lesson 17. Lobby  
-
-* 📖 [Djangoでロビー（待合室）を作ろう！](https://qiita.com/muzudho1/items/57677b07854aca71b42d)
 
 Lesson 19. Web page reload and redirect automatically  
 
