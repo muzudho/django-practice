@@ -435,37 +435,6 @@ urlpatterns = [
     # +----
     # | 部屋
 
-    # 一覧
-    path('rooms/', v_room.RoomView.render_list, name='listRoom'),
-    #     ------   ---------------------------        ----------
-    #     1        2                                  3
-    # 1. 例えば `http://example.com/rooms/` のような URL のパスの部分
-    #                              -------
-    # 2. v_room.py ファイルの RoomView クラスの render_list 静的メソッド
-    # 3. HTMLテンプレートの中で {% url 'listRoom' %} のような形でURLを取得するのに使える
-
-    # 読取
-    path('rooms/read/<int:id>/', v_room.RoomView.render_read, name='readRoom'),
-    #     --------------------   ---------------------------        ----------
-    #     1                      2                                  3
-    # 1. 例えば `http://example.com/rooms/read/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
-    #                              --------------------
-    # 2. v_room.py ファイルの RoomView クラスの render_read 静的メソッド
-    # 3. HTMLテンプレートの中で {% url 'readRoom' %} のような形でURLを取得するのに使える
-
-    # 削除
-    path('rooms/delete/<int:id>/',
-         # ---------------------
-         # 1
-         v_room.RoomView.render_delete, name='deleteRoom'),
-    #    -----------------------------        ----------
-    #    2                                    3
-    # 1. 例えば `http://example.com/rooms/delete/<数字列>/` のような URL のパスの部分
-    #                              ----------------------
-    #    数字列は v_room.py の中で id という名前で取得できる
-    # 2. v_room.py ファイルの RoomView クラスの render_delete 静的メソッド
-    # 3. HTMLテンプレートの中で {% url 'deleteRoom' %} のような形でURLを取得するのに使える
-
     # 作成
     path('rooms/create/', v_room.RoomView.render_upsert, name='createRoom'),
     #     -------------   -----------------------------        ----------
@@ -569,28 +538,6 @@ urlpatterns = [
 
 
     # +----
-    # | セッション練習
-
-    # アクティブ ユーザー一覧
-    path('practice/session-active-user-list/',
-         # ------------------------------------
-         # 1
-         practice_session.render_active_user_list, name='sessionPracticeV1_activeUserList'),
-    #    ----------------------------------------        --------------------------------
-    #    2                                               3
-    #
-    # 1. 例えば `http://example.com/practice/session-active-user-list/` のような URL のパスの部分
-    #                              --------------------------------------
-    # 2. practice_session (別名)ファイルの render_active_user_list メソッド
-    # 3. HTMLテンプレートの中で {% url 'sessionPracticeV1_activeUserList' %} のような形でURLを取得するのに使える
-
-    # | セッション練習
-    # +----
-
-
-
-
-    # +----
     # | ロビー（待合室）
 
     # ロビー（待合室）
@@ -611,32 +558,6 @@ urlpatterns = [
 
     # +----
     # | 練習
-
-    # 会員登録ユーザー一覧
-    path('practice/user-list/',
-         # ------------------
-         # 1
-         practice_pages.render_user_list, name='practice_userList'),
-    #    -------------------------------        -----------------
-    #    2                                      3
-    #
-    # 1. 例えば `http://example.com/practice/user-list/` のような URL のパスの部分
-    #                              --------------------
-    # 2. practice_pages (別名)ファイルの render_user_list メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_userList' %} のような形でURLを取得するのに使える
-
-    # 会員登録ユーザー一覧 v2
-    path('practice/user-list/v2/',
-         # ---------------------
-         # 1
-         practice_pages.render_user_list_v2, name='practice_userListV2'),
-    #    ----------------------------------        -------------------
-    #    2                                         3
-    #
-    # 1. 例えば `http://example.com/practice/user-list/v2/` のような URL のパスの部分
-    #                              -----------------------
-    # 2. practice_pages (別名)ファイルの render_user_list_v2 メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_userListV2' %} のような形でURLを取得するのに使える
 
     # 対局待合室
     path('practice/waiting-for-match/',

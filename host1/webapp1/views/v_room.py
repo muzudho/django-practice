@@ -1,8 +1,4 @@
-import json
-from django.core import serializers
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template import loader
 
 from webapp1.models.m_room import Room
 #    ------- ------ ------        ----
@@ -20,37 +16,9 @@ from webapp1.forms.f_room import RoomForm
 # 3. Python ファイル名。拡張子抜き
 # 4. クラス名
 
-from webapp1.models_helper.mh_user import MhUser
-#    ------- ------------- -------        ------
-#    1       2             3              4
-# 1. アプリケーション フォルダー名
-# 2. ディレクトリー名
-# 3. Python ファイル名。拡張子抜き
-# 4. クラス名
-
 
 class RoomView():
     """部屋"""
-
-    @staticmethod
-    def render_delete(request, id=id):
-        """削除ページ"""
-
-        template = loader.get_template('webapp1/rooms/delete.html')
-        #                               -------------------------
-        #                               1
-        # 1. host1/webapp1/templates/webapp1/rooms/delete.html
-        #                            -------------------------
-
-        room = Room.objects.get(pk=id)  # idを指定してメンバーを１人取得
-        name = room.name  # 名前だけまだ使う
-        room.delete()
-        context = {
-            'room': {
-                'name': name
-            }
-        }
-        return HttpResponse(template.render(context, request))
 
     @staticmethod
     def render_upsert(request, id=None):
