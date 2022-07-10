@@ -2,19 +2,6 @@ import datetime
 from django.shortcuts import render
 
 
-def render_waiting_for_match(request):
-    """対局待合室"""
-
-    context = {
-    }
-
-    return render(request, "webapp1/practice/waiting-for-match-v1.html", context)
-    #                       ------------------------------------------
-    #                       1
-    # 1. host1/webapp1/templates/webapp1/practice/waiting-for-match-v1.html
-    #                            ------------------------------------------
-
-
 def render_waiting_for_match_v2(request):
     """対局待合室"""
 

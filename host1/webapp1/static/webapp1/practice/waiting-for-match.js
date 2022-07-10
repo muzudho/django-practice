@@ -1,13 +1,4 @@
 /**
- * @param {number} intervalMilliseconds
- */
-function startReloadingAutomatically(intervalMilliseconds) {
-    setInterval(() => {
-        location.reload();
-    }, intervalMilliseconds);
-}
-
-/**
  * 内部で使用する変数
  *
  * * vue1
