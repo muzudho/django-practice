@@ -130,12 +130,9 @@ Lesson 0.16 Lobby
 Lesson 0.17 Web page reload and redirect automatically  
 
 * 📖 [Djangoで自動リロードするページを作ろう！](https://qiita.com/muzudho1/items/8df599dc0e0acb25f649)
+* 📖 [Djangoで自動リダイレクトするページを作ろう！](https://qiita.com/muzudho1/items/aea9be36422763f082e9)
 
 **以下、連載再構成予定**  
-
-Lesson 19. Web page reload and redirect automatically  
-
-* 📖 [Djangoで自動リダイレクトするページを作ろう！](https://qiita.com/muzudho1/items/aea9be36422763f082e9)
 
 Lesson 20. Reduce client-side functionality  
 

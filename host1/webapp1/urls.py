@@ -433,36 +433,6 @@ urlpatterns = [
 
 
     # +----
-    # | 部屋
-
-    # 作成
-    path('rooms/create/', v_room.RoomView.render_upsert, name='createRoom'),
-    #     -------------   -----------------------------        ----------
-    #     1               2                                    3
-    # 1. 例えば `http://example.com/rooms/create/` のような URL のパスの部分
-    #                              --------------
-    # 2. v_room.py ファイルの RoomView クラスの render_upsert 静的メソッド
-    # 3. HTMLテンプレートの中で {% url 'createRoom' %} のような形でURLを取得するのに使える
-
-    # 更新
-    path('rooms/update/<int:id>/',
-         # ---------------------
-         # 1
-         v_room.RoomView.render_upsert, name='updateRoom'),
-    #    -----------------------------        ----------
-    #    2                                    3
-    # 1. 例えば `http://example.com/rooms/update/<数字列>/` のような URL のパスの部分。数字列は v_room.py の中で id という名前で取得できる
-    #                              ----------------------
-    # 2. v_room.py ファイルの RoomView クラスの render_upsert 静的メソッド
-    # 3. HTMLテンプレートの中で {% url 'updateRoom' %} のような形でURLを取得するのに使える
-
-    # | 部屋
-    # +----
-
-
-
-
-    # +----
     # | ポータル作成
 
     # 旧ポータル
@@ -551,41 +521,6 @@ urlpatterns = [
     # 3. HTMLテンプレートの中で {% url 'lobbyV1_lobby' %} のような形でURLを取得するのに使える
 
     # | ロビー（待合室）
-    # +----
-
-
-
-
-    # +----
-    # | 練習
-
-    # 対局待合室
-    path('practice/waiting-for-match/',
-         # --------------------------
-         # 1
-         practice_pages.render_waiting_for_match, name='practice_waitingForMatch'),
-    #    ---------------------------------------        ------------------------
-    #    2                                              3
-    #
-    # 1. 例えば `http://example.com/waiting-for-match/` のような URL のパスの部分
-    #                              -------------------
-    # 2. practice_pages (別名)ファイルの render_waiting_for_match メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatch' %} のような形でURLを取得するのに使える
-
-    # 対局待合室 v2
-    path('practice/waiting-for-match/v2/',
-         # -----------------------------
-         # 1
-         practice_pages.render_waiting_for_match_v2, name='practice_waitingForMatchV2'),
-    #    ------------------------------------------        --------------------------
-    #    2                                                 3
-    #
-    # 1. 例えば `http://example.com/waiting-for-match/v2/` のような URL のパスの部分
-    #                              ----------------------
-    # 2. practice_pages (別名)ファイルの render_waiting_for_match_v2 メソッド
-    # 3. HTMLテンプレートの中で {% url 'practice_waitingForMatchV2' %} のような形でURLを取得するのに使える
-
-    # | 練習
     # +----
 ]
 
