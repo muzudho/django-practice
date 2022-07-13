@@ -136,11 +136,11 @@ Lesson 0.18 Reduce client-side functionality
 
 * 📖 [Djangoの〇×ゲームのPlayAgainボタンを外そう！](https://qiita.com/muzudho1/items/d4bfde69c1656616f8ce)
 
-**以下、連載再構成予定**  
-
-Lesson 21. Check-in  
+Lesson 0.19. Check-in  
 
 * 📖 [Djangoでチェックインを作ろう！](https://qiita.com/muzudho1/items/1ce542dd66929d7bce3f)
+
+**以下、連載再構成予定**  
 
 Lesson 22. Monitor  
 
