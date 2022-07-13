@@ -140,11 +140,11 @@ Lesson 0.19. Check-in
 
 * 📖 [Djangoでチェックインを作ろう！](https://qiita.com/muzudho1/items/1ce542dd66929d7bce3f)
 
-**以下、連載再構成予定**  
-
-Lesson 22. Monitor  
+Lesson 0.20 Monitor  
 
 * 📖 [Djangoでゲーム対局部屋をモニターしよう！](https://qiita.com/muzudho1/items/e5e6e6ba76da401c4c00)
+
+**以下、連載再構成予定**  
 
 Lesson 23. Watching game  
 
