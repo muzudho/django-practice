@@ -24,6 +24,8 @@ Lesson 0 Table of Contents
 
 * 📖 `DjangoとDockerでゲーム対局サーバーを作ろう！` (この記事)  
 
+**以下、連載再構成予定**  
+
 Lesson 0.1 Install  
 
 * 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/48e69ed17d70a8f171a7)
@@ -144,8 +146,6 @@ Lesson 0.20 Monitor
 
 * 📖 [Djangoでゲーム対局部屋をモニターしよう！](https://qiita.com/muzudho1/items/e5e6e6ba76da401c4c00)
 
-**以下、連載再構成予定**  
-
-Lesson 23. Watching game  
+Lesson 0.21 Watching game  
 
 * 📖 [Djangoで観戦モードを作ろう！](https://qiita.com/muzudho1/items/9e4a7dd1ccfac6ac8d66)
