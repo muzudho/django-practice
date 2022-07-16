@@ -24,8 +24,6 @@ Lesson 0 Table of Contents
 
 * 📖 `DjangoとDockerでゲーム対局サーバーを作ろう！` (この記事)  
 
-**以下、連載再構成予定**  
-
 Lesson 0.1 Install  
 
 * 📖 [DjangoをDockerコンテナへインストールしよう！](https://qiita.com/muzudho1/items/48e69ed17d70a8f171a7)
@@ -138,6 +136,8 @@ Lesson 0.17 Web page reload and redirect automatically
 Lesson 0.18 Reduce client-side functionality  
 
 * 📖 [Djangoの〇×ゲームのPlayAgainボタンを外そう！](https://qiita.com/muzudho1/items/d4bfde69c1656616f8ce)
+
+**以下、連載再構成予定**  
 
 Lesson 0.19. Check-in  
 
