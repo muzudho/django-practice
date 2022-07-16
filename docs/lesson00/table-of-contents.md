@@ -73,6 +73,7 @@ Lesson 0.5.5 User, Extends User, and Active User
 Lesson 0.6 Model  
 
 * 📖 [Djangoでモデルを追加しよう！](https://qiita.com/muzudho1/items/2463cc006da69f5ed7b2)
+* 📖 [Djangoでモデルの中身をダンプ出力しよう！](https://qiita.com/muzudho1/items/5db218ed0f12bae43d18)
 
 Lesson 0.7 CRUD  
 
